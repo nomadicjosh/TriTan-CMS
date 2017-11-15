@@ -2,8 +2,10 @@
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 
-$app->get('/logout/', function () use($app, $user) {
-    ttcms_logger_activity_log_write(_t('Authentication', 'tritan-cms'), _t('Logout', 'tritan-cms'), get_name(get_current_user_id()), _escape($user['user_login']));
+$app->get('/logout/', function () use($app) {
+    $user = ttcms_get_current_user();
+    
+    ttcms_logger_activity_log_write(_t('Authentication', 'tritan-cms'), _t('Logout', 'tritan-cms'), get_name(_escape($user['user_id'])), _escape($user['user_login']));
 
     if (strpos($app->req->server['HTTP_REFERER'], 'admin') !== FALSE) {
         $logout_link = $app->hook->{'apply_filter'}('user_logout_redirect', get_base_url() . 'login' . '/');

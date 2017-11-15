@@ -19,6 +19,13 @@ $app->group('/login', function() use ($app) {
             $redirect_to = ($app->req->get['redirect_to'] != null ? $app->req->get['redirect_to'] : get_base_url());
             ttcms_redirect($redirect_to);
         }
+
+        /**
+         * Fires before a user has logged in.
+         *
+         * @since 1.0.0
+         */
+        $app->hook->{'do_action'}('ttcms_login');
     });
 
     $app->match('GET|POST', '/', function () use($app) {
