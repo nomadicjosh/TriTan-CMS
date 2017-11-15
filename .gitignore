@@ -3,6 +3,9 @@
 config.php
 apidoc.json
 /docs/
+private/db/.htaccess
+private/.tmb
+private/.quarantine
 private/db/last_login.json
 private/db/ttcms_1_activity.json
 private/db/ttcms_1_error.json

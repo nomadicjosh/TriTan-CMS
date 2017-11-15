@@ -6,7 +6,7 @@ The main purpose of TriTan is to give developer's an option that is geared towar
 TriTan is pretty stable at the moment, but it is currently in beta and should no be used in production until release 1.0.
 
 ## Screenshot
-![TriTan CMS Screenshot](//tritan-cms.s3.amazonaws.com/assets/images/TriTan-Screenshot.png)
+![TriTan CMS Screenshot](https://tritan-cms.s3.amazonaws.com/assets/images/TriTan-Screenshot.png)
 
 ## Notable Features
 * Easier installation and deployment
@@ -43,6 +43,20 @@ TriTan uses a schemaless database library and stores those files as well as some
 * private/db/*
 * private/sites/{site_id}/files/cache/*
 
+Here is an example of what should go inside of the .htaccess file to secure the above directories. Make sure to change the `key` to something unique and secure.
+```
+# BEGIN Privatization
+# This .htaccess file ensures that other people cannot download your files.
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteCond %{QUERY_STRING} !key=03253844193810a1533b73d1a880007c
+RewriteRule (.*) - [F]
+</IfModule>
+
+# END Privatization
+```
+
 ## Resources
 * [Learn](//learn.tritancms.com/) - TriTan documentaion.
 * [API Doc](//learn.tritancms.com/api/) - Documentation of classes and functions.
@@ -65,7 +79,7 @@ As mentioned previously, TriTan CMS is also a content management framework. You 
 | [Hoa\Ruler](https://github.com/hoaproject/Ruler)  | This library allows to manipulate a rule engine. Rules can be written by using a dedicated language, very close to SQL. Therefore, they can be written by a user and saved in a database.  |
 
 ## Theme
-There is currently no theme repository. However, you can download the [Vapor]() theme. Use this theme as an example to build your own theme.
+There is currently no theme repository. However, you can download the [Vapor](//tritan-cms.s3.amazonaws.com/themes/Vapor.zip) theme. Use this theme as an example to build your own theme.
 
 ## Plugins
 The following plugins are available for download and use.
