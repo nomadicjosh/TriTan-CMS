@@ -42,7 +42,7 @@ define('SCREEN', 'home');
                     </ul>
                     <div class="tab-content no-padding">
                         <!-- Highchart subscribers/list -->
-                        <div class="chart tab-pane active" id="subList" style="padding:10px 10px;height:300px;text-align:center;font-size:2em;"><p><?=sprintf(_t('Welcome to the TriTan CMS dashboard. If you have any ideas on what should be on the dashboard, please head over to <a href="%s">Github</a> and let you know your ideas.'),'https://github.com/parkerj/TriTan-CMS/issues');?></p></div>
+                        <div class="chart tab-pane active" id="subList" style="padding:10px 10px;height:300px;text-align:center;font-size:2em;"><p><?=sprintf(_t('Welcome to the TriTan CMS dashboard. If you have any ideas on what should be on the dashboard, please head over to <a href="%s">Github</a> and let me know your ideas.'),'https://github.com/parkerj/TriTan-CMS/issues');?></p></div>
                     </div>
                 </div>
 

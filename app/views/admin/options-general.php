@@ -89,7 +89,7 @@ define('SCREEN', 'options-general');
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label><strong><font color="red">*</font> <?= _t('Api Key', 'tritan-cms'); ?></strong></label>
+                                    <label><strong><font color="red">*</font> <?= _t('API Key', 'tritan-cms'); ?></strong></label>
                                     <input type="text" class="form-control" name="api_key" value="<?= $app->hook->{'get_option'}('api_key'); ?>" required/>
                                 </div>
                                 <?php $app->hook->{'do_action'}('options_general_form'); ?>

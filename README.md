@@ -15,7 +15,7 @@ TriTan is pretty stable at the moment, but it is currently in beta and should no
 * Easier to migrate from one server to another
 * API first (read-only)
 * Go headless or nearly-headless
-* Caching (JSON caching on by default)
+* Caching (JSON by default when on)
 * Multisite (needs testing)
 
 ## Requirements
@@ -35,6 +35,7 @@ TriTan is pretty stable at the moment, but it is currently in beta and should no
 * Open your browser to `http://replace_url/login/` and login with the login credentials below:
     * username: TriTan
     * password: TriTanCMS
+* Visit `http://replace_url/admin/options-general/`, and change the API Key to something unique.
 
 ## Security
 TriTan uses a schemaless database library and stores those files as well as some other important files on the server. Whether you are on Apache/Nginx, you must make sure to secure the following directories so that files in those directories are not downloadable:
