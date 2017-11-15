@@ -1239,6 +1239,7 @@ app()->hook->{'add_action'}('reset_password_route', 'send_reset_password_email',
 app()->hook->{'add_action'}('password_change_email', 'send_password_change_email', 5, 3);
 app()->hook->{'add_action'}('email_change_email', 'send_email_change_email', 5, 2);
 app()->hook->{'add_action'}('before_router_login', 'update_main_site', 5);
+app()->hook->{'add_action'}('ttcms_login', 'generate_php_encryption', 5);
 app()->hook->{'add_filter'}('the_content', 'ttcms_autop');
 app()->hook->{'add_filter'}('the_content', 'parsecode_unautop');
 app()->hook->{'add_filter'}('the_content', 'do_parsecode', 5);

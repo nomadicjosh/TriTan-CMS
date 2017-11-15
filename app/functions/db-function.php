@@ -385,3 +385,32 @@ function update_meta_cache($meta_type, $array_ids)
     }
     return $cache;
 }
+
+/**
+ * Generates the encryption table if it does not exist.
+ * 
+ * @since 1.0.0
+ * @return bool
+ */
+function generate_php_encryption()
+{
+    $encrypt = app()->db->table('php_encryption');
+
+    if (count($encrypt->all()) > 0) {
+        return false;
+    }
+
+    $encrypt->begin();
+    try {
+        $key = \Defuse\Crypto\Key::createNewRandomKey();
+        $encrypt->insert([
+            'encryption_id' => (int) 1,
+            'key' => $key->saveToAsciiSafeString(),
+            'created_at' => (string) Jenssegers\Date\Date::now()
+        ]);
+        $encrypt->commit();
+    } catch (Exception $ex) {
+        $encrypt->rollback();
+        Cascade::getLogger('error')->error(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()), ['Db Functions' => 'php_encryption']);
+    }
+}
