@@ -1,0 +1,92 @@
+{
+    "59ab01efa05569.80831599": {
+        "_id": "59ab01efa05569.80831599",
+        "option_id": 1,
+        "option_key": "sitename",
+        "option_value": "TriTan Site"
+    },
+    "59ab01efa08ae1.15952299": {
+        "_id": "59ab01efa08ae1.15952299",
+        "option_id": 2,
+        "option_key": "site_description",
+        "option_value": "Just another TriTan CMS site"
+    },
+    "59ab01efa0bc98.48160633": {
+        "_id": "59ab01efa0bc98.48160633",
+        "option_id": 3,
+        "option_key": "admin_email",
+        "option_value": "admin@ttcms.com"
+    },
+    "59ab01efa0f176.56502973": {
+        "_id": "59ab01efa0f176.56502973",
+        "option_id": 4,
+        "option_key": "ttcms_core_locale",
+        "option_value": "en_US"
+    },
+    "59ab01efa12197.36004934": {
+        "_id": "59ab01efa12197.36004934",
+        "option_id": 5,
+        "option_key": "cookieexpire",
+        "option_value": 604800
+    },
+    "59ab01efa155c0.09821665": {
+        "_id": "59ab01efa155c0.09821665",
+        "option_id": 6,
+        "option_key": "cookiepath",
+        "option_value": "\/"
+    },
+    "59ab01efa18842.58558989": {
+        "_id": "59ab01efa18842.58558989",
+        "option_id": 7,
+        "option_key": "enable_cron_jobs",
+        "option_value": 0
+    },
+    "59ab01efa1bf29.43148068": {
+        "_id": "59ab01efa1bf29.43148068",
+        "option_id": 8,
+        "option_key": "system_timezone",
+        "option_value": "America\/New_York"
+    },
+    "59ab01efa1f3b8.93790693": {
+        "_id": "59ab01efa1f3b8.93790693",
+        "option_id": 9,
+        "option_key": "api_key",
+        "option_value": "FJHUKtxpVgezl28gjaWt"
+    },
+    "59ab01efa23581.15070732": {
+        "_id": "59ab01efa23581.15070732",
+        "option_id": 10,
+        "option_key": "date_format",
+        "option_value": "d F Y"
+    },
+    "59ab01efa28856.95873846": {
+        "_id": "59ab01efa28856.95873846",
+        "option_id": 11,
+        "option_key": "time_format",
+        "option_value": "h:i A"
+    },
+    "59ab01efa2e869.00876718": {
+        "_id": "59ab01efa2e869.00876718",
+        "option_id": 12,
+        "option_key": "admin_skin",
+        "option_value": "skin-red-light"
+    },
+    "59bc19804e29e9.21907809": {
+        "_id": "59bc19804e29e9.21907809",
+        "option_id": 13,
+        "option_key": "site_cache",
+        "option_value": 0
+    },
+    "59bc19804ebad2.48731800": {
+        "_id": "59bc19804ebad2.48731800",
+        "option_id": 14,
+        "option_key": "current_site_theme",
+        "option_value": "Vapor"
+    },
+    "59bc4884558389.97572241": {
+        "_id": "59bc4884558389.97572241",
+        "option_id": 15,
+        "option_key": "posts_per_page",
+        "option_value": 6
+    }
+}

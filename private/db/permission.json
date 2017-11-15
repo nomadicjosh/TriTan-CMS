@@ -1,0 +1,140 @@
+{
+    "59a6a7ef2cf277.01442883": {
+        "_id": "59a6a7ef2cf277.01442883",
+        "permission_id": 1,
+        "permission_key": "access_admin",
+        "permission_name": "Access Admin"
+    },
+    "59a5ec6c502305.84546114": {
+        "_id": "59a5ec6c502305.84546114",
+        "permission_id": 2,
+        "permission_key": "create_posts",
+        "permission_name": "Create Posts"
+    },
+    "59a5ec7b1c9a84.50237963": {
+        "_id": "59a5ec7b1c9a84.50237963",
+        "permission_id": 3,
+        "permission_key": "manage_posts",
+        "permission_name": "Manage Posts"
+    },
+    "59a5ec8aedf3c3.93096167": {
+        "_id": "59a5ec8aedf3c3.93096167",
+        "permission_id": 4,
+        "permission_key": "update_posts",
+        "permission_name": "Update Posts"
+    },
+    "59a5ec9b2fbce4.56313975": {
+        "_id": "59a5ec9b2fbce4.56313975",
+        "permission_id": 5,
+        "permission_key": "delete_posts",
+        "permission_name": "Delete Posts"
+    },
+    "59a60903862c42.58031890": {
+        "_id": "59a60903862c42.58031890",
+        "permission_id": 6,
+        "permission_key": "publish_posts",
+        "permission_name": "Publish Posts"
+    },
+    "59a5fde6752cc9.50702662": {
+        "_id": "59a5fde6752cc9.50702662",
+        "permission_id": 7,
+        "permission_key": "create_users",
+        "permission_name": "Create Users"
+    },
+    "59a5fdf77c0308.65760220": {
+        "_id": "59a5fdf77c0308.65760220",
+        "permission_id": 8,
+        "permission_key": "manage_users",
+        "permission_name": "Manage Users"
+    },
+    "59a5fe06409a17.48431452": {
+        "_id": "59a5fe06409a17.48431452",
+        "permission_id": 9,
+        "permission_key": "update_users",
+        "permission_name": "Update Users"
+    },
+    "59a5fe1acfda78.47681584": {
+        "_id": "59a5fe1acfda78.47681584",
+        "permission_id": 10,
+        "permission_key": "delete_users",
+        "permission_name": "Delete Users"
+    },
+    "59a5fe2fac7589.92590988": {
+        "_id": "59a5fe2fac7589.92590988",
+        "permission_id": 11,
+        "permission_key": "manage_media",
+        "permission_name": "Manage Media"
+    },
+    "59a6ad6a149059.92332407": {
+        "_id": "59a6ad6a149059.92332407",
+        "permission_id": 12,
+        "permission_key": "manage_options",
+        "permission_name": "Manage Options"
+    },
+    "59a5fe49bcd118.90647173": {
+        "_id": "59a5fe49bcd118.90647173",
+        "permission_id": 13,
+        "permission_key": "manage_settings",
+        "permission_name": "Manage Settings"
+    },
+    "59a5fe71c9f968.43593708": {
+        "_id": "59a5fe71c9f968.43593708",
+        "permission_id": 14,
+        "permission_key": "install_plugins",
+        "permission_name": "Install Plugins"
+    },
+    "59a5fe8212cec9.01562602": {
+        "_id": "59a5fe8212cec9.01562602",
+        "permission_id": 15,
+        "permission_key": "manage_plugins",
+        "permission_name": "Manage Plugins"
+    },
+    "59a5fe9108cd51.61453638": {
+        "_id": "59a5fe9108cd51.61453638",
+        "permission_id": 16,
+        "permission_key": "delete_plugins",
+        "permission_name": "Delete Plugins"
+    },
+    "59a5fec625bbb6.50332314": {
+        "_id": "59a5fec625bbb6.50332314",
+        "permission_id": 17,
+        "permission_key": "manage_ftp",
+        "permission_name": "Manage FTP"
+    },
+    "59a6ae39afa871.65635510": {
+        "_id": "59a6ae39afa871.65635510",
+        "permission_id": 18,
+        "permission_key": "manage_roles",
+        "permission_name": "Manage Roles"
+    },
+    "59a6af86237816.35583119": {
+        "_id": "59a6af86237816.35583119",
+        "permission_id": 19,
+        "permission_key": "switch_user",
+        "permission_name": "Switch User"
+    },
+    "59bf2e93b48786.47287230": {
+        "_id": "59bf2e93b48786.47287230",
+        "permission_id": 20,
+        "permission_key": "create_sites",
+        "permission_name": "Create Sites"
+    },
+    "59bf2e844b0a44.05540523": {
+        "_id": "59bf2e844b0a44.05540523",
+        "permission_id": 21,
+        "permission_key": "manage_sites",
+        "permission_name": "Manage Sites"
+    },
+    "59bf2f01b0c575.59148230": {
+        "_id": "59bf2f01b0c575.59148230",
+        "permission_id": 22,
+        "permission_key": "update_sites",
+        "permission_name": "Update Sites"
+    },
+    "59bf2f100c50f1.31430672": {
+        "_id": "59bf2f100c50f1.31430672",
+        "permission_id": 23,
+        "permission_key": "delete_sites",
+        "permission_name": "Delete Sites"
+    }
+}

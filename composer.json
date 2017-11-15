@@ -1,0 +1,42 @@
+{
+    "name": "parkerj/TriTan-CMS",
+    "description": "TriTan CMS is a developer centric content management framework that allows you to go completely headless or nearly headless. With the mighty TriTan, you can build amazing RESTful applications and robust websites.",
+    "type": "CMS",
+    "keywords": ["CMS", "TriTan", "TriTanCMS","cms framework","headless","headless cms"],
+    "license": "GPL-3.0",
+    "authors": [
+        {
+            "name": "Joshua Parker",
+            "email": "joshmac3@icloud.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0",
+        "mikey179/vfsStream": "^1",
+        "jolicode/jolinotif": "^1.0",
+        "symfony/process": "~2.8",
+        "phpmailer/phpmailer": "^5.2",
+        "gettext/gettext": "*",
+        "gettext/languages": "*",
+        "theorchard/monolog-cascade": "~0.4",
+        "jenssegers/date": "^3.2",
+        "respect/validation": "^1.1",
+        "ircmaxell/random-lib": "^1.2",
+        "mmeyer2k/dcrypt": "~3.0",
+        "cocur/slugify": "^2.0",
+        "defuse/php-encryption": "^2.1",
+        "stefangabos/zebra_pagination": "^2.0",
+        "fenom/fenom": "^2.11",
+        "studio-42/elfinder": "^2.1",
+        "adamwathan/form": "^0.9.0",
+        "mobiledetect/mobiledetectlib": "^2.8",
+        "phpfastcache/phpfastcache": "^6.0",
+        "webonyx/graphql-php": "^0.10.2",
+        "react/promise": "^2.5",
+        "psr/http-message": "^1.0",
+        "hoa/ruler": "2.17.05.16",
+        "stolz/assets": "^0.1.11",
+        "tubalmartin/cssmin": "^4.1",
+        "mtdowling/cron-expression": "^2.0"
+    }
+}

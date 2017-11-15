@@ -1,0 +1,16 @@
+{
+    "599bb903008be": {
+        "_id": "599bb903008be",
+        "posttype_id": 1,
+        "posttype_title": "Post",
+        "posttype_slug": "post",
+        "posttype_description": ""
+    },
+    "59a5fb6790fe83.51035156": {
+        "_id": "59a5fb6790fe83.51035156",
+        "posttype_id": 2,
+        "posttype_title": "Page",
+        "posttype_slug": "page",
+        "posttype_description": "Page post type is to be used for static content."
+    }
+}

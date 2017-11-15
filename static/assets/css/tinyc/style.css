@@ -1,0 +1,111 @@
+.tinycerror {
+    color:#ff0000 !important;
+}
+
+.tinycsuccess {
+    color:#008000 !important;
+}
+
+#newsletterform p {
+    font-size:14px !important;
+    line-height:26px !important;
+    margin-bottom:25px !important;
+    color:#fff !important;
+}
+
+#newsletterform input {
+    font-family: 'Raleway', sans-serif !important;
+    font-size: 16px !important;
+    font-weight:500 !important;
+    display: block !important;
+    width:55% !important;
+    background:#fff !important;
+    color:#888 !important;
+    padding:15px !important;
+    text-align: center !important;
+    text-transform: uppercase !important;
+    margin: 0 auto 12px auto !important;
+    border:2px solid #fff !important;
+    outline:0 !important;
+    border-radius: 3px !important;
+    -webkit-box-sizing: border-box !important;
+    -moz-box-sizing: border-box !important;
+    box-sizing: border-box !important;
+}
+
+#newsletterform input:focus {
+    border:2px solid #ddd !important;
+}
+
+#newsletterform input[type="submit"] {
+    background:#f77156 !important;
+    color:#fff !important;
+    width:30% !important;
+    padding:13px !important;
+    cursor: pointer !important;
+    margin-bottom:0 !important;
+    border:none !important;
+}
+
+#newsletterform input[type="submit"]:hover {
+    background:#F8CA4D !important;
+    color:#444 !important;
+}
+
+#newsletterform .arrow {
+    display: inline-block !important;
+    background: url("../../img/tinyc/arrow.png") no-repeat !important;
+    width: 139px !important;
+    height: 48px !important;
+    position: absolute !important;
+    left: 120px !important;
+    top: 290px !important;
+}
+
+#newsletterform #response {
+    color: #fff !important;
+    font-size: 1.4em !important;
+    height: 25px !important;
+    margin: 0 auto !important;
+    padding-top: 15px !important;
+    text-align: center !important;
+    width: 320px !important;
+}
+
+#newsletterform #response p {
+    margin: 0 !important;
+}
+
+#newsletterform .loading {
+    background: url("../../img/tinyc/loading.gif") no-repeat center 20px !important;
+}
+
+@media only screen and (max-width:769px) {
+
+    #newsletterform .wrap {
+        padding: 40px 25px !important;
+    }
+
+    #newsletterform .arrow {
+        display: none !important;
+    }
+
+    #newsletterform input {
+        width: 100% !important;
+        margin-bottom: 7px !important;
+    }
+
+    #newsletterform input[type="submit"] {
+        width: 100% !important;
+        padding: 16px !important;
+    }
+
+}
+
+@media only screen and (max-width:600px) {
+
+    #newsletterform h3 {
+        width: 100% !important;
+    }
+
+}

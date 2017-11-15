@@ -1,0 +1,13 @@
+User-agent: *
+Disallow: /app/
+Disallow: /languages/
+Disallow: /Liten/
+Disallow: /mu-plugins/
+Disallow: /plugins/
+Disallow: /private/cookies/
+Disallow: /private/db/
+Disallow: /private/sites/*/dropins/
+Disallow: /private/sites/*/files/
+Disallow: /private/sites/*/themes/
+Disallow: /static/
+Disallow: /vendor/

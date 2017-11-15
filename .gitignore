@@ -1,0 +1,12 @@
+.DS_Store
+/nbproject/
+config.php
+apidoc.json
+/docs/
+private/db/last_login.json
+private/db/ttcms_1_activity.json
+private/db/ttcms_1_error.json
+private/db/ttcms_1_plugin.json
+private/db/ttcms_1_tasks.json
+private/db/ttcms_1_ttcms_queue.json
+/vendor/
