@@ -216,7 +216,7 @@ $app->group('/rest', function() use ($app, $orm) {
      * @apiGroup REST API
      * 
      * @apiExample {curl} Example usage:
-     *     curl -i http://localhost:8888/rest/v1/UJHUPtxpEgezl45gjazX/user/sort/user_login/desc/
+     *     curl -i http://localhost:8888/rest/v1/UJHUPtxpEgezl45gjazX/ttcms_1_post/one/user/user_id/post_author/
      */
     $app->get('/v1/(\w+)/(\w+)/one/(\w+)/(\w+)/(\w+)/', function ($key, $table1, $table2, $field1, $field2) use($app) {
         if ($key !== $app->hook->{'get_option'}('api_key') || $app->hook->{'get_option'}('api_key') === null) {
