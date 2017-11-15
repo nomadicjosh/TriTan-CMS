@@ -76,8 +76,7 @@ $app->group('/rest', function() use ($app, $orm) {
     });
 
     /**
-     * @apiDescription Retrieve all records from a requested document sorted by
-     * a particular field.
+     * @apiDescription Retrieve all records from a requested document sorted by a particular field.
      * @api {get} /rest/v1/:api_key/:document/sort/:field/
      * @apiVersion 1.0.0
      * 
@@ -120,8 +119,7 @@ $app->group('/rest', function() use ($app, $orm) {
     });
 
     /**
-     * @apiDescription Retrieve all records from a requested document sorted by
-     * a particular field in descending order.
+     * @apiDescription Retrieve all records from a requested document sorted by a particular field in descending order.
      * @api {get} /rest/v1/:api_key/:document/sort/:field/desc/
      * @apiVersion 1.0.0
      * 
@@ -164,8 +162,7 @@ $app->group('/rest', function() use ($app, $orm) {
     });
 
     /**
-     * @apiDescription Retrieve all records from a requested document sorted by
-     * a particular field in descending order.
+     * @apiDescription Retrieve all records from a requested document sorted by a particular field in descending order.
      * @api {get} /rest/v1/:api_key/:document1/many/:document2/:field2/:field1/
      * @apiVersion 1.0.0
      * 
@@ -208,8 +205,7 @@ $app->group('/rest', function() use ($app, $orm) {
     });
 
     /**
-     * @apiDescription Retrieve all records from a requested document sorted by
-     * a particular field in descending order.
+     * @apiDescription Retrieve all records from a requested document sorted by a particular field in descending order.
      * @api {get} /rest/v1/:api_key/:document/sort/:field/desc/
      * @apiVersion 1.0.0
      * 
@@ -252,8 +248,7 @@ $app->group('/rest', function() use ($app, $orm) {
     });
 
     /**
-     * @apiDescription Retrieve a record based on field|value from a requested
-     * document.
+     * @apiDescription Retrieve a record based on field|value from a requested document.
      * @api {get} /rest/v1/:api_key/:document/:field/:value/
      * @apiVersion 1.0.0
      * 
