@@ -76,8 +76,7 @@ $app->group('/rest', function() use ($app, $orm) {
     });
 
     /**
-     * @apiDescription Retrieve all records from a requested document sorted by
-     * a particular field.
+     * @apiDescription Retrieve all records from a requested document sorted by a particular field.
      * @api {get} /rest/v1/:api_key/:document/sort/:field/
      * @apiVersion 1.0.0
      * 
@@ -120,8 +119,7 @@ $app->group('/rest', function() use ($app, $orm) {
     });
 
     /**
-     * @apiDescription Retrieve all records from a requested document sorted by
-     * a particular field in descending order.
+     * @apiDescription Retrieve all records from a requested document sorted by a particular field in descending order.
      * @api {get} /rest/v1/:api_key/:document/sort/:field/desc/
      * @apiVersion 1.0.0
      * 
@@ -164,8 +162,7 @@ $app->group('/rest', function() use ($app, $orm) {
     });
 
     /**
-     * @apiDescription Retrieve all records from a requested document sorted by
-     * a particular field in descending order.
+     * @apiDescription Retrieve all records from a requested document sorted by a particular field in descending order.
      * @api {get} /rest/v1/:api_key/:document1/many/:document2/:field2/:field1/
      * @apiVersion 1.0.0
      * 
@@ -208,15 +205,14 @@ $app->group('/rest', function() use ($app, $orm) {
     });
 
     /**
-     * @apiDescription Retrieve all records from a requested document sorted by
-     * a particular field in descending order.
+     * @apiDescription Retrieve all records from a requested document sorted by a particular field in descending order.
      * @api {get} /rest/v1/:api_key/:document/sort/:field/desc/
      * @apiVersion 1.0.0
      * 
      * @apiGroup REST API
      * 
      * @apiExample {curl} Example usage:
-     *     curl -i http://localhost:8888/rest/v1/UJHUPtxpEgezl45gjazX/user/sort/user_login/desc/
+     *     curl -i http://localhost:8888/rest/v1/UJHUPtxpEgezl45gjazX/ttcms_1_post/one/user/user_id/post_author/
      */
     $app->get('/v1/(\w+)/(\w+)/one/(\w+)/(\w+)/(\w+)/', function ($key, $table1, $table2, $field1, $field2) use($app) {
         if ($key !== $app->hook->{'get_option'}('api_key') || $app->hook->{'get_option'}('api_key') === null) {
@@ -252,8 +248,7 @@ $app->group('/rest', function() use ($app, $orm) {
     });
 
     /**
-     * @apiDescription Retrieve a record based on field|value from a requested
-     * document.
+     * @apiDescription Retrieve a record based on field|value from a requested document.
      * @api {get} /rest/v1/:api_key/:document/:field/:value/
      * @apiVersion 1.0.0
      * 
