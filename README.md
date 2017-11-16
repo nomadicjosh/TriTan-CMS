@@ -6,7 +6,7 @@ The main purpose of TriTan is to give developer's an option that is geared towar
 TriTan is pretty stable at the moment, but it is currently in beta and should no be used in production until release 1.0.
 
 ## Screenshot
-![TriTan CMS Screenshot](//tritan-cms.s3.amazonaws.com/assets/images/TriTan-Screenshot.png)
+![TriTan CMS Screenshot](https://tritan-cms.s3.amazonaws.com/assets/images/TriTan-Screenshot.png)
 
 ## Notable Features
 * Easier installation and deployment
