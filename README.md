@@ -79,8 +79,10 @@ As mentioned previously, TriTan CMS is also a content management framework. You 
 | [Promise](https://github.com/reactphp/promise)  | A lightweight implementation of CommonJS Promises/A for PHP.  |
 | [Hoa\Ruler](https://github.com/hoaproject/Ruler)  | This library allows to manipulate a rule engine. Rules can be written by using a dedicated language, very close to SQL. Therefore, they can be written by a user and saved in a database.  |
 
-## Theme
-There is currently no theme repository. However, you can download the [Vapor](//tritan-cms.s3.amazonaws.com/themes/Vapor.zip) theme. Use this theme as an example to build your own theme.
+## Theming
+There is currently no theme repository due to the nature of the project. However, you can download the [Vapor](//tritan-cms.s3.amazonaws.com/themes/Vapor.zip) theme. Use this theme as an example to build your own theme.
+
+The Liten Framework was used in the build of TriTan CMS. So, if you are interested in adding a head to your TriTan install, you will need to learn about [routing](//www.litenframework.com/wiki/routing/) and [middlewares](//www.litenframework.com/wiki/middleware/).
 
 ## Plugins
 The following plugins are available for download and use.
