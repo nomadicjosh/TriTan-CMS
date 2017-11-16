@@ -11,12 +11,12 @@
 
 /**
  * If set to PROD, errors will be generated in the logs
- * directory (app/tmp/logs/*.txt). If set to DEV, then
+ * directory (static/tmp/logs/*.txt). If set to DEV, then
  * errors will be displayed on the screen. For security
  * reasons, when made live to the world, this should be
  * set to PROD.
  */
-defined('APP_ENV') or define('APP_ENV', 'DEV');
+defined('APP_ENV') or define('APP_ENV', 'PROD');
 
 /**
  * Application path.
