@@ -6,7 +6,7 @@ The main purpose of TriTan is to give developer's an option that is geared towar
 TriTan is pretty stable at the moment, but it is currently in beta and should no be used in production until release 1.0.
 
 ## Screenshot
-![TriTan CMS Screenshot](https://tritan-cms.s3.amazonaws.com/assets/images/TriTan-Screenshot.png)
+![TriTan CMS Screenshot](//tritan-cms.s3.amazonaws.com/assets/images/TriTan-Screenshot.png)
 
 ## Notable Features
 * Easier installation and deployment
@@ -51,7 +51,7 @@ Here is an example of what should go inside of the .htaccess file to secure the 
 
 <IfModule mod_rewrite.c>
 RewriteEngine On
-RewriteCond %{QUERY_STRING} !key=03253844193810a1533b73d1a880007c
+RewriteCond %{QUERY_STRING} !key=replace_me
 RewriteRule (.*) - [F]
 </IfModule>
 
@@ -68,16 +68,18 @@ As mentioned previously, TriTan CMS is also a content management framework. You 
 
 | Library  | Description  | 
 |---|---|
-| [Monolog Cascade](https://github.com/theorchard/monolog-cascade)  | Monolog Cascade is a Monolog extension that allows you to set up and configure multiple loggers and handlers from a single config file.  |
-| [Date](https://github.com/jenssegers/date)  | This date library extends Carbon with multi-language support. Methods such as format, diffForHumans, parse, createFromFormat and the new timespan, will now be translated based on your locale.  |
-| [Validation](https://github.com/Respect/Validation)  | The most awesome validation engine ever created for PHP.  |
-| [Zebra Pagination](https://github.com/stefangabos/Zebra_Pagination)  | A generic, Twitter Bootstrap compatible, pagination library that automatically generates navigation links.  |
-| [Fenom](https://github.com/fenom-template/fenom)  | Lightweight and fast template engine for PHP.  |
-| [Form](https://github.com/adamwathan/form)  | Builds form HTML with a fluent-ish, hopefully intuitive syntax.  |
-| [Mobile Detect](https://github.com/serbanghita/Mobile-Detect)  | Mobile_Detect is a lightweight PHP class for detecting mobile devices (including tablets). It uses the User-Agent string combined with specific HTTP headers to detect the mobile environment.  |
-| [Graphql](https://github.com/webonyx/graphql-php)  | This is a PHP implementation of the GraphQL specification based on the reference implementation in JavaScript.  |
-| [Promise](https://github.com/reactphp/promise)  | A lightweight implementation of CommonJS Promises/A for PHP.  |
-| [Hoa\Ruler](https://github.com/hoaproject/Ruler)  | This library allows to manipulate a rule engine. Rules can be written by using a dedicated language, very close to SQL. Therefore, they can be written by a user and saved in a database.  |
+| [Monolog Cascade](//github.com/theorchard/monolog-cascade)  | Monolog Cascade is a Monolog extension that allows you to set up and configure multiple loggers and handlers from a single config file.  |
+| [Date](//github.com/jenssegers/date)  | This date library extends Carbon with multi-language support. Methods such as format, diffForHumans, parse, createFromFormat and the new timespan, will now be translated based on your locale.  |
+| [Validation](//github.com/Respect/Validation)  | The most awesome validation engine ever created for PHP.  |
+| [Zebra Pagination](//github.com/stefangabos/Zebra_Pagination)  | A generic, Twitter Bootstrap compatible, pagination library that automatically generates navigation links.  |
+| [Fenom](//github.com/fenom-template/fenom)  | Lightweight and fast template engine for PHP.  |
+| [Form](//github.com/adamwathan/form)  | Builds form HTML with a fluent-ish, hopefully intuitive syntax.  |
+| [Mobile Detect](//github.com/serbanghita/Mobile-Detect)  | Mobile_Detect is a lightweight PHP class for detecting mobile devices (including tablets). It uses the User-Agent string combined with specific HTTP headers to detect the mobile environment.  |
+| [Graphql](//github.com/webonyx/graphql-php)  | This is a PHP implementation of the GraphQL specification based on the reference implementation in JavaScript.  |
+| [Promise](//github.com/reactphp/promise)  | A lightweight implementation of CommonJS Promises/A for PHP.  |
+| [Hoa\Ruler](//github.com/hoaproject/Ruler)  | This library allows to manipulate a rule engine. Rules can be written by using a dedicated language, very close to SQL. Therefore, they can be written by a user and saved in a database.  |
+| [Guzzle](//github.com/guzzle/guzzle)  | Guzzle is a PHP HTTP client that makes it easy to send HTTP requests and trivial to integrate with web services.  |
+| [Image Optimizer](//github.com/psliwa/image-optimizer)  | This library is handy and very easy to use optimizer for image files. It uses optipng, pngquant, jpegoptim and few more libraries, so before use it you should install proper libraries on your server.  |
 
 ## Theming
 There is currently no theme repository due to the nature of the project. However, you can download the [Vapor](//tritan-cms.s3.amazonaws.com/themes/Vapor.zip) theme. Use this theme as an example to build your own theme.
@@ -95,7 +97,6 @@ The following plugins are available for download and use.
 | [Reftagger](//tritan-cms.s3.amazonaws.com/plugins/reftagger.zip)  | Reftagger turns Bible references into links to the verse on Biblia.com / Faithlife.com and adds tooltips with the text of the verse.  |
 | [Syntax Highlighter](//tritan-cms.s3.amazonaws.com/plugins/syntax-highlighter.zip)  | A lightweight and simple syntax highligher with automatic language detection.  |
 | [TTCMS SMTP](//tritan-cms.s3.amazonaws.com/plugins/ttcms-smtp.zip)  | TriTan CMS SMTP will allow you to send emails through an SMTP server and override the PHP mail() as well as the TriTan CMS ttcmsMail() sending methods.  |
-
 
 ## Todo
 * Finish dashboard
