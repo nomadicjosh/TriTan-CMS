@@ -320,7 +320,21 @@ $app->group('/admin', function() use ($app, $user) {
                             'read' => false,
                             'write' => false,
                             'hidden' => true,
-                            'locked' => false
+                            'locked' => true
+                        ],
+                        [
+                            'pattern' => '/\.gitignore/',
+                            'read' => false,
+                            'write' => false,
+                            'hidden' => true,
+                            'locked' => true
+                        ],
+                        [
+                            'pattern' => '/\.htaccess/',
+                            'read' => false,
+                            'write' => false,
+                            'hidden' => true,
+                            'locked' => true
                         ],
                         [
                             'pattern' => '/\index.html/',
@@ -409,7 +423,21 @@ $app->group('/admin', function() use ($app, $user) {
                             'read' => false,
                             'write' => false,
                             'hidden' => true,
-                            'locked' => false
+                            'locked' => true
+                        ],
+                        [
+                            'pattern' => '/\.gitignore/',
+                            'read' => false,
+                            'write' => false,
+                            'hidden' => true,
+                            'locked' => true
+                        ],
+                        [
+                            'pattern' => '/\.htaccess/',
+                            'read' => false,
+                            'write' => false,
+                            'hidden' => true,
+                            'locked' => true
                         ],
                         [
                             'pattern' => '/\index.html/',
