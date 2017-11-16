@@ -38,6 +38,7 @@
         "stolz/assets": "^0.1.11",
         "tubalmartin/cssmin": "^4.1",
         "mtdowling/cron-expression": "^2.0",
-        "guzzlehttp/guzzle": "^6.3"
+        "guzzlehttp/guzzle": "^6.3",
+        "spatie/image-optimizer": "^1.0"
     }
 }
