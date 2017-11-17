@@ -51,13 +51,13 @@ define('SCREEN', $posttype);
                 // Provide image and alt text for the image dialog
                 if (meta.filetype == "image") {
                     //callback("myimage.jpg", {alt: "My alt text"});
-                    callback(file.url);
+                    callback(file.url, {alt: file.name});
                 }
 
                 // Provide alternative source and posted for the media dialog
                 if (meta.filetype == "media") {
                     //callback("movie.mp4", {source2: "alt.ogg", poster: "image.jpg"});
-                    callback(file.url);
+                    callback(file.url, {alt: file.name});
                 }
             }
         });
