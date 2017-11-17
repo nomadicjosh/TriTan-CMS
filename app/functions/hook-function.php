@@ -1,7 +1,6 @@
 <?php
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
-
 use TriTan\Config;
 
 /**
@@ -622,51 +621,80 @@ function ttcms_validation_check($data)
 }
 
 /**
+ * Retrieve name of the current theme.
+ * 
+ * @since 1.0.0
+ * @return string Theme name.
+ */
+function get_theme()
+{
+    /**
+     * Filters the name of the current theme.
+     *
+     * @since 1.0.0
+     * @param string $theme Current theme's directory name.
+     */
+    return app()->hook->{'apply_filter'}('theme', app()->hook->{'get_option'}('current_site_theme'));
+}
+
+/**
+ * Retrieve theme directory URI.
+ *
+ * @since 1.0.0
+ * @uses app()->hook->{'apply_filter'}() Calls 'theme_directory_uri' filter.
+ * @return string TriTan CMS theme directory uri.
+ */
+function get_theme_directory_uri()
+{
+    $theme = str_replace('%2F', '/', rawurlencode(get_theme()));
+    $theme_root_uri = get_theme_url();
+    $theme_dir_uri = $theme_root_uri . $theme . '/';
+    return app()->hook->{'apply_filter'}('theme_directory_uri', $theme_dir_uri, $theme, $theme_root_uri);
+}
+
+/**
  * Retrieve javascript directory uri.
  *
  * @since 1.0.0
- * @uses app()->hook->{'apply_filter'}() Calls 'javascript_directory_uri' filter.
- *      
+ * @uses app()->hook->{'apply_filter'}() Calls 'javascript_directory_uri' filter. 
  * @return string TriTan CMS javascript url.
  */
 function get_javascript_directory_uri()
 {
-    $directory = 'static/assets/scripts';
-    $javascript_root_uri = get_base_url();
-    $javascript_dir_uri = "$javascript_root_uri$directory/";
-    return app()->hook->{'apply_filter'}('javascript_directory_uri', $javascript_dir_uri, $javascript_root_uri, $directory);
+    $theme = str_replace('%2F', '/', rawurlencode(get_theme()));
+    $javascript_root_uri = get_theme_url();
+    $javascript_dir_uri = $javascript_root_uri . $theme . '/assets/js/';
+    return app()->hook->{'apply_filter'}('javascript_directory_uri', $javascript_dir_uri, $theme, $javascript_root_uri);
 }
 
 /**
  * Retrieve less directory uri.
  *
  * @since 1.0.0
- * @uses app()->hook->{'apply_filter'}() Calls 'less_directory_uri' filter.
- *      
+ * @uses app()->hook->{'apply_filter'}() Calls 'less_directory_uri' filter.   
  * @return string TriTan CMS less url.
  */
 function get_less_directory_uri()
 {
-    $directory = 'static/assets/less';
-    $less_root_uri = get_base_url();
-    $less_dir_uri = "$less_root_uri$directory/";
-    return app()->hook->{'apply_filter'}('less_directory_uri', $less_dir_uri, $less_root_uri, $directory);
+    $theme = str_replace('%2F', '/', rawurlencode(get_theme()));
+    $less_root_uri = get_theme_url();
+    $less_dir_uri = $less_root_uri . $theme . '/assets/less/';
+    return app()->hook->{'apply_filter'}('less_directory_uri', $less_dir_uri, $theme, $less_root_uri);
 }
 
 /**
  * Retrieve css directory uri.
  *
  * @since 1.0.0
- * @uses app()->hook->{'apply_filter'}() Calls 'css_directory_uri' filter.
- *      
+ * @uses app()->hook->{'apply_filter'}() Calls 'css_directory_uri' filter.   
  * @return string TriTan CMS css url.
  */
 function get_css_directory_uri()
 {
-    $directory = 'static/assets/styles';
-    $css_root_uri = get_base_url();
-    $css_dir_uri = "$css_root_uri$directory/";
-    return app()->hook->{'apply_filter'}('css_directory_uri', $css_dir_uri, $css_root_uri, $directory);
+    $theme = str_replace('%2F', '/', rawurlencode(get_theme()));
+    $css_root_uri = get_theme_url();
+    $css_dir_uri = $css_root_uri . $theme . '/assets/css/';
+    return app()->hook->{'apply_filter'}('css_directory_uri', $css_dir_uri, $theme, $css_root_uri);
 }
 
 /**
