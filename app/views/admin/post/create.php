@@ -2,8 +2,8 @@
 $app = \Liten\Liten::getInstance();
 $app->view->extend('_layouts/admin');
 $app->view->block('admin');
-define('SCREEN_PARENT', $posttype);
-define('SCREEN', $posttype . '-create');
+TriTan\Config::set('screen_parent', $posttype);
+TriTan\Config::set('screen_child', $posttype . '-create');
 ?>
 
 <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>

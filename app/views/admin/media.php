@@ -3,6 +3,7 @@ $app = \Liten\Liten::getInstance();
 $app->view->extend('_layouts/admin');
 $app->view->block('admin');
 define('SCREEN_PARENT', 'media');
+TriTan\Config::set('screen_parent', 'media');
 ?>
 
 <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">

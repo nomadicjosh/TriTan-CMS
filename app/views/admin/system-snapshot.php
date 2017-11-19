@@ -15,8 +15,8 @@ use TriTan\Config;
 $app = \Liten\Liten::getInstance();
 $app->view->extend('_layouts/admin');
 $app->view->block('admin');
-define('SCREEN_PARENT', 'dashboard');
-define('SCREEN', 'snapshot');
+Config::set('screen_parent', 'dashboard');
+Config::set('screen_child', 'snapshot');
 
 ?>
 

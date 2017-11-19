@@ -3,8 +3,8 @@ if (!defined('BASE_PATH')) exit('No direct script access allowed');
 $app = \Liten\Liten::getInstance();
 $app->view->extend('_layouts/admin');
 $app->view->block('admin');
-define('SCREEN_PARENT', $posttype);
-define('SCREEN', $posttype);
+TriTan\Config::set('screen_parent', $posttype);
+TriTan\Config::set('screen_child', $posttype);
 
 ?>
 

@@ -4,8 +4,8 @@ if (!defined('BASE_PATH'))
 $app = \Liten\Liten::getInstance();
 $app->view->extend('_layouts/admin');
 $app->view->block('admin');
-define('SCREEN_PARENT', 'plugins');
-define('SCREEN', 'plugin-new');
+TriTan\Config::set('screen_parent', 'plugins');
+TriTan\Config::set('screen_child', 'plugin-new');
 
 ?>
 

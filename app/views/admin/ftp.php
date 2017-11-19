@@ -2,8 +2,8 @@
 $app = \Liten\Liten::getInstance();
 $app->view->extend('_layouts/admin');
 $app->view->block('admin');
-define('SCREEN_PARENT', 'dashboard');
-define('SCREEN', 'ftp');
+TriTan\Config::set('screen_parent', 'dashboard');
+TriTan\Config::set('screen_child', 'ftp');
 ?>
 
 <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">

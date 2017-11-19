@@ -1,6 +1,7 @@
 <?php
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
+use TriTan\Config;
 /**
  * View Permission View
  *  
@@ -14,8 +15,8 @@ $app = \Liten\Liten::getInstance();
 $app->view->extend('_layouts/admin');
 $app->view->block('admin');
 $ePerm = new \TriTan\ACL();
-define('SCREEN_PARENT', 'roles');
-define('SCREEN', 'perm');
+Config::set('screen_parent', 'roles');
+Config::set('screen_child', 'perm');
 
 ?>
 

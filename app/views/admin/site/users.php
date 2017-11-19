@@ -1,6 +1,7 @@
 <?php
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
+use TriTan\Config;
 /**
  * Site Users View
  *  
@@ -13,8 +14,8 @@ if (!defined('BASE_PATH'))
 $app = \Liten\Liten::getInstance();
 $app->view->extend('_layouts/admin');
 $app->view->block('admin');
-define('SCREEN_PARENT', 'sites');
-define('SCREEN', 'sites-user');
+Config::set('screen_parent', 'sites');
+Config::set('screen_child', 'sites-user');
 
 ?>        
 
