@@ -2,7 +2,7 @@
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use Jenssegers\Date\Date;
-
+use TriTan\Config;
 /**
  * Audit Trail View
  *  
@@ -15,8 +15,8 @@ use Jenssegers\Date\Date;
 $app = \Liten\Liten::getInstance();
 $app->view->extend('_layouts/admin');
 $app->view->block('admin');
-define('SCREEN_PARENT', 'dashboard');
-define('SCREEN', 'audit');
+Config::set('screen_parent', 'dashboard');
+Config::set('screen_child', 'audit');
 
 ?>        
 

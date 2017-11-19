@@ -1,6 +1,7 @@
 <?php
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
+use TriTan\Config;
 /**
  * Error Log View
  *  
@@ -14,8 +15,8 @@ $app = \Liten\Liten::getInstance();
 $app->view->extend('_layouts/admin');
 $app->view->block('admin');
 $logger = new TriTan\Logger();
-define('SCREEN_PARENT', 'dashboard');
-define('SCREEN', 'error');
+Config::set('screen_parent', 'dashboard');
+Config::set('screen_child', 'error');
 
 ?>        
 
