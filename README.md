@@ -36,6 +36,7 @@ TriTan is pretty stable at the moment, but it is currently in beta and should no
     * username: TriTan
     * password: TriTanCMS
 * Visit `http://replace_url/admin/options-general/`, and change the API Key to something unique.
+* Create a cronjob on the server: `http://replace_url/cronjob/`. It should run every minute.
 
 ## Security
 TriTan uses a schemaless database library and stores those files as well as some other important files on the server. Whether you are on Apache/Nginx, you must make sure to secure the following directories so that files in those directories are not downloadable:
