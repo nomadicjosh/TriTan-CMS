@@ -4,8 +4,8 @@ if (!defined('BASE_PATH'))
 $app = \Liten\Liten::getInstance();
 $app->view->extend('_layouts/admin');
 $app->view->block('admin');
-define('SCREEN_PARENT', 'sites');
-define('SCREEN', 'sites');
+TriTan\Config::set('screen_parent', 'sites');
+TriTan\Config::set('screen_child', 'sites');
 
 ?>
 

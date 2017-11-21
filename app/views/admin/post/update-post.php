@@ -3,8 +3,8 @@ if (!defined('BASE_PATH')) exit('No direct script access allowed');
 $app = \Liten\Liten::getInstance();
 $app->view->extend('_layouts/admin');
 $app->view->block('admin');
-define('SCREEN_PARENT', $posttype);
-define('SCREEN', $posttype);
+TriTan\Config::set('screen_parent', $posttype);
+TriTan\Config::set('screen_child', $posttype);
 
 ?>
 
@@ -51,13 +51,13 @@ define('SCREEN', $posttype);
                 // Provide image and alt text for the image dialog
                 if (meta.filetype == "image") {
                     //callback("myimage.jpg", {alt: "My alt text"});
-                    callback(file.url);
+                    callback(file.url, {alt: file.name});
                 }
 
                 // Provide alternative source and posted for the media dialog
                 if (meta.filetype == "media") {
                     //callback("movie.mp4", {source2: "alt.ogg", poster: "image.jpg"});
-                    callback(file.url);
+                    callback(file.url, {alt: file.name});
                 }
             }
         });

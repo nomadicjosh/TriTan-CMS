@@ -2,8 +2,8 @@
 $app = \Liten\Liten::getInstance();
 $app->view->extend('_layouts/admin');
 $app->view->block('admin');
-define('SCREEN_PARENT', 'options');
-define('SCREEN', 'options-reading');
+TriTan\Config::set('screen_parent', 'options');
+TriTan\Config::set('screen_child', 'options-reading');
 ?>
 <!-- form start -->
 <form name="form" method="post" data-toggle="validator" action="<?= get_base_url(); ?>admin/options-reading/" id="form" autocomplete="off">

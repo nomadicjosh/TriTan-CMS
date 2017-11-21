@@ -2,7 +2,7 @@
 $app = \Liten\Liten::getInstance();
 $app->view->extend('_layouts/admin');
 $app->view->block('admin');
-define('SCREEN_PARENT', $posttype);
+TriTan\Config::set('screen_parent', $posttype);
 ?>
 
 <!-- Content Wrapper. Contains page content -->

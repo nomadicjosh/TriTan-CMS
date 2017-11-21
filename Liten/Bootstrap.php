@@ -37,3 +37,4 @@ $loader->register();
 $loader->addNamespace('Liten', BASE_PATH . 'Liten' . DS);
 $loader->addNamespace('app', BASE_PATH . 'app' . DS);
 $loader->addNamespace('TriTan', BASE_PATH . 'app' . DS . 'src' . DS);
+$loader->addNamespace('Plugin', BASE_PATH . 'plugins' . DS);

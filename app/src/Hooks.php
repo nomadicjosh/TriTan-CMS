@@ -896,7 +896,7 @@ class Hooks
         $option_value = $_newvalue;
         try {
             $key->where('option_key', $option_key)->update([
-                'option_value' => if_null($option_value)
+                'option_value' => $option_value == '' ? 'null' : if_null($option_value)
             ]);
 
             if (count($key) > 0) {

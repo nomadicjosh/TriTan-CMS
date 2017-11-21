@@ -2,8 +2,8 @@
 $app = \Liten\Liten::getInstance();
 $app->view->extend('_layouts/admin');
 $app->view->block('admin');
-define('SCREEN_PARENT', 'dashboard');
-define('SCREEN', 'home');
+TriTan\Config::set('screen_parent', 'dashboard');
+TriTan\Config::set('screen_child', 'home');
 ?>
 
 <!-- Content Wrapper. Contains page content -->

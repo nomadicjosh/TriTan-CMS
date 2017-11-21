@@ -2,8 +2,8 @@
 $app = \Liten\Liten::getInstance();
 $app->view->extend('_layouts/admin');
 $app->view->block('admin');
-define('SCREEN_PARENT', 'plugins');
-define('SCREEN', 'installed-plugins');
+TriTan\Config::set('screen_parent', 'plugins');
+TriTan\Config::set('screen_child', 'installed-plugins');
 $plugins_header = $app->hook->{'get_plugins_header'}(BASE_PATH . 'plugins' . DS);
 ?>
 

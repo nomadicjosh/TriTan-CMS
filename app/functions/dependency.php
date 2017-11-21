@@ -135,7 +135,7 @@ function plugin_basename($filename)
  * When a plugin
  * is activated, the action `activate_pluginname` hook is called. `pluginname`
  * is replaced by the actually file name of the plugin being activated. So if the
- * plugin is located at 'app/plugin/sample/sample.plugin.php', then the hook will
+ * plugin is located at 'plugin/sample/sample.plugin.php', then the hook will
  * call 'activate_sample.plugin.php'.
  *
  * @see Plugin::register_activation_hook()
@@ -156,7 +156,7 @@ function register_activation_hook($filename, $function)
  * When a plugin
  * is deactivated, the action `deactivate_pluginname` hook is called. `pluginname`
  * is replaced by the actually file name of the plugin being deactivated. So if the
- * plugin is located at 'app/plugin/sample/sample.plugin.php', then the hook will
+ * plugin is located at 'plugin/sample/sample.plugin.php', then the hook will
  * call 'deactivate_sample.plugin.php'.
  *
  * @see Plugin::register_deactivation_hook()
@@ -355,6 +355,7 @@ function ttcms_get_theme_routers()
     return $theme_routers;
 }
 require( APP_PATH . 'functions' . DS . 'global-function.php' );
+require( APP_PATH . 'functions' . DS . 'menu-function.php' );
 require( APP_PATH . 'functions' . DS . 'auth-function.php' );
 require( APP_PATH . 'functions' . DS . 'cache-function.php' );
 require( APP_PATH . 'functions' . DS . 'textdomain-function.php' );

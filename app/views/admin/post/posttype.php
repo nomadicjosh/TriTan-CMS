@@ -2,7 +2,7 @@
 $app = \Liten\Liten::getInstance();
 $app->view->extend('_layouts/admin');
 $app->view->block('admin');
-define('SCREEN_PARENT', 'post_type');
+TriTan\Config::set('screen_parent', 'post_types');
 ?>
 
 <script src="static/assets/js/url_slug.js" type="text/javascript"></script>

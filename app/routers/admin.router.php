@@ -320,7 +320,21 @@ $app->group('/admin', function() use ($app, $user) {
                             'read' => false,
                             'write' => false,
                             'hidden' => true,
-                            'locked' => false
+                            'locked' => true
+                        ],
+                        [
+                            'pattern' => '/\.gitignore/',
+                            'read' => false,
+                            'write' => false,
+                            'hidden' => true,
+                            'locked' => true
+                        ],
+                        [
+                            'pattern' => '/\.htaccess/',
+                            'read' => false,
+                            'write' => false,
+                            'hidden' => true,
+                            'locked' => true
                         ],
                         [
                             'pattern' => '/\index.html/',
@@ -409,7 +423,21 @@ $app->group('/admin', function() use ($app, $user) {
                             'read' => false,
                             'write' => false,
                             'hidden' => true,
-                            'locked' => false
+                            'locked' => true
+                        ],
+                        [
+                            'pattern' => '/\.gitignore/',
+                            'read' => false,
+                            'write' => false,
+                            'hidden' => true,
+                            'locked' => true
+                        ],
+                        [
+                            'pattern' => '/\.htaccess/',
+                            'read' => false,
+                            'write' => false,
+                            'hidden' => true,
+                            'locked' => true
                         ],
                         [
                             'pattern' => '/\index.html/',
@@ -785,7 +813,9 @@ $app->group('/admin', function() use ($app, $user) {
     });
 
     $app->get('/flush-cache/', function () use($app) {
-        $app->fenom->clearAllCompiles();
+        if ($app->hook->{'get_option'}('current_site_theme') !== 'null' && $app->hook->{'get_option'}('current_site_theme') !== '' && $app->hook->{'get_option'}('current_site_theme') !== false) {
+            $app->fenom->clearAllCompiles();
+        }
         ttcms_cache_flush();
         ttcms_redirect($app->req->server['HTTP_REFERER']);
     });
