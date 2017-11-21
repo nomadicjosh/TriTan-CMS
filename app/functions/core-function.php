@@ -1768,30 +1768,6 @@ function is_ssl()
 }
 
 /**
- * Add a submenu page link.
- * 
- * Uses admin_submenu_$location filter hook.
- * 
- * @since 1.0.0
- * @param string $location      Submenu location.
- * @param string $menu_title    The text to be used for the menu.
- * @param string $menu_route    The route part of the url.
- * @param string $screen        Unique name of menu's screen.
- * @param string $permission    The permission required for this menu to be displayed to the user.
- * @return false|string         Return the new menu or false if permission is not met.
- */
-function admin_submenu($location, $menu_title, $menu_route, $screen, $permission = null)
-{
-    if ($permission !== null) {
-        if (!hasPermission($permission)) {
-            return false;
-        }
-    }
-    $menu = '<li' . (SCREEN === $screen ? ' class="active"' : '') . '><a href="' . get_base_url() . 'admin/' . $menu_route . '/"><i class="fa fa-circle-o"></i> ' . $menu_title . '</a></li>';
-    echo app()->hook->{'apply_filter'}("admin_submenu_{$location}", $menu);
-}
-
-/**
  * Enqueues stylesheets.
  * 
  * Example Usage:
