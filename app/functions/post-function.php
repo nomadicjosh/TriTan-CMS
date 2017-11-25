@@ -468,7 +468,7 @@ function ttcms_post_status_label($status)
  */
 function get_post_meta($post_id, $key = '', $single = false)
 {
-    return get_metadata('post', $post_id, $key, $single);
+    return get_metadata(Config::get('tbl_prefix') . 'post', $post_id, $key, $single);
 }
 
 /**
@@ -480,7 +480,7 @@ function get_post_meta($post_id, $key = '', $single = false)
  */
 function get_post_meta_by_mid($mid)
 {
-    return get_metadata_by_mid('post', $mid);
+    return get_metadata_by_mid(Config::get('tbl_prefix') . 'post', $mid);
 }
 
 /**
@@ -502,7 +502,7 @@ function get_post_meta_by_mid($mid)
  */
 function update_post_meta($post_id, $meta_key, $meta_value, $prev_value = '')
 {
-    return update_metadata('post', $post_id, $meta_key, $meta_value, $prev_value);
+    return update_metadata(Config::get('tbl_prefix') . 'post', $post_id, $meta_key, $meta_value, $prev_value);
 }
 
 /**
@@ -518,7 +518,7 @@ function update_post_meta_by_mid($mid, $meta_key, $meta_value)
 {
     $_meta_key = ttcms_unslash($meta_key);
     $_meta_value = ttcms_unslash($meta_value);
-    return update_metadata_by_mid('post', $mid, $_meta_key, $_meta_value);
+    return update_metadata_by_mid(Config::get('tbl_prefix') . 'post', $mid, $_meta_key, $_meta_value);
 }
 
 /**
@@ -534,7 +534,7 @@ function update_post_meta_by_mid($mid, $meta_key, $meta_value)
  */
 function add_post_meta($post_id, $meta_key, $meta_value, $unique = false)
 {
-    return add_metadata('post', $post_id, $meta_key, $meta_value, $unique);
+    return add_metadata(Config::get('tbl_prefix') . 'post', $post_id, $meta_key, $meta_value, $unique);
 }
 
 /**
@@ -553,7 +553,7 @@ function add_post_meta($post_id, $meta_key, $meta_value, $unique = false)
  */
 function delete_post_meta($post_id, $meta_key, $meta_value = '')
 {
-    return delete_metadata('post', $post_id, $meta_key, $meta_value);
+    return delete_metadata(Config::get('tbl_prefix') . 'post', $post_id, $meta_key, $meta_value);
 }
 
 /**
@@ -565,7 +565,7 @@ function delete_post_meta($post_id, $meta_key, $meta_value = '')
  */
 function delete_post_meta_by_mid($mid)
 {
-    return delete_metadata_by_mid('post', $mid);
+    return delete_metadata_by_mid(Config::get('tbl_prefix') . 'post', $mid);
 }
 
 /**
