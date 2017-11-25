@@ -2,12 +2,28 @@
     "name": "parkerj/TriTan-CMS",
     "description": "TriTan CMS is a developer centric content management framework that allows you to go completely headless or nearly headless. With the mighty TriTan, you can build amazing RESTful applications and robust websites.",
     "type": "CMS",
-    "keywords": ["CMS", "TriTan", "TriTanCMS","cms framework","headless","headless cms"],
+    "keywords": ["CMS", "TriTan", "TriTanCMS", "cms framework", "headless", "headless cms"],
     "license": "GPL-3.0",
     "authors": [
         {
             "name": "Joshua Parker",
             "email": "joshmac3@icloud.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "parkerj/php-auto-update",
+                "version": "dev-master",
+                "source": {
+                    "url": "https://github.com/parkerj/PHP-Auto-Update.git",
+                    "type": "git",
+                    "reference": "master"
+                }
+            }
         }
     ],
     "require": {
@@ -39,6 +55,9 @@
         "tubalmartin/cssmin": "^4.1",
         "mtdowling/cron-expression": "^2.0",
         "guzzlehttp/guzzle": "^6.3",
-        "spatie/image-optimizer": "^1.0"
+        "spatie/image-optimizer": "^1.0",
+        "parkerj/php-auto-update": "^1.0",
+        "league/oauth2-google": "^2.0",
+        "erusev/parsedown": "^1.6"
     }
 }
