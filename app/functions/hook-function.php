@@ -494,7 +494,13 @@ app()->hook->{'do_action'}('plugins_loaded');
 function admin_head()
 {
     /**
-     * Prints scripts and/or data in the head tag of the backend.
+     * Registers & enqueues a stylesheet to be printed in backend head section.
+     *
+     * @since 1.0.0
+     */
+    app()->hook->{'do_action'}('enqueue_admin_css');
+    /**
+     * Fires in head section of all admin screens.
      *
      * @since 1.0.0
      */
@@ -509,27 +515,17 @@ function admin_head()
 function ttcms_head()
 {
     /**
+     * Registers & enqueues a stylesheet to be printed in frontend head section.
+     *
+     * @since 1.0.0
+     */
+    app()->hook->{'do_action'}('enqueue_css');
+    /**
      * Prints scripts and/or data in the head of the front end.
      *
      * @since 1.0.0
      */
     app()->hook->{'do_action'}('ttcms_head');
-}
-
-/**
- * Fires the ttcms_footer action via the admin.
- *
- * @since 1.0.0
- */
-function ttcms_footer()
-{
-    /**
-     * Prints scripts and/or data before the ending body tag
-     * of the front end.
-     *
-     * @since 1.0.0
-     */
-    app()->hook->{'do_action'}('ttcms_footer');
 }
 
 /**
@@ -540,11 +536,39 @@ function ttcms_footer()
 function admin_footer()
 {
     /**
+     * Registers & enqueues javascript to be printed in backend footer section.
+     *
+     * @since 1.0.0
+     */
+    app()->hook->{'do_action'}('enqueue_admin_js');
+    /**
      * Prints scripts and/or data before the ending body tag of the backend.
      *
      * @since 1.0.0
      */
     app()->hook->{'do_action'}('ttcms_admin_footer');
+}
+
+/**
+ * Fires the ttcms_footer action via the admin.
+ *
+ * @since 1.0.0
+ */
+function ttcms_footer()
+{
+    /**
+     * Registers & enqueues javascript to be printed in frontend footer section.
+     *
+     * @since 1.0.0
+     */
+    app()->hook->{'do_action'}('enqueue_js');
+    /**
+     * Prints scripts and/or data before the ending body tag
+     * of the front end.
+     *
+     * @since 1.0.0
+     */
+    app()->hook->{'do_action'}('ttcms_footer');
 }
 
 /**
@@ -806,11 +830,11 @@ function nocache_headers()
 }
 
 /**
- * WYSIWYG editor for posts and pages.
+ * Upload image button.
  *
  * @since 1.0.0
  */
-function ttcms_set_featured_image()
+function ttcms_upload_image()
 {
     $elfinder = '<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
             <link href="vendor/studio-42/elfinder/css/elfinder.full.css" type="text/css" rel="stylesheet" />
@@ -843,7 +867,7 @@ function ttcms_set_featured_image()
                                 onlyURL: true,
                                 multiple: false,
                                 folders: false,
-                                oncomplete: ""
+                                oncomplete: "destroy"
                             },
                             handlers: {
                                 dblclick: function (event, elfinderInstance) {
@@ -851,7 +875,7 @@ function ttcms_set_featured_image()
 
                                     if (fileInfo.mime != "directory") {
                                         var imgURL = elfinderInstance.url(event.data.file);
-                                        $("#post_featured_image").val(imgURL);
+                                        $("#upload_image").val(imgURL);
 
                                         var imgPath = "<img src=\'"+imgURL+"\' id=\"append-image\" style=\"width:260px;height:auto;background-size:contain;margin-bottom:.9em;background-repeat:no-repeat\"/>";
                                         $("#elfinder_image").append(imgPath); //add the image to a div so you can see the selected images
@@ -876,7 +900,7 @@ function ttcms_set_featured_image()
                         });
                         $("#remove_image").click(function () {
                         
-                            $("#post_featured_image").val("");
+                            $("#upload_image").val("");
                             $("#elfinder_image").find("#append-image").remove(); //remove image from div when user clicks remove image button.
                             
                             $("#remove_image").hide();
@@ -887,7 +911,7 @@ function ttcms_set_featured_image()
                     });
                 });
             </script>';
-    return app()->hook->{'apply_filter'}('ttcms_set_featured_image', $elfinder);
+    return app()->hook->{'apply_filter'}('ttcms_upload_image', $elfinder);
 }
 
 /**
@@ -1074,6 +1098,19 @@ function plugins_url($path = '', $plugin = '')
 }
 
 /**
+ * Get the URL directory path (with trailing slash) for the plugin __FILE__ passed in.
+ * 
+ * @since 1.0.0
+ * @param string $file The filename of the plugin (__FILE__).
+ * @return string the URL path of the directory that contains the plugin.
+ */
+function plugin_dir_url($file)
+{
+    $url = add_trailing_slash(plugins_url('', $file));
+    return app()->hook->{'apply_filter'}('plugin_dir_url', $url, $file);
+}
+
+/**
  * Returns full base url of a site's theme.
  * 
  * @since 1.0.0
@@ -1248,6 +1285,152 @@ function delete_site_directories($_site_id)
 {
     _rmdir(Config::get('sites_dir') . (int) $_site_id . DS);
 }
+
+/**
+ * Renders an editor.
+ * 
+ * @since 1.0.0
+ * @param string $selector HTML ID attribute value for the textarea and TinyMCE. Can only be /[a-z]+/.
+ */
+function ttcms_editor($selector = null)
+{
+    ttcms_enqueue_js('default', '//cdn.tinymce.com/4/tinymce.min.js');
+
+    if ($selector == null) {
+        $mce_selector = '#tinymce_editor';
+    } else {
+        $mce_selector = $selector;
+    }
+
+    /**
+     * Filters the default theme for TinyMCE.
+     * 
+     * @since 1.0.0
+     * @param string $theme Theme used for TinyMCE.
+     */
+    $mce_theme = app()->hook->{'apply_filter'}('tiny_mce_theme', 'modern');
+
+    $plugins = [
+        'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'print', 'preview', 'anchor',
+        'searchreplace', 'visualblocks', 'code', 'codesample',
+        'insertdatetime', 'media', 'table', 'contextmenu', 'paste'
+    ];
+    /**
+     * Filters the list of default TinyMCE plugins.
+     * 
+     * @since 1.0.0
+     * @param array $plugins An array of default TinyMCE plugins.
+     */
+    $mce_plugins = app()->hook->{'apply_filter'}('tiny_mce_plugins', $plugins);
+
+    $mce_buttons = ['undo', 'redo', 'styleselect', 'bold', 'italic', 'alignleft', 'aligncenter', 'alignright', 'alignjustify', 'bullist', 'numlist', 'blockquote', 'outdent', 'indent', 'link', 'image', 'media', 'codesample', 'preview'];
+    /**
+     * Filters the first-row list of TinyMCE buttons.
+     *
+     * @since 1.0.0
+     * @param array  $buttons       First-row list of buttons.
+     * @param string $mce_selector  Unique editor identifier, e.g. 'textarea'.
+     */
+    $mce_buttons_1 = app()->hook->{'apply_filter'}('tiny_mce_buttons_1', $mce_buttons, $mce_selector);
+    /**
+     * Filters the second-row list of TinyMCE buttons.
+     *
+     * @since 1.0.0
+     * @param array  $buttons       First-row list of buttons.
+     * @param string $mce_selector  Unique editor identifier, e.g. 'textarea'.
+     */
+    $mce_buttons_2 = app()->hook->{'apply_filter'}('tiny_mce_buttons_2', [], $mce_selector);
+    /**
+     * Filters the third-row list of TinyMCE buttons.
+     *
+     * @since 1.0.0
+     * @param array  $buttons       First-row list of buttons.
+     * @param string $mce_selector  Unique editor identifier, e.g. 'textarea'.
+     */
+    $mce_buttons_3 = app()->hook->{'apply_filter'}('tiny_mce_buttons_3', [], $mce_selector);
+    /**
+     * Filters the default stylesheets.
+     *
+     * @since 1.0.0
+     * @param array  $css           CSS stylesheets to include.
+     * @param string $mce_selector  Unique editor identifier, e.g. 'textarea'.
+     */
+    $mce_css = app()->hook->{'apply_filter'}('tiny_mce_css', ['//fonts.googleapis.com/css?family=Lato:300,300i,400,400i', get_base_url() . 'static/assets/css/tinymce.css'], $mce_selector);
+
+    /**
+     * Fires immediately before TinyMCE is printed.
+     *
+     * @since 1.0.0
+     */
+    app()->hook->{'do_action'}('before_ttcms_tiny_mce');
+
+    ?>
+    <script type="text/javascript">
+        tinymce.init({
+            selector: "<?= $mce_selector; ?>",
+            theme: "<?= $mce_theme; ?>",
+            relative_urls: false,
+            remove_script_host: false,
+            height: 325,
+            media_live_embeds: true,
+            plugins: ["<?= implode(',', $mce_plugins); ?>"],
+            link_list: [
+    <?php foreach (tinymce_link_list() as $link) : {
+            echo "{title: '" . _escape($link['post_title']) . "', value: '" . get_base_url() . _escape($link['post_relative_url']) . "'}," . "\n";
+        } endforeach; ?>
+            ],
+            toolbar1: "<?= implode(' ', $mce_buttons_1); ?>",
+            toolbar2: "<?= implode(' ', $mce_buttons_2); ?>",
+            toolbar3: "<?= implode(' ', $mce_buttons_3); ?>",
+            autosave_ask_before_unload: false,
+            content_css: [<?= '"' . implode('", "', $mce_css) . '"'; ?>],
+            file_picker_callback: elFinderBrowser
+        });
+        function elFinderBrowser(callback, value, meta) {
+            tinymce.activeEditor.windowManager.open({
+                file: "<?= get_base_url(); ?>admin/elfinder/",
+                title: "elFinder 2.1",
+                width: 900,
+                height: 600,
+                resizable: "yes"
+            }, {
+                oninsert: function (file) {
+                    // Provide file and text for the link dialog
+                    if (meta.filetype == "file") {
+                        //callback("mypage.html", {text: "My text"});
+                        callback(file.url);
+                    }
+
+                    // Provide image and alt text for the image dialog
+                    if (meta.filetype == "image") {
+                        //callback("myimage.jpg", {alt: "My alt text"});
+                        callback(file.url, {alt: file.name});
+                    }
+
+                    // Provide alternative source and posted for the media dialog
+                    if (meta.filetype == "media") {
+                        //callback("movie.mp4", {source2: "alt.ogg", poster: "image.jpg"});
+                        callback(file.url, {alt: file.name});
+                    }
+                }
+            });
+            return false;
+        }
+        ;
+    </script>
+    <?php
+    /**
+     * Fires immediately after TinyMCE is printed.
+     *
+     * @since 1.0.0
+     */
+    app()->hook->{'do_action'}('after_ttcms_tiny_mce');
+}
+/**
+ * Default actions and filters.
+ * 
+ * @since 1.0.0
+ */
 app()->hook->{'add_action'}('ttcms_admin_head', 'head_release_meta', 5);
 app()->hook->{'add_action'}('ttcms_head', 'head_release_meta', 5);
 app()->hook->{'add_action'}('ttcms_head', 'post_css', 5, 2);
@@ -1268,6 +1451,7 @@ app()->hook->{'add_action'}('password_change_email', 'send_password_change_email
 app()->hook->{'add_action'}('email_change_email', 'send_email_change_email', 5, 2);
 app()->hook->{'add_action'}('before_router_login', 'update_main_site', 5);
 app()->hook->{'add_action'}('ttcms_login', 'generate_php_encryption', 5);
+app()->hook->{'add_action'}('enqueue_ttcms_editor', 'ttcms_editor', 5);
 app()->hook->{'add_filter'}('the_content', 'ttcms_autop');
 app()->hook->{'add_filter'}('the_content', 'parsecode_unautop');
 app()->hook->{'add_filter'}('the_content', 'do_parsecode', 5);
