@@ -2,6 +2,7 @@
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use TriTan\Config;
+use TriTan\Exception\Exception;
 use TriTan\Exception\UnauthorizedException;
 use Cascade\Cascade;
 
@@ -160,6 +161,7 @@ function ttcms_authenticate($login, $password, $rememberme)
             'last_login_id' => auto_increment('last_login', 'last_login_id'),
             'site_id' => (int) Config::get('site_id'),
             'user_id' => (int) _escape($user['user_id']),
+            'user_ip' => (string) app()->req->server['REMOTE_ADDR'],
             'login_timestamp' => (string) \Jenssegers\Date\Date::now()
         ]);
         $ll->commit();
@@ -211,7 +213,7 @@ function ttcms_authenticate_user($login, $password, $rememberme)
         return;
     }
 
-    if (filter_var($login, FILTER_VALIDATE_EMAIL)) {
+    if (validate_email($login)) {
         $user = get_user_by('email', $login);
 
         if (false == _escape($user['user_email'])) {
