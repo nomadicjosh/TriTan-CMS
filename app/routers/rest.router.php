@@ -206,7 +206,7 @@ $app->group('/rest', function() use ($app, $orm) {
 
     /**
      * @apiDescription Retrieve all records from a requested document sorted by a particular field in descending order.
-     * @api {get} /rest/v1/:api_key/:document/sort/:field/desc/
+     * @api {get} /rest/v1/:api_key/:document1/one/:document2/:field2/:field1/
      * @apiVersion 1.0.0
      * 
      * @apiGroup REST API
