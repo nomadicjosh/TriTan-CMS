@@ -290,7 +290,6 @@ use TriTan\Config;
         <script src="static/assets/js/iCheck/icheck.min.js" type="text/javascript"></script>
         <script src="static/assets/js/pages/iCheck.js" type="text/javascript"></script>
         <script src="//gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
-        <script src="static/assets/js/app.min.js"></script>
         <script src="static/assets/js/demo.js"></script>
         <script src="static/assets/js/datatables/jquery.dataTables.min.js" type="text/javascript"></script>
         <script src="static/assets/js/datatables/dataTables.bootstrap.min.js" type="text/javascript"></script>
