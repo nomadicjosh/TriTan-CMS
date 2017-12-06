@@ -25,6 +25,8 @@ $app->get('/cronjob/', function () use($app) {
     if ($app->hook->{'get_option'}('enable_cron_jobs') != (int) 1) {
         exit();
     }
+    
+    $app->hook->{'do_action'}('ttcms_task_worker_cron');
 
     $error_count = $app->db->table(Config::get('tbl_prefix') . 'error')
         ->where(strtotime('add_date'), '<=', strtotime('-5 days'))
@@ -45,12 +47,11 @@ $app->get('/cronjob/', function () use($app) {
 
     ttcms_logger_error_log_purge();
     ttcms_logger_activity_log_purge();
-
-    $app->hook->{'do_action'}('ttcms_task_worker_cron');
+    
     try {
 
         $tasks = $app->db->table(Config::get('tbl_prefix') . 'tasks')
-            ->where('enabled', 'true')
+            ->where('enabled', '1')
             ->get();
         if (count($tasks) > 0) {
 

@@ -145,7 +145,7 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
         $lastId = auto_increment($this->node(), 'queue_id');
         try {
             $query->insert([
-                'queue_id' => $lastId,
+                'queue_id' => (int) $lastId,
                 'name' => if_null($this->name),
                 'data' => if_null($this->app->hook->{'maybe_serialize'}($data)),
                 'created' => if_null(time())
@@ -217,9 +217,9 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
                      * and will tend to reset items before the lease should really
                      * expire.
                      */
-                    $update->where('expire', (int) 0)->where('queue_id', _escape($item['queue_id']))
+                    $update->where('expire', (int) 0)->where('queue_id', (int) _escape($item['queue_id']))
                         ->update([
-                            'expire' => (int) time() + ($this->lease_time <= 0 ? $lease_time : $this->lease_time)
+                            'expire' => (int) time() + ($this->lease_time <= (int) 0 ? (int) $lease_time : (int) $this->lease_time)
                     ]);
                     $update->commit();
                     return $item;
@@ -249,7 +249,7 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
         $update = $this->app->db->table($this->node());
         $update->begin();
         try {
-            $update->where('queue_id', $item['queue_id'])
+            $update->where('queue_id', (int) $item['queue_id'])
                 ->update([
                     'expire' => (int) 0
             ]);
@@ -272,7 +272,7 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
         $delete = $this->app->db->table($this->node());
         $delete->begin();
         try {
-            $delete->where('queue_id', $item['queue_id'])
+            $delete->where('queue_id', (int) $item['queue_id'])
                 ->delete();
             $delete->commit();
         } catch (Exception $e) {
