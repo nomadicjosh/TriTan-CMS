@@ -316,6 +316,13 @@ $app->group('/admin', function() use ($app, $user) {
                             'locked' => false
                         ],
                         [
+                            'pattern' => '/\__optimized__/',
+                            'read' => false,
+                            'write' => false,
+                            'hidden' => true,
+                            'locked' => true
+                        ],
+                        [
                             'pattern' => '/\.gitkeep/',
                             'read' => false,
                             'write' => false,

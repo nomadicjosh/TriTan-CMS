@@ -76,7 +76,7 @@ $app->group('/admin', function() use ($app, $user) {
                     $post_status = $app->req->post['post_status'];
                     $post_slug = $app->req->post['post_slug'] != '' ? $app->req->post['post_slug'] : ttcms_slugify($app->req->post['post_title']);
                     $relative_url = _escape($post_type['posttype_slug']) . '/' . $post_slug . '/';
-                    $featured_image = str_replace(get_base_url(), '', $app->req->post['post_featured_image']);
+                    $featured_image = ttcms_optimized_image_upload($app->req->post['post_featured_image']);
                     $post->insert([
                         'post_id' => (int) $post_id,
                         'post_title' => (string) $app->req->post['post_title'],
@@ -167,7 +167,7 @@ $app->group('/admin', function() use ($app, $user) {
                      */
                     $url_filter = $app->hook->{'apply_filter'}('relative_url', _escape($post_type['posttype_slug']) . '/', $post_type);
                     $relative_url = $url_filter . $post_slug . '/';
-                    $featured_image = str_replace(get_base_url(), '', $app->req->post['post_featured_image']);
+                    $featured_image = ttcms_optimized_image_upload($app->req->post['post_featured_image']);
                     $post->where('post_id', (int) $id)->update([
                         'post_title' => (string) $app->req->post['post_title'],
                         'post_slug' => (string) $post_slug,
@@ -289,6 +289,7 @@ $app->group('/admin', function() use ($app, $user) {
                     'post_featured_image' => null
                 ]);
                 $post->commit();
+                ttcms_cache_delete((int) $id, 'post');
                 _ttcms_flash()->{'success'}(_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
             } catch (Exception $ex) {
                 $post->rollback();

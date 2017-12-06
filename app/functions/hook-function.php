@@ -1169,6 +1169,32 @@ function themes_url($path = '', $theme = '')
 }
 
 /**
+ * Returns full base url of a site's private url.
+ * 
+ * @since 1.0.0
+ * @return string Site's private base url.
+ */
+function get_private_site_url()
+{
+    $site_id = Config::get('site_id');
+    $url = get_base_url() . 'private/sites/' . $site_id . '/';
+    return app()->hook->{'apply_filter'}("private_site_url{$site_id}", $url);
+}
+
+/**
+ * Returns full base url of a site's private upload url.
+ * 
+ * @since 1.0.0
+ * @return string Site's private upload base url.
+ */
+function get_private_site_upload_url()
+{
+    $site_id = Config::get('site_id');
+    $url = get_private_site_url() . 'uploads/';
+    return app()->hook->{'apply_filter'}("private_site_upload_url{$site_id}", $url);
+}
+
+/**
  * Searches for plain email addresses in given $string and
  * encodes them (by default) with the help of eae_encode_str().
  *
@@ -1267,6 +1293,7 @@ function create_site_directories($_site_id)
         _mkdir(Config::get('sites_dir') . (int) $_site_id . DS . 'files' . DS . 'logs' . DS);
         _mkdir(Config::get('sites_dir') . (int) $_site_id . DS . 'themes' . DS);
         _mkdir(Config::get('sites_dir') . (int) $_site_id . DS . 'uploads' . DS);
+        _mkdir(Config::get('sites_dir') . (int) $_site_id . DS . 'uploads' . DS . '__optimized__' . DS);
     } catch (Exception $ex) {
         Cascade::getLogger('error')->error(sprintf('IOSTATE[%s]: Forbidden: %s', $ex->getCode(), $ex->getMessage()));
     }
@@ -1375,9 +1402,12 @@ function ttcms_editor($selector = null)
             media_live_embeds: true,
             plugins: ["<?= implode(',', $mce_plugins); ?>"],
             link_list: [
-    <?php foreach (tinymce_link_list() as $link) : {
+    <?php
+    foreach (tinymce_link_list() as $link) : {
             echo "{title: '" . _escape($link['post_title']) . "', value: '" . get_base_url() . _escape($link['post_relative_url']) . "'}," . "\n";
-        } endforeach; ?>
+        } endforeach;
+
+    ?>
             ],
             toolbar1: "<?= implode(' ', $mce_buttons_1); ?>",
             toolbar2: "<?= implode(' ', $mce_buttons_2); ?>",
@@ -1425,6 +1455,27 @@ function ttcms_editor($selector = null)
      * @since 1.0.0
      */
     app()->hook->{'do_action'}('after_ttcms_tiny_mce');
+}
+
+/**
+ * Returns an optimized image for use.
+ * 
+ * @since 1.0.0
+ * @param string $image Original image file.
+ * @return string Optimized image file.
+ */
+function ttcms_optimized_image_upload($image)
+{
+    if($image === '') {
+        return null;
+    }
+    $site_id = Config::get('site_id');
+    $raw_filename = str_replace(get_base_url(), '', $image);
+    $new_filename = str_replace(get_private_site_upload_url(), 'private' . DS . 'sites' . DS . $site_id . DS . 'uploads' . DS . '__optimized__' . DS, $image);
+    if (!file_exists($new_filename)) {
+        _ttcms_image_optimizer($raw_filename, $new_filename);
+    }
+    return app()->hook->{'apply_filter'}('optimized_image', $new_filename, $image, $raw_filename);
 }
 /**
  * Default actions and filters.

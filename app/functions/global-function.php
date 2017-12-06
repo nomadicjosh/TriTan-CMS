@@ -1,6 +1,7 @@
 <?php
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
+use Spatie\ImageOptimizer\OptimizerChainFactory;
 
 /**
  * TriTan CMS Global Scope Functions.
@@ -82,4 +83,18 @@ function _ttcms_random_lib()
     $factory = new RandomLib\Factory;
     $generator = $factory->getGenerator(new SecurityLib\Strength(SecurityLib\Strength::MEDIUM));
     return $generator;
+}
+
+/**
+ * Image optimizer.
+ * 
+ * @since 1.0.0
+ * @param string $pathToImage       Path to original image.
+ * @param string $pathToOptimizded  Path to where optimized image should be saved.
+ * @return string Optimized image.
+ */
+function _ttcms_image_optimizer($pathToImage, $pathToOptimizded)
+{
+    $optimizerChain = OptimizerChainFactory::create();
+    return $optimizerChain->setTimeout(30)->optimize($pathToImage, $pathToOptimizded);
 }
