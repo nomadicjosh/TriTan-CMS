@@ -137,14 +137,17 @@ unset($site_dropin);
 $app->hook->{'do_action'}('dropins_loaded');
 
 /**
- * Autoload specific site Theme Routers and theme function file if they exist.
+ * Autoload theme function file if it exist.
+ */
+if (file_exists(Config::get('theme_path') . 'functions.php')) {
+    include(Config::get('theme_path') . 'functions.php');
+}
+
+/**
+ * Autoload specific site Theme Routers if they exist.
  */
 foreach (ttcms_get_theme_routers() as $theme_router) {
     include( $theme_router );
-}
-
-if (file_exists(Config::get('theme_path') . 'functions.php')) {
-    include(Config::get('theme_path') . 'functions.php');
 }
 
 /**
