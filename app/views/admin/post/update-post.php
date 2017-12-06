@@ -5,7 +5,7 @@ $app->view->extend('_layouts/admin');
 $app->view->block('admin');
 TriTan\Config::set('screen_parent', $posttype);
 TriTan\Config::set('screen_child', $posttype);
-
+TriTan\Config::set('post_id', _escape($post['post_id']));
 ?>
 
 <?= ttcms_upload_image(); ?>
