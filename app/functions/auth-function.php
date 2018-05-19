@@ -1,9 +1,11 @@
 <?php
+
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use TriTan\Config;
 use TriTan\Exception\Exception;
 use TriTan\Exception\UnauthorizedException;
+use TriTan\Exception\NotFoundException;
 use Cascade\Cascade;
 
 /**
@@ -57,8 +59,8 @@ function hasRole($role_id)
 function get_role_by_id($role = 0)
 {
     $sql = app()->db->table('role')
-        ->where('role_id', (int) $role)
-        ->first();
+            ->where('role_id', (int) $role)
+            ->first();
 
     $data = [];
     $data['role'] = [
@@ -145,9 +147,9 @@ function get_user_by($field, $value)
 function ttcms_authenticate($login, $password, $rememberme)
 {
     $user = app()->db->table('user')
-        ->where('user_login', $login)
-        ->orWhere('user_email', $login)
-        ->first();
+            ->where('user_login', $login)
+            ->orWhere('user_email', $login)
+            ->first();
 
     if (false == $user) {
         _ttcms_flash()->{'error'}(sprintf(_t('Sorry, an account for <strong>%s</strong> does not exist.', 'tritan-cms'), $login), app()->req->server['HTTP_REFERER']);
