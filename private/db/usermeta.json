@@ -75,12 +75,5 @@
         "user_id": 1,
         "meta_key": "ttcms_1_user_admin_skin",
         "meta_value": "skin-red-light"
-    },
-    "5a0c487b719810.78333526": {
-        "_id": "5a0c487b719810.78333526",
-        "meta_id": 12,
-        "user_id": 1,
-        "meta_key": "ttcms_1_user_pass",
-        "meta_value": "TriTanCMS"
     }
 }

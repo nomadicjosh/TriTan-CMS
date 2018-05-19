@@ -51,7 +51,7 @@ class Hooks
      * @var string
      *
      */
-    protected $_plugins_dir;
+    public $_plugins_dir;
 
     /**
      *
@@ -59,7 +59,7 @@ class Hooks
      * @var array
      *
      */
-    protected $_filters = [];
+    public $_filters = [];
 
     /**
      *
@@ -67,7 +67,7 @@ class Hooks
      * @var string
      *
      */
-    protected $_actions = [];
+    public $_actions = [];
 
     /**
      *
@@ -75,7 +75,7 @@ class Hooks
      * @var array
      *
      */
-    protected $_merged_filters = [];
+    public $_merged_filters = [];
 
     /**
      *
@@ -83,7 +83,7 @@ class Hooks
      * @var string
      *
      */
-    protected $_current_filter = [];
+    public $_current_filter = [];
 
     /**
      * all plugins header information in an array.
@@ -91,7 +91,7 @@ class Hooks
      * @access protected
      * @var array
      */
-    protected $_plugins_header = [];
+    public $_plugins_header = [];
 
     /**
      *
@@ -99,7 +99,7 @@ class Hooks
      * @var string
      *
      */
-    protected $_error = [];
+    public $_error = [];
 
     /**
      * __construct class constructor
@@ -263,7 +263,7 @@ class Hooks
     {
         $active = $this->app->db->table(Config::get('tbl_prefix') . 'plugin')->where('plugin_location', $plugin)->first();
 
-        if (count($active) > 0) {
+        if (@count($active) > 0) {
             return true;
         }
         return false;

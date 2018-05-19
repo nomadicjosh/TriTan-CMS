@@ -10,7 +10,7 @@ Options All -Indexes
 
 # Exclude assets, images and other directories from rewrite rules
 RewriteRule ^(app|languages|Liten|mu-plugins|plugins|private|static|vendor)($|/) - [L]
-RewriteRule \.(jpg|jpeg|png|gif|ico)$ - [L]
+RewriteRule \.(jpg|jpeg|png|gif|ico|txt|xml|gz)$ - [L]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

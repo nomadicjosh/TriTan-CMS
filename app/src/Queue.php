@@ -169,13 +169,13 @@ class Queue
         $tasks = ttcms_parse_args($args);
 
         $count = $this->app->db->table($this->node())
-            ->where('pid', $tasks['task_worker']['pid'])
+            ->where('pid', (int) $tasks['task_worker']['pid'])
             ->get();
         if (count($count) >= 1) {
             $node = $this->app->db->table($this->node());
             $node->begin();
             try {
-                $node->where('pid', $tasks['task_worker']['pid'])
+                $node->where('pid', (int) $tasks['task_worker']['pid'])
                     ->update([
                         'pid' => if_null($tasks['task_worker']['pid']),
                         'name' => if_null($tasks['task_worker']['name']),
@@ -346,7 +346,7 @@ class Queue
                  * Update the queue's # of runs as well as the last
                  * time it ran.
                  */
-                $upd->where('pid', $config['pid'])
+                $upd->where('pid', (int) $config['pid'])
                     ->update([
                         'executions' => +1,
                         'lastrun' => (string) \Jenssegers\Date\Date::now()->format('Y-m-d h:i:s'),

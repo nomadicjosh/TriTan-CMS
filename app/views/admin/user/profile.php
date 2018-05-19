@@ -56,7 +56,7 @@ $user = get_userdata(get_current_user_id());
                                 <label><strong><?= _t('Fixed Layout', 'tritan-cms'); ?></strong></label>
                                 <div class="ios-switch switch-md pull-right">
                                     <input type="hidden" class="js-switch" name="user_admin_layout" value="0" />
-                                    <input type="checkbox" class="js-switch" name="user_admin_layout"<?= checked(1, get_user_option('user_admin_layout', (int) _escape($user['user_id'])), false); ?> value="1" />
+                                    <input type="checkbox" class="js-switch" name="user_admin_layout"<?= checked('1', get_user_option('user_admin_layout', (int) _escape($user['user_id'])), false); ?> value="1" />
                                 </div>
                             </div>
 
@@ -64,7 +64,7 @@ $user = get_userdata(get_current_user_id());
                                 <label><strong><?= _t('Toggle Sidebar', 'tritan-cms'); ?></strong></label>
                                 <div class="ios-switch switch-md pull-right">
                                     <input type="hidden" class="js-switch" name="user_admin_sidebar" value="0" />
-                                    <input type="checkbox" class="js-switch" name="user_admin_sidebar"<?= checked(1, get_user_option('user_admin_sidebar', (int) _escape($user['user_id'])), false); ?> value="1" />
+                                    <input type="checkbox" class="js-switch" name="user_admin_sidebar"<?= checked('1', get_user_option('user_admin_sidebar', (int) _escape($user['user_id'])), false); ?> value="1" />
                                 </div>
                             </div>
                             

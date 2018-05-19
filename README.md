@@ -96,6 +96,7 @@ The following plugins are available for download and use.
 | [Easy iFrame Loader](//tritan-cms.s3.amazonaws.com/plugins/easy-iframe-loader.zip)  | The Easy iFrame Loader plugin allows you to enter an iframe parsecode into any TriTan post. You can use the plugin to load a Moodle site, Amazon store, or vidoes.  |
 | [Inject Code](//tritan-cms.s3.amazonaws.com/plugins/inject-code.zip)  | Add any kind of javascript or tracking code to TriTan head or footer section.  |
 | [Reftagger](//tritan-cms.s3.amazonaws.com/plugins/reftagger.zip)  | Reftagger turns Bible references into links to the verse on Biblia.com / Faithlife.com and adds tooltips with the text of the verse.  |
+| [SimpleMDE - Markdown Editor](//tritan-cms.s3.amazonaws.com/plugins/simplemde.zip)  | A drop-in JavaScript textarea replacement for writing beautiful and understandable Markdown.  |
 | [Syntax Highlighter](//tritan-cms.s3.amazonaws.com/plugins/syntax-highlighter.zip)  | A lightweight and simple syntax highligher with automatic language detection.  |
 | [TTCMS SMTP](//tritan-cms.s3.amazonaws.com/plugins/ttcms-smtp.zip)  | TriTan CMS SMTP will allow you to send emails through an SMTP server and override the PHP mail() as well as the TriTan CMS ttcmsMail() sending methods.  |
 

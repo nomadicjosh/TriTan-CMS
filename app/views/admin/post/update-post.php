@@ -5,66 +5,10 @@ $app->view->extend('_layouts/admin');
 $app->view->block('admin');
 TriTan\Config::set('screen_parent', $posttype);
 TriTan\Config::set('screen_child', $posttype);
-
+TriTan\Config::set('post_id', _escape($post['post_id']));
 ?>
 
-<script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
-<script type="text/javascript">
-    tinymce.init({
-        selector: "textarea",
-        theme: "modern",
-        relative_urls: false,
-        remove_script_host: false,
-        height: 300,
-        media_live_embeds: true,
-        plugins: [
-            "advlist autolink lists link image charmap print preview anchor",
-            "searchreplace visualblocks code codesample",
-            "insertdatetime media table contextmenu paste <?php app()->hook->{'do_action'}('ttcms_wysiwyg_editor_plugin'); ?>"
-        ],
-        link_list: [
-            <?php foreach(tinymce_link_list() as $link) : {echo "{title: '" . _escape($link['post_title']) . "', value: '" . get_base_url() . _escape($link['post_relative_url']) . "'}," . "\n"; } endforeach; ?>
-        ],
-        toolbar: "undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media | codesample | preview <?php app()->hook->{'do_action'}('ttcms_wysiwyg_editor_toolbar'); ?>",
-        autosave_ask_before_unload: false,
-        content_css: [
-            "//fonts.googleapis.com/css?family=Lato:300,300i,400,400i",
-            "//tritan-cms.s3.amazonaws.com/static/assets/css/tinymce.css"
-        ],
-        file_picker_callback: elFinderBrowser
-    });
-    function elFinderBrowser(callback, value, meta) {
-        tinymce.activeEditor.windowManager.open({
-            file: "<?= get_base_url(); ?>admin/elfinder/",
-            title: "elFinder 2.1",
-            width: 900,
-            height: 600,
-            resizable: "yes"
-        }, {
-            oninsert: function (file) {
-                // Provide file and text for the link dialog
-                if (meta.filetype == "file") {
-                    //callback("mypage.html", {text: "My text"});
-                    callback(file.url);
-                }
-
-                // Provide image and alt text for the image dialog
-                if (meta.filetype == "image") {
-                    //callback("myimage.jpg", {alt: "My alt text"});
-                    callback(file.url, {alt: file.name});
-                }
-
-                // Provide alternative source and posted for the media dialog
-                if (meta.filetype == "media") {
-                    //callback("movie.mp4", {source2: "alt.ogg", poster: "image.jpg"});
-                    callback(file.url, {alt: file.name});
-                }
-            }
-        });
-        return false;
-    };
-</script>
-<?= ttcms_set_featured_image(); ?>
+<?= ttcms_upload_image(); ?>
 
 <script src="static/assets/js/url_slug.js" type="text/javascript"></script>
 <script>
@@ -118,7 +62,7 @@ TriTan\Config::set('screen_child', $posttype);
                             <?php $app->hook->{'do_action'}('update_post_content_field', $posttype, $post) ;?>
                             <div class="form-group">
                                 <label><strong><?= _t('Content', 'tritan-cms'); ?></strong></label>
-                                <textarea class="form-control" name="post_content"><?= _escape($post['post_content']); ?></textarea>
+                                <textarea id="tinymce_editor" class="form-control" name="post_content"><?= _escape($post['post_content']); ?></textarea>
                             </div>
                         </div>
                         <!-- /.box-body -->
@@ -248,7 +192,7 @@ TriTan\Config::set('screen_child', $posttype);
                             <button type="button" id="set_image" class="btn btn-primary" style="display:none;"><?= _t('Set featured image', 'tritan-cms'); ?></button>
                             <button type="button" id="remove_image" class="btn btn-primary" style="display:none;"><?= _t('Remove featured image', 'tritan-cms'); ?></button>
                             <?php endif; ?>
-                            <input type="hidden" class="form-control" name="post_featured_image" id="post_featured_image" value="<?= _escape($post['post_featured_image']); ?>" />
+                            <input type="hidden" class="form-control" name="post_featured_image" id="upload_image" value="<?= _escape($post['post_featured_image']); ?>" />
                             <?php $app->hook->{'do_action'}('update_post_metabox_featured_image', $posttype, $post) ;?>
                         </div>
                         <!-- /.box-body -->
@@ -261,10 +205,17 @@ TriTan\Config::set('screen_child', $posttype);
             <!--/.row -->
         </section>
         <!-- /.Main content -->
-
     </div>
-    <!-- /.Content Wrapper. Contains post content -->
 </form>
+<!-- /.Content Wrapper. Contains post content -->
+<?php
+/**
+ * Fires before the update post screen is fully loaded.
+ * 
+ * @since 1.0.0
+ */
+$app->hook->{'do_action'}('enqueue_ttcms_editor');
+?>
 <!-- modal -->
 <div class="modal" id="slug">
     <div class="modal-dialog">

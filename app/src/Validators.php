@@ -1,9 +1,10 @@
-<?php namespace TriTan;
+<?php
+
+namespace TriTan;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use Respect\Validation\Exceptions\ValidationException;
-use Respect\Validation\Exceptions\EmailException;
 use Respect\Validation\Validator;
 use Cascade\Cascade;
 
@@ -50,13 +51,7 @@ class Validators
      */
     public static function validateEmail($email)
     {
-        try {
-            Validator::email()->check($email);
-            return true;
-        } catch (EmailException $ex) {
-            Cascade::getLogger('error')->error(sprintf('VALIDATOR[%s]: %s', $ex->getCode(), $ex->getMessage()));
-            _ttcms_flash()->error($ex->getMessage());
-            return false;
-        }
+        return Validator::filterVar(FILTER_VALIDATE_EMAIL)->validate($email);
     }
+
 }

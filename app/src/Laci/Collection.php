@@ -3,8 +3,8 @@
 namespace TriTan\Laci;
 
 use Closure;
-use TriTan\Laci\Exceptions\DirectoryNotFoundException;
-use TriTan\Laci\Exceptions\InvalidJsonException;
+use TriTan\Exception\DirectoryNotFoundException;
+use TriTan\Exception\InvalidJsonException;
 
 class Collection
 {

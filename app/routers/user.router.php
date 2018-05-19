@@ -43,7 +43,7 @@ $app->group('/admin', function() use ($app, $current_user) {
                 $user_id = get_current_user_id();
                 ttcms_update_user($post);
 
-                unset($post['new_pass']);
+                unset($post['user_pass']);
                 unset($post['user_id']);
                 foreach ($post as $key => $value) {
                     update_user_option((int) $user_id, $key, if_null($value));
