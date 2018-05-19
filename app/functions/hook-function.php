@@ -463,6 +463,7 @@ function ttcms_admin_copyright_footer()
 
     return app()->hook->{'apply_filter'}('admin_copyright_footer', $copyright);
 }
+
 /**
  * Includes and loads all activated plugins.
  *
@@ -1390,7 +1391,6 @@ function ttcms_editor($selector = null)
      * @since 1.0.0
      */
     app()->hook->{'do_action'}('before_ttcms_tiny_mce');
-
     ?>
     <script type="text/javascript">
         tinymce.init({
@@ -1406,7 +1406,6 @@ function ttcms_editor($selector = null)
     foreach (tinymce_link_list() as $link) : {
             echo "{title: '" . _escape($link['post_title']) . "', value: '" . get_base_url() . _escape($link['post_relative_url']) . "'}," . "\n";
         } endforeach;
-
     ?>
             ],
             toolbar1: "<?= implode(' ', $mce_buttons_1); ?>",
@@ -1466,17 +1465,45 @@ function ttcms_editor($selector = null)
  */
 function ttcms_optimized_image_upload($image)
 {
-    if($image === '') {
+    if ($image === '') {
         return null;
     }
     $site_id = Config::get('site_id');
     $raw_filename = str_replace(get_base_url(), '', $image);
-    $new_filename = str_replace(get_private_site_upload_url(), 'private' . DS . 'sites' . DS . $site_id . DS . 'uploads' . DS . '__optimized__' . DS, $image);
+    $new_filename = str_replace(get_private_site_upload_url(), 'private/sites/' . $site_id . '/uploads/__optimized__/', $image);
     if (!file_exists($new_filename)) {
         _ttcms_image_optimizer($raw_filename, $new_filename);
     }
     return app()->hook->{'apply_filter'}('optimized_image', $new_filename, $image, $raw_filename);
 }
+
+/**
+ * Checks if site exists or is archived.
+ * 
+ * @since 1.0.0
+ */
+function is_site_exist()
+{
+    $base_url = get_base_url();
+    $site_path = str_replace('index.php', '', app()->req->server['PHP_SELF']);
+    $site_domain = str_replace(['http://', 'https://', $site_path], '', $base_url);
+
+    $site = app()->db->table('site')
+            ->where('site_domain', $site_domain)
+            ->where('site_path', $site_path)
+            ->first();
+
+    if (!$site) {
+        app()->res->_format('json', 404);
+        exit();
+    }
+
+    if (_escape($site['site_status']) === 'archive') {
+        app()->res->_format('json', 503);
+        exit();
+    }
+}
+
 /**
  * Default actions and filters.
  * 
@@ -1501,6 +1528,7 @@ app()->hook->{'add_action'}('reset_password_route', 'send_reset_password_email',
 app()->hook->{'add_action'}('password_change_email', 'send_password_change_email', 5, 3);
 app()->hook->{'add_action'}('email_change_email', 'send_email_change_email', 5, 2);
 app()->hook->{'add_action'}('before_router_login', 'update_main_site', 5);
+app()->hook->{'add_action'}('before_router_login', 'is_site_exist', 6);
 app()->hook->{'add_action'}('ttcms_login', 'generate_php_encryption', 5);
 app()->hook->{'add_action'}('enqueue_ttcms_editor', 'ttcms_editor', 5);
 app()->hook->{'add_filter'}('the_content', 'ttcms_autop');
