@@ -32,7 +32,7 @@ function auto_increment($table, $pk)
     $sql = app()->db->table($table)
         ->sortBy($pk, 'desc')
         ->first();
-    if (count($sql) <= 0 || null == $sql || false == $sql) {
+    if (@count($sql) <= 0 || null == $sql || false == $sql) {
         $auto_increment = 1;
     } else {
         $auto_increment = $sql[$pk] + 1;
@@ -268,8 +268,8 @@ function number_posts_per_type($slug)
 {
     $count = app()->db->table(Config::get('tbl_prefix') . 'post')
         ->where('post_type.post_posttype', $slug)
-        ->get();
-    return count($count);
+        ->count();
+    return $count;
 }
 
 /**
@@ -396,7 +396,7 @@ function generate_php_encryption()
 {
     $encrypt = app()->db->table('php_encryption');
 
-    if (count($encrypt->all()) > 0) {
+    if ($encrypt->count() > 0) {
         return false;
     }
 

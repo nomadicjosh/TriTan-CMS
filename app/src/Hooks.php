@@ -263,7 +263,7 @@ class Hooks
     {
         $active = $this->app->db->table(Config::get('tbl_prefix') . 'plugin')->where('plugin_location', $plugin)->first();
 
-        if (count($active) > 0) {
+        if (@count($active) > 0) {
             return true;
         }
         return false;
