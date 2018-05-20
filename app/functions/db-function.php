@@ -1,4 +1,5 @@
 <?php
+
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use TriTan\Config;
@@ -30,8 +31,8 @@ use Cascade\Cascade;
 function auto_increment($table, $pk)
 {
     $sql = app()->db->table($table)
-        ->sortBy($pk, 'desc')
-        ->first();
+            ->sortBy($pk, 'desc')
+            ->first();
     if (@count($sql) <= 0 || null == $sql || false == $sql) {
         $auto_increment = 1;
     } else {
@@ -78,8 +79,8 @@ function ttcms_set_password($password, $user_id)
 function get_posttype_by($field, $value)
 {
     $posttype = app()->db->table(Config::get('tbl_prefix') . 'posttype')
-        ->where($field, $value)
-        ->first();
+            ->where($field, $value)
+            ->first();
 
     return $posttype;
 }
@@ -94,8 +95,8 @@ function get_posttype_by($field, $value)
 function get_post_by($field, $value)
 {
     $post = app()->db->table(Config::get('tbl_prefix') . 'post')
-        ->where($field, $value)
-        ->first();
+            ->where($field, $value)
+            ->first();
 
     return $post;
 }
@@ -110,8 +111,8 @@ function get_post_by($field, $value)
 function get_post_id($post_slug = null)
 {
     $post = app()->db->table(Config::get('tbl_prefix') . 'post')
-        ->where('post_slug', $post_slug)
-        ->first();
+            ->where('post_slug', $post_slug)
+            ->first();
 
     return _escape($post['post_id']);
 }
@@ -140,8 +141,8 @@ function ttcms_slugify($title, $table = null)
      * Query post/page table.
      */
     $results = app()->db->table(Config::get('tbl_prefix') . $table)
-        ->where("$field", 'match', "/$slug(-[0-9]+)?$/")
-        ->get();
+            ->where("$field", 'match', "/$slug(-[0-9]+)?$/")
+            ->get();
     if (count($results) > 0) {
         foreach ($results as $item) {
             $titles[] = $item["$field"];
@@ -249,9 +250,9 @@ function get_all_post_types()
 function get_post_dropdown_list($slug = null, $post_id = 0)
 {
     $posts = app()->db->table(Config::get('tbl_prefix') . 'post')
-        ->where('post_status', 'published')
-        ->where('post_id', 'not in', $post_id)
-        ->get();
+            ->where('post_status', 'published')
+            ->where('post_id', 'not in', $post_id)
+            ->get();
     foreach ($posts as $post) {
         echo '<option value="' . _escape($post['post_slug']) . '"' . selected($slug, _escape($post['post_slug']), false) . '>' . _escape($post['post_title']) . '</option>';
     }
@@ -267,8 +268,8 @@ function get_post_dropdown_list($slug = null, $post_id = 0)
 function number_posts_per_type($slug)
 {
     $count = app()->db->table(Config::get('tbl_prefix') . 'post')
-        ->where('post_type.post_posttype', $slug)
-        ->count();
+            ->where('post_type.post_posttype', $slug)
+            ->count();
     return $count;
 }
 
@@ -284,14 +285,14 @@ function get_all_posts($post_type = null)
 {
     if ($post_type != null) {
         $posts = app()->db->table(Config::get('tbl_prefix') . 'post')
-            ->where('post_type.post_posttype', $post_type)
-            ->where('post_status', 'published')
-            ->get();
+                ->where('post_type.post_posttype', $post_type)
+                ->where('post_status', 'published')
+                ->get();
         return $posts;
     } else {
         $posts = app()->db->table(Config::get('tbl_prefix') . 'post')
-            ->where('post_status', 'published')
-            ->get();
+                ->where('post_status', 'published')
+                ->get();
         return $posts;
     }
 }
@@ -305,8 +306,8 @@ function get_all_posts($post_type = null)
 function tinymce_link_list()
 {
     $links = app()->db->table(Config::get('tbl_prefix') . 'post')
-        ->where('post_status', 'published')
-        ->get(['post_title', 'post_relative_url']);
+            ->where('post_status', 'published')
+            ->get(['post_title', 'post_relative_url']);
     return $links;
 }
 
@@ -357,9 +358,9 @@ function update_meta_cache($meta_type, $array_ids)
     // Get meta info
     $id_list = join(',', $ids);
     $meta_list = app()->db->table($table)
-        ->where($column, 'in', $id_list)
-        ->sortBy('meta_id')
-        ->get();
+            ->where($column, 'in', $id_list)
+            ->sortBy('meta_id')
+            ->get();
 
     if (!empty($meta_list)) {
         foreach ($meta_list as $metarow) {
@@ -413,4 +414,24 @@ function generate_php_encryption()
         $encrypt->rollback();
         Cascade::getLogger('error')->error(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()), ['Db Functions' => 'php_encryption']);
     }
+}
+
+/**
+ * Checks if a key exists in the option table.
+ * 
+ * @since 0.9.4
+ * @param string $option_key Key to check against.
+ * @return bool
+ */
+function is_option_exist($option_key)
+{
+    $key = app()->db->table(Config::get('tbl_prefix') . 'option')
+            ->where('option_key', '=', $option_key)
+            ->first();
+
+    if (_escape((int) $key['option_id']) <= 0) {
+        return false;
+    }
+
+    return true;
 }
