@@ -23,7 +23,7 @@ elseif (strpos(get_path_info('/admin/site'), "/admin/site") === 0)
 elseif (strpos(get_path_info('/admin'), "/admin") === 0)
 {
     require($app->config('routers_dir') . 'admin.router.php');
-    require($app->config('routers_dir') . 'post.router.php');
+    _ttcms_post_router();
 }
 
 elseif (strpos(get_path_info('/login'), "/login") === 0)
