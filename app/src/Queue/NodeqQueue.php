@@ -1,4 +1,6 @@
-<?php namespace TriTan\Queue;
+<?php
+
+namespace TriTan\Queue;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
@@ -68,7 +70,7 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
     public function __construct(array $config = [], \Liten\Liten $liten = null)
     {
         $this->name = $config['name'];
-        $this->lease_time = $config['lease_time'];
+        $this->lease_time = $config['max_runtime'];
         $this->schedule = $config['schedule'];
         $this->debug = (bool) $config['debug'];
         $this->app = !empty($liten) ? $liten : \Liten\Liten::getInstance();
@@ -148,7 +150,8 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
                 'queue_id' => (int) $lastId,
                 'name' => if_null($this->name),
                 'data' => if_null($this->app->hook->{'maybe_serialize'}($data)),
-                'created' => if_null(time())
+                'created' => if_null(time()),
+                'expire' => (int) 0
             ]);
             $query->commit();
         } catch (Exception $e) {
@@ -191,11 +194,11 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
         while (true) {
             try {
                 $item = $this->app->db->table($this->node())
-                    ->where('expire', (int) 0)
-                    ->where('name', $this->name)
-                    ->sortBy('created')
-                    ->sortBy('queue_id')
-                    ->first();
+                        ->where('expire', (int) 0)
+                        ->where('name', $this->name)
+                        ->sortBy('created')
+                        ->sortBy('queue_id')
+                        ->first();
             } catch (Exception $e) {
                 $this->catchException($e);
                 /**
@@ -218,8 +221,8 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
                      * expire.
                      */
                     $update->where('expire', (int) 0)->where('queue_id', (int) _escape($item['queue_id']))
-                        ->update([
-                            'expire' => (int) time() + ($this->lease_time <= (int) 0 ? (int) $lease_time : (int) $this->lease_time)
+                            ->update([
+                                'expire' => (int) time() + ($this->lease_time <= (int) 0 ? (int) $lease_time : (int) $this->lease_time)
                     ]);
                     $update->commit();
                     return $item;
@@ -250,8 +253,8 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
         $update->begin();
         try {
             $update->where('queue_id', (int) $item['queue_id'])
-                ->update([
-                    'expire' => (int) 0
+                    ->update([
+                        'expire' => (int) 0
             ]);
             $update->commit();
         } catch (Exception $e) {
@@ -273,7 +276,7 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
         $delete->begin();
         try {
             $delete->where('queue_id', (int) $item['queue_id'])
-                ->delete();
+                    ->delete();
             $delete->commit();
         } catch (Exception $e) {
             $delete->rollback();
@@ -301,7 +304,7 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
         $delete->begin();
         try {
             $delete->where('name', $this->name)
-                ->delete();
+                    ->delete();
             $delete->commit();
         } catch (Exception $e) {
             $delete->rollback();
@@ -321,8 +324,8 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
              * Clean up the queue for failed batches.
              */
             $delete->where('created', '<', REQUEST_TIME - 864000)
-                ->where('name', $this->name)
-                ->delete();
+                    ->where('name', $this->name)
+                    ->delete();
             $delete->commit();
         } catch (Exception $e) {
             $delete->rollback();
@@ -341,9 +344,9 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
              * that's not used, this will simply be a no-op.
              */
             $update->where('expire', 'not in', (int) 0)
-                ->where('expire', '<', REQUEST_TIME)
-                ->update([
-                    'expire' => (int) 0
+                    ->where('expire', '<', REQUEST_TIME)
+                    ->update([
+                        'expire' => (int) 0
             ]);
             $update->commit();
         } catch (Exception $e) {
@@ -391,10 +394,10 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
         $task->begin();
         try {
             $task->where('pid', (int) $data['pid'])
-                ->update([
-                    'executions' => if_null(_escape($runs['executions']) + 1),
-                    'lastrun' => (string) \Jenssegers\Date\Date::now()->format('Y-m-d h:i:s'),
-                    'last_runtime' => (double) $time_end
+                    ->update([
+                        'executions' => if_null(_escape($runs['executions']) + 1),
+                        'lastrun' => (string) \Jenssegers\Date\Date::now()->format('Y-m-d h:i:s'),
+                        'last_runtime' => (double) $time_end
             ]);
             $task->commit();
         } catch (Exception $e) {
@@ -403,4 +406,5 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
         }
         return true;
     }
+
 }
