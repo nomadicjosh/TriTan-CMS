@@ -899,7 +899,7 @@ class Hooks
                 'option_value' => if_null($option_value)
             ]);
 
-            if (count($key) > 0) {
+            if (@count($key) > 0) {
                 $this->app->db->option[$option_key] = $newvalue;
             }
             $key->commit();
