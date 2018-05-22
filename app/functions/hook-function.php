@@ -723,6 +723,21 @@ function get_css_directory_uri()
 }
 
 /**
+ * Retrieve image directory uri.
+ *
+ * @since 0.9.4
+ * @uses app()->hook->{'apply_filter'}() Calls 'image_directory_uri' filter.   
+ * @return string TriTan CMS image url.
+ */
+function get_image_directory_uri()
+{
+    $theme = str_replace('%2F', '/', rawurlencode(get_theme()));
+    $image_root_uri = get_theme_url();
+    $image_dir_uri = $image_root_uri . $theme . '/assets/images/';
+    return app()->hook->{'apply_filter'}('image_directory_uri', $image_dir_uri, $theme, $image_root_uri);
+}
+
+/**
  * Parses a string into variables to be stored in an array.
  *
  * Uses {@link http://www.php.net/parse_str parse_str()}
