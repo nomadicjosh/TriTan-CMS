@@ -764,7 +764,7 @@ class Hooks
             $meta = $this->app->db->table(Config::get('tbl_prefix') . 'option');
             $result = ttcms_cache_get($option_key, 'option');
             if (empty($result)) {
-                $result = $meta->where('option_key', $option_key)
+                $result = $meta->where('option_key', '=', $option_key)
                     ->first();
                 ttcms_cache_add($option_key, $result, 'option');
             }
@@ -880,7 +880,7 @@ class Hooks
             return false;
         }
 
-        if ('' === $oldvalue) {
+        if (!is_option_exist($option_key)) {
             $this->add_option($option_key, $newvalue);
             return true;
         }
@@ -896,10 +896,10 @@ class Hooks
         $option_value = $_newvalue;
         try {
             $key->where('option_key', $option_key)->update([
-                'option_value' => $option_value == '' ? 'null' : if_null($option_value)
+                'option_value' => if_null($option_value)
             ]);
 
-            if (count($key) > 0) {
+            if (@count($key) > 0) {
                 $this->app->db->option[$option_key] = $newvalue;
             }
             $key->commit();
@@ -1013,7 +1013,7 @@ class Hooks
     public function add_option($name, $value = '')
     {
         // Make sure the option doesn't already exist
-        if ('' !== $this->get_option($name)) {
+        if (is_option_exist($name)) {
             return;
         }
 

@@ -1,4 +1,5 @@
 <?php
+
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use TriTan\Config;
@@ -28,7 +29,7 @@ $app->group('/admin', function() use ($app, $user) {
 
         $app->view->display('admin/index', [
             'title' => _t('Admin Dashboard', 'tritan-cms')
-            ]
+                ]
         );
     });
 
@@ -43,7 +44,7 @@ $app->group('/admin', function() use ($app, $user) {
 
         $app->view->display('admin/media', [
             'title' => _t('Media Library', 'tritan-cms')
-            ]
+                ]
         );
     });
 
@@ -58,7 +59,7 @@ $app->group('/admin', function() use ($app, $user) {
 
         $app->view->display('admin/ftp', [
             'title' => _t('FTP', 'tritan-cms')
-            ]
+                ]
         );
     });
 
@@ -91,9 +92,9 @@ $app->group('/admin', function() use ($app, $user) {
             $site->begin();
             try {
                 $site->where('site_id', (int) Config::get('site_id'))
-                    ->update([
-                        'site_name' => $app->req->post['sitename'],
-                        'site_modified' => (string) Jenssegers\Date\Date::now()
+                        ->update([
+                            'site_name' => $app->req->post['sitename'],
+                            'site_modified' => (string) Jenssegers\Date\Date::now()
                 ]);
                 $site->commit();
             } catch (Exception $ex) {
@@ -105,7 +106,7 @@ $app->group('/admin', function() use ($app, $user) {
 
         $app->view->display('admin/options-general', [
             'title' => _t('General Options', 'tritan-cms'),
-            ]
+                ]
         );
     });
 
@@ -136,7 +137,7 @@ $app->group('/admin', function() use ($app, $user) {
 
         $app->view->display('admin/options-reading', [
             'title' => _t('Reading Options', 'tritan-cms'),
-            ]
+                ]
         );
     });
 
@@ -150,7 +151,7 @@ $app->group('/admin', function() use ($app, $user) {
     });
 
     $app->get('/plugin/', function() use($app) {
-        $app->view->display('admin/plugin/index', [ 'title' => _t('Plugins')]);
+        $app->view->display('admin/plugin/index', ['title' => _t('Plugins')]);
     });
 
     /**
@@ -199,7 +200,7 @@ $app->group('/admin', function() use ($app, $user) {
             }
         }
 
-        $app->view->display('admin/plugin/install', [ 'title' => _t('Install Plugins')]);
+        $app->view->display('admin/plugin/install', ['title' => _t('Install Plugins')]);
     });
 
     $app->before('GET|POST', '/plugin/activate/', function () {
@@ -295,6 +296,11 @@ $app->group('/admin', function() use ($app, $user) {
 
     $app->match('GET|POST|PATCH|PUT|OPTIONS|DELETE', '/connector/', function () use($app) {
         error_reporting(0);
+        try {
+            _mkdir(BASE_PATH . 'private' . DS . 'sites' . DS . (int) Config::get('site_id') . DS . 'uploads' . DS . '__optimized__' . DS);
+        } catch (\TriTan\Exception\IOException $e) {
+            Cascade::getLogger('error')->error(sprintf('IOSTATE[%s]: Unable to create directory: %s', $e->getCode(), $e->getMessage()));
+        }
         $opts = [
             // 'debug' => true,
             'locale' => 'en_US.UTF-8',
@@ -407,6 +413,11 @@ $app->group('/admin', function() use ($app, $user) {
 
     $app->match('GET|POST|PATCH|PUT|OPTIONS|DELETE', '/ftp-connector/', function () use($app) {
         error_reporting(0);
+        try {
+            _mkdir(BASE_PATH . 'private' . DS . 'sites' . DS . (int) Config::get('site_id') . DS . 'uploads' . DS . '__optimized__' . DS);
+        } catch (\TriTan\Exception\IOException $e) {
+            Cascade::getLogger('error')->error(sprintf('IOSTATE[%s]: Unable to create directory: %s', $e->getCode(), $e->getMessage()));
+        }
         $opts = [
             // 'debug' => true,
             'locale' => 'en_US.UTF-8',
@@ -510,7 +521,7 @@ $app->group('/admin', function() use ($app, $user) {
 
         $app->view->display('admin/elfinder', [
             'title' => 'elfinder 2.1'
-            ]
+                ]
         );
     });
 
@@ -529,7 +540,7 @@ $app->group('/admin', function() use ($app, $user) {
 
         $app->view->display('admin/permission/index', [
             'title' => _t('Manage Permissions', 'tritan-cms')
-            ]
+                ]
         );
     });
 
@@ -539,9 +550,9 @@ $app->group('/admin', function() use ($app, $user) {
             $perm->begin();
             try {
                 $perm->where('permission_id', (int) $id)
-                    ->update([
-                        'permission_key' => if_null($app->req->post['permission_key']),
-                        'permission_name' => if_null($app->req->post['permission_name']),
+                        ->update([
+                            'permission_key' => if_null($app->req->post['permission_key']),
+                            'permission_name' => if_null($app->req->post['permission_name']),
                 ]);
                 $perm->commit();
                 ttcms_logger_activity_log_write('Update Record', 'Permission', $app->req->post['permission_name'], _escape($user['user_login']));
@@ -590,7 +601,7 @@ $app->group('/admin', function() use ($app, $user) {
             $app->view->display('admin/permission/update', [
                 'title' => _t('Update Permission', 'tritan-cms'),
                 'perm' => $perm
-                ]
+                    ]
             );
         }
     });
@@ -619,7 +630,7 @@ $app->group('/admin', function() use ($app, $user) {
 
         $app->view->display('admin/permission/create', [
             'title' => _t('Create New Permission', 'tritan-cms')
-            ]
+                ]
         );
     });
 
@@ -637,15 +648,15 @@ $app->group('/admin', function() use ($app, $user) {
 
         $app->view->display('admin/role/index', [
             'title' => _t('Manage Roles', 'tritan-cms')
-            ]
+                ]
         );
     });
 
     $app->match('GET|POST', '/role/(\d+)/', function ($id) use($app) {
 
         $role = $app->db->table('role')
-            ->where('role_id', (int) $id)
-            ->first();
+                ->where('role_id', (int) $id)
+                ->first();
 
         /**
          * If the database table doesn't exist, then it
@@ -681,7 +692,7 @@ $app->group('/admin', function() use ($app, $user) {
             $app->view->display('admin/role/update', [
                 'title' => _t('Update Role', 'tritan-cms'),
                 'role' => $role
-                ]
+                    ]
             );
         }
     });
@@ -708,7 +719,7 @@ $app->group('/admin', function() use ($app, $user) {
 
         $app->view->display('admin/role/create', [
             'title' => _t('Create Role', 'tritan-cms')
-            ]
+                ]
         );
     });
 
@@ -717,9 +728,9 @@ $app->group('/admin', function() use ($app, $user) {
         $role->begin();
         try {
             $role->where('role_id', (int) $app->req->post['role_id'])
-                ->update([
-                    'role_name' => (string) $app->req->post['role_name'],
-                    'role_permission' => $app->hook->{'maybe_serialize'}($app->req->post['role_permission'])
+                    ->update([
+                        'role_name' => (string) $app->req->post['role_name'],
+                        'role_permission' => $app->hook->{'maybe_serialize'}($app->req->post['role_permission'])
             ]);
             $role->commit();
             _ttcms_flash()->{'success'}(_ttcms_flash()->notice(200));
@@ -759,12 +770,12 @@ $app->group('/admin', function() use ($app, $user) {
 
     $app->get('/error/', function () use($app) {
         $errors = $app->db->table(Config::get('tbl_prefix') . 'error')
-            ->all();
+                ->all();
 
         $app->view->display('error/index', [
             'title' => _t('Error Logs', 'tritan-cms'),
             'errors' => $errors
-            ]
+                ]
         );
     });
 
@@ -773,7 +784,7 @@ $app->group('/admin', function() use ($app, $user) {
         $errors->begin();
         try {
             $errors->where('error_id', (int) $id)
-                ->delete();
+                    ->delete();
             $errors->commit();
             _ttcms_flash()->{'success'}(_ttcms_flash()->notice(200), get_base_url() . 'admin/error/' . '/');
         } catch (Exception $ex) {
@@ -785,7 +796,7 @@ $app->group('/admin', function() use ($app, $user) {
         $app->view->display('error/index', [
             'title' => _t('Error Logs', 'tritan-cms'),
             'errors' => $errors
-            ]
+                ]
         );
     });
 
@@ -799,13 +810,13 @@ $app->group('/admin', function() use ($app, $user) {
     $app->get('/audit-trail/', function () use($app) {
 
         $audit = $app->db->table(Config::get('tbl_prefix') . 'activity')
-            ->sortBy('created_at', 'DESC')
-            ->get();
+                ->sortBy('created_at', 'DESC')
+                ->get();
 
         $app->view->display('error/audit', [
             'title' => _t('Audit Trail', 'tritan-cms'),
             'audit' => $audit
-            ]
+                ]
         );
     });
 

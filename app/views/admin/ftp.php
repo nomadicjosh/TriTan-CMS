@@ -10,6 +10,7 @@ TriTan\Config::set('screen_child', 'ftp');
 <link href="vendor/studio-42/elfinder/css/elfinder.full.css" type="text/css" rel="stylesheet" />
 <link href="vendor/studio-42/elfinder/css/theme.css" type="text/css" rel="stylesheet" />
 <script src="vendor/studio-42/elfinder/js/elfinder.full.js" type="text/javascript"></script>
+<script src="vendor/studio-42/elfinder/js/extras/editors.default.js" type="text/javascript"></script>
 <script type="text/javascript">
 	$().ready(function() {
 		var elf = $('#elfinder').elfinder({
