@@ -1,4 +1,5 @@
 <?php
+
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use TriTan\Config;
@@ -8,7 +9,7 @@ use TriTan\Config;
  *
  * @license GPLv3
  *         
- * @since 1.0.0
+ * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
  */
@@ -17,15 +18,15 @@ use TriTan\Config;
  * This function checks to see if the current TriTan CMS query has any
  * results to loop over.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @access private
  * @return int
  */
 function has_posts()
 {
     $posts = app()->db->table(Config::get('tbl_prefix') . 'post')
-        ->where('post_type.post_posttype', 'post')
-        ->get();
+            ->where('post_type.post_posttype', 'post')
+            ->get();
     return count($posts) > 0;
 }
 
@@ -36,15 +37,15 @@ function has_posts()
 function the_post()
 {
     $posts = app()->db->table(Config::get('tbl_prefix') . 'post')
-        ->where('post_type.post_posttype', 'post')
-        ->get();
+            ->where('post_type.post_posttype', 'post')
+            ->get();
     return $posts;
 }
 
 /**
  * Retrieves post data given a post ID or post array.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int|Post|null $post
  *            Post ID or post array.
  * @param bool $object
@@ -72,14 +73,14 @@ function get_post($post, $object = false)
     if ($object === false) {
         $_post = (array) $_post;
     }
-    
+
     /**
-	 * Fires after a post is retrieved.
-	 *
-	 * @since 1.0.0
-	 * @param Post $_post Post data.
-	 */
-	$_post = app()->hook->{'apply_filter'}( 'get_post', $_post );
+     * Fires after a post is retrieved.
+     *
+     * @since 0.9
+     * @param Post $_post Post data.
+     */
+    $_post = app()->hook->{'apply_filter'}('get_post', $_post);
 
     return $_post;
 }
@@ -90,7 +91,7 @@ function get_post($post, $object = false)
  * Purpose of this function is for the post_date
  * filter.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int $post_id The unique id of a post.
  * @return string
  */
@@ -101,7 +102,7 @@ function get_post_date($post_id = 0)
     /**
      * Filters the post date.
      *
-     * @since 1.0.0
+     * @since 0.9
      *
      * @param string $date The post's date.
      * @param int  $post_id The post ID.
@@ -115,7 +116,7 @@ function get_post_date($post_id = 0)
  * Purpose of this function is for the post_time
  * filter.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int $post_id The unique id of a post.
  * @return string
  */
@@ -126,7 +127,7 @@ function get_post_time($post_id = 0)
     /**
      * Filters the post time.
      *
-     * @since 1.0.0
+     * @since 0.9
      *
      * @param string $time The post's time.
      * @param int  $post_id The post ID.
@@ -140,7 +141,7 @@ function get_post_time($post_id = 0)
  * Purpose of this function is for the post_datetime
  * filter.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int $post_id The unique id of a post.
  * @return string
  */
@@ -150,7 +151,7 @@ function get_post_datetime($post_id = 0)
     /**
      * Filters the post's datetime.
      *
-     * @since 1.0.0
+     * @since 0.9
      *
      * @param string $datetime The post's datetime.
      * @param int  $post_id The post ID.
@@ -164,7 +165,7 @@ function get_post_datetime($post_id = 0)
  * Purpose of this function is for the post_modified
  * filter.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int $post_id The unique id of a post.
  * @return string
  */
@@ -176,7 +177,7 @@ function get_post_modified($post_id = 0)
     /**
      * Filters the post date.
      *
-     * @since 1.0.0
+     * @since 0.9
      *
      * @param string $modified The post's modified datetime.
      * @param int  $post_id The post ID.
@@ -190,7 +191,7 @@ function get_post_modified($post_id = 0)
  * Purpose of this function is for the_post_content
  * filter.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int $post_id The unique id of a post.
  * @return string
  */
@@ -206,19 +207,19 @@ function get_post_content($post_id = 0)
  * Purpose of this function is for the post_posttype_name
  * filter.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int $post_id The unique id of a post.
  * @return string
  */
 function get_post_type_name($post_id = 0)
 {
     $post = get_post($post_id);
-    $posttype = get_posttype(_escape($post['posttype']['post_posttype']));
+    $posttype = get_posttype(_escape($post['post_type']['posttype_id']));
     $posttype_name = _escape($posttype['posttype_title']);
     /**
      * Filters the post posttype name.
      *
-     * @since 1.0.0
+     * @since 0.9
      *
      * @param string $posttype_name The post's posttype name.
      * @param string  $post_id The post ID.
@@ -232,19 +233,19 @@ function get_post_type_name($post_id = 0)
  * Purpose of this function is for the post_posttype_slug
  * filter.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int $post_id The unique id of a post.
  * @return string
  */
 function get_post_posttype_slug($post_id = 0)
 {
     $post = get_post($post_id);
-    $posttype = get_posttype(_escape($post['posttype']['post_posttype']));
+    $posttype = get_posttype(_escape($post['post_type']['posttype_id']));
     $posttype_slug = _escape($posttype['posttype_slug']);
     /**
      * Filters the post posttype slug.
      *
-     * @since 1.0.0
+     * @since 0.9
      *
      * @param string $posttype_slug The post's posttype slug.
      * @param string  $post_id The post ID.
@@ -258,7 +259,7 @@ function get_post_posttype_slug($post_id = 0)
  * Purpose of this function is for the post_posttype_link
  * filter.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param into $post_id The unique id of a post.
  * @return string
  */
@@ -268,7 +269,7 @@ function get_post_posttype_link($post_id = 0)
     /**
      * Filters the post posttype link.
      *
-     * @since 1.0.0
+     * @since 0.9
      *
      * @param string $link The post's posttype link.
      * @param string  $post_id The post ID.
@@ -282,7 +283,7 @@ function get_post_posttype_link($post_id = 0)
  * Purpose of this function is for the post_title
  * filter.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int $post_id The unique id of a post.
  * @return string
  */
@@ -293,7 +294,7 @@ function get_post_title($post_id = 0)
     /**
      * Filters the post title.
      *
-     * @since 1.0.0
+     * @since 0.9
      *
      * @param string $title The post's title.
      * @param string  $post_id The post ID.
@@ -307,7 +308,7 @@ function get_post_title($post_id = 0)
  * Purpose of this function is for the post_slug
  * filter.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int $post_id The unique id of a post.
  * @return string
  */
@@ -318,7 +319,7 @@ function get_post_slug($post_id = 0)
     /**
      * Filters the post's slug.
      *
-     * @since 1.0.0
+     * @since 0.9
      *
      * @param string $slug The post's slug.
      * @param int  $post_id The post ID.
@@ -327,43 +328,77 @@ function get_post_slug($post_id = 0)
 }
 
 /**
+ * A function which retrieves a TriTan CMS post's relative url.
+ * 
+ * Purpose of this function is for the post_relative_url
+ * filter.
+ *
+ * @since 0.9.5
+ * @param int|array $post Post id or array.
+ * @return string
+ */
+function get_relative_url($post = 0)
+{
+    if (is_array($post)) {
+        $_post = $post;
+    } else {
+        $_post = get_post($post);
+    }
+
+    if ((int) _escape($_post['post_id']) <= 0) {
+        return false;
+    }
+
+    $relative_url = _escape($_post['post_relative_url']);
+    /**
+     * Filters the post's relative_url.
+     *
+     * @since 0.9.5
+     *
+     * @param string $relative_url The post's relative url.
+     * @param string|array  $_post The post id or array.
+     */
+    return app()->hook->{'apply_filter'}('permalink', $relative_url, $_post);
+}
+
+/**
  * A function which retrieves a TriTan CMS post's permalink.
  * 
  * Purpose of this function is for the permalink
  * filter.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int|array $post Post id or array.
  * @return string
  */
 function get_permalink($post = 0)
 {
     if (is_array($post)) {
-        return $post;
+        $_post = $post;
     } else {
-        $post = get_post($post);
+        $_post = get_post($post);
     }
 
-    if (empty(_escape($post['post_id']))) {
+    if (empty(_escape($_post['post_id']))) {
         return false;
     }
 
-    $link = get_base_url() . _escape($post['post_type']['post_posttype']) . '/' . _escape($post['post_slug']) . '/';
+    $link = get_base_url() . get_relative_url($_post);
     /**
      * Filters the post's link.
      *
-     * @since 1.0.0
+     * @since 0.9
      *
      * @param string $link The post's link.
-     * @param string|array  $post The post id or array.
+     * @param string|array  $_post The post id or array.
      */
-    return app()->hook->{'apply_filter'}('permalink', $link, $post);
+    return app()->hook->{'apply_filter'}('permalink', $link, $_post);
 }
 
 /**
  * The TriTan CMS post filter.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int $post_id The unique id of a post.
  * @return string
  */
@@ -378,7 +413,7 @@ function the_content($post_id = 0)
 /**
  * Wrapper function for get_all_posts.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $post_type The post type.
  * @return object
  */
@@ -393,7 +428,7 @@ function the_posts($post_type = null)
  * Purpose of this function is for the post_css
  * filter.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int $post_id The unique id of a post.
  * @return string
  */
@@ -404,7 +439,7 @@ function post_css($post_id = 0)
     /**
      * Filters the post css code.
      *
-     * @since 1.0.0
+     * @since 0.9
      *
      * @param string $css The post's css code.
      * @param int  $post_id The post ID.
@@ -418,7 +453,7 @@ function post_css($post_id = 0)
  * Purpose of this function is for the post_js
  * filter.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int $post_id The unique id of a post.
  * @return string
  */
@@ -429,7 +464,7 @@ function post_js($post_id = 0)
     /**
      * Filters the post javascript code.
      *
-     * @since 1.0.0
+     * @since 0.9
      *
      * @param string $js The post's javascript code.
      * @param int  $post_id The post ID.
@@ -440,7 +475,7 @@ function post_js($post_id = 0)
 /**
  * Adds label to post's status.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $status
  * @return string
  */
@@ -458,7 +493,7 @@ function ttcms_post_status_label($status)
 /**
  * Retrieve post meta field for a post.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int    $post_id Post ID.
  * @param string $key     Optional. The meta key to retrieve. By default, returns
  *                        data for all keys. Default empty.
@@ -474,7 +509,7 @@ function get_post_meta($post_id, $key = '', $single = false)
 /**
  * Get post meta data by meta ID.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int $mid
  * @return array|bool
  */
@@ -491,7 +526,7 @@ function get_post_meta_by_mid($mid)
  *
  * If the meta field for the post does not exist, it will be added.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int    $post_id    Post ID.
  * @param string $meta_key   Metadata key.
  * @param mixed  $meta_value Metadata value. Must be serializable if non-scalar.
@@ -508,7 +543,7 @@ function update_post_meta($post_id, $meta_key, $meta_value, $prev_value = '')
 /**
  * Update post meta data by meta ID.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int $mid
  * @param string $meta_key
  * @param string $meta_value
@@ -524,7 +559,7 @@ function update_post_meta_by_mid($mid, $meta_key, $meta_value)
 /**
  * Add meta data field to a post.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int    $post_id    Post ID.
  * @param string $meta_key   Metadata name.
  * @param mixed  $meta_value Metadata value. Must be serializable if non-scalar.
@@ -544,7 +579,7 @@ function add_post_meta($post_id, $meta_key, $meta_value, $unique = false)
  * value, will keep from removing duplicate metadata with the same key. It also
  * allows removing all metadata matching key, if needed.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int    $post_id    Post ID.
  * @param string $meta_key   Metadata name.
  * @param mixed  $meta_value Optional. Metadata value. Must be serializable if
@@ -559,7 +594,7 @@ function delete_post_meta($post_id, $meta_key, $meta_value = '')
 /**
  * Delete post meta data by meta ID.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int $mid
  * @return bool
  */
@@ -574,7 +609,7 @@ function delete_post_meta_by_mid($mid)
  * The post meta fields are retrieved from the cache where possible,
  * so the function is optimized to be called more than once.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int $post_id The post's id.
  * @return array Post meta for the given post.
  */
@@ -589,7 +624,7 @@ function get_post_custom($post_id = 0)
  *
  * If there are no meta fields, then nothing (null) will be returned.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int $post_id The post's id.
  * @return array|void Array of the keys, if retrieved.
  */
@@ -610,7 +645,7 @@ function get_post_custom_keys($post_id = 0)
  * The parameters must not be considered optional. All of the post meta fields
  * will be retrieved and only the meta field key values returned.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $key     Optional. Meta field key. Default empty.
  * @param int    $post_id The post's id.
  * @return array|null Meta field values.
@@ -627,7 +662,7 @@ function get_post_custom_values($key = '', $post_id = 0)
 /**
  * Displays the permalink for the current post.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param int|array $post Post ID or post array.
  */
 function the_permalink($post = 0)
@@ -635,7 +670,7 @@ function the_permalink($post = 0)
     /**
      * Filters the display of the permalink for the current post.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string            $permalink The permalink for the current post.
      * @param int|array $post   Post ID, Post array, or 0. Default 0.
      */
