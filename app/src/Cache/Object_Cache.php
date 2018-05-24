@@ -8,7 +8,7 @@ if (!defined('BASE_PATH'))
  *
  * @license GPLv3
  *         
- * @since 1.0.0
+ * @since 0.9
  * @package TriTan CMS
  * @subpackage Cache
  * @author Joshua Parker <joshmac3@icloud.com>
@@ -19,7 +19,7 @@ class Object_Cache
     /**
      * The cache object.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @access protected
      * @var object
      */
@@ -28,7 +28,7 @@ class Object_Cache
     /**
      * Application global scope.
      * 
-     * @since 1.0.0
+     * @since 0.9
      * @access public
      * @var object
      */
@@ -46,7 +46,7 @@ class Object_Cache
             /**
              * Filter whether to use `\Memcache`|`\Memcached`.
              *
-             * @since 1.0.0
+             * @since 0.9
              * @param
              *            bool false Use `\Memcache`|`\Memcached`. Default is false.
              */
@@ -64,7 +64,7 @@ class Object_Cache
             /**
              * Filter the `\Memcache`|`\Memcached` server pool.
              *
-             * @since 1.0.0
+             * @since 0.9
              * @param array $pool
              *            Array of servers to add to the connection pool.
              */
@@ -76,7 +76,7 @@ class Object_Cache
              * Fires when being used to call another caching system not
              * native to TriTan CMS.
              *
-             * @since 1.0.0
+             * @since 0.9
              */
             $this->_cache = $this->app->hook->do_action('external_cache_driver');
         } elseif ($driver == 'xcache') {
@@ -101,7 +101,7 @@ class Object_Cache
     /**
      * Creates the cache file.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int|string $key
      *            Unique key of the cache file.
      * @param mixed $data
@@ -123,7 +123,7 @@ class Object_Cache
     /**
      * Fetches cached data.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int|string $key
      *            Unique key of the cache file.
      * @param string $namespace
@@ -143,7 +143,7 @@ class Object_Cache
      * This method only exists for
      * CRUD completeness purposes and just basically calls the create method.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int|string $key
      *            Unique key of the cache file.
      * @param mixed $data
@@ -165,7 +165,7 @@ class Object_Cache
     /**
      * Deletes a cache file based on unique key.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int|string $key
      *            Unique key of cache file.
      * @param string $namespace
@@ -183,7 +183,7 @@ class Object_Cache
     /**
      * Flushes the file system cache completely.
      *
-     * @since 1.0.0
+     * @since 0.9
      */
     public function flush()
     {
@@ -193,7 +193,7 @@ class Object_Cache
     /**
      * Removes all cache items from a particular namespace.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int|string $namespace
      *            Optional. Where the cache contents are namespaced.
      */
@@ -209,7 +209,7 @@ class Object_Cache
     /**
      * Sets the data contents into the cache.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int|string $key
      *            Unique key of the cache file.
      * @param mixed $data
@@ -237,7 +237,7 @@ class Object_Cache
      *
      * Gives the cache hits, cache misses and cache uptime.
      *
-     * @since 1.0.0
+     * @since 0.9
      */
     public function getStats()
     {
@@ -247,7 +247,7 @@ class Object_Cache
     /**
      * Increments numeric cache item's value.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int|string $key
      *            The cache key to increment
      * @param int $offset
@@ -268,7 +268,7 @@ class Object_Cache
     /**
      * Decrements numeric cache item's value.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int|string $key
      *            The cache key to decrement.
      * @param int $offset

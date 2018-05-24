@@ -4,7 +4,7 @@
  *  
  * @license GPLv3
  * 
- * @since       1.0.0
+ * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
  */
@@ -60,7 +60,7 @@ require( APP_PATH . 'application.php' );
 /**
  * Fires before the site's theme is loaded.
  *
- * @since 1.0.0
+ * @since 0.9
  */
 $app->hook->{'do_action'}('before_setup_theme');
 
@@ -87,7 +87,7 @@ $app->inst->singleton('fenom', function () use($app) {
 /**
  * Fires after the site's theme is loaded.
  *
- * @since 1.0.0
+ * @since 0.9
  */
 $app->hook->{'do_action'}('after_setup_theme');
 
@@ -105,7 +105,7 @@ unset($mu_plugin);
 /**
  * Fires once all must-use plugins have loaded.
  * 
- * @since 1.0.0
+ * @since 0.9
  */
 $app->hook->{'do_action'}('muplugins_loaded');
 
@@ -132,7 +132,7 @@ unset($site_dropin);
 /**
  * Fires once all dropins have loaded.
  * 
- * @since 1.0.0
+ * @since 0.9
  */
 $app->hook->{'do_action'}('dropins_loaded');
 
@@ -158,13 +158,13 @@ date_default_timezone_set($app->hook->{'get_option'}('system_timezone'));
 /**
  * Fires after TriTan CMS has finished loading but before any headers are sent.
  *
- * @since 1.0.0
+ * @since 0.9
  */
 $app->hook->{'do_action'}('init');
 
 /**
  * This hook is fired once TriTan, all plugins, and the theme are fully loaded and instantiated.
  *
- * @since 1.0.0
+ * @since 0.9
  */
 $app->hook->{'do_action'}('ttcms_loaded');

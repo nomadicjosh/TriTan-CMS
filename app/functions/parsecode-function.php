@@ -6,7 +6,7 @@ if (!defined('BASE_PATH'))
  *  
  * @license GPLv3
  * 
- * @since       1.0.0
+ * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
  */
@@ -32,14 +32,14 @@ function add_parsecode($tag, $func)
 
     if ('' == _trim($tag)) {
         $message = _t('Invalid parsecode name: empty name given.');
-        _incorrectly_called(__FUNCTION__, $message, '1.0.0');
+        _incorrectly_called(__FUNCTION__, $message, '0.9');
         return;
     }
 
     if (0 !== preg_match('@[<>&/\[\]\x00-\x20]@', $tag)) {
         /* translators: %s: parsecode name */
         $message = sprintf(_t('Invalid parsecode name: %s. Do not use spaces or reserved characters: & / < > [ ]'), $tag);
-        _incorrectly_called(__FUNCTION__, $message, '1.0.0');
+        _incorrectly_called(__FUNCTION__, $message, '0.9');
         return;
     }
 
@@ -50,7 +50,7 @@ function add_parsecode($tag, $func)
 /**
  * Removes hook for parsecode.
  *
- * @since 1.0.0
+ * @since 0.9
  * @uses $parsecode_tags
  *
  * @param string $tag parsecode tag to remove hook for.
@@ -61,7 +61,7 @@ function remove_parsecode($tag)
 
     if ('' == _trim($tag)) {
         $message = _t('Invalid parsecode name: empty name given.');
-        _incorrectly_called(__FUNCTION__, $message, '1.0.0');
+        _incorrectly_called(__FUNCTION__, $message, '0.9');
         return;
     }
 
@@ -75,7 +75,7 @@ function remove_parsecode($tag)
  * parsecodes global by a empty array. This is actually a very efficient method
  * for removing all parsecodes.
  *
- * @since 1.0.0
+ * @since 0.9
  * @uses $parsecode_tags
  */
 function remove_all_parsecodes()
@@ -92,7 +92,7 @@ function remove_all_parsecodes()
  * without any filtering. This might cause issues when plugins are disabled but
  * the parsecode will still show up in the post or content.
  *
- * @since 1.0.0
+ * @since 0.9
  * @uses $parsecode_tags
  * @uses get_parsecode_regex() Gets the search pattern for searching parsecodes.
  *
@@ -125,7 +125,7 @@ function do_parsecode($content)
  * 5 - The content of a parsecode when it wraps some content.
  * 6 - An extra ] to allow for escaping parsecodes with double [[]]
  *
- * @since 1.0.0
+ * @since 0.9
  * @uses $parsecode_tags
  *
  * @return string The parsecode search regular expression
@@ -172,7 +172,7 @@ function get_parsecode_regex()
  * Regular Expression callable for do_parsecode() for calling parsecode hook.
  * @see get_parsecode_regex for details of the match array contents.
  *
- * @since 1.0.0
+ * @since 0.9
  * @access private
  * @uses $parsecode_tags
  *
@@ -207,7 +207,7 @@ function do_parsecode_tag($m)
  * attribute as the value in the key/value pair. This allows for easier
  * retrieval of the attributes, since all attributes have to be known.
  *
- * @since 1.0.0
+ * @since 0.9
  *
  * @param string $text
  * @return array List of attributes and their value.
@@ -246,7 +246,7 @@ function parsecode_parse_atts($text)
  * If the $atts list has unsupported attributes, then they will be ignored and
  * removed from the final returned list.
  *
- * @since 1.0.0
+ * @since 0.9
  *
  * @param array $pairs Entire list of supported attributes and their defaults.
  * @param array $atts User defined attributes in parsecode tag.
@@ -268,7 +268,7 @@ function parsecode_atts($pairs, $atts)
 /**
  * Remove all parsecode tags from the given content.
  *
- * @since 1.0.0
+ * @since 0.9
  * @uses $parsecode_tags
  *
  * @param string $content Content to remove parsecode tags.
@@ -297,7 +297,7 @@ function strip_parsecode_tag($m)
 }
 
 /**
- * since 1.0.0
+ * since 0.9
  * @param unknown $pee
  * @param number $br
  * @return string|mixed

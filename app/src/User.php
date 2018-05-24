@@ -8,7 +8,7 @@ if (!defined('BASE_PATH'))
  *
  * @license GPLv3
  *         
- * @since 1.0.0
+ * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
  */
@@ -18,7 +18,7 @@ class User
     /**
      * User data container.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @var object
      */
     public $data;
@@ -26,7 +26,7 @@ class User
     /**
      * User user_id.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @var int
      */
     public $user_id = 0;
@@ -36,7 +36,7 @@ class User
      *
      * Retrieves the userdata and passes it to User::init().
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int|string|stdClass|User $user_id     User's ID, a User object, or a user object from the DB.
      * @param string $name                          Optional. User's username
      * @param int $site_id                          Optional Site ID, defaults to current site.
@@ -72,7 +72,7 @@ class User
     /**
      * Sets up object properties.
      *
-     * @since  1.0.0
+     * @since  0.9
      * @param object $data    User DB row object.
      */
     public function init($data)
@@ -84,7 +84,7 @@ class User
     /**
      * Return only the main user fields.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $field The field to query against: 'id', 'ID', 'email' or 'login'.
      * @param string|int $value The field value
      * @return object|false Raw user object
@@ -151,7 +151,7 @@ class User
     /**
      * Magic method for checking the existence of a certain custom field.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $key User meta key to check if set.
      * @return bool Whether the given user meta key is set.
      */
@@ -166,7 +166,7 @@ class User
     /**
      * Magic method for accessing custom fields.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $key User meta key to retrieve.
      * @return mixed Value of the given user meta key (if set). If `$key` is 'id', the user ID.
      */
@@ -191,7 +191,7 @@ class User
      * This method does not update custom fields in the database. It only stores
      * the value on the User instance.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $key   User meta key.
      * @param mixed  $value User meta value.
      */
@@ -208,7 +208,7 @@ class User
     /**
      * Magic method for unsetting a certain custom field.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $key User meta key to unset.
      */
     public function __unset($key)
@@ -221,7 +221,7 @@ class User
     /**
      * Determine whether the user exists in the database.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @return bool True if user exists in the database, false if not.
      */
     public function exists()
@@ -234,7 +234,7 @@ class User
      *
      * Retrieves from the users and usermeta table.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $key Property
      * @return mixed
      */
@@ -248,7 +248,7 @@ class User
      *
      * Consults the users and usermeta tables.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $key Property
      * @return bool
      */

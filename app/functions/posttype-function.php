@@ -7,7 +7,7 @@ if (!defined('BASE_PATH'))
  *
  * @license GPLv3
  *         
- * @since 1.0.0
+ * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
  */
@@ -15,7 +15,7 @@ if (!defined('BASE_PATH'))
 /**
  * Retrieves post type data given a post type ID or post type array.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string|Post Type|null $posttype
  *            Post Type ID or post type array.
  * @param bool $array
@@ -47,7 +47,7 @@ function get_posttype($posttype, $array = true)
     /**
 	 * Fires after a post type is retrieved.
 	 *
-	 * @since 1.0.0
+	 * @since 0.9
 	 * @param Posttype $_posttype Posttype data.
 	 */
 	$_posttype = app()->hook->{'apply_filter'}( 'get_posttype', $_posttype );

@@ -8,7 +8,7 @@ if (!defined('BASE_PATH'))
  *
  * @license GPLv3
  *         
- * @since 1.0.0
+ * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
  */
@@ -42,7 +42,7 @@ class Plugin
      *
      * The method extracts the file name of a specific plugin.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $filename
      *            Plugin's file name.
      * @return string The file name of the plugin.
@@ -63,7 +63,7 @@ class Plugin
      * This method is used to run code that should be executed
      * when a plugin is being activated.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $filename
      *            Plugin's file name.
      * @param string $function
@@ -81,7 +81,7 @@ class Plugin
      * This method is used to run code that should be executed
      * when a plugin is being deactivated.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $filename
      *            Plugin's file name.
      * @param string $function
@@ -96,7 +96,7 @@ class Plugin
     /**
      * Get the filesystem directory path (with trailing slash) for the plugin __FILE__ passed in.
      *
-     * @since 1.0.0
+     * @since 0.9
      *       
      * @param string $filename
      *            The filename of the plugin (__FILE__).

@@ -10,7 +10,7 @@ use Cascade\Cascade;
  *
  * @license GPLv3
  *         
- * @since       1.0.0
+ * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
  */
@@ -18,7 +18,7 @@ use Cascade\Cascade;
 /**
  * Used on the Role screen for permissions.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param int $id Role id.
  */
 function role_perm($id = 0)
@@ -101,7 +101,7 @@ function user_perm($id)
 /**
  * Print a dropdown list of users.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param int $active If working with active record, it will be the user's id.
  * @return array Dropdown list of users.
  */
@@ -134,7 +134,7 @@ function get_users_dropdown($active = null)
  * raw username (the username in the parameter), and the value of $strict as
  * parameters for the {@see 'sanitize_user'} filter.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $username The username to be sanitized.
  * @param bool   $strict   If set limits $username to specific characters. Default false.
  * @return string The sanitized username, after passing through filters.
@@ -159,7 +159,7 @@ function sanitize_user($username, $strict = false)
     /**
      * Filters a sanitized username string.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $username     Sanitized username.
      * @param string $raw_username The username prior to sanitization.
      * @param bool   $strict       Whether to limit the sanitization to specific characters. Default false.
@@ -170,7 +170,7 @@ function sanitize_user($username, $strict = false)
 /**
  * Get the current user's ID
  *
- * @since 1.0.0
+ * @since 0.9
  * @return int The current user's ID, or 0 if no user is logged in.
  */
 function get_current_user_id()
@@ -185,7 +185,7 @@ function get_current_user_id()
 /**
  * Returns array of data for current user.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @return array
  */
 function ttcms_get_current_user()
@@ -197,7 +197,7 @@ function ttcms_get_current_user()
 /**
  * Returns the name of a particular user.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int $id
  *            User ID.
  * @return string
@@ -206,13 +206,13 @@ function get_name($id, $reverse = false)
 {
     if ('' == _trim($id)) {
         $message = _t('Invalid user ID: empty ID given.', 'tritan-cms');
-        _incorrectly_called(__FUNCTION__, $message, '1.0.0');
+        _incorrectly_called(__FUNCTION__, $message, '0.9');
         return;
     }
 
     if (!is_numeric($id)) {
         $message = _t('Invalid user id: user id must be numeric.', 'tritan-cms');
-        _incorrectly_called(__FUNCTION__, $message, '1.0.0');
+        _incorrectly_called(__FUNCTION__, $message, '0.9');
         return;
     }
 
@@ -231,7 +231,7 @@ function get_name($id, $reverse = false)
  * Shows selected user's initials instead of
  * his/her's full name.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int $id
  *            User ID
  * @param int $initials
@@ -242,13 +242,13 @@ function get_initials($id, $initials = 2)
 {
     if ('' == _trim($id)) {
         $message = _t('Invalid user ID: empty ID given.', 'tritan-cms');
-        _incorrectly_called(__FUNCTION__, $message, '1.0.0');
+        _incorrectly_called(__FUNCTION__, $message, '0.9');
         return;
     }
 
     if (!is_numeric($id)) {
         $message = _t('Invalid user id: user id must be numeric.', 'tritan-cms');
-        _incorrectly_called(__FUNCTION__, $message, '1.0.0');
+        _incorrectly_called(__FUNCTION__, $message, '0.9');
         return;
     }
 
@@ -267,7 +267,7 @@ function get_initials($id, $initials = 2)
  * Retrieve requested field from user table
  * based on user's id.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $id
  *            User ID.
  * @param mixed $field
@@ -284,7 +284,7 @@ function get_user_value($id, $field)
 /**
  * Retrieves a list of roles from the roles table.
  *
- * @since 1.0.0
+ * @since 0.9
  * @return mixed
  */
 function get_perm_roles()
@@ -299,7 +299,7 @@ function get_perm_roles()
 /**
  * Checks whether the given username exists.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $username
  *            Username to check.
  * @return string|false The user's ID on success, and false on failure.
@@ -315,7 +315,7 @@ function username_exists($username)
     /**
      * Filters whether the given username exists or not.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int|false $user_id    The user's user_id on success, and false on failure.
      * @param string    $username   Username to check.
      */
@@ -325,7 +325,7 @@ function username_exists($username)
 /**
  * Checks whether the given email exists.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $email
  *            Email to check.
  * @return string|false The user's ID on success, and false on failure.
@@ -341,7 +341,7 @@ function email_exists($email)
     /**
      * Filters whether the given email exists or not.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int|false $user_id    The user's user_id on success, and false on failure.
      * @param string    $email      Email to check.
      */
@@ -357,7 +357,7 @@ function email_exists($email)
  *          //do something;
  *      }
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $username
  *            Username to check.
  * @return bool Whether given username is valid.
@@ -370,7 +370,7 @@ function validate_username($username)
     /**
      * Filters whether the given username is valid or not.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param bool      $valid      Whether given username is valid.
      * @param string    $username   Username to check.
      */
@@ -386,7 +386,7 @@ function validate_username($username)
  *          //do something;
  *      }
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $email Email address to validate.
  * @return bool True if valid, false otherwise.
  */
@@ -397,7 +397,7 @@ function validate_email($email)
     /**
      * Filters whether the given email is valid or not.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param bool      $valid  Whether given email is valid.
      * @param string    $email  Email to check.
      */
@@ -407,7 +407,7 @@ function validate_email($email)
 /**
  * Adds label to user's status.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $status
  * @return string
  */
@@ -424,7 +424,7 @@ function ttcms_user_status_label($status)
 /**
  * Retrieve a list of available user roles.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param type $active
  */
 function get_user_roles($active = null)
@@ -440,7 +440,7 @@ function get_user_roles($active = null)
 /**
  * Retrieve a list of all users.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param type $active
  */
 function get_users_list($active = null)
@@ -456,7 +456,7 @@ function get_users_list($active = null)
 /**
  * Retrieve user meta field for a user.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int    $user_id User ID.
  * @param string $key     Optional. The meta key to retrieve. By default, returns data for all keys.
  * @param bool   $single  Whether to return a single value.
@@ -470,7 +470,7 @@ function get_user_meta($user_id, $key = '', $single = false)
 /**
  * Get user meta data by meta ID.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int $mid
  * @return array|bool
  */
@@ -487,7 +487,7 @@ function get_user_meta_by_mid($mid)
  *
  * If the meta field for the user does not exist, it will be added.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int    $user_id    User ID.
  * @param string $meta_key   Metadata key.
  * @param mixed  $meta_value Metadata value.
@@ -502,7 +502,7 @@ function update_user_meta($user_id, $meta_key, $meta_value, $prev_value = '')
 /**
  * Update user meta data by meta ID.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int $mid
  * @param string $meta_key
  * @param string $meta_value
@@ -518,7 +518,7 @@ function update_user_meta_by_mid($mid, $meta_key, $meta_value)
 /**
  * Adds meta data to a user.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int    $user_id    User ID.
  * @param string $meta_key   Metadata name.
  * @param mixed  $meta_value Metadata value.
@@ -537,7 +537,7 @@ function add_user_meta($user_id, $meta_key, $meta_value, $unique = false)
  * value, will keep from removing duplicate metadata with the same key. It also
  * allows removing all metadata matching key, if needed.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int    $user_id    User ID
  * @param string $meta_key   Metadata name.
  * @param mixed  $meta_value Optional. Metadata value.
@@ -551,7 +551,7 @@ function delete_user_meta($user_id, $meta_key, $meta_value = '')
 /**
  * Delete user meta data by meta ID.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int $mid
  * @return bool
  */
@@ -570,7 +570,7 @@ function delete_user_meta_by_mid($mid)
  *
  * The option will first check for the per site name and then the global name.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $option     User option name.
  * @param int    $user       Optional. User ID.
  * @return mixed User option value on success, false on failure.
@@ -600,7 +600,7 @@ function get_user_option($option, $user = 0)
      *
      * The dynamic portion of the hook name, `$option`, refers to the user option name.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param mixed     $result Value for the user's option.
      * @param string    $option Name of the option being retrieved.
      * @param int       $user   ID of the user whose option is being retrieved.
@@ -617,7 +617,7 @@ function get_user_option($option, $user = 0)
  *
  * Deletes the user option if $newvalue is empty.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int    $user_id     User ID.
  * @param string $option_name User option name.
  * @param mixed  $newvalue    User option value.
@@ -642,7 +642,7 @@ function update_user_option($user_id, $option_name, $newvalue, $global = false)
  * global site options. If the 'global' parameter is false, which it is by default
  * it will prepend the TriTan CMS table prefix to the option name.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int    $user_id           User ID
  * @param string $option_name       User option name.
  * @param bool   $global            Optional. Whether option name is global or site specific.
@@ -667,7 +667,7 @@ function delete_user_option($user_id, $option_name, $global = false)
  * the field name. An example using 'user_bio' would have the filter called, 'pre_user_bio' that
  * can be hooked into.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param array|User $userdata {
  *     An array or User array of user data arguments.
  *
@@ -721,7 +721,7 @@ function ttcms_insert_user($userdata)
      *
      * This filter is called before the user is created or updated.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $sanitized_user_login Username after it has been sanitized.
      */
     $pre_user_login = app()->hook->{'apply_filter'}('pre_user_login', $sanitized_user_login);
@@ -743,7 +743,7 @@ function ttcms_insert_user($userdata)
     /**
      * Filters the list of blacklisted usernames.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param array $usernames Array of blacklisted usernames.
      */
     $illegal_logins = (array) app()->hook->{'apply_filter'}('illegal_user_logins', blacklisted_usernames());
@@ -756,7 +756,7 @@ function ttcms_insert_user($userdata)
     /**
      * Filters a user's URL before the user is created or updated.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $raw_user_url The user's URL.
      */
     $user_url = app()->hook->{'apply_filter'}('pre_user_url', $raw_user_url);
@@ -765,7 +765,7 @@ function ttcms_insert_user($userdata)
     /**
      * Filters a user's email before the user is created or updated.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $raw_user_email The user's email.
      */
     $user_email = app()->hook->{'apply_filter'}('pre_user_email', $raw_user_email);
@@ -789,7 +789,7 @@ function ttcms_insert_user($userdata)
     /**
      * Filters a user's first name before the user is created or updated.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $user_fname The user's first name.
      */
     $meta['user_fname'] = app()->hook->{'apply_filter'}('pre_user_fname', $user_fname);
@@ -798,7 +798,7 @@ function ttcms_insert_user($userdata)
     /**
      * Filters a user's last name before the user is created or updated.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $user_lname The user's last name.
      */
     $meta['user_lname'] = app()->hook->{'apply_filter'}('pre_user_lname', $user_lname);
@@ -809,7 +809,7 @@ function ttcms_insert_user($userdata)
     /**
      * Filters a user's bio before the user is created or updated.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $user_bio The user's bio.
      */
     $meta['user_bio'] = app()->hook->{'apply_filter'}('pre_user_bio', $user_bio);
@@ -818,7 +818,7 @@ function ttcms_insert_user($userdata)
     /**
      * Filters a user's role before the user is created or updated.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $user_role The user's role.
      */
     $meta['user_role'] = app()->hook->{'apply_filter'}('pre_user_role', $user_role);
@@ -827,7 +827,7 @@ function ttcms_insert_user($userdata)
     /**
      * Filters a user's status before the user is created or updated.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $user_status The user's status.
      */
     $meta['user_status'] = app()->hook->{'apply_filter'}('pre_user_status', $user_status);
@@ -856,7 +856,7 @@ function ttcms_insert_user($userdata)
      *
      * It only includes data in the user's table, not any user metadata.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param array    $data {
      *     Values and keys for the user.
      *
@@ -922,7 +922,7 @@ function ttcms_insert_user($userdata)
      * Filters a user's meta values and keys immediately after the user is created or updated
      * and before any user meta is inserted or updated.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param array $meta {
      *     Default meta values and keys for the user.
      *
@@ -953,7 +953,7 @@ function ttcms_insert_user($userdata)
         /**
          * Fires immediately after an existing user is updated.
          *
-         * @since 1.0.0
+         * @since 0.9
          * @param int     $user_id      User ID.
          * @param User $old_user_data   Array containing user's data prior to update.
          */
@@ -962,7 +962,7 @@ function ttcms_insert_user($userdata)
         /**
          * Fires immediately after a new user is registered.
          *
-         * @since 1.0.0
+         * @since 0.9
          * @param int $user_id User ID.
          */
         app()->hook->{'do_action'}('user_register', $user_id);
@@ -979,7 +979,7 @@ function ttcms_insert_user($userdata)
  * 
  * @see ttcms_insert_user() For what fields can be set in $userdata.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param object|User $userdata An array of user data or a user object of type stdClass or User.
  * @return int|Exception The updated user's id or throw an Exception if the user could not be updated.
  */
@@ -1017,7 +1017,7 @@ function ttcms_update_user($userdata)
          * 
          * @see ttcms_insert_user() For `$user` and `$userdata` fields.
          *
-         * @since 1.0.0
+         * @since 0.9
          * @param bool  $send     Whether to send the email.
          * @param array $user     The original user array.
          * @param array $userdata The updated user array.
@@ -1032,7 +1032,7 @@ function ttcms_update_user($userdata)
          * 
          * @see ttcms_insert_user() For `$user` and `$userdata` fields.
          *
-         * @since 1.0.0
+         * @since 0.9
          * @param bool  $send     Whether to send the email.
          * @param array $user     The original user array.
          * @param array $userdata The updated user array.
@@ -1064,7 +1064,7 @@ function ttcms_update_user($userdata)
 /**
  * Email sent to user with new generated password.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param int $user
  *            User array.
  * @param string $password
@@ -1095,7 +1095,7 @@ function send_reset_password_email($user, $password)
 /**
  * Email sent to user with changed/updated password.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param int $user
  *            User array.
  * @param string $password
@@ -1127,7 +1127,7 @@ function send_password_change_email($user, $password, $userdata)
 /**
  * Email sent to user with changed/updated email.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param array $user       Original user array.
  * @param array $userdata   Updated user array.
  * @return bool|Error
@@ -1156,7 +1156,7 @@ function send_email_change_email($user, $userdata)
 /**
  * Update user caches.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param User $user User object to be cached.
  * @return bool|null Returns false on failure.
  */
@@ -1178,7 +1178,7 @@ function update_user_caches($user)
 /**
  * Clean user caches.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param User|int $user User object or user_id to be cleaned from the cache.
  */
 function clean_user_cache($user)
@@ -1198,7 +1198,7 @@ function clean_user_cache($user)
     /**
      * Fires immediately after the given user's cache is cleaned.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int   $user_id User user_id.
      * @param User  $user    User object.
      */
@@ -1208,7 +1208,7 @@ function clean_user_cache($user)
 /**
  * An extensive list of blacklisted usernames.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @return array Array of blacklisted usernames.
  */
 function blacklisted_usernames()

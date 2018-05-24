@@ -9,7 +9,7 @@ use TriTan\Exception\Exception;
  *
  * @license GPLv3
  *         
- * @since 1.0.0
+ * @since 0.9
  * @package TriTan CMS
  * @subpackage Cache
  * @author Joshua Parker <joshmac3@icloud.com>
@@ -20,7 +20,7 @@ class Cache_APC extends \TriTan\Cache\Abstract_Cache
     /**
      * Holds the cached objects.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @var array
      */
     protected $_cache = [];
@@ -28,7 +28,7 @@ class Cache_APC extends \TriTan\Cache\Abstract_Cache
     /**
      * Holds the application object
      * 
-     * @since 1.0.0
+     * @since 0.9
      * @var object
      */
     public $app;
@@ -36,7 +36,7 @@ class Cache_APC extends \TriTan\Cache\Abstract_Cache
     /**
      * Sets if cache is enabled or not.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @var bool
      */
     public $enable;
@@ -52,7 +52,7 @@ class Cache_APC extends \TriTan\Cache\Abstract_Cache
         /**
          * Filter sets whether caching is enabled or not.
          *
-         * @since 1.0.0
+         * @since 0.9
          * @var bool
          */
         $this->enable = $this->app->hook->apply_filter('enable_caching', true);
@@ -65,7 +65,7 @@ class Cache_APC extends \TriTan\Cache\Abstract_Cache
      *
      * @see TriTan\Cache\Abstract_Cache::create()
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int|string $key
      *            Unique key of the APC cached item.
      * @param mixed $data
@@ -101,7 +101,7 @@ class Cache_APC extends \TriTan\Cache\Abstract_Cache
      *
      * @see TriTan\Cache\Abstract_Cache::read()
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int|string $key
      *            Unique key of the APC cached item.
      * @param string $namespace
@@ -129,7 +129,7 @@ class Cache_APC extends \TriTan\Cache\Abstract_Cache
      *
      * @see TriTan\Cache\Abstract_Cache::update()
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int|string $key
      *            Unique key of the APC cache.
      * @param mixed $data
@@ -161,7 +161,7 @@ class Cache_APC extends \TriTan\Cache\Abstract_Cache
      *
      * @see TriTan\Cache\Abstract_Cache::delete()
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int|string $key
      *            Unique key of APC cache.
      * @param string $namespace
@@ -185,7 +185,7 @@ class Cache_APC extends \TriTan\Cache\Abstract_Cache
      *
      * @see TriTan\Cache\Abstract_Cache::flush()
      *
-     * @since 1.0.0
+     * @since 0.9
      */
     public function flush()
     {
@@ -200,7 +200,7 @@ class Cache_APC extends \TriTan\Cache\Abstract_Cache
      *
      * @see TriTan\Cache\Abstract_Cache::flushNamespace()
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int|string $namespace
      *            Optional. Where the cache contents are namespaced. Default: 'default'.
      */
@@ -220,7 +220,7 @@ class Cache_APC extends \TriTan\Cache\Abstract_Cache
      *
      * @see TriTan\Cache\Abstract_Cache::set()
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int|string $key
      *            Unique key of the cache file.
      * @param mixed $data
@@ -248,7 +248,7 @@ class Cache_APC extends \TriTan\Cache\Abstract_Cache
      *
      * Gives the cache hits, cache misses and cache uptime.
      *
-     * @since 1.0.0
+     * @since 0.9
      */
     public function getStats()
     {
@@ -281,7 +281,7 @@ class Cache_APC extends \TriTan\Cache\Abstract_Cache
      *
      * @see TriTan\Cache\Abstract_Cache::inc()
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int|string $key
      *            The cache key to increment
      * @param int $offset
@@ -304,7 +304,7 @@ class Cache_APC extends \TriTan\Cache\Abstract_Cache
      *
      * @see TriTan\Cache\Abstract_Cache::dec()
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int|string $key
      *            The cache key to decrement.
      * @param int $offset
@@ -327,7 +327,7 @@ class Cache_APC extends \TriTan\Cache\Abstract_Cache
      *
      * @see TriTan\Cache\Abstract_Cache::uniqueKey()
      *
-     * @since 1.0.0
+     * @since 0.9
      * @access protected
      * @param int|string $key
      *            Unique key for cache file.
@@ -350,7 +350,7 @@ class Cache_APC extends \TriTan\Cache\Abstract_Cache
      *
      * @see TriTanCache\Abstract_Cache::_exists()
      *
-     * @since 1.0.0
+     * @since 0.9
      * @access protected
      * @param int|string $key
      *            Cache key to check for existence.
@@ -370,7 +370,7 @@ class Cache_APC extends \TriTan\Cache\Abstract_Cache
      *
      * @see TriTan\Cache\Abstract_Cache::_namespace()
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int|string $value
      *            The value to slice to get namespace.
      */

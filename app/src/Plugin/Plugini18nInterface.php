@@ -8,7 +8,7 @@ if (!defined('BASE_PATH'))
  *
  * @license GPLv3
  *         
- * @since 1.0.0
+ * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
  */
@@ -18,7 +18,7 @@ interface Plugini18nInterface
     /**
      * Load the plugin text domain for translation.
      *
-     * @since    1.0.0
+     * @since    0.9
      */
     public function loadPluginTextdomain();
 }

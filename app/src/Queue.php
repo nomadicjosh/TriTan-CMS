@@ -10,7 +10,7 @@ use Cascade\Cascade;
 /**
  * Task Manager Queue
  *  
- * @since       1.0.0
+ * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
  */
@@ -162,7 +162,7 @@ class Queue
     /**
      * Create a new job and save it to the queue or update the job if it exists.
      * 
-     * @since 1.0.0
+     * @since 0.9
      */
     public function enqueue($args)
     {

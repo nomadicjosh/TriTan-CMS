@@ -12,7 +12,7 @@ if (!defined('BASE_PATH'))
  * class in the event of an error and if not handled properly will result in
  * code errors.
  *  
- * @since       1.0.0
+ * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
  */
@@ -22,7 +22,7 @@ class Error
     /**
      * Stores the list of errors.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @var array
      */
     public $errors = [];
@@ -30,7 +30,7 @@ class Error
     /**
      * Stores the list of data for error codes.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @var array
      */
     public $error_data = [];
@@ -46,7 +46,7 @@ class Error
      * Though the class is constructed with a single error code and
      * message, multiple codes can be added using the `add()` method.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string|int $code Error code
      * @param string $message Error message
      * @param mixed $data Optional. Error data.
@@ -67,7 +67,7 @@ class Error
     /**
      * Retrieve all error codes.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @return array List of error codes, if available.
      */
     public function get_error_codes()
@@ -82,7 +82,7 @@ class Error
     /**
      * Retrieve first error code available.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @return string|int Empty string, if no error codes.
      */
     public function get_error_code()
@@ -99,7 +99,7 @@ class Error
     /**
      * Retrieve all error messages or error messages matching code.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string|int $code Optional. Retrieve messages matching code, if exists.
      * @return array Error strings on success, or empty array on failure (if using code parameter).
      */
@@ -127,7 +127,7 @@ class Error
      * This will get the first message available for the code. If no code is
      * given then the first code available will be used.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string|int $code Optional. Error code to retrieve message.
      * @return string
      */
@@ -146,7 +146,7 @@ class Error
     /**
      * Retrieve error data for error code.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string|int $code Optional. Error code.
      * @return mixed Error data, if it exists.
      */
@@ -163,7 +163,7 @@ class Error
     /**
      * Add an error or append additional message to an existing error.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string|int $code Error code.
      * @param string $message Error message.
      * @param mixed $data Optional. Error data.
@@ -181,7 +181,7 @@ class Error
      *
      * The error code can only contain one error data.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param mixed $data Error data.
      * @param string|int $code Error code.
      */
@@ -200,7 +200,7 @@ class Error
      * This function removes all error messages associated with the specified
      * error code, along with any error data for that code.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string|int $code Error code.
      */
     public function remove($code)

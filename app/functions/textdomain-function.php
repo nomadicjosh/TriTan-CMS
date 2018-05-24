@@ -6,7 +6,7 @@ if (!defined('BASE_PATH'))
  *  
  * @license GPLv3
  * 
- * @since       1.0.0
+ * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
  */
@@ -16,7 +16,7 @@ $t->register();
 /**
  * Loads the current or default locale.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @return string The locale.
  */
 function load_core_locale()
@@ -33,7 +33,7 @@ function load_core_locale()
 /**
  * Load a .mo file into the text domain.
  *
- * @since 1.0.0
+ * @since 0.9
  *
  * @param string $domain Text domain. Unique identifier for retrieving translated strings.
  * @param string $path Path to the .mo file.
@@ -46,7 +46,7 @@ function load_textdomain($domain, $path)
     /**
      * Filter text domain and/or .mo file path for loading translations.
      *
-     * @since 1.0.0
+     * @since 0.9
      *
      * @param bool   $override Should we override textdomain?. Default is false.
      * @param string $domain   Text domain. Unique identifier for retrieving translated strings.
@@ -61,7 +61,7 @@ function load_textdomain($domain, $path)
     /**
      * Fires before the .mo translation file is loaded.
      *
-     * @since 1.0.0
+     * @since 0.9
      *
      * @param string $domain Text domain. Unique identifier for retrieving translated strings.
      * @param string $path Path to the .mo file.
@@ -71,7 +71,7 @@ function load_textdomain($domain, $path)
     /**
      * Filter .mo file path for loading translations for a specific text domain.
      *
-     * @since 1.0.0
+     * @since 0.9
      *
      * @param string $path Path to the .mo file.
      * @param string $domain Text domain. Unique identifier for retrieving translated strings.
@@ -91,7 +91,7 @@ function load_textdomain($domain, $path)
 /**
  * Load default translated strings based on locale.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $domain Text domain. Unique identifier for retrieving translated strings.
  * @param string $path Path to the .mo file.
  * @return bool True on success, false on failure.
@@ -112,7 +112,7 @@ function load_default_textdomain($domain, $path)
  *
  * If the path is not given then it will be the root of the plugin directory.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $domain          Unique identifier for retrieving translated strings
  * @param string $plugin_rel_path Optional. Relative path to TTCMS_PLUGIN_DIR where the locale directory resides.
  *                                Default false.
@@ -124,7 +124,7 @@ function load_plugin_textdomain($domain, $plugin_rel_path = false)
     /**
      * Filter a plugin's locale.
      * 
-     * @since 1.0.0
+     * @since 0.9
      * 
      * @param string $locale The plugin's current locale.
      * @param string $domain Text domain. Unique identifier for retrieving translated strings.
@@ -148,7 +148,7 @@ function load_plugin_textdomain($domain, $plugin_rel_path = false)
 /**
  * Retrieves a list of available locales.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $active
  */
 function ttcms_dropdown_languages($active = '')
@@ -537,7 +537,7 @@ function ttcms_dropdown_languages($active = '')
  * | -------- | ----- | ----------- | --------------------------------------- |
  * | U+00B7   | l·l   | ll          | Flown dot (between two Ls)              |
  *
- * @since 1.0.0
+ * @since 0.9
  *
  * @param string $string Text that might have accent characters
  * @return string Filtered string with replaced "nice" characters.
@@ -817,7 +817,7 @@ function ttcms_remove_accents($string)
  * via the plugin API. If $string is empty and $fallback_string is set, the latter
  * will be used.
  *
- * @since 1.0.0
+ * @since 0.9
  *
  * @param string $string          The string to be sanitized.
  * @param string $fallback_string Optional. A string to use if $string is empty.
@@ -834,7 +834,7 @@ function ttcms_sanitize_string($string, $fallback_string = '', $context = 'save'
     /**
      * Filters a sanitized string.
      *
-     * @since 1.0.0
+     * @since 0.9
      *
      * @param string $string        Sanitized string.
      * @param string $raw_string    The string prior to sanitization.

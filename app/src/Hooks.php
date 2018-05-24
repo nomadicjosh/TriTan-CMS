@@ -746,7 +746,7 @@ class Hooks
          * Passing a truthy value to the filter will short-circuit retrieving
          * the option value, returning the passed value instead.
          *
-         * @since 1.0.0
+         * @since 0.9
          *       
          * @param bool|mixed $pre_option
          *            Value to return instead of the option value.
@@ -783,7 +783,7 @@ class Hooks
          *
          * The dynamic portion of the hook name, `$option_key`, refers to the option name.
          *
-         * @since 1.0.0 As 'get_option_' . $setting
+         * @since 0.9 As 'get_option_' . $setting
          *       
          * @param mixed $value
          *            Value of the option. If stored serialized, it will be
@@ -797,7 +797,7 @@ class Hooks
     /**
      * Retrieve a site's option value based on the option name.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int      $site_id     ID of the site. Can be null to default to the current site.
      * @param string   $option      Name of option to retrieve.
      * @param mixed    $default     Optional. Value to return if the option doesn't exist. Default false.
@@ -824,7 +824,7 @@ class Hooks
          * Passing a truthy value to the filter will effectively short-circuit retrieval,
          * returning the passed value instead.
          *
-         * @since 1.0.0
+         * @since 0.9
          * @param mixed  $pre_option    The value to return instead of the option value. This differs from
          *                              `$default`, which is used as the fallback value in the event the
          *                              option doesn't exist elsewhere in get_site_option(). Default
@@ -860,7 +860,7 @@ class Hooks
          *
          * The dynamic portion of the hook name, `$option`, refers to the option name.
          *
-         * @since 1.0.0
+         * @since 0.9
          * @param mixed  $value     Value of site option.
          * @param string $option    Option name.
          * @param int    $_site_id  ID of the site.
@@ -913,7 +913,7 @@ class Hooks
     /**
      * Update the value of a site option that was already added.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int      $site_id ID of the site. Can be null to default to the current site ID.
      * @param string   $option  Name of option. Expected to not be SQL-escaped.
      * @param mixed    $value   Option value. Expected to not be SQL-escaped.
@@ -939,7 +939,7 @@ class Hooks
          *
          * The dynamic portion of the hook name, `$option`, refers to the option name.
          *
-         * @since 1.0.0
+         * @since 0.9
          * @param mixed  $value     New value of the site option.
          * @param mixed  $old_value Old value of the site option.
          * @param string $option    Option name.
@@ -982,7 +982,7 @@ class Hooks
              *
              * The dynamic portion of the hook name, `$option`, refers to the option name.
              *
-             * @since 1.0.0
+             * @since 0.9
              * @param string $option    Name of the site option.
              * @param mixed  $value     Current value of the site option.
              * @param mixed  $old_value Old value of the site option.
@@ -993,7 +993,7 @@ class Hooks
             /**
              * Fires after the value of a site option has been successfully updated.
              *
-             * @since 1.0.0
+             * @since 0.9
              * @param string $option        Name of the site option.
              * @param mixed  $value         Current value of the site option.
              * @param mixed  $old_value     Old value of the site option.
@@ -1047,7 +1047,7 @@ class Hooks
      *
      * Existing options will not be updated.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int    $site_id   ID of the site. Can be null to default to the current site ID.
      * @param string $option    Name of option to add. Expected to not be SQL-escaped.
      * @param mixed  $value     Option value, can be anything. Expected to not be SQL-escaped.
@@ -1116,7 +1116,7 @@ class Hooks
              *
              * The dynamic portion of the hook name, `$option`, refers to the option name.
              *
-             * @since 1.0.0
+             * @since 0.9
              * @param string $option    Name of the site option.
              * @param mixed  $value     Value of the site option.
              * @param int    $_site_id  ID of the site.
@@ -1126,7 +1126,7 @@ class Hooks
             /**
              * Fires after a site option has been successfully added.
              *
-             * @since 1.0.0
+             * @since 0.9
              * @param string $option    Name of the site option.
              * @param mixed  $value     Value of the site option.
              * @param int    $_site_id  ID of the site.
@@ -1172,7 +1172,7 @@ class Hooks
     /**
      * Removes a site option by name.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int    $site_id   ID of the site. Can be null to default to the current site ID.
      * @param string $option    Name of option to remove. Expected to not be SQL-escaped.
      * @return bool True, if succeed. False, if failure.
@@ -1195,7 +1195,7 @@ class Hooks
          *
          * The dynamic portion of the hook name, `$option`, refers to the option name.
          *
-         * @since 1.0.0
+         * @since 0.9
          * @param string $option    Option name.
          * @param int    $_site_id  ID of the site.
          */
@@ -1226,7 +1226,7 @@ class Hooks
              *
              * The dynamic portion of the hook name, `$option`, refers to the option name.
              *
-             * @since 1.0.0
+             * @since 0.9
              * @param string $option    Name of the site option.
              * @param int    $_site_id  ID of the site.
              */
@@ -1235,7 +1235,7 @@ class Hooks
             /**
              * Fires after a site option has been deleted.
              *
-             * @since 1.0.0
+             * @since 0.9
              * @param string $option    Name of the site option.
              * @param int    $_site_id   ID of the site.
              */

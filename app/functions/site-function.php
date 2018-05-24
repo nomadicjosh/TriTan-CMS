@@ -6,7 +6,7 @@ if (!defined('BASE_PATH'))
  *
  * @license GPLv3
  *         
- * @since 1.0.0
+ * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
  */
@@ -17,7 +17,7 @@ use Cascade\Cascade;
 /**
  * Retrieves site data given a site ID or post array.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int|Site|null $site
  *            Site ID or site array.
  * @param bool $object
@@ -49,7 +49,7 @@ function get_site($site, $object = false)
     /**
      * Fires after a site is retrieved.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param Site $_site Site data.
      */
     $_site = app()->hook->{'apply_filter'}('get_site', $_site);
@@ -60,7 +60,7 @@ function get_site($site, $object = false)
 /**
  * Checks whether the given site domain exists.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $sitedomain Site domain to check against.
  * @return bool If site domain exists, return true otherwise return false.
  */
@@ -77,7 +77,7 @@ function site_domain_exists($sitedomain)
     /**
      * Filters whether the given site domain exists or not.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param bool $exists           Whether the site's domain is taken or not.
      * @param string $sitedomain    Site domain to check.
      */
@@ -87,7 +87,7 @@ function site_domain_exists($sitedomain)
 /**
  * Checks whether the given site exists.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $site_domain   Site domain to check against.
  * @param string $site_path     Site path to check against.
  * @return bool If site exists, return true otherwise return false.
@@ -108,7 +108,7 @@ function site_exists($site_domain, $site_path)
     /**
      * Filters whether the given sitedata exists or not.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param bool $exists          Whether the site exists or not.
      * @param string $site_domain   Site domain to check against.
      * @param string $site_path     Site path to check against.
@@ -119,7 +119,7 @@ function site_exists($site_domain, $site_path)
 /**
  * Creates/updates user meta data for specified site.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param int $_site_id Site ID.
  * @param int $user_id  User ID.
  */
@@ -148,7 +148,7 @@ function update_site_user_meta($_site_id, $user_id)
 /**
  * Deletes user meta data when site/user is deleted.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param int $_site_id Site ID.
  */
 function delete_site_user_meta($_site_id)
@@ -170,7 +170,7 @@ function delete_site_user_meta($_site_id)
 /**
  * Deletes site tables when site is deleted.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param int $_site_id Site ID.
  */
 function delete_site_tables($_site_id)
@@ -188,7 +188,7 @@ function delete_site_tables($_site_id)
 /**
  * Retrieve the current site id.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @global int $site_id
  * @return int Site ID.
  */
@@ -200,7 +200,7 @@ function get_current_site_id()
 /**
  * Update main site based Constants in config file.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @return boolean
  */
 function update_main_site()
@@ -229,7 +229,7 @@ function update_main_site()
 /**
  * Retrieve a list of users based on site.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @return array Users data.
  */
 function get_multisite_users()
@@ -298,7 +298,7 @@ function add_user_to_site($user, $site, $role)
      * Filters a user's meta values and keys immediately after the user is added
      * and before any user meta is inserted.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param array $meta {
      *     Default meta values and keys for the user.
      *
@@ -332,7 +332,7 @@ function add_user_to_site($user, $site, $role)
  * followed by the field name. An example using 'site_name' would have the filter called,
  * 'pre_site_name' that can be hooked into.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param array|User $sitedata {
  *     An array or User array of user data arguments.
  *
@@ -373,7 +373,7 @@ function ttcms_insert_site($sitedata)
      *
      * This filter is called before the user is created or updated.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $sanitized_user_login Username after it has been sanitized.
      */
     $pre_site_domain = app()->hook->{'apply_filter'}('pre_site_domain', $raw_site_domain);
@@ -393,7 +393,7 @@ function ttcms_insert_site($sitedata)
     /**
      * Filters a site's name before the site is created or updated.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $raw_site_name The site's name.
      */
     $site_name = app()->hook->{'apply_filter'}('pre_site_name', $raw_site_name);
@@ -402,7 +402,7 @@ function ttcms_insert_site($sitedata)
     /**
      * Filters a site's path before the site is created or updated.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $raw_site_path The site's path.
      */
     $site_path = app()->hook->{'apply_filter'}('pre_site_path', $raw_site_path);
@@ -423,7 +423,7 @@ function ttcms_insert_site($sitedata)
     /**
      * Filters a site's status before the site is created or updated.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $raw_site_status The site's status.
      */
     $site_status = app()->hook->{'apply_filter'}('pre_site_status', $raw_site_status);
@@ -438,7 +438,7 @@ function ttcms_insert_site($sitedata)
     /**
      * Filters site data before the record is created or updated.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param array    $data {
      *     Values and keys for the site.
      *
@@ -495,7 +495,7 @@ function ttcms_insert_site($sitedata)
         /**
          * Fires immediately after an existing site is updated.
          *
-         * @since 1.0.0
+         * @since 0.9
          * @param int     $site_id      Site ID.
          * @param User $old_site_data   Array containing site's data prior to update.
          */
@@ -504,7 +504,7 @@ function ttcms_insert_site($sitedata)
         /**
          * Fires immediately after a new site is registered.
          *
-         * @since 1.0.0
+         * @since 0.9
          * @param int $site_id      Site ID.
          * @param int $site_owner   Site owner.
          */
@@ -519,7 +519,7 @@ function ttcms_insert_site($sitedata)
  * 
  * See ttcms_insert_site() For what fields can be set in $sitedata.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int|object|Site $sitedata An array of site data or a site object or site id.
  * @return int|Exception The updated site's id or throw an Exception if the site could not be updated.
  */
@@ -546,7 +546,7 @@ function ttcms_update_site($sitedata)
  * Populates site options and user meta for site admin after new site
  * is created.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @access private Used when the action hook `site_register` is called.
  * @param int $site_id      Site id of the newly created site.
  * @param int $site_owner   User id of the site owner.
@@ -662,7 +662,7 @@ function new_site_data($site_id, $site_owner)
      * Filters a user's meta values and keys immediately after the user is added
      * and before any user meta is inserted.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param array $meta {
      *     Default meta values and keys for the user.
      *
@@ -691,7 +691,7 @@ function new_site_data($site_id, $site_owner)
 /**
  * Adds status label for site's table.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $status Status to check for.
  * @return string Sites status.
  */
@@ -705,7 +705,7 @@ function ttcms_site_status_label($status)
     /**
      * Filters the label result.
      * 
-     * @since 1.0.0
+     * @since 0.9
      * @param
      */
     return app()->hook->{'apply_filter'}('site_status_label', $label[$status], $status);

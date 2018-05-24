@@ -9,7 +9,7 @@ use Cascade\Cascade;
  *
  * @license GPLv3
  *         
- * @since 1.0.0
+ * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
  */
@@ -20,7 +20,7 @@ use Cascade\Cascade;
  * Function used to send login details to new
  * user.
  * 
- * @since 1.0.0
+ * @since 0.9
  */
 function ttcms_nodeq_login_details()
 {

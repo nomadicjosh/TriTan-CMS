@@ -15,7 +15,7 @@ use Cascade\Cascade;
  *
  * @license GPLv3
  *         
- * @since 1.0.0
+ * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
  */
@@ -23,7 +23,7 @@ use Cascade\Cascade;
 /**
  * Auto increments the table's primary key.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $table Table in the document.
  * @param int $pk Primary key field name.
  * @return int
@@ -45,7 +45,7 @@ function auto_increment($table, $pk)
  * Used by ttcms_check_password in order to rehash
  * an old password that was hashed using MD5 function.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $password
  *            User password.
  * @param int $user_id
@@ -72,7 +72,7 @@ function ttcms_set_password($password, $user_id)
 /**
  * Retrieve post type by a given field from the post type table.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $field The field to retrieve the post type with.
  * @param string $value A value for $field (_id, post_id, posttype_slug).
  */
@@ -88,7 +88,7 @@ function get_posttype_by($field, $value)
 /**
  * Retrieve post by a given field from the post table.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $field The field to retrieve the post with.
  * @param string|int|string $value A value for $field (_id, post_id, post_slug).
  */
@@ -104,7 +104,7 @@ function get_post_by($field, $value)
 /**
  * A function which retrieves a TriTan CMS post id.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $post_slug The unique slug of a post.
  * @return integer
  */
@@ -228,7 +228,7 @@ function ttcms_slugify($title, $table = null)
  * Function used to dynamically generate post screens
  * based on post type.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @access private
  * @return array
  */
@@ -241,7 +241,7 @@ function get_all_post_types()
 /**
  * Retrieves all posts
  * 
- * @since 1.0.0
+ * @since 0.9
  * @access private
  * @param string Post slug.
  * @param int Post id.
@@ -261,7 +261,7 @@ function get_post_dropdown_list($slug = null, $post_id = 0)
 /**
  * Returns the number of posts within a given post type.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param int $slug Post type slug.
  * @return int
  */
@@ -276,7 +276,7 @@ function number_posts_per_type($slug)
 /**
  * Retrieve all published posts or all published posts by post type.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @access private
  * @param string $post_type Post type.
  * @return array
@@ -300,7 +300,7 @@ function get_all_posts($post_type = null)
 /**
  * Returns a list of internal links for TinyMCE.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @return array
  */
 function tinymce_link_list()
@@ -314,7 +314,7 @@ function tinymce_link_list()
 /**
  * Update the metadata cache for the specified arrays.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string    $meta_type  Type of array metadata is for (e.g., post or user)
  * @param int|array $array_ids Array or comma delimited list of array IDs to update cache for
  * @return array|false Metadata cache for the specified arrays, or false on failure.
@@ -390,7 +390,7 @@ function update_meta_cache($meta_type, $array_ids)
 /**
  * Generates the encryption table if it does not exist.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @return bool
  */
 function generate_php_encryption()

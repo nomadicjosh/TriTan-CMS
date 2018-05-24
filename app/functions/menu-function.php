@@ -6,7 +6,7 @@ if (!defined('BASE_PATH'))
  *
  * @license GPLv3
  *         
- * @since 1.0.0
+ * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
  */
@@ -17,7 +17,7 @@ use TriTan\Config;
  * 
  * Uses admin_submenu_$location filter hook.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $location      Submenu location.
  * @param string $menu_title    The text to be used for the menu.
  * @param string $menu_route    The route part of the url.
@@ -39,7 +39,7 @@ function add_admin_submenu($location, $menu_title, $menu_route, $screen, $permis
 /**
  * Adds an admin dashboard submenu page link.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $menu_title    The text to be used for the menu.
  * @param string $menu_route    The route part of the url.
  * @param string $screen        Unique name of menu's screen.
@@ -54,7 +54,7 @@ function add_dashboard_submenu($menu_title, $menu_route, $screen, $permission = 
 /**
  * Adds a sites submenu page link.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $menu_title    The text to be used for the menu.
  * @param string $menu_route    The route part of the url.
  * @param string $screen        Unique name of menu's screen.
@@ -69,7 +69,7 @@ function add_sites_submenu($menu_title, $menu_route, $screen, $permission = null
 /**
  * Adds a plugin submenu page link.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $menu_title    The text to be used for the menu.
  * @param string $menu_route    The route part of the url.
  * @param string $screen        Unique name of menu's screen.
@@ -84,7 +84,7 @@ function add_plugins_submenu($menu_title, $menu_route, $screen, $permission = nu
 /**
  * Adds a users submenu page link.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $menu_title    The text to be used for the menu.
  * @param string $menu_route    The route part of the url.
  * @param string $screen        Unique name of menu's screen.
@@ -99,7 +99,7 @@ function add_users_submenu($menu_title, $menu_route, $screen, $permission = null
 /**
  * Adds an options submenu page link.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $menu_title    The text to be used for the menu.
  * @param string $menu_route    The route part of the url.
  * @param string $screen        Unique name of menu's screen.

@@ -9,7 +9,7 @@ if (!defined('BASE_PATH'))
  * Classes implementing this interface will do a best effort to preserve order
  * in messages and to execute them at least once.
  * 
- * @since       1.0.0
+ * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
  */

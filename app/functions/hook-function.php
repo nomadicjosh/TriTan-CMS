@@ -8,7 +8,7 @@ use TriTan\Config;
  *
  * @license GPLv3
  *         
- * @since 1.0.0
+ * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
  */
@@ -19,7 +19,7 @@ use TriTan\Config;
  *
  * @see Hooks::register_admin_page()
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $slug
  *            Plugin's slug.
  * @param string $title
@@ -38,7 +38,7 @@ function register_admin_page($slug, $title, $function)
  *
  * @see Hooks::activate_plugin()
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $id
  *            ID of the plugin to be activated.
  * @return mixed Activates plugin if it exists.
@@ -54,7 +54,7 @@ function activate_plugin($id)
  *
  * @see Hooks::deactivate_plugin()
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $id
  *            ID of the plugin to be deactivated.
  * @return mixed Deactivates plugin if it exists and is active.
@@ -70,7 +70,7 @@ function deactivate_plugin($id)
  *
  * @see Hooks::load_activated_plugins()
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $plugins_dir
  *            Loads plugins from specified folder
  * @return mixed
@@ -86,7 +86,7 @@ function load_activated_plugins($plugins_dir = '')
  *
  * @see Hooks::is_plugin_activated()
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $plugin
  *            Name of plugin file.
  * @return bool False if plugin is not activated and true if it is activated.
@@ -107,7 +107,7 @@ function is_plugin_activated($plugin)
  *
  * This function is to be used in every function that is deprecated.
  *
- * @since 1.0.0
+ * @since 0.9
  *       
  * @param string $function_name
  *            The function that was called.
@@ -121,7 +121,7 @@ function _deprecated_function($function_name, $release, $replacement = null)
     /**
      * Fires when a deprecated function is called.
      *
-     * @since 1.0.0
+     * @since 0.9
      *       
      * @param string $function_name
      *            The function that was called.
@@ -135,7 +135,7 @@ function _deprecated_function($function_name, $release, $replacement = null)
     /**
      * Filter whether to trigger an error for deprecated functions.
      *
-     * @since 1.0.0
+     * @since 0.9
      *       
      * @param bool $trigger
      *            Whether to trigger the error for deprecated functions. Default true.
@@ -168,7 +168,7 @@ function _deprecated_function($function_name, $release, $replacement = null)
  *
  * This function is to be used in every class that is deprecated.
  *
- * @since 1.0.0
+ * @since 0.9
  *       
  * @param string $class_name
  *            The class that was called.
@@ -182,7 +182,7 @@ function _deprecated_class($class_name, $release, $replacement = null)
     /**
      * Fires when a deprecated class is called.
      *
-     * @since 1.0.0
+     * @since 0.9
      *       
      * @param string $class_name
      *            The class that was called.
@@ -196,7 +196,7 @@ function _deprecated_class($class_name, $release, $replacement = null)
     /**
      * Filter whether to trigger an error for deprecated classes.
      *
-     * @since 1.0.0
+     * @since 0.9
      *       
      * @param bool $trigger
      *            Whether to trigger the error for deprecated classes. Default true.
@@ -229,7 +229,7 @@ function _deprecated_class($class_name, $release, $replacement = null)
  *
  * This function is to be used in every class's method that is deprecated.
  *
- * @since 1.0.0
+ * @since 0.9
  *       
  * @param string $method_name
  *            The class method that was called.
@@ -243,7 +243,7 @@ function _deprecated_class_method($method_name, $release, $replacement = null)
     /**
      * Fires when a deprecated class method is called.
      *
-     * @since 1.0.0
+     * @since 0.9
      *       
      * @param string $method_name
      *            The class's method that was called.
@@ -257,7 +257,7 @@ function _deprecated_class_method($method_name, $release, $replacement = null)
     /**
      * Filter whether to trigger an error for deprecated class methods.
      *
-     * @since 1.0.0
+     * @since 0.9
      *       
      * @param bool $trigger
      *            Whether to trigger the error for deprecated class methods. Default true.
@@ -288,7 +288,7 @@ function _deprecated_class_method($method_name, $release, $replacement = null)
  * For example:
  *
  * if ( ! empty( $deprecated ) ) {
- * _deprecated_argument( __FUNCTION__, '1.0.0' );
+ * _deprecated_argument( __FUNCTION__, '0.9' );
  * }
  *
  *
@@ -298,7 +298,7 @@ function _deprecated_class_method($method_name, $release, $replacement = null)
  *
  * The current behavior is to trigger a user error if APP_ENV is set to DEV.
  *
- * @since 1.0.0
+ * @since 0.9
  *       
  * @param string $function_name
  *            The function that was called.
@@ -312,7 +312,7 @@ function _deprecated_argument($function_name, $release, $message = null)
     /**
      * Fires when a deprecated argument is called.
      *
-     * @since 1.0.0
+     * @since 0.9
      *       
      * @param string $function_name
      *            The function that was called.
@@ -325,7 +325,7 @@ function _deprecated_argument($function_name, $release, $message = null)
     /**
      * Filter whether to trigger an error for deprecated arguments.
      *
-     * @since 1.0.0
+     * @since 0.9
      *       
      * @param bool $trigger
      *            Whether to trigger the error for deprecated arguments. Default true.
@@ -355,7 +355,7 @@ function _deprecated_argument($function_name, $release, $message = null)
  * This function is called by the hook::do_action_deprecated() and Hook::apply_filter_deprecated()
  * functions, and so generally does not need to be called directly.
  *
- * @since 1.0.0
+ * @since 0.9
  * 
  * @param string $hook        The hook that was used.
  * @param string $release     The release of TriTan CMS that deprecated the hook.
@@ -367,7 +367,7 @@ function _deprecated_hook($hook, $release, $replacement = null, $message = null)
     /**
      * Fires when a deprecated hook is called.
      *
-     * @since 1.0.0
+     * @since 0.9
      * 
      * @param string $hook        The hook that was called.
      * @param string $replacement The hook that should be used as a replacement.
@@ -379,7 +379,7 @@ function _deprecated_hook($hook, $release, $replacement = null, $message = null)
     /**
      * Filters whether to trigger deprecated hook errors.
      *
-     * @since 1.0.0
+     * @since 0.9
      * 
      * @param bool $trigger Whether to trigger deprecated hook errors. Requires
      *                      `APP_DEV` to be defined DEV.
@@ -403,7 +403,7 @@ function _deprecated_hook($hook, $release, $replacement = null, $message = null)
  *
  * The current behavior is to trigger a user error if APP_ENV is set to DEV.
  *
- * @since 1.0.0
+ * @since 0.9
  *       
  * @param string $function_name
  *            The function that was called.
@@ -417,7 +417,7 @@ function _incorrectly_called($function_name, $message, $release)
     /**
      * Fires when the given function is being used incorrectly.
      *
-     * @since 1.0.0
+     * @since 0.9
      *       
      * @param string $function_name
      *            The function that was called.
@@ -453,7 +453,7 @@ function _incorrectly_called($function_name, $message, $release)
 /**
  * Prints copyright in the admin footer.
  *
- * @since 1.0.0
+ * @since 0.9
  */
 function ttcms_admin_copyright_footer()
 {
@@ -467,7 +467,7 @@ function ttcms_admin_copyright_footer()
 /**
  * Includes and loads all activated plugins.
  *
- * @since 1.0.0
+ * @since 0.9
  */
 load_activated_plugins(BASE_PATH . 'plugins' . DS);
 
@@ -475,7 +475,7 @@ load_activated_plugins(BASE_PATH . 'plugins' . DS);
  * An action called to add the plugin's link
  * to the menu structure.
  *
- * @since 1.0.0
+ * @since 0.9
  * @uses app()->hook->{'do_action'}() Calls 'admin_menu' hook.
  */
 app()->hook->{'do_action'}('admin_menu');
@@ -483,27 +483,27 @@ app()->hook->{'do_action'}('admin_menu');
 /**
  * Fires once activated plugins have loaded.
  *
- * @since 1.0.0
+ * @since 0.9
  */
 app()->hook->{'do_action'}('plugins_loaded');
 
 /**
  * Fires the admin_head action.
  *
- * @since 1.0.0
+ * @since 0.9
  */
 function admin_head()
 {
     /**
      * Registers & enqueues a stylesheet to be printed in backend head section.
      *
-     * @since 1.0.0
+     * @since 0.9
      */
     app()->hook->{'do_action'}('enqueue_admin_css');
     /**
      * Fires in head section of all admin screens.
      *
-     * @since 1.0.0
+     * @since 0.9
      */
     app()->hook->{'do_action'}('ttcms_admin_head');
 }
@@ -511,20 +511,20 @@ function admin_head()
 /**
  * Fires the ttcms_head action.
  *
- * @since 1.0.0
+ * @since 0.9
  */
 function ttcms_head()
 {
     /**
      * Registers & enqueues a stylesheet to be printed in frontend head section.
      *
-     * @since 1.0.0
+     * @since 0.9
      */
     app()->hook->{'do_action'}('enqueue_css');
     /**
      * Prints scripts and/or data in the head of the front end.
      *
-     * @since 1.0.0
+     * @since 0.9
      */
     app()->hook->{'do_action'}('ttcms_head');
 }
@@ -532,20 +532,20 @@ function ttcms_head()
 /**
  * Fires the admin_footer action via backend.
  *
- * @since 1.0.0
+ * @since 0.9
  */
 function admin_footer()
 {
     /**
      * Registers & enqueues javascript to be printed in backend footer section.
      *
-     * @since 1.0.0
+     * @since 0.9
      */
     app()->hook->{'do_action'}('enqueue_admin_js');
     /**
      * Prints scripts and/or data before the ending body tag of the backend.
      *
-     * @since 1.0.0
+     * @since 0.9
      */
     app()->hook->{'do_action'}('ttcms_admin_footer');
 }
@@ -553,21 +553,21 @@ function admin_footer()
 /**
  * Fires the ttcms_footer action via the admin.
  *
- * @since 1.0.0
+ * @since 0.9
  */
 function ttcms_footer()
 {
     /**
      * Registers & enqueues javascript to be printed in frontend footer section.
      *
-     * @since 1.0.0
+     * @since 0.9
      */
     app()->hook->{'do_action'}('enqueue_js');
     /**
      * Prints scripts and/or data before the ending body tag
      * of the front end.
      *
-     * @since 1.0.0
+     * @since 0.9
      */
     app()->hook->{'do_action'}('ttcms_footer');
 }
@@ -575,14 +575,14 @@ function ttcms_footer()
 /**
  * Fires the ttcms_release action.
  *
- * @since 1.0.0
+ * @since 0.9
  */
 function ttcms_release()
 {
     /**
      * Prints TriTan CMS release information.
      *
-     * @since 1.0.0
+     * @since 0.9
      */
     app()->hook->{'do_action'}('ttcms_release');
 }
@@ -590,14 +590,14 @@ function ttcms_release()
 /**
  * Fires the admin_top_widgets action.
  *
- * @since 1.0.0
+ * @since 0.9
  */
 function admin_top_widgets()
 {
     /**
      * Prints widgets at the top portion of the admin.
      *
-     * @since 1.0.0
+     * @since 0.9
      */
     app()->hook->{'do_action'}('admin_top_widgets');
 }
@@ -605,7 +605,7 @@ function admin_top_widgets()
 /**
  * Large logo. Filterable.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @return string
  */
 function get_logo_large()
@@ -617,7 +617,7 @@ function get_logo_large()
 /**
  * Mini logo. Filterable.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @return string
  */
 function get_logo_mini()
@@ -629,7 +629,7 @@ function get_logo_mini()
 /**
  * Checks data to make sure it is a valid request.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param mixed $data
  */
 function ttcms_validation_check($data)
@@ -648,7 +648,7 @@ function ttcms_validation_check($data)
 /**
  * Retrieve name of the current theme.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @return string Theme name.
  */
 function get_theme()
@@ -656,7 +656,7 @@ function get_theme()
     /**
      * Filters the name of the current theme.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $theme Current theme's directory name.
      */
     return app()->hook->{'apply_filter'}('theme', app()->hook->{'get_option'}('current_site_theme'));
@@ -665,7 +665,7 @@ function get_theme()
 /**
  * Retrieve theme directory URI.
  *
- * @since 1.0.0
+ * @since 0.9
  * @uses app()->hook->{'apply_filter'}() Calls 'theme_directory_uri' filter.
  * @return string TriTan CMS theme directory uri.
  */
@@ -680,7 +680,7 @@ function get_theme_directory_uri()
 /**
  * Retrieve javascript directory uri.
  *
- * @since 1.0.0
+ * @since 0.9
  * @uses app()->hook->{'apply_filter'}() Calls 'javascript_directory_uri' filter. 
  * @return string TriTan CMS javascript url.
  */
@@ -695,7 +695,7 @@ function get_javascript_directory_uri()
 /**
  * Retrieve less directory uri.
  *
- * @since 1.0.0
+ * @since 0.9
  * @uses app()->hook->{'apply_filter'}() Calls 'less_directory_uri' filter.   
  * @return string TriTan CMS less url.
  */
@@ -710,7 +710,7 @@ function get_less_directory_uri()
 /**
  * Retrieve css directory uri.
  *
- * @since 1.0.0
+ * @since 0.9
  * @uses app()->hook->{'apply_filter'}() Calls 'css_directory_uri' filter.   
  * @return string TriTan CMS css url.
  */
@@ -742,7 +742,7 @@ function get_image_directory_uri()
  *
  * Uses {@link http://www.php.net/parse_str parse_str()}
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $string
  *            The string to be parsed.
  * @param array $array
@@ -764,7 +764,7 @@ function ttcms_parse_str($string, $array)
 /**
  * Frontend portal footer powered by and release.
  *
- * @since 1.0.0
+ * @since 0.9
  * @uses app()->hook->{'apply_filter'}() Calls 'met_footer_release' filter.
  *      
  * @return mixed.
@@ -778,7 +778,7 @@ function get_footer_release()
 /**
  * Retrieve the avatar `<img>` tag for user.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $email User's email address.
  * @param int $s        Height and width of the avatar image file in pixels. Default 80.
  * @param string $class Class to add to `<img>` element.
@@ -809,7 +809,7 @@ function get_user_avatar($email, $s = 80, $class = '')
 /**
  * Retrieves the avatar url.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $email Email address of user.
  * @return string The url of the avatar that was found, or default if not found.
  */
@@ -848,7 +848,7 @@ function nocache_headers()
 /**
  * Upload image button.
  *
- * @since 1.0.0
+ * @since 0.9
  */
 function ttcms_upload_image()
 {
@@ -933,7 +933,7 @@ function ttcms_upload_image()
 /**
  * Compares release values.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $current
  *            Current release value.
  * @param string $latest
@@ -948,7 +948,7 @@ function compare_releases($current, $latest, $operator = '>')
     /**
      * Filters the comparison between two release.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param $php_function PHP
      *            function for comparing two release values.
      */
@@ -965,7 +965,7 @@ function compare_releases($current, $latest, $operator = '>')
  * Retrieves a response code from the header
  * of a given resource.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $url
  *            URL of resource/website.
  * @return int HTTP response code.
@@ -977,7 +977,7 @@ function get_http_response_code($url)
     /**
      * Filters the http response code.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param
      *            string
      */
@@ -987,7 +987,7 @@ function get_http_response_code($url)
 /**
  * Plugin success message when plugin is activated successfully.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $plugin_name
  *            The name of the plugin that was just activated.
  */
@@ -997,7 +997,7 @@ function ttcms_plugin_activate_message($plugin_name)
     /**
      * Filter the default plugin success activation message.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $success
      *            The success activation message.
      * @param string $plugin_name
@@ -1009,7 +1009,7 @@ function ttcms_plugin_activate_message($plugin_name)
 /**
  * Plugin success message when plugin is deactivated successfully.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $plugin_name
  *            The name of the plugin that was just deactivated.
  */
@@ -1019,7 +1019,7 @@ function ttcms_plugin_deactivate_message($plugin_name)
     /**
      * Filter the default plugin success deactivation message.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $success
      *            The success deactivation message.
      * @param string $plugin_name
@@ -1031,7 +1031,7 @@ function ttcms_plugin_deactivate_message($plugin_name)
 /**
  * Shows an error message when system is in DEV mode.
  * 
- * @since 1.0.0
+ * @since 0.9
  */
 function ttcms_dev_mode()
 {
@@ -1043,7 +1043,7 @@ function ttcms_dev_mode()
 /**
  * Returns full base url of MU Plugins.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @return string MU Plugin base url.
  */
 function get_mu_plugin_url()
@@ -1055,7 +1055,7 @@ function get_mu_plugin_url()
 /**
  * Returns full base url of Plugins.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @return string Plugin base url.
  */
 function get_plugin_url()
@@ -1069,7 +1069,7 @@ function get_plugin_url()
  *
  * Defaults to the plugins directory URL if no arguments are supplied.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param  string $path   Optional. Extra path appended to the end of the URL, including
  *                        the relative directory if $plugin is supplied. Default empty.
  * @param  string $plugin Optional. A full path to a file inside a plugin or mu-plugin.
@@ -1105,7 +1105,7 @@ function plugins_url($path = '', $plugin = '')
     /**
      * Filters the URL to the plugins or mu-plugins directory.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $url       The complete URL to the plugins directory including scheme and path.
      * @param string $_path     Path relative to the URL to the plugins directory. Blank string
      *                          if no path is specified.
@@ -1118,7 +1118,7 @@ function plugins_url($path = '', $plugin = '')
 /**
  * Get the URL directory path (with trailing slash) for the plugin __FILE__ passed in.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $file The filename of the plugin (__FILE__).
  * @return string the URL path of the directory that contains the plugin.
  */
@@ -1131,7 +1131,7 @@ function plugin_dir_url($file)
 /**
  * Returns full base url of a site's theme.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @return string Site's theme base url.
  */
 function get_theme_url()
@@ -1146,7 +1146,7 @@ function get_theme_url()
  *
  * Defaults to the site's theme directory URL if no arguments are supplied.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param  string $path   Optional. Extra path appended to the end of the URL, including
  *                        the relative directory if $theme is supplied. Default empty.
  * @param  string $theme  Optional. A full path to a file inside a theme.
@@ -1176,7 +1176,7 @@ function themes_url($path = '', $theme = '')
     /**
      * Filters the URL to a site's theme directory.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $url       The complete URL to a site's theme directory including scheme and path.
      * @param string $_path     Path relative to the URL to a site's theme directory. Blank string
      *                          if no path is specified.
@@ -1189,7 +1189,7 @@ function themes_url($path = '', $theme = '')
 /**
  * Returns full base url of a site's private url.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @return string Site's private base url.
  */
 function get_private_site_url()
@@ -1202,7 +1202,7 @@ function get_private_site_url()
 /**
  * Returns full base url of a site's private upload url.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @return string Site's private upload base url.
  */
 function get_private_site_upload_url()
@@ -1219,7 +1219,7 @@ function get_private_site_upload_url()
  * Regular expression is based on based on John Gruber's Markdown.
  * http://daringfireball.net/projects/markdown/
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $string
  *            Text with email addresses to encode
  * @return string $string Given text with encoded email addresses
@@ -1266,7 +1266,7 @@ function eae_encode_emails($string)
  * Whose code is based on a filter by Matthew Wickline, posted to
  * the BBEdit-Talk with some optimizations by Milian Wolff.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $string
  *            Text with email addresses to encode
  * @return string $string Given text with encoded email addresses
@@ -1299,7 +1299,7 @@ function eae_encode_str($string)
 /**
  * Create the needed directories when a new site is created.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param int $_site_id Site ID.
  * @return bool Returns true on success and false otherwise.
  */
@@ -1322,7 +1322,7 @@ function create_site_directories($_site_id)
 /**
  * Deletes the site directory when the site is deleted.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param int $_site_id Site ID.
  * @return bool Returns true on success and false otherwise.
  */
@@ -1334,7 +1334,7 @@ function delete_site_directories($_site_id)
 /**
  * Renders an editor.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $selector HTML ID attribute value for the textarea and TinyMCE. Can only be /[a-z]+/.
  */
 function ttcms_editor($selector = null)
@@ -1350,7 +1350,7 @@ function ttcms_editor($selector = null)
     /**
      * Filters the default theme for TinyMCE.
      * 
-     * @since 1.0.0
+     * @since 0.9
      * @param string $theme Theme used for TinyMCE.
      */
     $mce_theme = app()->hook->{'apply_filter'}('tiny_mce_theme', 'modern');
@@ -1363,7 +1363,7 @@ function ttcms_editor($selector = null)
     /**
      * Filters the list of default TinyMCE plugins.
      * 
-     * @since 1.0.0
+     * @since 0.9
      * @param array $plugins An array of default TinyMCE plugins.
      */
     $mce_plugins = app()->hook->{'apply_filter'}('tiny_mce_plugins', $plugins);
@@ -1372,7 +1372,7 @@ function ttcms_editor($selector = null)
     /**
      * Filters the first-row list of TinyMCE buttons.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param array  $buttons       First-row list of buttons.
      * @param string $mce_selector  Unique editor identifier, e.g. 'textarea'.
      */
@@ -1380,7 +1380,7 @@ function ttcms_editor($selector = null)
     /**
      * Filters the second-row list of TinyMCE buttons.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param array  $buttons       First-row list of buttons.
      * @param string $mce_selector  Unique editor identifier, e.g. 'textarea'.
      */
@@ -1388,7 +1388,7 @@ function ttcms_editor($selector = null)
     /**
      * Filters the third-row list of TinyMCE buttons.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param array  $buttons       First-row list of buttons.
      * @param string $mce_selector  Unique editor identifier, e.g. 'textarea'.
      */
@@ -1396,7 +1396,7 @@ function ttcms_editor($selector = null)
     /**
      * Filters the default stylesheets.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param array  $css           CSS stylesheets to include.
      * @param string $mce_selector  Unique editor identifier, e.g. 'textarea'.
      */
@@ -1405,7 +1405,7 @@ function ttcms_editor($selector = null)
     /**
      * Fires immediately before TinyMCE is printed.
      *
-     * @since 1.0.0
+     * @since 0.9
      */
     app()->hook->{'do_action'}('before_ttcms_tiny_mce');
     ?>
@@ -1469,7 +1469,7 @@ function ttcms_editor($selector = null)
     /**
      * Fires immediately after TinyMCE is printed.
      *
-     * @since 1.0.0
+     * @since 0.9
      */
     app()->hook->{'do_action'}('after_ttcms_tiny_mce');
 }
@@ -1477,7 +1477,7 @@ function ttcms_editor($selector = null)
 /**
  * Returns an optimized image for use.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $image Original image file.
  * @return string Optimized image file.
  */
@@ -1498,7 +1498,7 @@ function ttcms_optimized_image_upload($image)
 /**
  * Checks if site exists or is archived.
  * 
- * @since 1.0.0
+ * @since 0.9
  */
 function is_site_exist()
 {
@@ -1619,7 +1619,7 @@ function add_files_cache_directory()
 /**
  * Default actions and filters.
  * 
- * @since 1.0.0
+ * @since 0.9
  */
 app()->hook->{'add_action'}('ttcms_admin_head', 'head_release_meta', 5);
 app()->hook->{'add_action'}('ttcms_head', 'head_release_meta', 5);

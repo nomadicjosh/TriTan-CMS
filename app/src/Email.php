@@ -10,7 +10,7 @@ if (!defined('BASE_PATH'))
  *
  * @license GPLv3
  *         
- * @since 1.0.0
+ * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
  */
@@ -34,7 +34,7 @@ class Email
      * email successfully. It just only means that the method used was able to
      * process the request without any errors.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $to
      *            Array or comma-separated list of email addresses to send message.
      * @param string $subject
@@ -54,7 +54,7 @@ class Email
         /**
          * Filter the ttcmsMail() arguments.
          *
-         * @since 1.0.0      
+         * @since 0.9      
          * @param array $args
          *            A compacted array of ttcmsMail() arguments, including the "to" email,
          *            subject, message, headers, and attachments values.
@@ -192,7 +192,7 @@ class Email
         /**
          * Filter the email address to send from.
          *
-         * @since 1.0.0       
+         * @since 0.9       
          * @param string $from_email
          *            Email address to send from.
          */
@@ -201,7 +201,7 @@ class Email
         /**
          * Filter the name to associate with the "from" email address.
          *
-         * @since 1.0.0       
+         * @since 0.9       
          * @param string $from_name
          *            Name associated with the "from" email address.
          */
@@ -279,7 +279,7 @@ class Email
         /**
          * Filter the ttcmsMail() content type.
          *
-         * @since 1.0.0       
+         * @since 0.9       
          * @param string $content_type
          *            Default ttcmsMail() content type.
          */
@@ -297,7 +297,7 @@ class Email
         /**
          * Filter the default ttcmsMail() charset.
          *
-         * @since 1.0.0      
+         * @since 0.9      
          * @param string $charset
          *            Default email charset.
          */
@@ -328,7 +328,7 @@ class Email
         /**
          * Fires after PHPMailer is initialized.
          *
-         * @since 1.0.0    
+         * @since 0.9    
          * @param PHPMailer $this->mailer
          *            The PHPMailer instance, passed by reference.
          */
@@ -345,7 +345,7 @@ class Email
             /**
              * Fires after a phpmailerException is caught.
              *
-             * @since 1.0.0
+             * @since 0.9
              * @param Error $error
              *            A Error object with the phpmailerException code, message, and an array
              *            containing the mail recipient, subject, message, headers, and attachments.
@@ -361,7 +361,7 @@ class Email
     /**
      * Email sent to new user when account is created.
      * 
-     * @since 1.0.0
+     * @since 0.9
      *
      * @param int $user_id
      *            User id.

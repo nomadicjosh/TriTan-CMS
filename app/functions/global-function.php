@@ -8,7 +8,7 @@ use Spatie\ImageOptimizer\OptimizerChainFactory;
  *
  * @license GPLv3
  *         
- * @since 1.0.0
+ * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
  */
@@ -17,7 +17,7 @@ use Spatie\ImageOptimizer\OptimizerChainFactory;
  * Sets up object cache global scope and assigns it based on
  * the type of caching system used.
  *
- * @since 1.0.0
+ * @since 0.9
  */
 function _ttcms_cache_init()
 {
@@ -29,7 +29,7 @@ function _ttcms_cache_init()
 /**
  * Sets up PHPMailer global scope.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param bool $bool
  *            Set whether to use exceptions for error handling. Default: true.
  */
@@ -42,7 +42,7 @@ function _ttcms_phpmailer($bool = true)
 /**
  * Sets up TriTan CMS Email global scope.
  *
- * @since 1.0.0
+ * @since 0.9
  */
 function _ttcms_email()
 {
@@ -53,7 +53,7 @@ function _ttcms_email()
 /**
  * Sets up TriTan CMS Logger global scope.
  *
- * @since 1.0.0
+ * @since 0.9
  */
 function _ttcms_logger()
 {
@@ -64,7 +64,7 @@ function _ttcms_logger()
 /**
  * Sets up TriTan CMS Flash Messages global scope.
  *
- * @since 1.0.0
+ * @since 0.9
  */
 function _ttcms_flash()
 {
@@ -75,7 +75,7 @@ function _ttcms_flash()
 /**
  * Sets up random number and string generator global scope.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @return type
  */
 function _ttcms_random_lib()
@@ -88,7 +88,7 @@ function _ttcms_random_lib()
 /**
  * Image optimizer.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $pathToImage       Path to original image.
  * @param string $pathToOptimizded  Path to where optimized image should be saved.
  * @return string Optimized image.

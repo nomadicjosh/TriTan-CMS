@@ -8,7 +8,7 @@ use TriTan\Config;
  *
  * @license GPLv3
  *         
- * @since 1.0.0
+ * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
  */
@@ -16,7 +16,7 @@ use TriTan\Config;
 /**
  * Call the application global scope.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @return object
  */
 function app()
@@ -49,7 +49,7 @@ app()->inst->singleton('form', function () {
  * This function makes the error a little more understandable for the
  * end user to track down the issue.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $message
  *            Custom message to print.
  * @param string $level
@@ -69,7 +69,7 @@ function _trigger_error($message, $level = E_USER_NOTICE)
  *
  * Apply to filters to return false.
  *
- * @since 1.0.0
+ * @since 0.9
  * @return bool False
  */
 function __return_false()
@@ -82,7 +82,7 @@ function __return_false()
  *
  * Apply to filters to return true.
  *
- * @since 1.0.0
+ * @since 0.9
  * @return bool True
  */
 function __return_true()
@@ -95,7 +95,7 @@ function __return_true()
  *
  * Apply to filters to return null.
  *
- * @since 1.0.0
+ * @since 0.9
  * @return bool NULL
  */
 function __return_null()
@@ -106,7 +106,7 @@ function __return_null()
 /**
  * Return posted data if set.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param mixed $post
  * @return mixed
  */
@@ -121,7 +121,7 @@ function __return_post($post)
  *
  * @see Plugin::plugin_basename()
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $filename
  *            Plugin's file name.
  */
@@ -140,7 +140,7 @@ function plugin_basename($filename)
  *
  * @see Plugin::register_activation_hook()
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $filename
  *            Plugin's filename.
  * @param string $function
@@ -161,7 +161,7 @@ function register_activation_hook($filename, $function)
  *
  * @see Plugin::register_deactivation_hook()
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $filename
  *            Plugin's filename.
  * @param string $function
@@ -178,7 +178,7 @@ function register_deactivation_hook($filename, $function)
  *
  * @see Plugin::plugin_dir_path()
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $filename
  *            The filename of the plugin (__FILE__).
  * @return string The filesystem path of the directory that contains the plugin.
@@ -191,7 +191,7 @@ function plugin_dir_path($filename)
 /**
  * Special function for file includes.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $file
  *            File which should be included/required.
  * @param bool $once
@@ -219,7 +219,7 @@ function ttcms_load_file($file, $once = true, $show_errors = true)
 /**
  * Removes directory recursively along with any files.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $dir
  *            Directory that should be removed.
  */
@@ -249,7 +249,7 @@ function _rmdir($dir)
  * The primary use of this is for paths and thus should be used for paths. It is
  * not restricted to paths and offers no specific path support.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $string
  *            What to add the trailing slash to.
  * @return string String with trailing slash added.
@@ -265,7 +265,7 @@ function add_trailing_slash($string)
  * The primary use of this is for paths and thus should be used for paths. It is
  * not restricted to paths and offers no specific path support.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $string
  *            What to remove the trailing slashes from.
  * @return string String without the trailing slashes.
@@ -278,7 +278,7 @@ function remove_trailing_slash($string)
 /**
  * Load an array of must-use plugin files
  * 
- * @since 1.0.0
+ * @since 0.9
  * @access private
  * @return array Files to include
  */
@@ -304,7 +304,7 @@ function ttcms_get_mu_plugins()
 /**
  * Load an array of dropin files per site.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @access private
  * @return array Files to include
  */
@@ -331,7 +331,7 @@ function ttcms_get_site_dropins()
 /**
  * Load an array of theme routers per site.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @access private
  * @return array Files to include
  */

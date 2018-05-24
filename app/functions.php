@@ -15,7 +15,7 @@ function url($route)
 /**
  * Renders any unwarranted special characters to HTML entities.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $str
  * @return mixed
  */
@@ -25,7 +25,7 @@ function _h($str)
 }
 
 /**
- * @since 1.0.0
+ * @since 0.9
  */
 function timeAgo($original)
 {
@@ -71,7 +71,7 @@ function timeAgo($original)
 }
 
 /**
- * @since 1.0.0
+ * @since 0.9
  * @return bool
  */
 function remoteFileExists($url)
@@ -100,7 +100,7 @@ function remoteFileExists($url)
  * 
  * @param  string $filename
  * @return string
- * @since   1.0.0
+ * @since   0.9
  */
 function get_file_ext($filename)
 {
@@ -117,7 +117,7 @@ function get_file_ext($filename)
  * @return  string
  *
  * @access  public
- * @since   1.0.0
+ * @since   0.9
  */
 function safe_truncate($string, $length, $append = '...')
 {
@@ -143,7 +143,7 @@ function safe_truncate($string, $length, $append = '...')
  * @param bool|Closure $show_errors If bool error will be processed, if Closure - only Closure will be called
  * 
  * @return bool
- * @since 1.0.0
+ * @since 0.9
  */
 function _require($file, $once = false, $show_errors = true)
 {
@@ -170,7 +170,7 @@ function _require($file, $once = false, $show_errors = true)
  * @param bool|Closure $show_errors If bool error will be processed, if Closure - only Closure will be called
  * 
  * @return bool
- * @since 1.0.0
+ * @since 0.9
  */
 function _include($file, $once = false, $show_errors = true)
 {
@@ -196,7 +196,7 @@ function _include($file, $once = false, $show_errors = true)
  * @param bool|Closure $show_errors If bool error will be processed, if Closure - only Closure will be called
  * 
  * @return bool
- * @since 1.0.0
+ * @since 0.9
  */
 function _require_once($file, $show_errors = true)
 {
@@ -210,7 +210,7 @@ function _require_once($file, $show_errors = true)
  * @param bool|Closure $show_errors If bool error will be processed, if Closure - only Closure will be called
  * 
  * @return bool
- * @since 1.0.0
+ * @since 0.9
  */
 function _include_once($file, $show_errors = true)
 {
@@ -221,7 +221,7 @@ function _include_once($file, $show_errors = true)
  * Formats date to be stored in MySQL database.
  * 
  * @return string
- * @since 1.0.0
+ * @since 0.9
  */
 function formatDate($date)
 {
@@ -236,7 +236,7 @@ function formatDate($date)
  * 
  * @param string $str
  * @return mixed
- * @since 1.0.0
+ * @since 0.9
  */
 function _trim($str)
 {
@@ -248,7 +248,7 @@ function _trim($str)
  * 
  * @param string $string the string to transform.
  * @return string the resulting slug.
- * @since 1.0.0
+ * @since 0.9
  */
 function slugify($string)
 {
@@ -272,7 +272,7 @@ function slugify($string)
  * @param string $file Filepath
  * @param int $digits Digits to display
  * @return string|bool Size (KB, MB, GB, TB) or boolean
- * @since 1.0.0
+ * @since 0.9
  */
 function getFilesize($file, $digits = 2)
 {
@@ -294,7 +294,7 @@ function getFilesize($file, $digits = 2)
  * @param string $location The path to redirect to
  * @param int $status Status code to use
  * @return bool False if $location is not set
- * @since 1.0.0
+ * @since 0.9
  */
 function redirect($location, $status = 302)
 {
@@ -427,7 +427,7 @@ function checked_selected_helper($helper, $current, $echo, $type)
 /**
  * Added htmLawed functions
  *
- * @since 1.0.0
+ * @since 0.9
  */
 function htmLawed($t, $C = 1, $S = array())
 {
@@ -1510,7 +1510,7 @@ function hl_version()
 /**
  * Concatenation with separator.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $separator Delimeter to used between strings.
  * @param type $string1 Left string.
  * @param type $string2 Right string.

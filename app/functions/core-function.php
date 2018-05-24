@@ -7,7 +7,7 @@ if (!defined('BASE_PATH'))
  *
  * @license GPLv3
  *         
- * @since 1.0.0
+ * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
  */
@@ -26,7 +26,7 @@ use Respect\Validation\Validator as v;
  * 
  * Uses base_url filter.
  *
- * @since 1.0.0
+ * @since 0.9
  * @return string TriTan CMS root url.
  */
 function get_base_url()
@@ -42,7 +42,7 @@ function get_base_url()
  * if not, then it will be created with set permissions and also created
  * recursively if needed.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $path
  *            Path to be created.
  * @return string
@@ -53,7 +53,7 @@ function _mkdir($path)
 {
     if ('' == _trim($path)) {
         $message = _t('Invalid directory path: Empty path given.', 'tritan-cms');
-        _incorrectly_called(__FUNCTION__, $message, '1.0.0');
+        _incorrectly_called(__FUNCTION__, $message, '0.9');
         return;
     }
 
@@ -75,7 +75,7 @@ function _mkdir($path)
 /**
  * Displays the returned translated text.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param type $msgid
  *            The translated string.
  * @param type $domain
@@ -108,7 +108,7 @@ function get_path_info($relative)
  * Uses trigger_include_path_search, resource_context and stream_context_create_options
  * filters.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $filename
  *            Resource to read.
  * @param bool $use_include_path
@@ -121,7 +121,7 @@ function _file_get_contents($filename, $use_include_path = false, $context = tru
     /**
      * Filter the boolean for include path.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @var bool $use_include_path
      * @return bool
      */
@@ -130,7 +130,7 @@ function _file_get_contents($filename, $use_include_path = false, $context = tru
     /**
      * Filter the context resource.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @var bool $context
      * @return bool
      */
@@ -145,7 +145,7 @@ function _file_get_contents($filename, $use_include_path = false, $context = tru
     /**
      * Filters the stream context create options.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param array $opts Array of options.
      * @return mixed
      */
@@ -194,7 +194,7 @@ function _file_get_contents($filename, $use_include_path = false, $context = tru
  *      $size = getimagesize('static/assets/img/avatar.png');
  *      resize_image($size[0], $size[1], 80);
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int $width Width of the image.
  * @param int $height Height of the image.
  * @param string $target Size of image.
@@ -218,7 +218,7 @@ function resize_image($width, $height, $target)
 /**
  * Turn all URLs into clickable links.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $value
  * @param array  $protocols  http/https, ftp, mail, twitter
  * @param array  $attributes
@@ -315,7 +315,7 @@ function percent($num_amount, $num_total)
  * This function is used throughout TriTan CMS to allow for both string or array
  * to be merged into another array.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string|array $args
  *            Value to merge with $defaults
  * @param array $defaults
@@ -352,7 +352,7 @@ function foot_release()
 /**
  * Hashes a plain text password.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $password
  *            Plain text password
  * @return mixed
@@ -361,7 +361,7 @@ function ttcms_hash_password($password)
 {
     if ('' == _trim($password)) {
         $message = _t('Invalid password: empty password given.', 'tritan-cms');
-        _incorrectly_called(__FUNCTION__, $message, '1.0.0');
+        _incorrectly_called(__FUNCTION__, $message, '0.9');
         return;
     }
 
@@ -376,7 +376,7 @@ function ttcms_hash_password($password)
  *
  * Uses check_password filter.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $password
  *            Plain test password.
  * @param string $hash
@@ -461,7 +461,7 @@ function generate_timezone_list()
 /**
  * Get age by birthdate.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $birthdate
  *            User's birth date.
  * @return mixed
@@ -480,7 +480,7 @@ function get_age($birthdate = '0000-00-00')
 /**
  * Converts a string into unicode values.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $string            
  * @return mixed
  */
@@ -497,7 +497,7 @@ function unicoder($string)
 /**
  * Returns the layout header information
  *
- * @since 1.0.0
+ * @since 0.9
  * @param
  *            string (optional) $layout_dir loads layouts from specified folder
  * @return mixed
@@ -550,7 +550,7 @@ function get_layouts_header($layout_dir = '')
  * Subdomain as directory function uses the subdomain
  * of the install as a directory.
  *
- * @since 1.0.0
+ * @since 0.9
  * @return string
  */
 function subdomain_as_directory()
@@ -568,7 +568,7 @@ function subdomain_as_directory()
 /**
  * Strips out all duplicate values and compact the array.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param mixed $a
  *            An array that be compacted.
  * @return mixed
@@ -587,7 +587,7 @@ function array_unique_compact($a)
 /**
  * Checks the mime type of a file.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $file  File to check.
  * @param int $mode     Perform a full check or extension check only.
  * @return bool
@@ -596,7 +596,7 @@ function check_mime_type($file, $mode = 0)
 {
     if ('' == _trim($file)) {
         $message = _t('Invalid file: empty file given.', 'tritan-cms');
-        _incorrectly_called(__FUNCTION__, $message, '1.0.0');
+        _incorrectly_called(__FUNCTION__, $message, '0.9');
         return;
     }
 
@@ -656,7 +656,7 @@ function check_mime_type($file, $mode = 0)
  *
  * Returns true if $object is an object of the \TriTan\Error class.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param mixed $object
  *            Check if unknown variable is an \TriTan\Error object.
  * @return bool True, if \TriTan\Error. False, if not \TriTan\Error.
@@ -671,7 +671,7 @@ function is_ttcms_error($object)
  *
  * Returns true if $object is an object of the `\TriTan\Exception\BaseException` class.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param mixed $object
  *            Check if unknown variable is an `\TriTan\Exception\BaseException` object.
  * @return bool True, if `\TriTan\Exception\BaseException`. False, if not `\TriTan\Exception\BaseException`.
@@ -684,7 +684,7 @@ function is_ttcms_exception($object)
 /**
  * Returns the datetime of when the content of file was changed.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $file
  *            Absolute path to file.
  */
@@ -696,7 +696,7 @@ function file_mod_time($file)
 /**
  * Returns an array of function names in a file.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $filename
  *            The path to the file.
  * @param bool $sort
@@ -722,14 +722,14 @@ function get_functions_in_file($filename, $sort = false)
 /**
  * Checks a given file for any duplicated named user functions.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $filename            
  */
 function is_duplicate_function($filename)
 {
     if ('' == _trim($filename)) {
         $message = _t('Invalid file name: empty file name given.', 'tritan-cms');
-        _incorrectly_called(__FUNCTION__, $message, '1.0.0');
+        _incorrectly_called(__FUNCTION__, $message, '0.9');
         return;
     }
 
@@ -749,7 +749,7 @@ function is_duplicate_function($filename)
  * Performs a check within a php script and returns any other files
  * that might have been required or included.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $filename
  *            PHP script to check.
  */
@@ -757,7 +757,7 @@ function ttcms_php_check_includes($filename)
 {
     if ('' == _trim($filename)) {
         $message = _t('Invalid file name: empty file name given.', 'tritan-cms');
-        _incorrectly_called(__FUNCTION__, $message, '1.0.0');
+        _incorrectly_called(__FUNCTION__, $message, '0.9');
         return;
     }
 
@@ -805,7 +805,7 @@ function ttcms_php_check_includes($filename)
 /**
  * Performs a syntax and error check of a given PHP script.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $filename
  *            PHP script/file to check.
  * @param bool $check_includes
@@ -859,7 +859,7 @@ function ttcms_php_check_syntax($filename, $check_includes = true)
  * Uses activate_plugin, activate_$plugin_name, and activated_plugin
  * actions hooks.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $plugin_name
  *            Name of the plugin file (i.e. disqus.plugin.php).
  */
@@ -893,7 +893,7 @@ function ttcms_validate_plugin($plugin_name)
      * $pluginName refers to the plugin's
      * name (i.e. disqus.plugin.php).
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $plugin_name
      *            The plugin's base name.
      */
@@ -905,7 +905,7 @@ function ttcms_validate_plugin($plugin_name)
      * $pluginName refers to the plugin's
      * name (i.e. disqus.plugin.php).
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $plugin_name
      *            The plugin's base name.
      */
@@ -914,7 +914,7 @@ function ttcms_validate_plugin($plugin_name)
     /**
      * Activate the plugin if there are no errors.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $plugin_name
      *            The plugin's base name.
      */
@@ -926,7 +926,7 @@ function ttcms_validate_plugin($plugin_name)
      * $pluginName refers to the plugin's
      * name (i.e. disqus.plugin.php).
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $plugin_name
      *            The plugin's base name.
      */
@@ -937,7 +937,7 @@ function ttcms_validate_plugin($plugin_name)
  * Single file writable atribute check.
  * Thanks to legolas558.users.sf.net
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $path            
  * @return true
  */
@@ -968,7 +968,7 @@ function win_is_writable($path)
 /**
  * Alternative to PHP's native is_writable function due to a Window's bug.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $path
  *            Path to check.
  */
@@ -1000,7 +1000,7 @@ function array_to_object(array $array)
 /**
  * Strip close comment and close php tags from file headers.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $str
  *            Header comment to clean up.
  * @return string
@@ -1020,7 +1020,7 @@ function _ttcms_cleanup_file_header_comment($str)
  * If the file data is not within that first 8kB, then the author should correct
  * their plugin file and move the data headers to the top.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $file
  *            Path to the file.
  * @param array $default_headers
@@ -1046,7 +1046,7 @@ function ttcms_get_file_data($file, $default_headers, $context = '')
      * The dynamic portion of the hook name, `$context`, refers to
      * the context where extra headers might be loaded.
      *
-     * @since 1.0.0
+     * @since 0.9
      *       
      * @param array $extra_context_headers
      *            Empty array by default.
@@ -1092,7 +1092,7 @@ function ttcms_get_file_data($file, $default_headers, $context = '')
  * the file. This is not checked however and the file is only opened for
  * reading.
  *
- * @since 1.0.0
+ * @since 0.9
  *       
  * @param string $plugin_file
  *            Path to the plugin file
@@ -1140,7 +1140,7 @@ function get_plugin_data($plugin_file, $markup = true, $translate = true)
  * A wrapper for htmLawed which is a set of functions
  * for html purifier
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $str            
  * @return mixed
  */
@@ -1152,7 +1152,7 @@ function _escape($t, $C = 1, $S = [])
 /**
  * Converts seconds to time format.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param numeric $seconds
  */
 function ttcms_seconds_to_time($seconds)
@@ -1189,7 +1189,7 @@ function ttcms_seconds_to_time($seconds)
 /**
  * Checks whether a file or directory exists.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $filename Path to the file or directory.
  * @param bool $throw Determines whether to do a simple check or throw an exception.
  * @return boolean <b>true</b> if the file or directory specified by
@@ -1214,7 +1214,7 @@ function ttcms_file_exists($filename, $throw = true)
  * 
  * Uses email_template filter hook.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $body The message to templatize.
  * @return string $email The email surrounded by template.
  */
@@ -1232,7 +1232,7 @@ function set_email_template($body)
  * 
  * Uses email_template_tags filter hook.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $template Template with variables.
  * @return string Template with variables replaced.
  */
@@ -1261,7 +1261,7 @@ function template_vars_replacement($template)
  * 
  * Uses email_template_body filter hook.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $text
  * @param string $title
  * @return string
@@ -1286,7 +1286,7 @@ function process_email_html($text, $title)
 /**
  * Retrieve the domain name.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @return string
  */
 function get_domain_name()
@@ -1311,7 +1311,7 @@ function get_domain_name()
  *      php_like('%lu', 'Lucy'); //false
  *      php_like('cy%', 'Lucy'); //false
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $pattern
  * @param string $subject
  * @return bool
@@ -1325,7 +1325,7 @@ function php_like($pattern, $subject)
 /**
  * Url shortening function.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $url URL
  * @param int $length Characters to check against.
  * @return string
@@ -1348,7 +1348,7 @@ function ttcms_url_shorten($url, $length = 80)
  * 
  * Uses ttcms_redirect and ttcms_redirect_status filter hooks.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $location The path to redirect to
  * @param int $status Status code to use
  * @return bool False if $location is not set
@@ -1358,7 +1358,7 @@ function ttcms_redirect($location, $status = 302)
     /**
      * Filters the redirect location.
      *
-     * @since 1.0.0
+     * @since 0.9
      *
      * @param string $location The path to redirect to.
      * @param int    $status   Status code to use.
@@ -1367,7 +1367,7 @@ function ttcms_redirect($location, $status = 302)
     /**
      * Filters the redirect status code.
      *
-     * @since 1.0.0
+     * @since 0.9
      *
      * @param int    $status   Status code to use.
      * @param string $_location The path to redirect to.
@@ -1386,7 +1386,7 @@ function ttcms_redirect($location, $status = 302)
  * 
  * Uses query_arg_port filter hook.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $key A query variable key.
  * @param string $value A query variable value, or a URL to act upon.
  * @param string $url A URL to act upon.
@@ -1423,7 +1423,7 @@ function add_query_arg($key, $value, $url)
  * 
  * Uses login_url filter hook.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $redirect Path to redirect to on log in.
  * @return string Returns the login url.
  */
@@ -1438,7 +1438,7 @@ function ttcms_login_url($redirect = '')
     /**
      * Validates & protects redirect url against XSS attacks.
      * 
-     * @since 1.0.0
+     * @since 0.9
      */
     if (!empty($redirect) && !validate_url($redirect)) {
         $login_url = get_base_url() . 'login' . '/';
@@ -1446,7 +1446,7 @@ function ttcms_login_url($redirect = '')
     /**
      * Filters the login URL.
      *
-     * @since 1.0.0
+     * @since 0.9
      *
      * @param string $login_url    The login URL. Not HTML-encoded.
      * @param string $redirect     The path to redirect to on login, if supplied.
@@ -1457,7 +1457,7 @@ function ttcms_login_url($redirect = '')
 /**
  * Create a backup of TriTan CMS install.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param type $source Path/directory to zip.
  * @param type $destination Target for zipped file.
  * @return mixed
@@ -1503,7 +1503,7 @@ function ttcms_system_backup($source, $destination)
 /**
  * Used to retrieve values within a range.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param mixed $val
  * @param mixed $min
  * @param mixed $max
@@ -1521,7 +1521,7 @@ function ttcms_between($val, $min, $max)
  *      
  *      ttcms_list_sort($posttype['posttype_title'],'posttype_id','ASC');
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param array $objects    Array of objects to sort.
  * @param string $on        Name of field.
  * @param string $order     (ASC|DESC)
@@ -1543,7 +1543,7 @@ function ttcms_list_sort(&$objects, $on, $order = 'ASC')
  *      ttcms_pluralize(2, 'octopus', 'octopii'); // octopii
  *      ttcms_pluralize(1, 'mouse', 'mice'); // mouse
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param int $quantity     Number of items.
  * @param string $singular  Singular form of word.
  * @param string $plural    Plural form of word; function will attempt to deduce plural form from singular if not provided.
@@ -1579,7 +1579,7 @@ function ttcms_pluralize($quantity, $singular, $plural = null)
  *          //do something;
  *      }
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $url Url to validate.
  * @return bool True if valid, false otherwise.
  */
@@ -1591,7 +1591,7 @@ function validate_url($url)
 /**
  * Navigates through an array, object, or scalar, and removes slashes from the values.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param mixed $value  The value to be stripped.
  * @return mixed Stripped value.
  */
@@ -1608,7 +1608,7 @@ function stripslashes_deep($value)
  * This should be used to remove slashes from data passed to core API that
  * expects data to be unslashed.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string|array String or array of strings to unslash.
  * @return string|array Unslashed value.
  */
@@ -1620,7 +1620,7 @@ function ttcms_unslash($value)
 /**
  * Convert a value to non-negative integer.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param mixed $maybeint   Data you wish to have converted to a non-negative integer.
  * @return int A non-negative integer.
  */
@@ -1632,7 +1632,7 @@ function absint($maybeint)
 /**
  * Checks if a variable is null. If not null, check if integer or string.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string|int $var   Variable to check.
  * @return string|int|null Returns null if empty otherwise a string or an integer.
  */
@@ -1649,7 +1649,7 @@ function if_null($var)
  * 
  * Uses sanitize_key filter hook.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $key String key
  * @return string Sanitized key
  */
@@ -1662,7 +1662,7 @@ function sanitize_key($key)
     /**
      * Filters a sanitized key string.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $key     Sanitized key.
      * @param string $raw_key The key prior to sanitization.
      */
@@ -1672,7 +1672,7 @@ function sanitize_key($key)
 /**
  * Get an array that represents directory tree
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $dir   Directory path
  * @param string $bool  Include sub directories
  */
@@ -1697,7 +1697,7 @@ function directory_listing($dir, $bool = "dirs")
 /**
  * Get a list of themes available for a specific site.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $active The name to check against.
  * @return array Theme options to choose from.
  */
@@ -1714,7 +1714,7 @@ function get_site_themes($active = null)
 /**
  * Determines if the server is running Apache.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @return bool
  */
 function is_apache()
@@ -1729,7 +1729,7 @@ function is_apache()
  * 
  * e.g. `/admin/`
  * 
- * @since 1.0.0
+ * @since 0.9
  * @return bool True if an admin screen, otherwise false.
  */
 function is_admin()
@@ -1745,7 +1745,7 @@ function is_admin()
  * 
  * Checks if base_url filter hook is present.
  *
- * @since 1.0.0
+ * @since 0.9
  * @return bool True if SSL, otherwise false.
  */
 function is_ssl()
@@ -1779,7 +1779,7 @@ function is_ssl()
  * Uses default_css_pipeline, plugin_css_pipeline and theme_css_pipeline
  * filter hooks.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $config                Set whether to use `default` config or `plugin` config.
  * @param string|array $asset           Relative path to stylesheet(s) to enqueue.
  * @param bool $minify                  Set whether to minify asset or not.
@@ -1840,7 +1840,7 @@ function ttcms_enqueue_css($config, $asset, $minify = false, $plugin_slug = null
  * Uses default_js_pipeline, plugin_js_pipeline and theme_js_pipeline
  * filter hooks.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $config            Set whether to use `default` config or `plugin` config.
  * @param string|array $asset       Javascript(s) to enqueue.
  * @param bool $minify              Set whether to minify asset or not.
@@ -1905,7 +1905,7 @@ function ttcms_enqueue_js($config, $asset, $minify = false, $plugin_slug = null)
 /**
  * Normalize a filesystem path.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $path Path to normalize.
  * @return string Normalized path.
  */
@@ -1926,7 +1926,7 @@ function ttcms_normalize_path($path)
  * the `<script>` and `<style>` tags. E.g. `strip_tags( '<script>something</script>' )`
  * will return 'something'. ttcms_strip_tags will return ''
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $string        String containing HTML tags
  * @param bool   $remove_breaks Optional. Whether to remove left over line breaks and white space chars
  * @return string The processed string.
@@ -1948,7 +1948,7 @@ function ttcms_strip_tags($string, $remove_breaks = false)
  * 
  * Uses beautified_filename filter hook.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $filename Filename to beautify.
  * @return string Beautified filename.
  */
@@ -1975,7 +1975,7 @@ function beautify_filename($filename)
     /**
      * Filters a beautified filename.
      * 
-     * @since 1.0.0
+     * @since 0.9
      * @param string $filename     Beautified filename.
      * @param string $filename_raw The filename prior to beautification.
      */
@@ -1993,7 +1993,7 @@ function beautify_filename($filename)
  * 
  * Uses sanitized_filename filter hook.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $filename  Name of file to sanitize.
  * @param bool $beautify    Whether or not to beautify the sanitized filename.
  * @return string Sanitized filename for use.
@@ -2020,7 +2020,7 @@ function sanitize_filename($filename, $beautify = true)
     /**
      * Filters a sanitized filename.
      * 
-     * @since 1.0.0
+     * @since 0.9
      * @param string $filename     Sanitized filename.
      * @param string $filename_raw The filename prior to sanitization.
      */

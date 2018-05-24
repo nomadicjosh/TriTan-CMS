@@ -7,7 +7,7 @@ if (!defined('BASE_PATH'))
  *
  * @license GPLv3
  *         
- * @since 1.0.0
+ * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
  */
@@ -15,7 +15,7 @@ if (!defined('BASE_PATH'))
 /**
  * Adds data to the cache, if the cache key doesn't already exist.
  *
- * @since 1.0.0
+ * @since 0.9
  * @uses _ttcms_cache_init()
  * @param int|string $key
  *            The cache key to use for retrieval later.
@@ -34,7 +34,7 @@ function ttcms_cache_add($key, $data, $namespace = '', $expire = 3600)
     /**
      * Filter the expire time for cache item.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int $expire
      *            When the cache data should expire, in seconds.
      */
@@ -46,7 +46,7 @@ function ttcms_cache_add($key, $data, $namespace = '', $expire = 3600)
 /**
  * Retrieves the cache contents from the cache by key and group.
  *
- * @since 1.0.0
+ * @since 0.9
  * @uses _ttcms_cache_init()
  * @param int|string $key
  *            The key under which the cache contents are stored.
@@ -64,7 +64,7 @@ function ttcms_cache_get($key, $namespace = '')
 /**
  * Replaces the contents of the cache with new data.
  *
- * @since 1.0.0
+ * @since 0.9
  * @uses _ttcms_cache_init()
  * @param int|string $key
  *            The key for the cache data that should be replaced.
@@ -83,7 +83,7 @@ function ttcms_cache_replace($key, $data, $namespace = '', $expire = 3600)
     /**
      * Filter the expire time for cache item.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int $expire
      *            When the cache data should expire, in seconds.
      */
@@ -95,7 +95,7 @@ function ttcms_cache_replace($key, $data, $namespace = '', $expire = 3600)
 /**
  * Removes the cache contents matching key and group.
  *
- * @since 1.0.0
+ * @since 0.9
  * @uses _ttcms_cache_init()
  * @param int|string $key
  *            What the contents in the cache are called.
@@ -112,7 +112,7 @@ function ttcms_cache_delete($key, $namespace = '')
 /**
  * Removes all cache items.
  *
- * @since 1.0.0
+ * @since 0.9
  * @uses _ttcms_cache_init()
  * @return bool False on failure, true on success
  */
@@ -125,7 +125,7 @@ function ttcms_cache_flush()
 /**
  * Removes all cache items from a particular namespace.
  *
- * @since 1.0.0
+ * @since 0.9
  * @uses _ttcms_cache_init()
  * @param string $value
  *            The namespace to delete from.
@@ -140,7 +140,7 @@ function ttcms_cache_flush_namespace($value)
 /**
  * Sets the data contents into the cache.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param int|string $key
  *            Unique key of the cache file.
  * @param mixed $data
@@ -158,7 +158,7 @@ function ttcms_cache_set($key, $data, $namespace = '', $expire = 3600)
     /**
      * Filter the expire time for cache item.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int $expire
      *            When the cache data should expire, in seconds.
      */
@@ -172,7 +172,7 @@ function ttcms_cache_set($key, $data, $namespace = '', $expire = 3600)
  *
  * Gives the cache hits, cache misses and cache uptime.
  *
- * @since 1.0.0
+ * @since 0.9
  * @uses _ttcms_cache_init()
  */
 function ttcms_cache_get_stats()
@@ -184,7 +184,7 @@ function ttcms_cache_get_stats()
 /**
  * Increments numeric cache item's value.
  *
- * @since 1.0.0
+ * @since 0.9
  * @uses _ttcms_cache_init()
  * @param int|string $key
  *            The cache key to increment
@@ -203,7 +203,7 @@ function ttcms_cache_increment($key, $offset = 1, $namespace = '')
 /**
  * Decrements numeric cache item's value.
  *
- * @since 1.0.0
+ * @since 0.9
  * @uses _ttcms_cache_init()
  * @param int|string $key
  *            The cache key to decrement.
