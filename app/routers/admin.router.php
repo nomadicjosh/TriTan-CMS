@@ -835,6 +835,13 @@ $app->group('/admin', function() use ($app, $user) {
             $app->fenom->clearAllCompiles();
         }
         ttcms_cache_flush();
+        /**
+         * Action is triggered after cache is flushed and cache
+         * directory is re-created.
+         * 
+         * @since 0.9.5
+         */
+        $this->app->hook->{'do_action'}('protect_cache_dir');
         ttcms_redirect($app->req->server['HTTP_REFERER']);
     });
 
