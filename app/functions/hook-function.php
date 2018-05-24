@@ -1413,6 +1413,7 @@ function ttcms_editor($selector = null)
         tinymce.init({
             selector: "<?= $mce_selector; ?>",
             theme: "<?= $mce_theme; ?>",
+            browser_spellcheck: true,
             relative_urls: false,
             remove_script_host: false,
             height: 325,
@@ -1585,6 +1586,37 @@ function set_url_scheme($url, $scheme = null)
 }
 
 /**
+ * Adds missing files to site's cache directory.
+ *
+ * @since 0.9.5
+ */
+function add_files_cache_directory()
+{
+    $dir = Config::get('cache_path');
+
+    $key = _ttcms_random_lib()->generate(25, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+
+    if (!file_exists($dir . '.htaccess')) {
+        $content = "# BEGIN Privatization";
+        $content .= "# This .htaccess file ensures that other people cannot download your files.";
+        $content .= "<IfModule mod_rewrite.c>";
+        $content .= "RewriteEngine On";
+        $content .= "RewriteCond %{QUERY_STRING} !key=$key";
+        $content .= "RewriteRule (.*) - [F]";
+        $content .= "</IfModule>";
+        $content .= "# END Privatization";
+        file_put_contents($dir . '.htaccess', $content);
+    }
+
+    if (!file_exists($dir . '.gitignore')) {
+        $content = "*";
+        $content .= "*/";
+        $content .= "!.gitignore";
+        file_put_contents($dir . '.gitignore', $content);
+    }
+}
+
+/**
  * Default actions and filters.
  * 
  * @since 1.0.0
@@ -1611,6 +1643,7 @@ app()->hook->{'add_action'}('before_router_login', 'update_main_site', 5);
 app()->hook->{'add_action'}('before_router_login', 'is_site_exist', 6);
 app()->hook->{'add_action'}('ttcms_login', 'generate_php_encryption', 5);
 app()->hook->{'add_action'}('enqueue_ttcms_editor', 'ttcms_editor', 5);
+app()->hook->{'add_action'}('protect_cache_dir', 'add_files_cache_directory', 5);
 app()->hook->{'add_filter'}('the_content', 'ttcms_autop');
 app()->hook->{'add_filter'}('the_content', 'parsecode_unautop');
 app()->hook->{'add_filter'}('the_content', 'do_parsecode', 5);
