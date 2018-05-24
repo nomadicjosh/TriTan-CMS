@@ -12,7 +12,7 @@ if (!defined('BASE_PATH'))
  *
  * @license GPLv3
  *         
- * @since 1.0.0
+ * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
  */
@@ -33,7 +33,7 @@ class Logger
     /**
      * Writes a log to the log table in the database.
      * 
-     * @since 1.0.0
+     * @since 0.9
      */
     public function writeLog($action, $process, $record, $uname)
     {
@@ -67,7 +67,7 @@ class Logger
     /**
      * Purges audit trail logs that are older than 30 days old.
      * 
-     * @since 1.0.0
+     * @since 0.9
      */
     public function purgeActivityLog()
     {
@@ -93,7 +93,7 @@ class Logger
     /**
      * Purges system error logs that are older than 30 days old.
      * 
-     * @since 1.0.0
+     * @since 0.9
      */
     public function purgeErrorLog()
     {

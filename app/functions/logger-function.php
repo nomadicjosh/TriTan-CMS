@@ -9,7 +9,7 @@ use TriTan\Config;
  *
  * @license GPLv3
  *         
- * @since 1.0.0
+ * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
  */
@@ -108,7 +108,7 @@ Cascade::fileConfig(app()->hook->{'apply_filter'}('monolog_cascade_config', $con
  * Sets the default error handler to handle
  * PHP errors and exceptions.
  *
- * @since 1.0.0
+ * @since 0.9
  */
 function ttcms_error_handler($type, $string, $file, $line)
 {
@@ -119,7 +119,7 @@ function ttcms_error_handler($type, $string, $file, $line)
 /**
  * Set Error Log for Debugging.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string|array $value The data to be catched.
  */
 function ttcms_error_log($value)
@@ -134,7 +134,7 @@ function ttcms_error_log($value)
 /**
  * Write Activity Logs to Database.
  *
- * @since 1.0.0
+ * @since 0.9
  */
 function ttcms_logger_activity_log_write($action, $process, $record, $uname)
 {
@@ -145,7 +145,7 @@ function ttcms_logger_activity_log_write($action, $process, $record, $uname)
 /**
  * Purges the error log of old records.
  *
- * @since 1.0.0
+ * @since 0.9
  */
 function ttcms_logger_error_log_purge()
 {
@@ -156,7 +156,7 @@ function ttcms_logger_error_log_purge()
 /**
  * Purges the activity log of old records.
  *
- * @since 1.0.0
+ * @since 0.9
  */
 function ttcms_logger_activity_log_purge()
 {
@@ -167,7 +167,7 @@ function ttcms_logger_activity_log_purge()
 /**
  * Custom error log function for better PHP logging.
  * 
- * @since 1.0.0
+ * @since 0.9
  * @param string $name
  *            Log channel and log file prefix.
  * @param string $message
@@ -183,7 +183,7 @@ function ttcms_monolog($name, $message)
 /**
  * Set the system environment.
  * 
- * @since 1.0.0
+ * @since 0.9
  */
 function ttcms_set_environment()
 {

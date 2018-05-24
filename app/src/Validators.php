@@ -13,7 +13,7 @@ use Cascade\Cascade;
  *
  * @license GPLv3
  *         
- * @since 1.0.0
+ * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
  */
@@ -23,7 +23,7 @@ class Validators
     /**
      * Validates username.
      * 
-     * @since 1.0.0
+     * @since 0.9
      * @param string $username Whether given username is valid.
      * @return bool|Exception   Returns true if username is valid, false and exception
      *                          if username is not valid.
@@ -44,7 +44,7 @@ class Validators
     /**
      * Validates email.
      * 
-     * @since 1.0.0
+     * @since 0.9
      * @param string $email Whether given email is valid.
      * @return bool|Exception   Returns true if email is valid, false and exception
      *                          if email is not valid.

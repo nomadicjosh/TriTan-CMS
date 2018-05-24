@@ -6,7 +6,7 @@ use TriTan\Config;
  * Liten - PHP 5 micro framework
  *
  * @link http://www.litenframework.com
- * @version 1.0.0
+ * @version 0.9
  * @package Liten
  *         
  *          The MIT License (MIT)

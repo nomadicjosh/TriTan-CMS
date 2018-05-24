@@ -12,7 +12,7 @@ if (!defined('BASE_PATH'))
  *
  * @license GPLv3
  *         
- * @since 1.0.0
+ * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
  */
@@ -21,7 +21,7 @@ interface PluginLoaderInterface
     /**
      * Add a new action to the collection to be registered with TriTan CMS.
      *
-     * @since    1.0.0
+     * @since    0.9
      * @param    string               $hook             The name of the TriTan CMS action that is being registered.
      * @param    object               $component        A reference to the instance of the object on which the action is defined.
      * @param    string               $callback         The name of the function definition on the $component.
@@ -33,7 +33,7 @@ interface PluginLoaderInterface
     /**
      * Add a new filter to the collection to be registered with TriTan CMS.
      *
-     * @since    1.0.0
+     * @since    0.9
      * @param    string               $hook             The name of the TriTan CMS filter that is being registered.
      * @param    object               $component        A reference to the instance of the object on which the filter is defined.
      * @param    string               $callback         The name of the function definition on the $component.
@@ -46,7 +46,7 @@ interface PluginLoaderInterface
      * A utility function that is used to register the actions and hooks into a single
      * collection.
      *
-     * @since    1.0.0
+     * @since    0.9
      * @access   private
      * @param    array                $hooks            The collection of hooks that is being registered (that is, actions or filters).
      * @param    string               $hook             The name of the TriTan CMS filter that is being registered.
@@ -61,7 +61,7 @@ interface PluginLoaderInterface
     /**
      * Register the filters and actions with TriTan CMS.
      *
-     * @since    1.0.0
+     * @since    0.9
      */
     public function run();
 }

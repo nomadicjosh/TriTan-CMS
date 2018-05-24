@@ -6,7 +6,7 @@ if (!defined('BASE_PATH'))
  *
  * @license GPLv3
  *         
- * @since 1.0.0
+ * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
  */
@@ -16,7 +16,7 @@ use Cascade\Cascade;
 /**
  * Retrieve the name of the metadata table for the specified object type.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $type Type of object to get metadata table for (e.g. post or user)
  * @return string Metadata document name.
  */
@@ -30,7 +30,7 @@ function _get_meta_table($type)
 /**
  * Retrieve metadata for the specified array.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $meta_type Type of array metadata is for (e.g. post or user)
  * @param int    $array_id ID of the array metadata is for
  * @param string $meta_key  Optional. Metadata key. If not specified, retrieve all metadata for
@@ -55,7 +55,7 @@ function get_metadata($meta_type, $array_id, $meta_key, $single = false)
      * array type (post or user). Returning a non-null value
      * will effectively short-circuit the function.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param null|string   $value      The value get_metadata() should return - a single metadata value.
      * @param int           $array_id  Array ID.
      * @param string        $meta_key   Meta key.
@@ -100,7 +100,7 @@ function get_metadata($meta_type, $array_id, $meta_key, $single = false)
  * Update metadata for the specified array. If no value already exists for the specified array
  * ID and metadata key, the metadata will be added.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $meta_type  Type of array metadata is for (e.g. post or user)
  * @param int    $array_id  ID of the array metadata is for
  * @param string $meta_key   Metadata key
@@ -133,7 +133,7 @@ function update_metadata($meta_type, $array_id, $meta_key, $meta_value, $prev_va
      * array type (post or user). Returning a non-null value
      * will effectively short-circuit the function.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param null|bool $check      Whether to allow updating metadata for the given type.
      * @param int       $array_id  Array ID.
      * @param string    $meta_key   Meta key.
@@ -175,7 +175,7 @@ function update_metadata($meta_type, $array_id, $meta_key, $meta_value, $prev_va
          * The dynamic portion of the hook, `$meta_type`, refers to the meta
          * array type (post or user).
          *
-         * @since 1.0.0
+         * @since 0.9
          *
          * @param int    $meta_id    ID of the metadata entry to update.
          * @param int    $array_id  Array ID.
@@ -213,7 +213,7 @@ function update_metadata($meta_type, $array_id, $meta_key, $meta_value, $prev_va
          * The dynamic portion of the hook, `$meta_type`, refers to the meta
          * array type (post or user).
          *
-         * @since 1.0.0
+         * @since 0.9
          * @param int    $meta_id    ID of updated metadata entry.
          * @param int    $array_id  Array ID.
          * @param string $meta_key   Meta key.
@@ -228,7 +228,7 @@ function update_metadata($meta_type, $array_id, $meta_key, $meta_value, $prev_va
 /**
  * Add metadata for the specified array.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $meta_type  Type of array metadata is for (e.g. post or user)
  * @param int    $array_id  ID of the array metadata is for
  * @param string $meta_key   Metadata key
@@ -268,7 +268,7 @@ function add_metadata($meta_type, $array_id, $meta_key, $meta_value, $unique = f
      * array type (post or user). Returning a non-null value
      * will effectively short-circuit the function.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param null|bool $check          Whether to allow adding metadata for the given type.
      * @param int       $array_id      Array ID.
      * @param string    $meta_key       Meta key.
@@ -300,7 +300,7 @@ function add_metadata($meta_type, $array_id, $meta_key, $meta_value, $unique = f
      * The dynamic portion of the hook, `$meta_type`, refers to the meta
      * array type (post or user).
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int    $array_id  Array ID.
      * @param string $meta_key   Meta key.
      * @param mixed  $meta_value Meta value.
@@ -341,7 +341,7 @@ function add_metadata($meta_type, $array_id, $meta_key, $meta_value, $unique = f
      * The dynamic portion of the hook, `$meta_type`, refers to the meta
      * array type (post or user).
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int    $mid        The meta ID after successful update.
      * @param int    $array_id  Array ID.
      * @param string $meta_key   Meta key.
@@ -355,7 +355,7 @@ function add_metadata($meta_type, $array_id, $meta_key, $meta_value, $unique = f
 /**
  * Delete metadata for the specified array.
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $meta_type  Type of array metadata is for (e.g. post or user)
  * @param int    $array_id  ID of the array metadata is for
  * @param string $meta_key   Metadata key
@@ -397,7 +397,7 @@ function delete_metadata($meta_type, $array_id, $meta_key, $meta_value = '', $de
      * array type (post or user). Returning a non-null value
      * will effectively short-circuit the function.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param null|bool $delete     Whether to allow metadata deletion of the given type.
      * @param int       $array_id  Array ID.
      * @param string    $meta_key   Meta key.
@@ -451,7 +451,7 @@ function delete_metadata($meta_type, $array_id, $meta_key, $meta_value = '', $de
      * The dynamic portion of the hook, `$meta_type`, refers to the meta
      * array type (post or user).
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param array  $meta_ids   An array of metadata entry IDs to delete.
      * @param int    $array_id  Array ID.
      * @param string $meta_key   Meta key.
@@ -489,7 +489,7 @@ function delete_metadata($meta_type, $array_id, $meta_key, $meta_value = '', $de
      * The dynamic portion of the hook name, `$meta_type`, refers to the meta
      * array type (post or user).
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param array  $meta_ids   An array of deleted metadata entry IDs.
      * @param int    $array_id  Array ID.
      * @param string $meta_key   Meta key.
@@ -503,7 +503,7 @@ function delete_metadata($meta_type, $array_id, $meta_key, $meta_value = '', $de
 /**
  * Determine if a meta key is set for a given array
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $meta_type Type of array metadata is for (e.g. post or user)
  * @param int    $array_id ID of the array metadata is for
  * @param string $meta_key  Metadata key.
@@ -543,7 +543,7 @@ function metadata_exists($meta_type, $array_id, $meta_key)
 /**
  * Get meta data by meta ID
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $meta_type Type of array metadata is for (e.g. post or user).
  * @param int    $meta_id   ID for a specific meta row
  * @return array|false Meta array or false.
@@ -583,7 +583,7 @@ function get_metadata_by_mid($meta_type, $meta_id)
 /**
  * Update meta data by meta ID
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $meta_type  Type of array metadata is for (e.g. post or user)
  * @param int    $meta_id    ID for a specific meta row
  * @param string $meta_value Metadata value
@@ -660,7 +660,7 @@ function update_metadata_by_mid($meta_type, $meta_id, $meta_value, $meta_key = f
 /**
  * Delete meta data by meta ID
  *
- * @since 1.0.0
+ * @since 0.9
  * @param string $meta_type Type of array metadata is for (e.g. post or user).
  * @param int    $meta_id   ID for a specific meta row
  * @return bool True on successful delete, false on failure.

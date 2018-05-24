@@ -9,7 +9,7 @@ if (!defined('BASE_PATH'))
  * If the TriTan CMS 'queue' service implements this interface, the
  * garbageCollection() method will be called during master cron.
  * 
- * @since       1.0.0
+ * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
  */

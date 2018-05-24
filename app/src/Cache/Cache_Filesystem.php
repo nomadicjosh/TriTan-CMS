@@ -1,4 +1,6 @@
-<?php namespace TriTan\Cache;
+<?php
+
+namespace TriTan\Cache;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
@@ -12,7 +14,7 @@ use Cascade\Cascade;
  *
  * @license GPLv3
  *         
- * @since 1.0.0
+ * @since 0.9
  * @package TriTan CMS
  * @subpackage Cache
  * @author Joshua Parker <joshmac3@icloud.com>
@@ -23,7 +25,7 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
     /**
      * Application object.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @var object
      */
     public $app;
@@ -31,7 +33,7 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
     /**
      * Cache directory object.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @var string
      */
     protected $_dir;
@@ -39,7 +41,7 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
     /**
      * Holds the cached objects.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @var array
      */
     protected $_cache = [];
@@ -47,7 +49,7 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
     /**
      * Holds the memory limit object.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @var int
      */
     protected $_memory_limit;
@@ -55,7 +57,7 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
     /**
      * Holds the memory limit object
      *
-     * @since 1.0.0
+     * @since 0.9
      * @var int
      */
     protected $_memory_low;
@@ -63,7 +65,7 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
     /**
      * Should the cache persist or not.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @var bool
      */
     public $persist;
@@ -71,7 +73,7 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
     /**
      * Sets if cache is enabled or not.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @var bool
      */
     public $enable;
@@ -124,10 +126,10 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
         /**
          * Filter sets whether caching is enabled or not.
          *
-         * @since 1.0.0
+         * @since 0.9
          * @var bool
          */
-        $this->enable = $this->app->hook->apply_filter('enable_caching', true);
+        $this->enable = $this->app->hook->{'apply_filter'}('enable_caching', true);
 
         $this->persist = $this->enable && true;
 
@@ -140,11 +142,11 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
          * Filter the file cache directory in order to override it
          * in case some systems are having issues.
          *
-         * @since 1.0.0
+         * @since 0.9
          * @param string $dir
          *            The directory where file system cache files are saved.
          */
-        $cacheDir = $this->app->hook->apply_filter('filesystem_cache_dir', $dir);
+        $cacheDir = $this->app->hook->{'apply_filter'}('filesystem_cache_dir', $dir);
 
         /**
          * If the cache directory does not exist, the create it first
@@ -180,7 +182,7 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
      *
      * @see TriTan\Cache\Abstract_Cache::create()
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int|string $key
      *            Unique key of the cache file.
      * @param mixed $data
@@ -210,7 +212,7 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
      *
      * @see TriTan\Cache\Abstract_Cache::read()
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int|string $key
      *            Unique key of the cache file.
      * @param string $namespace
@@ -290,7 +292,7 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
      *
      * @see TriTan\Cache\Abstract_Cache::update()
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int|string $key
      *            Unique key of the cache file.
      * @param mixed $data
@@ -320,7 +322,7 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
      *
      * @see TriTan\Cache\Abstract_Cache::delete()
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int|string $key
      *            Unique key of cache file.
      * @param string $namespace
@@ -351,7 +353,7 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
      *
      * @see TriTan\Cache\Abstract_Cache::flush()
      *
-     * @since 1.0.0
+     * @since 0.9
      * @return bool Returns true if the cache was purged or false otherwise.
      */
     public function flush()
@@ -369,7 +371,7 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
      *
      * @see TriTan\Cache\Abstract_Cache::flushNamespace()
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int|string $namespace
      *            Optional. Where the cache contents are namespaced. Default: 'default'.
      * @return bool Returns true if the namespace was purged or false otherwise.
@@ -393,7 +395,7 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
      *
      * @see TriTan\Cache\Abstract_Cache::set()
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int|string $key
      *            Unique key of the cache file.
      * @param mixed $data
@@ -469,7 +471,7 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
      *
      * Gives the cache hits, cache misses and cache uptime.
      *
-     * @since 1.0.0
+     * @since 0.9
      */
     public function getStats()
     {
@@ -491,7 +493,7 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
      *
      * @see TriTan\Cache\Abstract_Cache::inc()
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int|string $key
      *            The cache key to increment
      * @param int $offset
@@ -532,7 +534,7 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
      *
      * @see TriTan\Cache\Abstract_Cache::dec()
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int|string $key
      *            The cache key to decrement.
      * @param int $offset
@@ -573,7 +575,7 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
      *
      * @see TriTan\Cache\Abstract_Cache::uniqueKey()
      *
-     * @since 1.0.0
+     * @since 0.9
      * @access protected
      * @param int|string $key
      *            Unique key for cache file.
@@ -596,7 +598,7 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
      *
      * @see TriTan\Cache\Abstract_Cache::_exists()
      *
-     * @since 1.0.0
+     * @since 0.9
      * @access protected
      * @param int|string $key
      *            Cache key to check for existence.
@@ -618,7 +620,7 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
     /**
      * Deletes cache/namespace directory.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $dir
      *            Directory that should be removed.
      */
@@ -642,7 +644,7 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
      * Counts the number of cache hits
      * and writes it to a file.
      *
-     * @since 1.0.0
+     * @since 0.9
      */
     protected function cacheHits()
     {
@@ -671,7 +673,7 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
      * Counts the number of cache misses
      * and writes it to a file.
      *
-     * @since 1.0.0
+     * @since 0.9
      */
     protected function cacheMisses()
     {
@@ -699,7 +701,7 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
     /**
      * Removes any and all stale items from the cache.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int|string $namespace
      *            Optional. Where the cache contents are namespaced. Default: 'default'.
      * @param int $ttl
@@ -726,7 +728,7 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
     /**
      * Retrieve the cache file.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @access protected
      * @param int|string $key
      *            Unqiue key of cache.
@@ -749,4 +751,5 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
         }
         return $this->_dir . urlencode($namespace) . DS . urlencode(md5($key));
     }
+
 }

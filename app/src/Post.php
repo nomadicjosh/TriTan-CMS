@@ -9,7 +9,7 @@ use TriTan\Config;
  *
  * @license GPLv3
  *         
- * @since 1.0.0
+ * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
  */
@@ -19,7 +19,7 @@ final class Post
     /**
      * Post ID.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @var int
      */
     public $post_id;
@@ -76,7 +76,7 @@ final class Post
     /**
      * Issetter.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $key Property to check if set.
      * @return bool
      */
@@ -88,7 +88,7 @@ final class Post
     /**
      * Getter.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $key Key to get.
      * @return mixed
      */

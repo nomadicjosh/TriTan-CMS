@@ -8,7 +8,7 @@ if (!defined('BASE_PATH'))
  *
  * @license GPLv3
  *         
- * @since 1.0.0
+ * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
  */
@@ -18,7 +18,7 @@ final class Site
     /**
      * Site id.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @var int
      */
     public $site_id;
@@ -26,7 +26,7 @@ final class Site
     /**
      * Name of site.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @var string
      */
     public $site_name;
@@ -34,7 +34,7 @@ final class Site
     /**
      * Domain of site.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @var string
      */
     public $site_domain;
@@ -42,7 +42,7 @@ final class Site
     /**
      * Path of site.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @var string
      */
     public $site_path;
@@ -50,7 +50,7 @@ final class Site
     /**
      * Owner of site.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @var int
      */
     public $site_owner;
@@ -58,7 +58,7 @@ final class Site
     /**
      * Status of site.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @var string
      */
     public $site_status;
@@ -66,7 +66,7 @@ final class Site
     /**
      * Timestamp when site was created.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @var string
      */
     public $site_registered = '0000-00-00 00:00:00';
@@ -74,7 +74,7 @@ final class Site
     /**
      * Timestamp when site was updated.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @var string
      */
     public $site_modified = '0000-00-00 00:00:00';
@@ -82,7 +82,7 @@ final class Site
     /**
      * Retrieves a site from the database by its site_id.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param int $site_id The site_id of the site to retrieve.
      * @return Site|false The site's object if found. False if not.
      */
@@ -116,7 +116,7 @@ final class Site
      * Will populate object properties from the object provided and assign other
      * default properties based on that information.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param Site|object $site A site object.
      */
     public function __construct($site)
@@ -138,7 +138,7 @@ final class Site
      * Allows current multisite naming conventions when getting properties.
      * Allows access to extended site properties.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $key Property to get.
      * @return mixed Value of the property. Null if not available.
      */
@@ -170,7 +170,7 @@ final class Site
      * Allows current multisite naming conventions when checking for properties.
      * Checks for extended site properties.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $key Property to check if set.
      * @return bool Whether the property is set.
      */
@@ -201,7 +201,7 @@ final class Site
      *
      * Allows current multisite naming conventions while setting properties.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @param string $key   Property to set.
      * @param mixed  $value Value to assign to the property.
      */
@@ -221,7 +221,7 @@ final class Site
      *
      * This method is used internally to lazy-load the extended properties of a site.
      *
-     * @since 1.0.0
+     * @since 0.9
      * @see Site::__get()
      * @return stdClass A raw site object with all details included.
      */
@@ -241,7 +241,7 @@ final class Site
         /**
          * Filters a site's extended properties.
          *
-         * @since 1.0.0
+         * @since 0.9
          * @param array $details The site details.
          */
         $details = app()->hook->{'apply_filter'}('site_details', $details);

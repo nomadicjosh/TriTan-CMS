@@ -9,7 +9,7 @@ use Cascade\Cascade;
  *  
  * @license GPLv3
  * 
- * @since       1.0.0
+ * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
  */
@@ -39,6 +39,6 @@ ttcms_set_environment();
 /**
  * Loads the default textdomain.
  * 
- * @since 1.0.0
+ * @since 0.9
  */
 load_default_textdomain('tritan-cms', BASE_PATH . 'languages' . DS);
