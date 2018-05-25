@@ -1,4 +1,5 @@
 <?php
+
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 
@@ -247,7 +248,7 @@ function make_clickable($value, $protocols = ['http', 'mail'], array $attributes
             case 'https': $value = preg_replace_callback('~(?:(https?)://([^\s<]+)|(www\.[^\s<]+?\.[^\s<]+))(?<![\.,:])~i', function ($match) use ($protocol, &$links, $attr) {
                     if ($match[1])
                         $protocol = $match[1];
-                    $link = $match[2] ? : $match[3];
+                    $link = $match[2] ?: $match[3];
                     return '<' . array_push($links, "<a $attr href=\"$protocol://$link\">$link</a>") . '>';
                 }, $value);
                 break;
@@ -519,8 +520,8 @@ function get_layouts_header($layout_dir = '')
                     preg_match('|Layout Slug:(.*)$|mi', $layout_data, $layout_slug);
 
                     foreach (array(
-                    'name',
-                    'layout_slug'
+                'name',
+                'layout_slug'
                     ) as $field) {
                         if (!empty(${$field}))
                             ${$field} = trim(${$field}[1]);
@@ -1519,18 +1520,23 @@ function ttcms_between($val, $min, $max)
  *
  * Example Usage:
  *      
- *      ttcms_list_sort($posttype['posttype_title'],'posttype_id','ASC');
+ *      ttcms_list_sort($post,'post_id','ASC', false);
  * 
  * @since 0.9
- * @param array $objects    Array of objects to sort.
- * @param string $on        Name of field.
- * @param string $order     (ASC|DESC)
+ * @param array $objects        Array of objects to sort.
+ * @param string/array $orderby Name of field or array of fields to filter by.
+ * @param string $order         (ASC|DESC)
+ * @param bool $preserve_keys   Whether to preserve keys.
  * @return array Returns a sorted array.
  */
-function ttcms_list_sort(&$objects, $on, $order = 'ASC')
+function ttcms_list_sort(&$objects, $orderby = [], $order = 'ASC', $preserve_keys = false)
 {
-    $comparer = ($order === 'DESC') ? "return -strcmp(\$a->{$on},\$b->{$on});" : "return strcmp(\$a->{$on},\$b->{$on});";
-    usort($objects, create_function('$a,$b', $comparer));
+    if (!is_array($objects)) {
+        return [];
+    }
+
+    $util = new \TriTan\ListUtil($objects);
+    return $util->sort($orderby, $order, $preserve_keys);
 }
 
 /**
@@ -1598,8 +1604,8 @@ function validate_url($url)
 function stripslashes_deep($value)
 {
     $_value = is_array($value) ?
-        array_map('stripslashes_deep', $value) :
-        stripslashes($value);
+            array_map('stripslashes_deep', $value) :
+            stripslashes($value);
 
     return $_value;
 }
@@ -1964,13 +1970,13 @@ function beautify_filename($filename)
         '/_+/',
         // "file---name.zip" becomes "file-name.zip"
         '/-+/'
-        ], '-', $filename_raw);
+            ], '-', $filename_raw);
     $filename = preg_replace([
         // "file--.--.-.--name.zip" becomes "file.name.zip"
         '/-*\.-*/',
         // "file...name..zip" becomes "file.name.zip"
         '/\.{2,}/'
-        ], '.', $filename);
+            ], '.', $filename);
 
     /**
      * Filters a beautified filename.
@@ -2003,7 +2009,7 @@ function sanitize_filename($filename, $beautify = true)
     $filename_raw = $filename;
     // sanitize filename
     $filename = preg_replace(
-        '~
+            '~
         [<>:"/\\|?*]|            # file system reserved https://en.wikipedia.org/wiki/Filename#Reserved_characters_and_words
         [\x00-\x1F]|             # control characters http://msdn.microsoft.com/en-us/library/windows/desktop/aa365247%28v=vs.85%29.aspx
         [\x7F\xA0\xAD]|          # non-printing characters DEL, NO-BREAK SPACE, SOFT HYPHEN
