@@ -427,6 +427,7 @@ $app->group('/admin', function() use ($app, $user) {
                     'path' => BASE_PATH . 'private' . DS,
                     'tmbURL' => get_base_url() . 'private/.tmb',
                     'tmpPath' => BASE_PATH . 'private' . DS . '.tmb',
+                    'detectDirIcon' => 'favicon.ico',
                     'alias' => 'Files',
                     'mimeDetect' => 'auto',
                     'accessControl' => 'access',
@@ -497,6 +498,95 @@ $app->group('/admin', function() use ($app, $user) {
                     'uploadAllow' => [
                         'text/plain', 'text/html', 'application/json', 'application/xml',
                         'application/javascript'
+                    ],
+                    'uploadOrder' => ['allow', 'deny']
+                ],
+                [
+                    'driver' => 'LocalFileSystem',
+                    'startPath' => Config::get('site_path') . 'uploads' . DS,
+                    'path' => Config::get('site_path') . 'uploads' . DS,
+                    'alias' => 'Media Library',
+                    'mimeDetect' => 'auto',
+                    'accessControl' => 'access',
+                    'tmbURL' => get_base_url() . 'private/sites/' . (int) Config::get('site_id') . '/uploads/' . '.tmb',
+                    'tmpPath' => Config::get('site_path') . 'uploads' . DS . '.tmb',
+                    'URL' => get_base_url() . 'private/sites/' . (int) Config::get('site_id') . '/uploads/',
+                    'attributes' => [
+                        [
+                            'read' => true,
+                            'write' => true,
+                            'locked' => false
+                        ],
+                        [
+                            'pattern' => '/\__optimized__/',
+                            'read' => false,
+                            'write' => false,
+                            'hidden' => true,
+                            'locked' => true
+                        ],
+                        [
+                            'pattern' => '/\.gitkeep/',
+                            'read' => false,
+                            'write' => false,
+                            'hidden' => true,
+                            'locked' => true
+                        ],
+                        [
+                            'pattern' => '/\.gitignore/',
+                            'read' => false,
+                            'write' => false,
+                            'hidden' => true,
+                            'locked' => true
+                        ],
+                        [
+                            'pattern' => '/\.htaccess/',
+                            'read' => false,
+                            'write' => false,
+                            'hidden' => true,
+                            'locked' => true
+                        ],
+                        [
+                            'pattern' => '/\index.html/',
+                            'read' => false,
+                            'write' => false,
+                            'hidden' => true,
+                            'locked' => false
+                        ],
+                        [
+                            'pattern' => '/\.tmb/',
+                            'read' => false,
+                            'write' => false,
+                            'hidden' => true,
+                            'locked' => false
+                        ],
+                        [
+                            'pattern' => '/\.quarantine/',
+                            'read' => false,
+                            'write' => false,
+                            'hidden' => true,
+                            'locked' => false
+                        ],
+                        [
+                            'pattern' => '/\.DS_Store/',
+                            'read' => false,
+                            'write' => false,
+                            'hidden' => true,
+                            'locked' => false
+                        ],
+                        [
+                            'pattern' => '/\.json$/',
+                            'read' => true,
+                            'write' => true,
+                            'hidden' => false,
+                            'locked' => false
+                        ]
+                    ],
+                    'uploadMaxSize' => '500M',
+                    'uploadAllow' => [
+                        'text/plain', 'image/png', 'image/jpeg', 'image/gif', 'application/zip',
+                        'text/csv', 'application/pdf', 'application/msword', 'application/vnd.ms-excel',
+                        'application/vnd.ms-powerpoint', 'application/msword', 'application/vnd.ms-excel',
+                        'application/vnd.ms-powerpoint', 'video/mp4'
                     ],
                     'uploadOrder' => ['allow', 'deny']
                 ]
@@ -752,12 +842,12 @@ $app->group('/admin', function() use ($app, $user) {
     });
 
     $app->get('/system-snapshot/', function () use($app) {
-        $user = $app->db->table('user')->where('user_status', 'A')->get();
-        $error = $app->db->table(Config::get('tbl_prefix') . 'error')->all();
+        $user = $app->db->table('user')->where('user_status', 'A');
+        $error = $app->db->table(Config::get('tbl_prefix') . 'error');
         $app->view->display('admin/system-snapshot', [
             'title' => _t('System Snapshot Report', 'tritan-cms'),
-            'user' => count($user),
-            'error' => count($error)
+            'user' => (int) $user->count(),
+            'error' => (int) $error->count()
         ]);
     });
 
@@ -841,7 +931,7 @@ $app->group('/admin', function() use ($app, $user) {
          * 
          * @since 0.9.5
          */
-        $this->app->hook->{'do_action'}('protect_cache_dir');
+        $app->hook->{'do_action'}('protect_cache_dir');
         ttcms_redirect($app->req->server['HTTP_REFERER']);
     });
 

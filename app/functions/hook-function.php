@@ -1594,23 +1594,32 @@ function add_files_cache_directory()
 {
     $dir = Config::get('cache_path');
 
+    try {
+        /**
+         * Re-creates the cache directory with proper permissions.
+         */
+        _mkdir($dir);
+    } catch (IOException $e) {
+        Cascade::getLogger('error')->error(sprintf('IOSTATE[%s]: Forbidden: %s', $e->getCode(), $e->getMessage()));
+    }
+
     $key = _ttcms_random_lib()->generate(25, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
 
     if (!file_exists($dir . '.htaccess')) {
-        $content = "# BEGIN Privatization";
-        $content .= "# This .htaccess file ensures that other people cannot download your files.";
-        $content .= "<IfModule mod_rewrite.c>";
-        $content .= "RewriteEngine On";
-        $content .= "RewriteCond %{QUERY_STRING} !key=$key";
-        $content .= "RewriteRule (.*) - [F]";
-        $content .= "</IfModule>";
+        $content = "# BEGIN Privatization" . "\n";
+        $content .= "# This .htaccess file ensures that other people cannot download your files." . "\n";
+        $content .= "<IfModule mod_rewrite.c>" . "\n";
+        $content .= "RewriteEngine On" . "\n";
+        $content .= "RewriteCond %{QUERY_STRING} !key=$key" . "\n";
+        $content .= "RewriteRule (.*) - [F]" . "\n";
+        $content .= "</IfModule>" . "\n";
         $content .= "# END Privatization";
         file_put_contents($dir . '.htaccess', $content);
     }
 
     if (!file_exists($dir . '.gitignore')) {
-        $content = "*";
-        $content .= "*/";
+        $content = "*" . "\n";
+        $content .= "*/" . "\n";
         $content .= "!.gitignore";
         file_put_contents($dir . '.gitignore', $content);
     }

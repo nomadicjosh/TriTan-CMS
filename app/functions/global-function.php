@@ -35,7 +35,7 @@ function _ttcms_cache_init()
  */
 function _ttcms_phpmailer($bool = true)
 {
-    $phpMailer = new \PHPMailer($bool);
+    $phpMailer = new \PHPMailer\PHPMailer\PHPMailer($bool);
     return $phpMailer;
 }
 

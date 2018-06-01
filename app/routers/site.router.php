@@ -1,4 +1,5 @@
 <?php
+
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use TriTan\Config;
@@ -52,7 +53,7 @@ $app->group('/admin', function() use ($app, $user) {
         $app->view->display('admin/site/index', [
             'title' => _t('Sites', 'tritan-cms'),
             'sites' => $sites
-            ]
+                ]
         );
     });
 
@@ -106,7 +107,7 @@ $app->group('/admin', function() use ($app, $user) {
             $app->view->display('admin/site/update', [
                 'title' => _t('Update Site', 'tritan-cms'),
                 'site' => $q,
-                ]
+                    ]
             );
         }
     });
@@ -131,7 +132,7 @@ $app->group('/admin', function() use ($app, $user) {
         $site->begin();
         try {
             $site->where('site_id', (int) $id)
-                ->delete();
+                    ->delete();
             $site->commit();
             /**
              * Action hook triggered after the site is deleted.
@@ -165,7 +166,7 @@ $app->group('/admin', function() use ($app, $user) {
         $app->view->display('admin/site/users', [
             'title' => _t('Manage Site Users', 'tritan-cms'),
             'users' => $users
-            ]
+                ]
         );
     });
 
@@ -190,22 +191,22 @@ $app->group('/admin', function() use ($app, $user) {
         $user->begin();
         try {
             $user->where('user_id', (int) $id)
-                ->delete();
+                    ->delete();
             $user->commit();
 
             $check = $app->db->table('usermeta')
-                ->where('user_id', (int) $id)
-                ->where('meta_key', 'match', "/$tbl_prefix/")
-                ->get();
+                    ->where('user_id', (int) $id)
+                    ->where('meta_key', 'match', "/$tbl_prefix/")
+                    ->count();
 
-            if (count($check) > 0) {
+            if ((int) $check > 0) {
 
                 $umeta = $app->db->table('usermeta');
                 $umeta->begin();
                 try {
                     $umeta->where('user_id', (int) $id)
-                        ->where('meta_key', 'match', "/$tbl_prefix/")
-                        ->delete();
+                            ->where('meta_key', 'match', "/$tbl_prefix/")
+                            ->delete();
 
                     $umeta->commit();
                 } catch (Exception $ex) {

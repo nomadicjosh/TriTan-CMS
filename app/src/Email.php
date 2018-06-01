@@ -1,4 +1,6 @@
-<?php namespace TriTan;
+<?php
+
+namespace TriTan;
 
 use Cascade\Cascade;
 
@@ -85,6 +87,9 @@ class Email
         }
 
         // Headers
+        $cc = $bcc = $reply_to = [];
+
+        // Headers
         if (empty($headers)) {
             $headers = [];
         } else {
@@ -95,9 +100,9 @@ class Email
             } else {
                 $tempheaders = $headers;
             }
+
             $headers = [];
-            $cc = [];
-            $bcc = [];
+
             // If it's actually got contents
             if (!empty($tempheaders)) {
                 // Iterate through the raw headers
@@ -108,7 +113,7 @@ class Email
                             $boundary = trim(str_replace([
                                 "'",
                                 '"'
-                                    ], '', $parts[1]));
+                                            ], '', $parts[1]));
                         }
                         continue;
                     }
@@ -144,13 +149,13 @@ class Email
                                     $charset = trim(str_replace([
                                         'charset=',
                                         '"'
-                                            ], '', $charset_content));
+                                                    ], '', $charset_content));
                                 } elseif (false !== stripos($charset_content, 'boundary=')) {
                                     $boundary = trim(str_replace([
                                         'BOUNDARY=',
                                         'boundary=',
                                         '"'
-                                            ], '', $charset_content));
+                                                    ], '', $charset_content));
                                     $charset = '';
                                 }
                                 // Avoid setting an empty $content_type.
@@ -164,6 +169,9 @@ class Email
                         case 'bcc':
                             $bcc = array_merge((array) $bcc, explode(',', $content));
                             break;
+                        case 'reply-to':
+                            $reply_to = array_merge((array) $reply_to, explode(',', $content));
+                            break;
                         default:
                             // Add it to our grand headers array
                             $headers[trim($name)] = trim($content);
@@ -174,10 +182,10 @@ class Email
         }
 
         // Empty out the values that may be set
-        $this->mailer->ClearAllRecipients();
-        $this->mailer->ClearAttachments();
-        $this->mailer->ClearCustomHeaders();
-        $this->mailer->ClearReplyTos();
+        $this->mailer->clearAllRecipients();
+        $this->mailer->clearAttachments();
+        $this->mailer->clearCustomHeaders();
+        $this->mailer->clearReplyTos();
 
         // From email and name
         // If we don't have a name from the input headers
@@ -196,7 +204,7 @@ class Email
          * @param string $from_email
          *            Email address to send from.
          */
-        $this->mailer->From = $this->app->hook->{'apply_filter'}('ttcms_mail_from', $from_email);
+        $from_email = $this->app->hook->{'apply_filter'}('ttcms_mail_from', $from_email);
 
         /**
          * Filter the name to associate with the "from" email address.
@@ -205,7 +213,16 @@ class Email
          * @param string $from_name
          *            Name associated with the "from" email address.
          */
-        $this->mailer->FromName = $this->app->hook->{'apply_filter'}('ttcms_mail_from_name', $from_name);
+        $from_name = $this->app->hook->{'apply_filter'}('ttcms_mail_from_name', $from_name);
+
+        try {
+            $this->mailer->setFrom($from_email, $from_name, false);
+        } catch (\PHPMailer\PHPMailer\Exception $e) {
+            $mail_error_data = compact('to', 'subject', 'message', 'headers', 'attachments');
+            $mail_error_data['phpmailer_exception_code'] = $e->getCode();
+            $this->app->hook->{'do_action'}('ttcms_mail_failed', new Error('ttcms_mail_failed', $e->getMessage(), $mail_error_data));
+            return false;
+        }
 
         foreach ((array) $to as $recipient) {
             try {
@@ -217,8 +234,8 @@ class Email
                         $recipient = $matches[2];
                     }
                 }
-                $this->mailer->AddAddress($recipient, $recipient_name);
-            } catch (phpmailerException $e) {
+                $this->mailer->addAddress($recipient, $recipient_name);
+            } catch (\PHPMailer\PHPMailer\Exception $e) {
                 Cascade::getLogger('error')->error(sprintf('PHPMailer[%s]: Error: %s', $e->getCode(), $e->getMessage()));
                 continue;
             }
@@ -228,47 +245,45 @@ class Email
         $this->mailer->Subject = $subject;
         $this->mailer->Body = $message;
 
-        // Add any CC and BCC recipients
-        if (!empty($cc)) {
-            foreach ((array) $cc as $recipient) {
-                try {
-                    // Break $recipient into name and address parts if in the format "Foo <bar@baz.com>"
-                    $recipient_name = '';
-                    if (preg_match('/(.*)<(.+)>/', $recipient, $matches)) {
-                        if (count($matches) == 3) {
-                            $recipient_name = $matches[1];
-                            $recipient = $matches[2];
-                        }
-                    }
-                    $this->mailer->AddCc($recipient, $recipient_name);
-                } catch (phpmailerException $e) {
-                    Cascade::getLogger('error')->error(sprintf('PHPMailer[%s]: Error: %s', $e->getCode(), $e->getMessage()));
-                    continue;
-                }
-            }
-        }
+        // Set destination addresses, using appropriate methods for handling addresses
+        $address_headers = compact('to', 'cc', 'bcc', 'reply_to');
 
-        if (!empty($bcc)) {
-            foreach ((array) $bcc as $recipient) {
+        foreach ($address_headers as $address_header => $addresses) {
+            if (empty($addresses)) {
+                continue;
+            }
+            foreach ((array) $addresses as $address) {
                 try {
                     // Break $recipient into name and address parts if in the format "Foo <bar@baz.com>"
                     $recipient_name = '';
-                    if (preg_match('/(.*)<(.+)>/', $recipient, $matches)) {
+                    if (preg_match('/(.*)<(.+)>/', $address, $matches)) {
                         if (count($matches) == 3) {
                             $recipient_name = $matches[1];
-                            $recipient = $matches[2];
+                            $address = $matches[2];
                         }
                     }
-                    $this->mailer->AddBcc($recipient, $recipient_name);
-                } catch (phpmailerException $e) {
-                    Cascade::getLogger('error')->error(sprintf('PHPMailer[%s]: Error: %s', $e->getCode(), $e->getMessage()));
+                    switch ($address_header) {
+                        case 'to':
+                            $this->mailer->addAddress($address, $recipient_name);
+                            break;
+                        case 'cc':
+                            $this->mailer->addCc($address, $recipient_name);
+                            break;
+                        case 'bcc':
+                            $this->mailer->addBcc($address, $recipient_name);
+                            break;
+                        case 'reply_to':
+                            $this->mailer->addReplyTo($address, $recipient_name);
+                            break;
+                    }
+                } catch (\PHPMailer\PHPMailer\Exception $e) {
                     continue;
                 }
             }
         }
 
         // Set to use PHP's mail()
-        $this->mailer->IsMail();
+        $this->mailer->isMail();
 
         // Set Content-Type and charset
         // If we don't have a content-type from the input headers
@@ -289,7 +304,12 @@ class Email
 
         // Set whether it's plaintext, depending on $content_type
         if ('text/html' == $content_type) {
-            $this->mailer->IsHTML(true);
+            $this->mailer->isHTML(true);
+        }
+
+        // If we don't have a charset from the input headers
+        if (!isset($charset)) {
+            $charset = ''; //get_bloginfo( 'charset' );
         }
 
         // Set the content-type and charset
@@ -306,19 +326,19 @@ class Email
         // Set custom headers
         if (!empty($headers)) {
             foreach ((array) $headers as $name => $content) {
-                $this->mailer->AddCustomHeader(sprintf('%1$s: %2$s', $name, $content));
+                $this->mailer->addCustomHeader(sprintf('%1$s: %2$s', $name, $content));
             }
 
             if (false !== stripos($content_type, 'multipart') && !empty($boundary)) {
-                $this->mailer->AddCustomHeader(sprintf("Content-Type: %s;\n\t boundary=\"%s\"", $content_type, $boundary));
+                $this->mailer->addCustomHeader(sprintf("Content-Type: %s;\n\t boundary=\"%s\"", $content_type, $boundary));
             }
         }
 
         if (!empty($attachments)) {
             foreach ($attachments as $attachment) {
                 try {
-                    $this->mailer->AddAttachment($attachment);
-                } catch (phpmailerException $e) {
+                    $this->mailer->addAttachment($attachment);
+                } catch (\PHPMailer\PHPMailer\Exception $e) {
                     Cascade::getLogger('error')->error(sprintf('PHPMailer[%s]: Error: %s', $e->getCode(), $e->getMessage()));
                     continue;
                 }
@@ -338,24 +358,23 @@ class Email
 
         // Send!
         try {
-            return $this->mailer->Send();
-        } catch (phpmailerException $e) {
+            return $this->mailer->send();
+        } catch (\PHPMailer\PHPMailer\Exception $e) {
 
             $mail_error_data = compact($to, $subject, $message, $headers, $attachments);
+            $mail_error_data['phpmailer_exception_code'] = $e->getCode();
             /**
-             * Fires after a phpmailerException is caught.
+             * Fires after a \PHPMailer\PHPMailer\Exception is caught.
              *
              * @since 0.9
              * @param Error $error
-             *            A Error object with the phpmailerException code, message, and an array
+             *            A Error object with the \PHPMailer\PHPMailer\Exception code, message, and an array
              *            containing the mail recipient, subject, message, headers, and attachments.
              */
-            $this->app->hook->{'do_action'}('ttcms_mail_failed', new \TriTan\Error($e->getCode(), $e->getMessage(), $mail_error_data));
+            $this->app->hook->{'do_action'}('ttcms_mail_failed', new Error('ttcms_mail_failed', $e->getMessage(), $mail_error_data));
             Cascade::getLogger('error')->error(sprintf('PHPMailer[%s]: Error: %s', $e->getCode(), $e->getMessage()));
             return false;
         }
-
-        return true;
     }
 
     /**
@@ -388,8 +407,9 @@ class Email
         }
         try {
             $this->ttcmsMail(_escape($user['user_email']), _t('New Account'), $message, $headers);
-        } catch (\phpmailerException $e) {
+        } catch (\PHPMailer\PHPMailer\Exception $e) {
             _ttcms_flash()->error($e->getMessage());
         }
     }
+
 }

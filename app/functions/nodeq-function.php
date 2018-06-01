@@ -51,7 +51,7 @@ function ttcms_nodeq_login_details()
 
             try {
                 _ttcms_email()->ttcmsMail(_escape($r['email']), _t("TriTan CMS Login Details"), $message, $headers);
-            } catch (phpmailerException $e) {
+            } catch (PHPMailer\PHPMailer\Exception $e) {
                 Cascade::getLogger('system_email')->alert(sprintf('PHPMAILER[%s]: %s', $e->getCode(), $e->getMessage()));
             } catch (Exception $e) {
                 Cascade::getLogger('system_email')->alert(sprintf('PHPMAILER[%s]: %s', $e->getCode(), $e->getMessage()));

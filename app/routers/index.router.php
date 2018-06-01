@@ -1,10 +1,11 @@
 <?php
+
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 
 $app->get('/logout/', function () use($app) {
     $user = ttcms_get_current_user();
-    
+
     ttcms_logger_activity_log_write(_t('Authentication', 'tritan-cms'), _t('Logout', 'tritan-cms'), get_name(_escape($user['user_id'])), _escape($user['user_login']));
 
     if (strpos($app->req->server['HTTP_REFERER'], 'admin') !== FALSE) {
@@ -32,18 +33,18 @@ $app->get('/logout/', function () use($app) {
 
 $app->post('/reset-password/', function () use($app) {
     $user = $app->db->table('user')
-        ->where('user_login', $app->req->post['username'])
-        ->where('user_email', $app->req->post['email'])
-        ->first();
+            ->where('user_login', $app->req->post['username'])
+            ->where('user_email', $app->req->post['email'])
+            ->first();
 
-    if (count($user) > 1) {
+    if ((int) _escape($user['user_id']) > 1) {
         $password = _ttcms_random_lib()->generateString(20, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
         $reset = $app->db->table('user');
         $reset->begin();
         try {
             $reset->where('user_id', (int) _escape($user['user_id']))
-                ->update([
-                    'user_pass' => ttcms_hash_password($password)
+                    ->update([
+                        'user_pass' => ttcms_hash_password($password)
             ]);
             $reset->commit();
             /**

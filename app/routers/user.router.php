@@ -1,4 +1,5 @@
 <?php
+
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use TriTan\Validators;
@@ -58,7 +59,7 @@ $app->group('/admin', function() use ($app, $current_user) {
         }
         $app->view->display('admin/user/profile', [
             'title' => _t('User Profile', 'tritan-cms'),
-            ]
+                ]
         );
     });
 
@@ -77,7 +78,7 @@ $app->group('/admin', function() use ($app, $current_user) {
         $app->view->display('admin/user/index', [
             'title' => _t('Manage Users', 'tritan-cms'),
             'users' => get_multisite_users()
-            ]
+                ]
         );
     });
 
@@ -134,7 +135,7 @@ $app->group('/admin', function() use ($app, $current_user) {
 
         $app->view->display('admin/user/create', [
             'title' => _t('Create New User', 'tritan-cms')
-            ]
+                ]
         );
     });
 
@@ -206,7 +207,7 @@ $app->group('/admin', function() use ($app, $current_user) {
             $app->view->display('admin/user/update', [
                 'title' => _t('Update User', 'tritan-cms'),
                 'user' => $_user
-                ]
+                    ]
             );
         }
     });
@@ -352,18 +353,18 @@ $app->group('/admin', function() use ($app, $current_user) {
         $tbl_prefix = Config::get('tbl_prefix');
 
         $check = $app->db->table('usermeta')
-            ->where('user_id', (int) $id)
-            ->where('meta_key', 'match', "/$tbl_prefix/")
-            ->get();
+                ->where('user_id', (int) $id)
+                ->where('meta_key', 'match', "/$tbl_prefix/")
+                ->count();
 
-        if (count($check) > 0) {
+        if ((int) $check > 0) {
             $user = $app->db->table('usermeta');
             $user->begin();
             try {
 
                 $user->where('user_id', (int) $id)
-                    ->where('meta_key', 'match', "/$tbl_prefix/")
-                    ->delete();
+                        ->where('meta_key', 'match', "/$tbl_prefix/")
+                        ->delete();
 
                 $user->commit();
 
@@ -379,16 +380,16 @@ $app->group('/admin', function() use ($app, $current_user) {
 
     $app->match('GET|POST', '/user/lookup/', function () use($app) {
         $user = $app->db->table('user')
-            ->where('user_id', $app->req->post['user_login'])
-            ->first();
+                ->where('user_id', $app->req->post['user_login'])
+                ->first();
 
         $json = [
             'input#fname' => _escape($user['user_fname']), 'input#lname' => _escape($user['user_lname']),
             'input#email' => _escape($user['user_email'])
         ];
         error_log($app->req->post['user_login']);
-        error_log(var_export($app->req->post,true));
-        error_log(var_export($user,true));
+        error_log(var_export($app->req->post, true));
+        error_log(var_export($user, true));
         echo json_encode($json);
     });
 

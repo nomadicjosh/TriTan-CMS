@@ -1,4 +1,5 @@
 <?php
+
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use TriTan\Exception\Exception;
@@ -25,19 +26,19 @@ $app->get('/cronjob/', function () use($app) {
     if ($app->hook->{'get_option'}('enable_cron_jobs') != (int) 1) {
         exit();
     }
-    
+
     $app->hook->{'do_action'}('ttcms_task_worker_cron');
 
     $error_count = $app->db->table(Config::get('tbl_prefix') . 'error')
-        ->where(strtotime('add_date'), '<=', strtotime('-5 days'))
-        ->get();
+            ->where(strtotime('add_date'), '<=', strtotime('-5 days'))
+            ->count();
 
-    if (count($error_count) > 0) {
+    if ((int) $error_count > 0) {
         $error = $app->db->table(Config::get('tbl_prefix') . 'error');
         $error->begin();
         try {
             $error->where(strtotime('add_date'), '<=', strtotime('-5 days'))
-                ->delete();
+                    ->delete();
             $error->commit();
         } catch (Exception $e) {
             $error->rollback();
@@ -47,16 +48,15 @@ $app->get('/cronjob/', function () use($app) {
 
     ttcms_logger_error_log_purge();
     ttcms_logger_activity_log_purge();
-    
+
     try {
 
         $tasks = $app->db->table(Config::get('tbl_prefix') . 'tasks')
-            ->where('enabled', '1')
-            ->get();
-        if (count($tasks) > 0) {
+                ->where('enabled', '1');
+        if ((int) $tasks->count() > 0) {
 
             $array = [];
-            foreach ($tasks as $task) {
+            foreach ($tasks->get() as $task) {
                 $array[] = (array) $task;
             }
 
@@ -66,7 +66,7 @@ $app->get('/cronjob/', function () use($app) {
                     $delete->begin();
                     try {
                         $delete->where('tasks_id', (int) _escape($queue['tasks_id']))
-                            ->delete();
+                                ->delete();
                         $delete->commit();
                     } catch (Exception $e) {
                         $delete->rollback();

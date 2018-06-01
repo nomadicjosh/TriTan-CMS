@@ -1,4 +1,5 @@
 <?php
+
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use TriTan\Config;
@@ -40,15 +41,15 @@ $app->group('/admin', function() use ($app, $user) {
          */
         $app->get('/' . _escape($post_type['posttype_slug']) . '/', function () use($app, $post_type) {
             $posts = $app->db->table(Config::get('tbl_prefix') . 'post')
-                ->where('post_type.post_posttype', _escape($post_type['posttype_slug']))
-                ->sortBy('post_created', 'desc')
-                ->get();
+                    ->where('post_type.post_posttype', _escape($post_type['posttype_slug']))
+                    ->sortBy('post_created', 'desc')
+                    ->get();
 
             $app->view->display('admin/post/index', [
                 'title' => _escape($post_type['posttype_title']),
                 'posts' => $posts,
                 'posttype' => _escape($post_type['posttype_slug'])
-                ]
+                    ]
             );
         });
 
@@ -126,14 +127,14 @@ $app->group('/admin', function() use ($app, $user) {
                 }
             }
 
-            $post_count = $app->db->table(Config::get('tbl_prefix') . 'post')->all();
+            $post_count = $app->db->table(Config::get('tbl_prefix') . 'post')->count();
 
             $app->view->display('admin/post/create', [
                 'title' => _t('Create', 'tritan-cms') . ' ' . _escape($post_type['posttype_title']),
                 'posttype_title' => _escape($post_type['posttype_title']),
                 'posttype' => _escape($post_type['posttype_slug']),
-                'post_count' => count($post_count)
-                ]
+                'post_count' => (int) $post_count
+                    ]
             );
         });
 
@@ -196,8 +197,8 @@ $app->group('/admin', function() use ($app, $user) {
 
                     $parent = $app->db->table(Config::get('tbl_prefix') . 'post');
                     $parent->where('post_attributes.parent.parent_id', (int) $id)
-                        ->update([
-                            'post_attributes.parent.post_parent' => (string) $post_slug
+                            ->update([
+                                'post_attributes.parent.post_parent' => (string) $post_slug
                     ]);
                     ttcms_cache_delete((int) $id, 'post');
                     /**
@@ -227,8 +228,8 @@ $app->group('/admin', function() use ($app, $user) {
             $cache = ttcms_cache_get((int) $id, 'post');
             if (empty($cache)) {
                 $cache = $q->where('post_id', (int) $id)
-                    ->where('post_type.post_posttype', _escape((string) $post_type['posttype_slug']))
-                    ->first();
+                        ->where('post_type.post_posttype', _escape((string) $post_type['posttype_slug']))
+                        ->first();
                 ttcms_cache_add((int) $id, $cache, 'post');
             }
 
@@ -265,7 +266,7 @@ $app->group('/admin', function() use ($app, $user) {
                     'posttype_title' => _escape($post_type['posttype_title']),
                     'posttype' => _escape($post_type['posttype_slug']),
                     'post' => $cache
-                    ]
+                        ]
                 );
             }
         });
@@ -314,7 +315,7 @@ $app->group('/admin', function() use ($app, $user) {
             $post->begin();
             try {
                 $post->where('post_id', (int) $id)
-                    ->delete();
+                        ->delete();
                 $post->commit();
                 _ttcms_flash()->{'success'}(_ttcms_flash()->notice(200), get_base_url() . 'admin/' . (string) _escape($post_type['posttype_slug']) . '/');
             } catch (Exception $ex) {
@@ -373,7 +374,7 @@ $app->group('/admin', function() use ($app, $user) {
         $app->view->display('admin/post/posttype', [
             'title' => _t('Post Types', 'tritan-cms'),
             'posttypes' => $posttypes
-            ]
+                ]
         );
     });
 
@@ -389,6 +390,10 @@ $app->group('/admin', function() use ($app, $user) {
     });
 
     $app->match('GET|POST', '/post-type/(\d+)/', function ($id) use($app) {
+        $current_pt = $app->db->table(Config::get('tbl_prefix') . 'posttype')
+                ->where('posttype_id', (int) $id)
+                ->first();
+
         if ($app->req->isPost()) {
             $posttype = $app->db->table(Config::get('tbl_prefix') . 'posttype');
             $posttype->begin();
@@ -401,11 +406,15 @@ $app->group('/admin', function() use ($app, $user) {
                 ]);
                 $posttype->commit();
 
-                $post = $app->db->table(Config::get('tbl_prefix') . 'post');
-                $post->where('post_type.posttype_id', (int) $id)
-                    ->update([
-                        'post_type.post_posttype' => (string) $posttype_slug
-                ]);
+                /**
+                 * Update all post's relative url if the the posted data
+                 * for posttype does not equal to the current posttype.
+                 * 
+                 * @since 0.9.6
+                 */
+                if ($current_pt['posttype_slug'] != (string) $posttype_slug) {
+                    update_post_relative_url_posttype($id, $current_pt['posttype_slug'], (string) $posttype_slug);
+                }
                 ttcms_cache_delete((int) $id, 'posttype');
                 /**
                  * Action hook triggered after the posttype is updated.
@@ -451,7 +460,7 @@ $app->group('/admin', function() use ($app, $user) {
                 'title' => _t('Update Post Type', 'tritan-cms'),
                 'posttype' => $q,
                 'posttypes' => $posttypes
-                ]
+                    ]
             );
         }
     });
@@ -472,14 +481,14 @@ $app->group('/admin', function() use ($app, $user) {
         $posttype->begin();
         try {
             $posttype->where('posttype_id', (int) $id)
-                ->delete();
+                    ->delete();
             $posttype->commit();
 
             $post = $app->db->table(Config::get('tbl_prefix') . 'post');
             $post->begin();
             try {
                 $post->where('post_type.posttype_id', (int) $id)
-                    ->delete();
+                        ->delete();
                 $post->commit();
                 ttcms_cache_delete('posttype', 'posttype');
                 ttcms_cache_delete('post', 'post');
