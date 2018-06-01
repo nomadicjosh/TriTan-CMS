@@ -931,7 +931,7 @@ $app->group('/admin', function() use ($app, $user) {
          * 
          * @since 0.9.5
          */
-        $this->app->hook->{'do_action'}('protect_cache_dir');
+        $app->hook->{'do_action'}('protect_cache_dir');
         ttcms_redirect($app->req->server['HTTP_REFERER']);
     });
 
