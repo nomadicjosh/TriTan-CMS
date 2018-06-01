@@ -46,6 +46,7 @@ TriTan uses a schemaless database library and stores those files as well as some
 * private/sites/{site_id}/files/cache/*
 
 Here is an example of what should go inside of the .htaccess file to secure the above directories. Make sure to change the `key` to something unique and secure.
+
 ```
 # BEGIN Privatization
 # This .htaccess file ensures that other people cannot download your files.
