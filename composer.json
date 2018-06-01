@@ -31,7 +31,7 @@
         "mikey179/vfsStream": "^1",
         "jolicode/jolinotif": "^1.0",
         "symfony/process": "~2.8",
-        "phpmailer/phpmailer": "^5.2",
+        "phpmailer/phpmailer": "*",
         "gettext/gettext": "*",
         "gettext/languages": "*",
         "theorchard/monolog-cascade": "~0.4",
@@ -59,6 +59,7 @@
         "parkerj/php-auto-update": "^1.0",
         "league/oauth2-google": "^2.0",
         "erusev/parsedown": "^1.6",
-        "vlucas/valitron": "^1.4"
+        "vlucas/valitron": "^1.4",
+        "fenom/providers-collection": "^1.0"
     }
 }
