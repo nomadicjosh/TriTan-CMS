@@ -47,7 +47,7 @@ TriTan uses a schemaless database library and stores those files as well as some
 
 Here is an example of what should go inside of the .htaccess file to secure the above directories. Make sure to change the `key` to something unique and secure.
 
-`
+```
 # BEGIN Privatization
 # This .htaccess file ensures that other people cannot download your files.
 
@@ -58,7 +58,7 @@ RewriteRule (.*) - [F]
 </IfModule>
 
 # END Privatization
-`
+```
 
 ## Resources
 * [Learn](//learn.tritancms.com/) - TriTan documentaion.
