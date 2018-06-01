@@ -390,6 +390,10 @@ $app->group('/admin', function() use ($app, $user) {
     });
 
     $app->match('GET|POST', '/post-type/(\d+)/', function ($id) use($app) {
+        $current_pt = $app->db->table(Config::get('tbl_prefix') . 'posttype')
+                ->where('posttype_id', (int) $id)
+                ->first();
+
         if ($app->req->isPost()) {
             $posttype = $app->db->table(Config::get('tbl_prefix') . 'posttype');
             $posttype->begin();
@@ -402,11 +406,15 @@ $app->group('/admin', function() use ($app, $user) {
                 ]);
                 $posttype->commit();
 
-                $post = $app->db->table(Config::get('tbl_prefix') . 'post');
-                $post->where('post_type.posttype_id', (int) $id)
-                        ->update([
-                            'post_type.post_posttype' => (string) $posttype_slug
-                ]);
+                /**
+                 * Update all post's relative url if the the posted data
+                 * for posttype does not equal to the current posttype.
+                 * 
+                 * @since 0.9.6
+                 */
+                if ($current_pt['posttype_slug'] != (string) $posttype_slug) {
+                    update_post_relative_url_posttype($id, $current_pt['posttype_slug'], (string) $posttype_slug);
+                }
                 ttcms_cache_delete((int) $id, 'posttype');
                 /**
                  * Action hook triggered after the posttype is updated.

@@ -391,6 +391,7 @@ function update_meta_cache($meta_type, $array_ids)
  * Generates the encryption table if it does not exist.
  * 
  * @since 0.9
+ * @access private
  * @return bool
  */
 function generate_php_encryption()
@@ -434,4 +435,37 @@ function is_option_exist($option_key)
     }
 
     return true;
+}
+
+/**
+ * Update post's relative url if posttype slug has been updated.
+ * 
+ * @since 0.9.6
+ * @access private
+ * @param int $id           Unique Posttype id.
+ * @param string $old_slug  Old posttype slug.
+ * @param string $new_slug  New posttype slug.
+ */
+function update_post_relative_url_posttype($id, $old_slug, $new_slug)
+{
+    $post = app()->db->table(Config::get('tbl_prefix') . 'post');
+    $post->begin();
+    try {
+        $post->where('post_type.posttype_id', (int) $id)
+                ->update([
+                    'post_type.post_posttype' => (string) $new_slug
+        ]);
+        $post->commit();
+    } catch (Exception $ex) {
+        $post->rollback();
+        Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
+        _ttcms_flash()->{'error'}(_ttcms_flash()->notice(409));
+    }
+
+    $collection = app()->db->table(Config::get('tbl_prefix') . 'post');
+    $query = $collection->where('post_type.posttype_id', (int) $id)->map(function($data) use($old_slug, $new_slug) {
+        $data['post_relative_url'] = str_replace((string) $old_slug, (string) $new_slug, (string) $data['post_relative_url']);
+        return $data;
+    });
+    $query->save();
 }
