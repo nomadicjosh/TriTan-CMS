@@ -7,7 +7,7 @@ use TriTan\Config;
  *  
  * @license GPLv3
  * 
- * @since       1.0.0
+ * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
  */
@@ -18,13 +18,9 @@ Config::set('screen_parent', 'users');
 Config::set('screen_child', 'auser');
 ?>
 
-<style>
-    #other{display:none;}
-</style>
-
 <script type="text/javascript">
 $(document).ready(function(){
-    $('#user').on('change', function(e) {
+    $('#user_select').on('change', function(e) {
         $.ajax({
             type    : 'POST',
             url     : '<?=get_base_url();?>admin/user/lookup/',
@@ -38,6 +34,21 @@ $(document).ready(function(){
             }
         });
     });
+});
+
+ $(document).ready(function(){
+    $('[name^="check"]').on('change', function() {   
+        if( $('#user_select').prop('disabled')) {
+            $('#user_select').prop('disabled',false);
+            $('#user_input').prop('disabled',true);
+            $('#send_email').hide();
+     } else {
+            $('#user_input').prop('disabled',false);
+            $('#user_select').prop('disabled',true);
+            $('#send_email').show();
+        }
+    });    
+
 });
 </script>
 
@@ -75,14 +86,19 @@ $(document).ready(function(){
                         <div class="box-body">
                             <div class="form-group">
                                 <label><strong><font color="red">*</font> <?= _t('Username', 'tritan-cms'); ?></strong></label>
-                                <div id="other">
-                                    <p style="margin-top:.6em;"><input type="text" class="form-control" name="user_login" placeholder="Username" /></p>
+                                <div class="clearfix">
+                                    <input type="checkbox" name="check" checked="checked"/> <?=_t('New User?');?>
                                 </div>
                                 
-                                <select id="user" class="form-control select2" name="user_login" style="width: 100%;" required>
-                                    <option value=""> ---------------------- </option>
-                                    <?php get_users_dropdown(__return_post('user_login')); ?>
-                                    <option value="other"><?= _t('New User', 'tritan-cms'); ?></option>
+                                <div class="clearfix">&nbsp;</div>
+                                
+                                <div class="clearfix">
+                                    <p style="margin-top:.6em;"><input id="user_input" type="text" class="form-control" name="user_login" placeholder="Username" value="<?= __return_post('user_login'); ?>" /></p>
+                                </div>
+                                
+                                <select id="user_select" class="form-control select2" name="user_id" style="width: 100%;" disabled="disabled">
+                                    <option value=""> ----------Existing User?------------ </option>
+                                    <?php get_users_dropdown(__return_post('user_id')); ?>
                                 </select>
                             </div>
 
@@ -100,7 +116,7 @@ $(document).ready(function(){
                             /**
                              * Fires at the end of the 'Name' section on the 'Create User' screen.
                              * 
-                             * @since 1.0.0
+                             * @since 0.9
                              */
                             $app->hook->{'do_action'}('create_user_profile_name');
                             ?>
@@ -123,7 +139,7 @@ $(document).ready(function(){
                             /**
                              * Fires at the end of the 'Contact info' section on the 'Create User' screen.
                              * 
-                             * @since 1.0.0
+                             * @since 0.9
                              */
                             $app->hook->{'do_action'}('create_user_profile_contact');
                             ?>
@@ -162,24 +178,19 @@ $(document).ready(function(){
                             /**
                              * Fires at the end of the 'Status' section on the 'Create User' screen.
                              * 
-                             * @since 1.0.0
+                             * @since 0.9
                              */
                             $app->hook->{'do_action'}('create_user_profile_status');
                             ?>
                         </div>
                     </div>
                     
-                    <div class="box box-primary">
+                    <div id="send_email" class="box box-primary">
                         <div class="box-header with-border">
-                            <h3 class="box-title"><?= _t('Password', 'tritan-cms'); ?></h3>
+                            <h3 class="box-title"><?= _t('Email', 'tritan-cms'); ?></h3>
                         </div>
                         <!-- /.box-header -->
                         <div class="box-body">
-
-                            <div class="form-group">
-                                <label><strong><font color="red">*</font> <?= _t('Set Password', 'tritan-cms'); ?></strong></label>
-                                <input type="text" class="form-control" name="user_pass" value="<?= __return_post('user_pass'); ?>" required/>
-                            </div>
                             
                             <div class="form-group">
                                 <label><strong><?= _t('Send Email', 'tritan-cms'); ?></strong></label>
@@ -193,7 +204,7 @@ $(document).ready(function(){
                             /**
                              * Fires at the end of the 'Password' section on the 'Create User' screen.
                              * 
-                             * @since 1.0.0
+                             * @since 0.9
                              */
                             $app->hook->{'do_action'}('create_user_profile_password');
                             ?>
@@ -204,7 +215,7 @@ $(document).ready(function(){
                     /**
                      * Fires after the 'About the user' section on the 'Create User' screen.
                      * 
-                     * @since 1.0.0
+                     * @since 0.9
                      */
                     $app->hook->{'do_action'}('create_user_profile');
                     ?>
@@ -220,13 +231,4 @@ $(document).ready(function(){
     <!-- /.content-wrapper -->
 </form>
 <!-- form end -->
-<script>
-$('select[name=user_login]').change(function(e){
-  if ($('select[name=user_login]').val() == 'other'){
-      $('#other').show();
-  } else {
-    $('#other').hide();
-  }
-});
-</script>
 <?php $app->view->stop(); ?>

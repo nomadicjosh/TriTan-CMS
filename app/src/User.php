@@ -1,4 +1,8 @@
-<?php namespace TriTan;
+<?php
+
+namespace TriTan;
+
+use TriTan\Config;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
@@ -32,22 +36,30 @@ class User
     public $user_id = 0;
 
     /**
+     * The site ID the capabilities of this user are initialized for.
+     *
+     * @since 0.9.7
+     * @var int
+     */
+    private $site_id = 0;
+
+    /**
      * Constructor.
      *
      * Retrieves the userdata and passes it to User::init().
      *
      * @since 0.9
-     * @param int|string|stdClass|User $user_id     User's ID, a User object, or a user object from the DB.
+     * @param int|string|stdClass|User $user_id     User's ID, a User object, or a user array from the DB.
      * @param string $name                          Optional. User's username
      * @param int $site_id                          Optional Site ID, defaults to current site.
      */
-    public function __construct($user_id = 0, $name = '')
+    public function __construct($user_id = 0, $name = '', $site_id = '')
     {
         if ($user_id instanceof User) {
-            $this->init($user_id->data);
+            $this->init($user_id->data, $site_id);
             return;
         } elseif (is_object($user_id)) {
-            $this->init($user_id);
+            $this->init($user_id, $site_id);
             return;
         }
 
@@ -63,7 +75,7 @@ class User
         }
 
         if ($data) {
-            $this->init($data);
+            $this->init($data, $site_id);
         } else {
             $this->data = new \stdClass;
         }
@@ -73,12 +85,15 @@ class User
      * Sets up object properties.
      *
      * @since  0.9
-     * @param object $data    User DB row object.
+     * @param object $data              User DB row array.
+     * @param int $site_id Optional.    The site ID to initialize
      */
-    public function init($data)
+    public function init($data, $site_id = '')
     {
-        $this->data = $data;
+        $this->data = array_to_object($data);
         $this->user_id = (int) $data['user_id'];
+
+        $this->for_site($site_id);
     }
 
     /**
@@ -160,7 +175,7 @@ class User
         if (isset($this->data->$key)) {
             return true;
         }
-        return metadata_exists('users', $this->user_id, Config::get('tbl_prefix') . $key);
+        return metadata_exists('user', $this->user_id, Config::get('tbl_prefix') . $key);
     }
 
     /**
@@ -256,4 +271,32 @@ class User
     {
         return $this->__isset($key);
     }
+
+    /**
+     * Return an array representation.
+     *
+     * @since 0.9.7
+     * @return array Array representation.
+     */
+    public function to_array()
+    {
+        return get_object_vars($this->data);
+    }
+
+    /**
+     * Sets the site to operate on. Defaults to the current site.
+     *
+     * @since 0.9.7
+     * @param int $site_id Site ID to initialize user capabilities for. Default is the current site.
+     */
+    public function for_site($site_id = '')
+    {
+
+        if (!empty($site_id)) {
+            $this->site_id = absint($site_id);
+        } else {
+            $this->site_id = get_current_site_id();
+        }
+    }
+
 }

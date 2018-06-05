@@ -1,4 +1,5 @@
 <?php
+
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 /**
@@ -95,11 +96,11 @@ function site_domain_exists($sitedomain)
 function site_exists($site_domain, $site_path)
 {
     $site = app()->db->table('site')
-        ->where('site_domain', $site_domain)
-        ->where('site_path', $site_path)
-        ->get();
+            ->where('site_domain', $site_domain)
+            ->where('site_path', $site_path)
+            ->count();
 
-    if (count($site) > 0) {
+    if ($site > 0) {
         $exists = true;
     } else {
         $exists = false;
@@ -127,14 +128,14 @@ function update_site_user_meta($_site_id, $user_id)
 {
     $user = get_userdata((int) $user_id);
     $data = [
-        'user_login' => _escape($user['user_login']),
-        'user_fname' => _escape($user['user_fname']),
-        'user_lname' => _escape($user['user_lname']),
-        'user_email' => _escape($user['user_email']),
+        'user_login' => _escape($user->user_login),
+        'user_fname' => _escape($user->user_fname),
+        'user_lname' => _escape($user->user_lname),
+        'user_email' => _escape($user->user_email),
         'user_url' => null,
         'user_bio' => null,
         'user_role' => (int) 2,
-        'user_status' => _escape($user['user_status']),
+        'user_status' => _escape($user->user_status),
         'user_admin_layout' => (int) '0',
         'user_admin_sidebar' => (int) '0',
         'user_admin_skin' => 'skin-red-light'
@@ -157,7 +158,7 @@ function delete_site_user_meta($_site_id)
     $umeta->begin();
     try {
         $umeta->where('meta_key', 'match', "/ttcms_{$_site_id}/")
-            ->delete();
+                ->delete();
         $umeta->commit();
         ttcms_cache_flush_namespace('user_meta');
     } catch (Exception $ex) {
@@ -214,10 +215,10 @@ function update_main_site()
     $site->begin();
     try {
         $site->where('site_id', (int) 1)
-            ->update([
-                'site_domain' => (string) TTCMS_MAINSITE,
-                'site_path' => (string) TTCMS_MAINSITE_PATH,
-                'site_registered' => (string) \Jenssegers\Date\Date::now()
+                ->update([
+                    'site_domain' => (string) TTCMS_MAINSITE,
+                    'site_path' => (string) TTCMS_MAINSITE_PATH,
+                    'site_registered' => (string) \Jenssegers\Date\Date::now()
         ]);
         $site->commit();
     } catch (Exception $ex) {
@@ -238,15 +239,15 @@ function get_multisite_users()
 
     $users = [];
     $site_users = app()->db->table('usermeta')
-        ->where('meta_key', 'match', "/$tbl_prefix/")
-        ->get();
+            ->where('meta_key', 'match', "/$tbl_prefix/")
+            ->get();
     foreach ($site_users as $site_user) {
         $users[] = _escape($site_user['user_id']);
     }
 
     $list_users = app()->db->table('user')
-        ->where('user_id', 'in', $users)
-        ->get();
+            ->where('user_id', 'in', $users)
+            ->get();
 
     return $list_users;
 }
@@ -265,34 +266,38 @@ function add_user_to_site($user, $site, $role)
         $_site = get_site($site);
     }
 
-    if (!username_exists(_escape($_user['user_login']))) {
+    if (!username_exists(_escape($_user->user_login))) {
         return false;
     }
 
-    if (!site_exists($_site)) {
+    if (!site_exists(_escape($_site['site_domain']), _escape($_site['site_path']))) {
         return false;
     }
 
     // Store values to save in user meta.
     $meta = [];
 
-    $meta['user_login'] = if_null($_user['user_login']);
+    $meta['username'] = if_null($_user->user_login);
 
-    $meta['user_fname'] = if_null($_user['user_fname']);
+    $meta['fname'] = if_null($_user->user_fname);
 
-    $meta['user_lname'] = if_null($_user['user_lname']);
+    $meta['lname'] = if_null($_user->user_lname);
 
-    $meta['user_bio'] = if_null($_user['user_bio']);
+    $meta['email'] = if_null($_user->user_email);
 
-    $meta['user_role'] = if_null($role);
+    $meta['url'] = app()->hook->{'apply_filter'}('site_user_url', null);
 
-    $meta['user_status'] = if_null($_user['user_status']);
+    $meta['bio'] = if_null($_user->user_bio);
 
-    $meta['user_admin_layout'] = (int) 0;
+    $meta['role'] = if_null($role);
 
-    $meta['user_admin_sidebar'] = (int) 0;
+    $meta['status'] = if_null($_user->user_status);
 
-    $meta['user_admin_skin'] = 'skin-red-light';
+    $meta['admin_layout'] = (int) 0;
+
+    $meta['admin_sidebar'] = (int) 0;
+
+    $meta['admin_skin'] = 'skin-red-light';
 
     /**
      * Filters a user's meta values and keys immediately after the user is added
@@ -302,26 +307,27 @@ function add_user_to_site($user, $site, $role)
      * @param array $meta {
      *     Default meta values and keys for the user.
      *
-     *     @type string $user_login           The user's username
-     *     @type string $user_fname           The user's first name.
-     *     @type string $user_lname           The user's last name.
-     *     @type string $user_bio             The user's bio.
-     *     @type string $user_role            The user's role.
-     *     @type string $user_status          The user's status.
-     *     @type int    $user_admin_layout    The user's layout option.
-     *     @type int    $user_admin_sidebar   The user's sidebar option.
-     *     @type int    $user_admin_skin      The user's skin option.
+     *     @type string $login           The user's username
+     *     @type string $fname           The user's first name.
+     *     @type string $lname           The user's last name.
+     *     @type string $email           The user's email.
+     *     @type string $bio             The user's bio.
+     *     @type string $role            The user's role.
+     *     @type string $status          The user's status.
+     *     @type int    $admin_layout    The user's layout option.
+     *     @type int    $admin_sidebar   The user's sidebar option.
+     *     @type int    $admin_skin      The user's skin option.
      * }
      * @param User $user   User object.
      */
-    $meta = app()->hook->{'apply_filter'}('add_user_user_meta', $meta, $user);
+    $meta = app()->hook->{'apply_filter'}('add_user_user_meta', $meta, $_user);
 
     // Update user meta.
     foreach ($meta as $key => $value) {
-        update_user_option(_escape($user['user_id']), $key, if_null($value));
+        update_user_option(_escape($_user->user_id), $key, if_null($value));
     }
 
-    return (int) _escape($user['user_id']);
+    return (int) _escape($_user->user_id);
 }
 
 /**
@@ -450,7 +456,7 @@ function ttcms_insert_site($sitedata)
      * @param bool     $update      Whether the site is being updated rather than created.
      * @param int|null $site_id     ID of the site to be updated, or NULL if the site is being created.
      */
-    $data = app()->hook->{'apply_filter'}('ttcms_pre_insert_site_data', $data, $update, $update ? (int) $site_id : null );
+    $data = app()->hook->{'apply_filter'}('ttcms_pre_insert_site_data', $data, $update, $update ? (int) $site_id : null);
 
     if (!$update) {
         $_data = $data + compact('site_registered');
@@ -467,7 +473,7 @@ function ttcms_insert_site($sitedata)
         $update->begin();
         try {
             $update->where('site_id', $site_id)
-                ->update($data);
+                    ->update($data);
             $update->commit();
         } catch (Exception $ex) {
             $update->rollback();
@@ -574,7 +580,7 @@ function new_site_data($site_id, $site_owner)
     $option->insert([
         'option_id' => auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'admin_email',
-        'option_value' => _escape($userdata['user_email'])
+        'option_value' => _escape($userdata->user_email)
     ]);
     $option->insert([
         'option_id' => auto_increment($prefix . 'option', 'option_id'),
@@ -640,23 +646,23 @@ function new_site_data($site_id, $site_owner)
     // Store values to save in user meta.
     $meta = [];
 
-    $meta['user_login'] = if_null($userdata['user_login']);
+    $meta['username'] = if_null($userdata->user_login);
 
-    $meta['user_fname'] = if_null($userdata['user_fname']);
+    $meta['fname'] = if_null($userdata->user_fname);
 
-    $meta['user_lname'] = if_null($userdata['user_lname']);
+    $meta['lname'] = if_null($userdata->user_lname);
 
-    $meta['user_bio'] = if_null($userdata['user_bio']);
+    $meta['bio'] = if_null($userdata->user_bio);
 
-    $meta['user_role'] = (int) 2;
+    $meta['role'] = (int) 2;
 
-    $meta['user_status'] = if_null($userdata['user_status']);
+    $meta['status'] = if_null($userdata->user_status);
 
-    $meta['user_admin_layout'] = (int) 0;
+    $meta['admin_layout'] = (int) 0;
 
-    $meta['user_admin_sidebar'] = (int) 0;
+    $meta['admin_sidebar'] = (int) 0;
 
-    $meta['user_admin_skin'] = 'skin-red-light';
+    $meta['admin_skin'] = 'skin-red-light';
 
     /**
      * Filters a user's meta values and keys immediately after the user is added
@@ -676,13 +682,13 @@ function new_site_data($site_id, $site_owner)
      *     @type int    $user_admin_sidebar   The user's sidebar option.
      *     @type int    $user_admin_skin      The user's skin option.
      * }
-     * @param User $user   User object.
+     * @param object $userdata   User object.
      */
     $meta = app()->hook->{'apply_filter'}('new_site_user_meta', $meta, $userdata);
 
     // Update user meta.
     foreach ($meta as $key => $value) {
-        update_user_meta(_escape($userdata['user_id']), $prefix . $key, if_null($value));
+        update_user_meta(_escape($userdata->user_id), $prefix . $key, if_null($value));
     }
 
     return (int) _escape($sitedata['site_id']);

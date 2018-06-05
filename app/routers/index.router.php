@@ -6,7 +6,7 @@ if (!defined('BASE_PATH'))
 $app->get('/logout/', function () use($app) {
     $user = ttcms_get_current_user();
 
-    ttcms_logger_activity_log_write(_t('Authentication', 'tritan-cms'), _t('Logout', 'tritan-cms'), get_name(_escape($user['user_id'])), _escape($user['user_login']));
+    ttcms_logger_activity_log_write(_t('Authentication', 'tritan-cms'), _t('Logout', 'tritan-cms'), get_name(_escape($user->user_id)), _escape($user->user_login));
 
     if (strpos($app->req->server['HTTP_REFERER'], 'admin') !== FALSE) {
         $logout_link = $app->hook->{'apply_filter'}('user_logout_redirect', get_base_url() . 'login' . '/');
@@ -17,14 +17,14 @@ $app->get('/logout/', function () use($app) {
     /**
      * This function is documented in app/functions/auth-function.php.
      * 
-     * @since 1.0.0
+     * @since 0.9
      */
     ttcms_clear_auth_cookie();
 
     /**
      * Fires after a user has logged out.
      *
-     * @since 1.0.0
+     * @since 0.9
      */
     app()->hook->{'do_action'}('ttcms_logout');
 
@@ -38,7 +38,7 @@ $app->post('/reset-password/', function () use($app) {
             ->first();
 
     if ((int) _escape($user['user_id']) > 1) {
-        $password = _ttcms_random_lib()->generateString(20, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+        $password = ttcms_generate_password();
         $reset = $app->db->table('user');
         $reset->begin();
         try {
@@ -50,7 +50,7 @@ $app->post('/reset-password/', function () use($app) {
             /**
              * This action fires after user's password has been reset.
              * 
-             * @since 1.0.0
+             * @since 0.9
              * @param array $user       User data array.
              * @param string $password  Plaintext password.
              */

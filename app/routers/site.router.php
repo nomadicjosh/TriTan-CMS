@@ -137,7 +137,7 @@ $app->group('/admin', function() use ($app, $user) {
             /**
              * Action hook triggered after the site is deleted.
              * 
-             * @since 1.0.0
+             * @since 0.9
              * @param int $id Site ID.
              */
             $app->hook->{'do_action'}('delete_site', (int) $id);
@@ -217,11 +217,13 @@ $app->group('/admin', function() use ($app, $user) {
             /**
              * Action hook triggered after the user is deleted.
              * 
-             * @since 1.0.0
+             * @since 0.9
              * @param int $id Site ID.
              */
             $app->hook->{'do_action'}('delete_user', (int) $id);
             ttcms_cache_delete($id, 'user');
+            ttcms_cache_flush_namespace('user_meta');
+            clean_user_cache($id);
             _ttcms_flash()->{'success'}(_ttcms_flash()->notice(200), get_base_url() . 'admin/site/users/');
         } catch (Exception $ex) {
             $user->rollback();

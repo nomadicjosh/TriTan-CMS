@@ -1,4 +1,5 @@
 <?php
+
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 /**
@@ -57,7 +58,7 @@ function get_metadata($meta_type, $array_id, $meta_key, $single = false)
      *
      * @since 0.9
      * @param null|string   $value      The value get_metadata() should return - a single metadata value.
-     * @param int           $array_id  Array ID.
+     * @param int           $array_id   Array ID.
      * @param string        $meta_key   Meta key.
      * @param bool          $single     Whether to return only the first value of the specified $meta_key.
      */
@@ -158,9 +159,9 @@ function update_metadata($meta_type, $array_id, $meta_key, $meta_value, $prev_va
     }
 
     $meta_ids = app()->db->table($table)
-        ->where('meta_key', $meta_key)
-        ->where($column, $array_id)
-        ->first();
+            ->where('meta_key', $meta_key)
+            ->where($column, $array_id)
+            ->first();
 
     if (empty($meta_ids)) {
         return add_metadata($meta_type, $array_id, $meta_key, $meta_value);
@@ -189,9 +190,9 @@ function update_metadata($meta_type, $array_id, $meta_key, $meta_value, $prev_va
     $result->begin();
     try {
         $result->where($column, $array_id)
-            ->where('meta_key', $meta_key)
-            ->update([
-                'meta_value' => if_null($_newvalue)
+                ->where('meta_key', $meta_key)
+                ->update([
+                    'meta_value' => if_null($_newvalue)
         ]);
         $result->commit();
     } catch (Exception $ex) {
@@ -283,9 +284,9 @@ function add_metadata($meta_type, $array_id, $meta_key, $meta_value, $unique = f
 
     if ($unique) {
         $count = app()->db->table($table)
-            ->where('meta_key', $meta_key)
-            ->where($column, $array_id)
-            ->all();
+                ->where('meta_key', $meta_key)
+                ->where($column, $array_id)
+                ->all();
         if (count($count)) {
             return false;
         }
@@ -328,10 +329,10 @@ function add_metadata($meta_type, $array_id, $meta_key, $meta_value, $unique = f
     }
 
     $mid = app()->db->table($table)
-        ->where($column, $array_id)
-        ->where('meta_key', $meta_key)
-        ->where('meta_value', $meta_value)
-        ->get([$meta_type . '_id']);
+            ->where($column, $array_id)
+            ->where('meta_key', $meta_key)
+            ->where('meta_value', $meta_value)
+            ->get([$meta_type . '_id']);
 
     ttcms_cache_delete($array_id, $meta_type . '_meta');
 
@@ -417,15 +418,15 @@ function delete_metadata($meta_type, $array_id, $meta_key, $meta_value = '', $de
     if (!$delete_all) {
         if ('' !== $meta_value && null !== $meta_value && false !== $meta_value) {
             $meta_ids = app()->db->table($table)
-                ->where('meta_key', $meta_key)
-                ->where($type_column, $array_id)
-                ->where('meta_value', $meta_value)
-                ->get(['meta_id']);
+                    ->where('meta_key', $meta_key)
+                    ->where($type_column, $array_id)
+                    ->where('meta_value', $meta_value)
+                    ->get(['meta_id']);
         }
         $meta_ids = app()->db->table($table)
-            ->where('meta_key', $meta_key)
-            ->where('meta_value', $meta_value)
-            ->get(['meta_id']);
+                ->where('meta_key', $meta_key)
+                ->where('meta_value', $meta_value)
+                ->get(['meta_id']);
     }
 
     if (!count($meta_ids)) {
@@ -435,13 +436,13 @@ function delete_metadata($meta_type, $array_id, $meta_key, $meta_value = '', $de
     if ($delete_all) {
         if ('' !== $meta_value && null !== $meta_value && false !== $meta_value) {
             $array_ids = app()->db->table($table)
-                ->where('meta_key', $meta_key)
-                ->where('meta_value', $meta_value)
-                ->get([$type_column]);
+                    ->where('meta_key', $meta_key)
+                    ->where('meta_value', $meta_value)
+                    ->get([$type_column]);
         } else {
             $array_ids = app()->db->table($table)
-                ->where('meta_key', $meta_key)
-                ->get([$type_column]);
+                    ->where('meta_key', $meta_key)
+                    ->get([$type_column]);
         }
     }
 
@@ -463,7 +464,7 @@ function delete_metadata($meta_type, $array_id, $meta_key, $meta_value = '', $de
     $count->begin();
     try {
         $count->where('meta_id', 'in', implode(',', $meta_ids))
-            ->delete();
+                ->delete();
         $count->commit();
     } catch (Exception $ex) {
         $count->rollback();
@@ -520,7 +521,7 @@ function metadata_exists($meta_type, $array_id, $meta_key)
         return false;
     }
 
-    /** This filter is documented in wp-includes/meta.php */
+    /** This filter is documented in app/meta-function.php */
     $check = app()->hook->{'apply_filter'}("get_{$meta_type}_metadata", null, $array_id, $meta_key, true);
     if (null !== $check) {
         return (bool) $check;
@@ -529,7 +530,7 @@ function metadata_exists($meta_type, $array_id, $meta_key)
     $meta_cache = ttcms_cache_get($array_id, $meta_type . '_meta');
 
     if (!$meta_cache) {
-        $meta_cache = update_meta_cache($meta_type, array($array_id));
+        $meta_cache = update_meta_cache($meta_type, [$array_id]);
         $meta_cache = $meta_cache[$array_id];
     }
 
@@ -566,8 +567,8 @@ function get_metadata_by_mid($meta_type, $meta_id)
     }
 
     $meta = app()->db->table($table)
-        ->where('meta_id', $meta_id)
-        ->first();
+            ->where('meta_id', $meta_id)
+            ->first();
 
     if (empty($meta)) {
         return false;
@@ -631,9 +632,9 @@ function update_metadata_by_mid($meta_type, $meta_id, $meta_value, $meta_key = f
         $result->begin();
         try {
             $result->where('meta_id', $meta_id)
-                ->update([
-                    'meta_key' => $meta_key,
-                    'meta_value' => $meta_value
+                    ->update([
+                        'meta_key' => $meta_key,
+                        'meta_value' => $meta_value
             ]);
             $result->commit();
         } catch (Exception $ex) {

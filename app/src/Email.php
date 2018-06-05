@@ -395,7 +395,7 @@ class Email
         $message = _t('Hi there,', 'tritan-cms') . "<br />";
         $message .= sprintf(_t("<p>Welcome to %s! Here's how to log in: ", 'tritan-cms'), $this->app->hook->{'get_option'}('sitename'));
         $message .= get_base_url() . "</p>";
-        $message .= sprintf(_t('Username: %s', 'tritan-cms'), _escape($user['user_login'])) . "<br />";
+        $message .= sprintf(_t('Username: %s', 'tritan-cms'), _escape($user->user_login)) . "<br />";
         $message .= sprintf(_t('Password: %s', 'tritan-cms'), $pass) . "<br />";
         $message .= sprintf(_t('<p>If you have any problems, please contact us at %s.', 'tritan-cms'), $this->app->hook->{'get_option'}('admin_email')) . "</p>";
 
@@ -406,7 +406,7 @@ class Email
             $headers[] = sprintf("X-Mailer: TriTan CMS %s", CURRENT_RELEASE);
         }
         try {
-            $this->ttcmsMail(_escape($user['user_email']), _t('New Account'), $message, $headers);
+            $this->ttcmsMail(_escape($user->user_email), _t('New Account'), $message, $headers);
         } catch (\PHPMailer\PHPMailer\Exception $e) {
             _ttcms_flash()->error($e->getMessage());
         }

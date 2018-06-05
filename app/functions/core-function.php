@@ -2037,3 +2037,39 @@ function sanitize_filename($filename, $beautify = true)
     $filename = mb_strcut(pathinfo($filename, PATHINFO_FILENAME), 0, 255 - ($ext ? strlen($ext) + 1 : 0), mb_detect_encoding($filename)) . ($ext ? '.' . $ext : '');
     return $filename;
 }
+
+/**
+ * Generates a random password drawn from the defined set of characters.
+ *
+ * Uses random_lib library to create passwords with far less predictability.
+ *
+ * @since 0.9.7
+ * @param int  $length              Optional. The length of password to generate. Default 12.
+ * @param bool $special_chars       Optional. Whether to include standard special characters.
+ *                                  Default true.
+ * @param bool $extra_special_chars Optional. Whether to include other special characters.
+ *                                  Default false.
+ * @return string The system generated password.
+ */
+function ttcms_generate_password($length = 12, $special_chars = true, $extra_special_chars = false)
+{
+    $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+    if ($special_chars) {
+        $chars .= '!@#$%^&*()';
+    }
+
+    if ($extra_special_chars) {
+        $chars .= '-_ []{}<>~`+=,.;:/?|';
+    }
+
+    $password = _ttcms_random_lib()->generate($length, $chars);
+
+    /**
+     * Filters the system generated password.
+     *
+     * @since 0.9.7
+     * @param string $password The generated password.
+     */
+    return app()->hook->{'apply_filter'}('random_password', $password);
+}

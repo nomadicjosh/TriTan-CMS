@@ -645,7 +645,7 @@ $app->group('/admin', function() use ($app, $user) {
                             'permission_name' => if_null($app->req->post['permission_name']),
                 ]);
                 $perm->commit();
-                ttcms_logger_activity_log_write('Update Record', 'Permission', $app->req->post['permission_name'], _escape($user['user_login']));
+                ttcms_logger_activity_log_write('Update Record', 'Permission', $app->req->post['permission_name'], _escape($user->user_login));
                 _ttcms_flash()->{'success'}(_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
             } catch (Exception $ex) {
                 $perm->rollback();
@@ -709,7 +709,7 @@ $app->group('/admin', function() use ($app, $user) {
                     'permission_name' => if_null($app->req->post['permission_name']),
                 ]);
                 $perm->commit();
-                ttcms_logger_activity_log_write('Create Record', 'Permission', $app->req->post['permission_name'], _escape($user['user_login']));
+                ttcms_logger_activity_log_write('Create Record', 'Permission', $app->req->post['permission_name'], _escape($user->user_login));
                 _ttcms_flash()->{'success'}(_ttcms_flash()->notice(200), get_base_url() . 'admin/permission' . '/');
             } catch (Exception $ex) {
                 $perm->rollback();
