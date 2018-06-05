@@ -216,7 +216,7 @@ class ACL
     public function hasPermission($permKey)
     {
         $user_role = $this->app->db->table('usermeta')
-            ->where('meta_key', Config::get('tbl_prefix') . 'user_role')
+            ->where('meta_key', Config::get('tbl_prefix') . 'role')
             ->where('user_id', get_current_user_id())
             ->first();
 

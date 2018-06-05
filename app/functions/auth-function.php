@@ -43,7 +43,7 @@ function hasPermission($perm)
 function hasRole($role_id)
 {
     $user = get_userdata(get_current_user_id());
-    if ((int) $role_id === (int) _escape($user['user_role'])) {
+    if ((int) $role_id === (int) _escape($user->user_role)) {
         return true;
     }
     return false;
@@ -94,7 +94,7 @@ function is_user_logged_in()
 {
     $user = get_user_by('id', get_current_user_id());
 
-    if ('' != (int) _escape($user['user_id']) && app()->cookies->{'verifySecureCookie'}('TTCMS_COOKIENAME')) {
+    if ('' != (int) _escape($user->user_id) && app()->cookies->{'verifySecureCookie'}('TTCMS_COOKIENAME')) {
         return true;
     }
 
@@ -133,7 +133,7 @@ function get_user_by($field, $value)
     $user = new \TriTan\User();
     $user->init($userdata);
 
-    return $user->data;
+    return $user;
 }
 
 /**
@@ -218,20 +218,20 @@ function ttcms_authenticate_user($login, $password, $rememberme)
     if (validate_email($login)) {
         $user = get_user_by('email', $login);
 
-        if (false == _escape($user['user_email'])) {
+        if (false == _escape($user->user_email)) {
             _ttcms_flash()->{'error'}(_t('<strong>ERROR</strong>: Invalid email address.', 'tritan-cms'), app()->req->server['HTTP_REFERER']);
             return;
         }
     } else {
         $user = get_user_by('login', $login);
 
-        if (false == _escape($user['user_login'])) {
+        if (false == _escape($user->user_login)) {
             _ttcms_flash()->{'error'}(_t('<strong>ERROR</strong>: Invalid username.', 'tritan-cms'), app()->req->server['HTTP_REFERER']);
             return;
         }
     }
 
-    if (!ttcms_check_password($password, $user['user_pass'], $user['user_id'])) {
+    if (!ttcms_check_password($password, $user->user_pass, $user->user_id)) {
         _ttcms_flash()->{'error'}(_t('<strong>ERROR</strong>: The password you entered is incorrect.', 'tritan-cms'), app()->req->server['HTTP_REFERER']);
         return;
     }

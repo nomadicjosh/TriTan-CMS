@@ -52,7 +52,7 @@ use TriTan\Config;
         <link rel="stylesheet" href="static/assets/css/skins/_all-skins.min.css">
         <?php admin_head(); ?>
     </head>
-    <body class="hold-transition <?=get_user_option('user_admin_skin', _escape($user['user_id']));?> <?=(get_user_option('user_admin_layout', _escape($user['user_id'])) == 1 ? 'fixed ' : '');?><?=(get_user_option('user_admin_sidebar', _escape($user['user_id'])) == 1 ? 'sidebar-collapse ' : '');?>sidebar-mini">
+    <body class="hold-transition <?=get_user_option('admin_skin', _escape($user->user_id));?> <?=(get_user_option('admin_layout', _escape($user->user_id)) == 1 ? 'fixed ' : '');?><?=(get_user_option('admin_sidebar', _escape($user->user_id)) == 1 ? 'sidebar-collapse ' : '');?>sidebar-mini">
         <div class="wrapper">
 
             <header class="main-header">
@@ -75,17 +75,17 @@ use TriTan\Config;
                             <!-- User Account: style can be found in dropdown.less -->
                             <li class="dropdown user user-menu">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                    <?= get_user_avatar(_escape($user['user_email']), 160, 'user-image'); ?>
+                                    <?= get_user_avatar(_escape($user->user_email), 160, 'user-image'); ?>
                                     <span class="hidden-xs"><?= get_name(get_current_user_id()); ?></span>
                                 </a>
                                 <ul class="dropdown-menu">
                                     <!-- User image -->
                                     <li class="user-header">
-                                        <?= get_user_avatar(_escape($user['user_email']), 160, 'image-circle'); ?>
+                                        <?= get_user_avatar(_escape($user->user_email), 160, 'image-circle'); ?>
 
                                         <p>
                                             <?= get_name(get_current_user_id()); ?>
-                                            <small><?= _t('Member since', 'tritan-cms'); ?> <?= Jenssegers\Date\Date::parse(_escape($user['user_registered']))->format('M Y'); ?></small>
+                                            <small><?= _t('Member since', 'tritan-cms'); ?> <?= Jenssegers\Date\Date::parse(_escape($user->user_registered))->format('M Y'); ?></small>
                                         </p>
                                     </li>
                                     <!-- Menu Footer-->
@@ -117,7 +117,7 @@ use TriTan\Config;
                     <!-- Sidebar user panel -->
                     <div class="user-panel">
                         <div class="pull-left image">
-                            <?= get_user_avatar(_escape($user['user_email']), 160, 'img-circle'); ?>
+                            <?= get_user_avatar(_escape($user->user_email), 160, 'img-circle'); ?>
                         </div>
                         <div class="pull-left info">
                             <p><?= get_name(get_current_user_id()); ?></p>

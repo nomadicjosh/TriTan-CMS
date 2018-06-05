@@ -95,7 +95,21 @@ $app->group('/admin', function() use ($app, $current_user) {
     $app->match('GET|POST', '/user/create/', function () use($app, $current_user) {
 
         if ($app->req->isPost()) {
-            if (empty($app->req->post['user_login'])) {
+            $user = get_user_by('email', $app->req->post['user_email']);
+
+            $password = ttcms_generate_password();
+
+            if ((int) _escape($user->user_id) > 0) {
+                $update = true;
+                $user_login = _escape($user->user_login);
+                $extra = ['user_pass' => (string) $password, 'user_login' => (string) $user_login];
+            } else {
+                $update = false;
+                $user_login = $app->req->post['user_login'];
+                $extra = ['user_pass' => (string) $password];
+            }
+
+            if (empty($user_login)) {
                 _ttcms_flash()->{'error'}(_t('Username cannot be null.', 'tritan-cms'), $app->req->server['HTTP_REFERER']);
                 exit();
             }
@@ -105,28 +119,24 @@ $app->group('/admin', function() use ($app, $current_user) {
                 exit();
             }
 
-            if (email_exists($app->req->post['user_email'])) {
-                _ttcms_flash()->{'error'}(sprintf(_t('The email address <strong>%s</strong> is already in use.', 'tritan-cms'), $app->req->post['user_email']), $app->req->server['HTTP_REFERER']);
-                exit();
-            }
-
-            if (username_exists($app->req->post['user_login'])) {
-                _ttcms_flash()->{'error'}(sprintf(_t('The username <strong>%s</strong> already exists.', 'tritan-cms'), $app->req->post['user_login']), $app->req->server['HTTP_REFERER']);
-                exit();
-            }
-
-            if (!validate_username($app->req->post['user_login'])) {
+            if (!validate_username($user_login)) {
                 ttcms_redirect($app->req->server['HTTP_REFERER']);
                 exit();
             }
 
             try {
-                $user_id = ttcms_insert_user($app->req->post);
+                $array_merge = array_merge($extra, $app->req->post);
+                $object = array_to_object($array_merge);
+                if ($update) {
+                    $user_id = ttcms_update_user($object);
+                } else {
+                    $user_id = ttcms_insert_user($object);
+                }
 
                 if ($app->req->post['sendemail'] == '1') {
-                    _ttcms_email()->sendNewUserEmail((int) $user_id, $app->req->post['user_pass']);
+                    _ttcms_email()->sendNewUserEmail((int) $user_id, $password);
                 }
-                ttcms_logger_activity_log_write('New Record', 'User', get_name((int) $user_id), (string) _escape($current_user['user_login']));
+                ttcms_logger_activity_log_write('New Record', 'User', get_name((int) $user_id), (string) _escape($current_user->user_login));
                 _ttcms_flash()->{'success'}(_ttcms_flash()->notice(200), get_base_url() . 'admin/user' . '/' . (int) $user_id . '/');
             } catch (Exception $ex) {
                 _ttcms_flash()->{'error'}($ex->getMessage());
@@ -155,7 +165,7 @@ $app->group('/admin', function() use ($app, $current_user) {
             /**
              * Fires before user record is updated.
              *
-             * @since 1.0.0
+             * @since 0.9
              * @param int $id
              *            User's id.
              */
@@ -164,7 +174,7 @@ $app->group('/admin', function() use ($app, $current_user) {
             try {
                 $user = array_merge(['user_id' => $id], $app->req->post);
                 ttcms_update_user($user);
-                ttcms_logger_activity_log_write('Update Record', 'User', get_name((int) $id), (string) _escape($current_user['user_login']));
+                ttcms_logger_activity_log_write('Update Record', 'User', get_name((int) $id), (string) _escape($current_user->user_login));
                 _ttcms_flash()->{'success'}(_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
             } catch (Exception $ex) {
                 _ttcms_flash()->{'error'}($ex->getMessage());
@@ -193,7 +203,7 @@ $app->group('/admin', function() use ($app, $current_user) {
         }
         /**
          * If data is zero, 404 not found.
-         */ elseif ((int) _escape($_user['user_id']) <= 0) {
+         */ elseif ((int) _escape($_user->user_id) <= 0) {
 
             $app->res->_format('json', 404);
             exit();
@@ -228,7 +238,7 @@ $app->group('/admin', function() use ($app, $current_user) {
             $switch_cookie = [
                 'key' => 'SWITCH_USERBACK',
                 'user_id' => (int) get_current_user_id(),
-                'user_login' => _escape($current_user['user_login']),
+                'user_login' => _escape($current_user->user_login),
                 'remember' => $app->hook->{'get_option'}('cookieexpire') - time() > 86400 ? _t('yes', 'tritan-cms') : _t('no', 'tritan-cms'),
                 'exp' => (int) $app->hook->{'get_option'}('cookieexpire') + time()
             ];
@@ -367,7 +377,8 @@ $app->group('/admin', function() use ($app, $current_user) {
                         ->delete();
 
                 $user->commit();
-
+                clean_user_cache($id);
+                ttcms_cache_flush_namespace('user_meta');
                 _ttcms_flash()->{'success'}(_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
             } catch (Exception $e) {
                 $user->rollback();
@@ -380,16 +391,13 @@ $app->group('/admin', function() use ($app, $current_user) {
 
     $app->match('GET|POST', '/user/lookup/', function () use($app) {
         $user = $app->db->table('user')
-                ->where('user_id', $app->req->post['user_login'])
+                ->where('user_id', $app->req->post['user_id'])
                 ->first();
 
         $json = [
             'input#fname' => _escape($user['user_fname']), 'input#lname' => _escape($user['user_lname']),
             'input#email' => _escape($user['user_email'])
         ];
-        error_log($app->req->post['user_login']);
-        error_log(var_export($app->req->post, true));
-        error_log(var_export($user, true));
         echo json_encode($json);
     });
 

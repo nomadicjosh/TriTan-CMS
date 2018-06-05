@@ -1,4 +1,5 @@
 <?php
+
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use TriTan\Config;
@@ -24,8 +25,8 @@ use Cascade\Cascade;
 function role_perm($id = 0)
 {
     $role = app()->db->table('role')
-        ->where('role_id', (int) $id)
-        ->first();
+            ->where('role_id', (int) $id)
+            ->first();
     $perm = app()->hook->{'maybe_unserialize'}(_escape($role['role_permission']));
 
     $sql = app()->db->table('permission')->all();
@@ -48,8 +49,8 @@ function user_perm($id)
     $array = [];
 
     $pp = app()->db->table('user_perms')
-        ->where('user_id', $id)
-        ->first();
+            ->where('user_id', $id)
+            ->first();
 
     foreach ($pp as $r) {
         $array[] = $r;
@@ -63,8 +64,8 @@ function user_perm($id)
     $array1 = [];
 
     $pr = app()->db->table('user_roles')
-        ->where('user_id', $id)
-        ->first();
+            ->where('user_id', $id)
+            ->first();
 
     foreach ($pr as $r1) {
         $array1[] = $r1;
@@ -75,7 +76,7 @@ function user_perm($id)
      */
     //$array2 = [];
     $role = app()->db->table('role')
-            ->where('role_id', (int) $r1['role_id'])->first();
+                    ->where('role_id', (int) $r1['role_id'])->first();
     /* foreach ($role as $r2) {
       $array2[] = $r2;
       } */
@@ -111,15 +112,15 @@ function get_users_dropdown($active = null)
 
     $users = [];
     $site_users = app()->db->table('usermeta')
-        ->where('meta_key', 'match', "/$tbl_prefix/")
-        ->get();
+            ->where('meta_key', 'match', "/$tbl_prefix/")
+            ->get();
     foreach ($site_users as $site_user) {
         $users[] = _escape($site_user['user_id']);
     }
 
     $list_users = app()->db->table('user')
-        ->where('user_id', 'not in', $users)
-        ->get();
+            ->where('user_id', 'not in', $users)
+            ->get();
 
     foreach ($list_users as $user) {
         echo '<option value="' . (int) _escape($user['user_id']) . '"' . selected((int) _escape($user['user_id']), $active, false) . '>' . get_name((int) _escape($user['user_id'])) . '</option>';
@@ -183,10 +184,10 @@ function get_current_user_id()
 }
 
 /**
- * Returns array of data for current user.
+ * Returns object of data for current user.
  * 
  * @since 0.9
- * @return array
+ * @return object
  */
 function ttcms_get_current_user()
 {
@@ -219,9 +220,9 @@ function get_name($id, $reverse = false)
     $name = get_user_by('id', $id);
 
     if ($reverse) {
-        $_name = _escape($name['user_fname']) . ' ' . _escape($name['user_lname']);
+        $_name = _escape($name->user_fname) . ' ' . _escape($name->user_lname);
     } else {
-        $_name = _escape($name['user_lname']) . ', ' . _escape($name['user_fname']);
+        $_name = _escape($name->user_lname) . ', ' . _escape($name->user_fname);
     }
 
     return app()->hook->{'apply_filter'}('get_name', $_name);
@@ -255,9 +256,9 @@ function get_initials($id, $initials = 2)
     $name = get_user_by('user_id', $id);
 
     if ($initials == 2) {
-        $_initials = mb_substr(_escape($name['user_fname']), 0, 1, 'UTF-8') . '. ' . mb_substr(_escape($name['user_lname']), 0, 1, 'UTF-8') . '.';
+        $_initials = mb_substr(_escape($name->user_fname), 0, 1, 'UTF-8') . '. ' . mb_substr(_escape($name->user_lname), 0, 1, 'UTF-8') . '.';
     } else {
-        $_initials = _escape($name['user_lname']) . ', ' . mb_substr(_escape($name['user_fname']), 0, 1, 'UTF-8') . '.';
+        $_initials = _escape($name->user_lname) . ', ' . mb_substr(_escape($name->user_fname), 0, 1, 'UTF-8') . '.';
     }
 
     return app()->hook->{'apply_filter'}('get_initials', $_initials);
@@ -278,7 +279,7 @@ function get_user_value($id, $field)
 {
     $value = get_user_by('id', $id);
 
-    return $value[$field];
+    return $value->{$field};
 }
 
 /**
@@ -307,7 +308,7 @@ function get_perm_roles()
 function username_exists($username)
 {
     if ($user = get_user_by('login', $username)) {
-        $user_id = (int) _escape($user['user_id']);
+        $user_id = (int) _escape($user->user_id);
     } else {
         $user_id = false;
     }
@@ -333,7 +334,7 @@ function username_exists($username)
 function email_exists($email)
 {
     if ($user = get_user_by('email', $email)) {
-        $user_id = (int) _escape($user['user_id']);
+        $user_id = (int) _escape($user->user_id);
     } else {
         $user_id = false;
     }
@@ -430,7 +431,7 @@ function ttcms_user_status_label($status)
 function get_user_roles($active = null)
 {
     $roles = app()->db->table('role')
-        ->all();
+            ->all();
 
     foreach ($roles as $role) {
         echo '<option value="' . (int) _escape($role['role_id']) . '"' . selected($active, (int) _escape($role['role_id']), false) . '>' . _escape($role['role_name']) . '</option>';
@@ -446,7 +447,7 @@ function get_user_roles($active = null)
 function get_users_list($active = null)
 {
     $users = app()->db->table('user')
-        ->all();
+            ->all();
 
     foreach ($users as $user) {
         echo '<option value="' . (int) _escape($user['user_id']) . '"' . selected($active, (int) _escape($user['user_id']), false) . '>' . get_name((int) _escape($user['user_id'])) . '</option>';
@@ -583,7 +584,7 @@ function get_user_option($option, $user = 0)
 
     $udata = get_userdata($user);
 
-    if (!$user = (int) _escape($udata['user_id'])) {
+    if (!$user = (int) _escape($udata->user_id)) {
         return false;
     }
 
@@ -668,8 +669,8 @@ function delete_user_option($user_id, $option_name, $global = false)
  * can be hooked into.
  *
  * @since 0.9
- * @param array|User $userdata {
- *     An array or User array of user data arguments.
+ * @param array|object|User $userdata {
+ *     An array, object or User object of user data arguments.
  *
  *     @type int        $user_id               User's ID. If supplied, the user will be updated.
  *     @type string     $user_pass             The plain-text user password.
@@ -692,8 +693,10 @@ function delete_user_option($user_id, $option_name, $global = false)
  */
 function ttcms_insert_user($userdata)
 {
-    if ($userdata instanceof \TriTan\User) {
+    if ($userdata instanceof \stdClass) {
         $userdata = get_object_vars($userdata);
+    } elseif ($userdata instanceof TriTan\User) {
+        $userdata = $userdata->to_array();
     }
 
     // Are we updating or creating?
@@ -707,7 +710,7 @@ function ttcms_insert_user($userdata)
         }
 
         // hashed in ttcms_update_user(), plaintext if called directly
-        $user_pass = !empty($userdata['user_pass']) ? $userdata['user_pass'] : $old_user_data['user_pass'];
+        $user_pass = !empty($userdata['user_pass']) ? $userdata['user_pass'] : $old_user_data->user_pass;
     } else {
         $update = false;
         // Hash the password
@@ -775,15 +778,14 @@ function ttcms_insert_user($userdata)
      * check if current email and new email are the same, or not, and check `email_exists`
      * accordingly.
      */
-    if ((!$update || (!empty($old_user_data) && 0 !== strcasecmp($user_email, _escape($old_user_data['user_email'])) ) ) && email_exists($user_email)
-    ) {
+    if ((!$update || (!empty($old_user_data) && 0 !== strcasecmp($user_email, _escape($old_user_data->user_email)) ) ) && email_exists($user_email)) {
         throw new Exception(_t('Sorry, that email address is already used.', 'tritan-cms'), 'existing_user_email');
     }
 
     // Store values to save in user meta.
     $meta = [];
 
-    $meta['user_login'] = $user_login;
+    $meta['username'] = $user_login;
 
     $user_fname = if_null($userdata['user_fname']);
     /**
@@ -792,7 +794,7 @@ function ttcms_insert_user($userdata)
      * @since 0.9
      * @param string $user_fname The user's first name.
      */
-    $meta['user_fname'] = app()->hook->{'apply_filter'}('pre_user_fname', $user_fname);
+    $meta['fname'] = app()->hook->{'apply_filter'}('pre_user_fname', $user_fname);
 
     $user_lname = if_null($userdata['user_lname']);
     /**
@@ -801,9 +803,9 @@ function ttcms_insert_user($userdata)
      * @since 0.9
      * @param string $user_lname The user's last name.
      */
-    $meta['user_lname'] = app()->hook->{'apply_filter'}('pre_user_lname', $user_lname);
+    $meta['lname'] = app()->hook->{'apply_filter'}('pre_user_lname', $user_lname);
 
-    $meta['user_email'] = $user_email;
+    $meta['email'] = $user_email;
 
     $user_bio = if_null($userdata['user_bio']);
     /**
@@ -812,7 +814,7 @@ function ttcms_insert_user($userdata)
      * @since 0.9
      * @param string $user_bio The user's bio.
      */
-    $meta['user_bio'] = app()->hook->{'apply_filter'}('pre_user_bio', $user_bio);
+    $meta['bio'] = app()->hook->{'apply_filter'}('pre_user_bio', $user_bio);
 
     $user_role = if_null($userdata['user_role']);
     /**
@@ -821,7 +823,7 @@ function ttcms_insert_user($userdata)
      * @since 0.9
      * @param string $user_role The user's role.
      */
-    $meta['user_role'] = app()->hook->{'apply_filter'}('pre_user_role', $user_role);
+    $meta['role'] = app()->hook->{'apply_filter'}('pre_user_role', $user_role);
 
     $user_status = if_null($userdata['user_status']);
     /**
@@ -830,19 +832,21 @@ function ttcms_insert_user($userdata)
      * @since 0.9
      * @param string $user_status The user's status.
      */
-    $meta['user_status'] = app()->hook->{'apply_filter'}('pre_user_status', $user_status);
+    $meta['status'] = app()->hook->{'apply_filter'}('pre_user_status', $user_status);
 
     $user_admin_layout = 0;
 
-    $meta['user_admin_layout'] = if_null($user_admin_layout);
+    $meta['admin_layout'] = if_null($user_admin_layout);
 
     $user_admin_sidebar = 0;
 
-    $meta['user_admin_sidebar'] = if_null($user_admin_sidebar);
+    $meta['admin_sidebar'] = if_null($user_admin_sidebar);
 
     $user_admin_skin = 'skin-red-light';
 
-    $meta['user_admin_skin'] = if_null($user_admin_skin);
+    $meta['admin_skin'] = if_null($user_admin_skin);
+
+    $user_addedby = (int) get_current_user_id();
 
     $user_registered = (string) \Jenssegers\Date\Date::now();
 
@@ -868,16 +872,17 @@ function ttcms_insert_user($userdata)
      *      @type string $user_url          The user's url.
      *      @type string $user_status       The user's status.
      *      @type string $user_role         The user's role.
+     *      @type string $user_addedby      User who registered user.
      *      @type string $user_registered   Timestamp describing the moment when the user registered. Defaults to
      *                                      Y-m-d h:i:s
      * }
      * @param bool     $update Whether the user is being updated rather than created.
      * @param int|null $id     ID of the user to be updated, or NULL if the user is being created.
      */
-    $data = app()->hook->{'apply_filter'}('ttcms_pre_insert_user_data', $data, $update, $update ? (int) $user_id : null );
+    $data = app()->hook->{'apply_filter'}('ttcms_pre_insert_user_data', $data, $update, $update ? (int) $user_id : null);
 
     if (!$update) {
-        $_data = $data + compact('user_registered');
+        $_data = $data + compact('user_addedby', 'user_registered');
         $user_id = auto_increment('user', 'user_id');
         $_user_id = ['user_id' => $user_id];
         $data = array_merge($_user_id, $_data);
@@ -887,7 +892,7 @@ function ttcms_insert_user($userdata)
 
     if ($update) {
 
-        if ($user_email !== $old_user_data['user_email']) {
+        if ($user_email !== $old_user_data->user_email) {
             $data['user_activation_key'] = null;
         }
 
@@ -895,7 +900,7 @@ function ttcms_insert_user($userdata)
         $update->begin();
         try {
             $update->where('user_id', $user_id)
-                ->update($data);
+                    ->update($data);
             $update->commit();
         } catch (Exception $ex) {
             $update->rollback();
@@ -936,8 +941,8 @@ function ttcms_insert_user($userdata)
      *     @type int    $user_admin_sidebar   The user's sidebar option.
      *     @type int    $user_admin_skin      The user's skin option.
      * }
-     * @param User $user   User object.
-     * @param bool    $update Whether the user is being updated rather than created.
+     * @param object $user  User object.
+     * @param bool $update  Whether the user is being updated rather than created.
      */
     $meta = app()->hook->{'apply_filter'}('insert_user_meta', $meta, $user, $update);
 
@@ -955,7 +960,7 @@ function ttcms_insert_user($userdata)
          *
          * @since 0.9
          * @param int     $user_id      User ID.
-         * @param User $old_user_data   Array containing user's data prior to update.
+         * @param object $old_user_data   Object containing user's data prior to update.
          */
         app()->hook->{'do_action'}('profile_update', $user_id, $old_user_data);
     } else {
@@ -985,8 +990,10 @@ function ttcms_insert_user($userdata)
  */
 function ttcms_update_user($userdata)
 {
-    if ($userdata instanceof \TriTan\User) {
+    if ($userdata instanceof \stdClass) {
         $userdata = get_object_vars($userdata);
+    } elseif ($userdata instanceof TriTan\User) {
+        $userdata = $userdata->to_array();
     }
 
     $ID = isset($userdata['user_id']) ? (int) $userdata['user_id'] : (int) 0;
@@ -1000,14 +1007,16 @@ function ttcms_update_user($userdata)
         throw new Exception(_t('Invalid user id.', 'tritan-cms'), 'invalid_user_id');
     }
 
-    $additional_user_keys = ['user_login', 'user_fname', 'user_lname', 'user_bio', 'user_role', 'user_status', 'user_admin_layout', 'user_admin_sidebar', 'user_admin_skin'];
+    $user = $user_obj->to_array();
+
+    $additional_user_keys = ['username', 'fname', 'lname', 'email', 'bio', 'role', 'status', 'admin_layout', 'admin_sidebar', 'admin_skin'];
     // Add additional custom fields
     foreach ($additional_user_keys as $key) {
         $user[$key] = get_user_option($key, (int) _escape($user['user_id']));
     }
 
 
-    if (!empty($userdata['user_pass']) && $userdata['user_pass'] !== $user_obj['user_pass']) {
+    if (!empty($userdata['user_pass']) && $userdata['user_pass'] !== $user_obj->user_pass) {
         // If password is changing, hash it now
         $plaintext_pass = $userdata['user_pass'];
         $userdata['user_pass'] = ttcms_hash_password($userdata['user_pass']);
@@ -1023,7 +1032,7 @@ function ttcms_update_user($userdata)
          * @param array $userdata The updated user array.
          *
          */
-        $send_password_change_email = app()->hook->{'apply_filter'}('send_password_change_email', false, $user, $userdata);
+        $send_password_change_email = app()->hook->{'apply_filter'}('send_password_change_email', true, $user, $userdata);
     }
 
     if (isset($userdata['user_email']) && $user['user_email'] !== $userdata['user_email']) {
@@ -1038,7 +1047,7 @@ function ttcms_update_user($userdata)
          * @param array $userdata The updated user array.
          *
          */
-        $send_email_change_email = app()->hook->{'apply_filter'}('send_email_change_email', false, $user, $userdata);
+        $send_email_change_email = app()->hook->{'apply_filter'}('send_email_change_email', true, $user, $userdata);
     }
 
     ttcms_cache_delete(_escape($user['user_email']), 'useremail');
@@ -1087,7 +1096,9 @@ function send_reset_password_email($user, $password)
     }
     try {
         _ttcms_email()->ttcmsMail(_escape($user['user_email']), sprint(_t('[%s] Notice of Password Reset', 'tritan-cms'), $site_name), $message, $headers);
-    } catch (\phpmailerException $ex) {
+    } catch (PHPMailer\PHPMailer\Exception $ex) {
+        _ttcms_flash()->error($ex->getMessage());
+    } catch (Exception $ex) {
         _ttcms_flash()->error($ex->getMessage());
     }
 }
@@ -1111,15 +1122,17 @@ function send_password_change_email($user, $password, $userdata)
     $message .= sprintf(_t('Password: %s', 'tritan-cms'), $password) . "</p>";
     $message .= sprintf(_t('<p>If you did not initiate a password change/update, please contact us at %s.', 'tritan-cms'), app()->hook->{'get_option'}('admin_email')) . "</p>";
 
-    $message = process_email_html($message, sprint(_t('[%s] Notice of Password Change', 'tritan-cms'), $site_name));
+    $message = process_email_html($message, sprintf(_t('[%s] Notice of Password Change', 'tritan-cms'), $site_name));
     $headers[] = sprintf("From: %s <auto-reply@%s>", $site_name, get_domain_name());
     if (!function_exists('ttcms_smtp')) {
         $headers[] = 'Content-Type: text/html; charset="UTF-8"';
         $headers[] = sprintf("X-Mailer: TriTan CMS %s", CURRENT_RELEASE);
     }
     try {
-        _ttcms_email()->ttcmsMail(_escape($user['user_email']), sprint(_t('[%s] Notice of Password Change', 'tritan-cms'), $site_name), $message, $headers);
-    } catch (\phpmailerException $ex) {
+        _ttcms_email()->ttcmsMail(_escape($user['user_email']), sprintf(_t('[%s] Notice of Password Change', 'tritan-cms'), $site_name), $message, $headers);
+    } catch (PHPMailer\PHPMailer\Exception $ex) {
+        _ttcms_flash()->error($ex->getMessage());
+    } catch (Exception $ex) {
         _ttcms_flash()->error($ex->getMessage());
     }
 }
@@ -1148,7 +1161,9 @@ function send_email_change_email($user, $userdata)
     }
     try {
         _ttcms_email()->ttcmsMail(_escape($userdata['user_email']), sprintf(_t('[%s] Notice of Email Change', 'tritan-cms'), $site_name), $message, $headers);
-    } catch (\phpmailerException $ex) {
+    } catch (PHPMailer\PHPMailer\Exception $ex) {
+        _ttcms_flash()->error($ex->getMessage());
+    } catch (Exception $ex) {
         _ttcms_flash()->error($ex->getMessage());
     }
 }
@@ -1157,7 +1172,7 @@ function send_email_change_email($user, $userdata)
  * Update user caches.
  *
  * @since 0.9
- * @param User $user User object to be cached.
+ * @param object $user User object to be cached.
  * @return bool|null Returns false on failure.
  */
 function update_user_caches($user)
@@ -1167,19 +1182,19 @@ function update_user_caches($user)
             return false;
         }
 
-        $user = $user->data;
+        $user = $user;
     }
 
-    ttcms_cache_add(_escape($user['user_id']), $user, 'users');
-    ttcms_cache_add(_escape($user['user_login']), (int) _escape($user['user_id']), 'userlogins');
-    ttcms_cache_add(_escape($user['user_email']), (int) _escape($user['user_id']), 'useremail');
+    ttcms_cache_add(_escape($user->user_id), $user, 'users');
+    ttcms_cache_add(_escape($user->user_login), (int) _escape($user->user_id), 'userlogins');
+    ttcms_cache_add(_escape($user->user_email), (int) _escape($user->user_id), 'useremail');
 }
 
 /**
  * Clean user caches.
  *
  * @since 0.9
- * @param User|int $user User object or user_id to be cleaned from the cache.
+ * @param object|int $user User object or user_id to be cleaned from the cache.
  */
 function clean_user_cache($user)
 {
@@ -1191,9 +1206,9 @@ function clean_user_cache($user)
         return;
     }
 
-    ttcms_cache_delete(_escape($user->data['user_id']), 'users');
-    ttcms_cache_delete(_escape($user->data['user_login']), 'userlogins');
-    ttcms_cache_delete(_escape($user->data['user_email']), 'useremail');
+    ttcms_cache_delete(_escape($user->user_id), 'users');
+    ttcms_cache_delete(_escape($user->user_login), 'userlogins');
+    ttcms_cache_delete(_escape($user->user_email), 'useremail');
 
     /**
      * Fires immediately after the given user's cache is cleaned.
@@ -1202,7 +1217,7 @@ function clean_user_cache($user)
      * @param int   $user_id User user_id.
      * @param User  $user    User object.
      */
-    app()->hook->{'do_action'}('clean_user_cache', _escape($user->data['user_id']), $user);
+    app()->hook->{'do_action'}('clean_user_cache', _escape($user->user_id), $user);
 }
 
 /**
