@@ -1161,6 +1161,7 @@ function themes_url($path = '', $theme = '')
     $_theme = ttcms_normalize_path($theme);
 
     $url = get_theme_url();
+    $url = set_url_scheme($url);
 
     if (!empty($_theme) && is_string($_theme)) {
         $folder = basename(dirname($_theme));
