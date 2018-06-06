@@ -389,6 +389,16 @@ $app->group('/admin', function() use ($app, $current_user) {
         }
     });
 
+    /**
+     * Before route check.
+     */
+    $app->before('GET', '/user/lookup/', function() use($app) {
+        if (!is_user_logged_in()) {
+            _ttcms_flash()->{'error'}(_t("401 - Error: Unauthorized.", 'tritan-cms'), $app->req->server['HTTP_REFERER']);
+            exit();
+        }
+    });
+
     $app->match('GET|POST', '/user/lookup/', function () use($app) {
         $user = $app->db->table('user')
                 ->where('user_id', $app->req->post['user_id'])
@@ -399,6 +409,35 @@ $app->group('/admin', function() use ($app, $current_user) {
             'input#email' => _escape($user['user_email'])
         ];
         echo json_encode($json);
+    });
+
+    /**
+     * Before route check.
+     */
+    $app->before('GET|POST', '/user/(\d+)/reset-password/', function () use($app) {
+        if (!hasPermission('update_users')) {
+            _ttcms_flash()->{'error'}(_t("You are not allowed to reset user passwords.", 'tritan-cms'), $app->req->server['HTTP_REFERER']);
+            exit();
+        }
+    });
+
+    $app->get('/user/(\d+)/reset-password/', function ($id) use($app) {
+        $password = ttcms_generate_password();
+        $data = ['user_id' => $id, 'user_pass' => $password];
+
+        try {
+            $user = ttcms_update_user($data);
+
+            if ($user > 0) {
+                _ttcms_flash()->{'success'}(sprintf(_t('Password successfully updated for <strong>%s</strong>.'), get_name($id)));
+            } else {
+                _ttcms_flash()->{'error'}(_t('Could not update password.'));
+            }
+        } catch (Exception $ex) {
+            _ttcms_flash()->{'error'}($ex->getMessage());
+        }
+
+        ttcms_redirect($app->req->server['HTTP_REFERER']);
     });
 
     /**

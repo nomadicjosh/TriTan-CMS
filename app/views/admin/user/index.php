@@ -67,6 +67,7 @@ Config::set('screen_child', 'all-users');
                                 <td class="text-center">
                                     <a href="<?= get_base_url(); ?>admin/user/<?= (int) _escape($user['user_id']); ?>/" data-toggle="tooltip" data-placement="top" title="Update"><button type="button" class="btn bg-yellow"><i class="fa fa-edit"></i></button></a>
                                     <!--<a href="<?= get_base_url(); ?>admin/user/<?= (int) _escape($user['user_id']); ?>/perm/" data-toggle="tooltip" data-placement="top" title="Edit Permissions"><button type="button" class="btn bg-purple"><i class="fa fa-key"></i></button></a>-->
+                                    <a href="<?= get_base_url(); ?>admin/user/<?= (int) _escape($user['user_id']); ?>/reset-password/" data-toggle="tooltip" data-placement="top" title="Reset Password"><button type="button" class="btn bg-purple"><i class="fa fa-refresh"></i></button></a>
                                     <?php if (!isset($app->req->cookie['SWITCH_USERBACK']) && (int) _escape($user['user_id']) !== get_current_user_id()) : ?>
                                         <a<?= ae('switch_user'); ?> href="<?= get_base_url(); ?>admin/user/<?= (int) _escape($user['user_id']); ?>/switch-to/" data-toggle="tooltip" data-placement="top" title="Switch to"><button type="button" class="btn bg-blue"><i class="fa fa-exchange"></i></button></a>
                                     <?php endif; ?>
