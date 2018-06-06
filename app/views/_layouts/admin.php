@@ -251,7 +251,7 @@ use TriTan\Config;
                             </ul>
                         </li>
                         <li>
-                            <a href="//github.com/parkerj/TriTan-CMS/issues">
+                            <a href="//gitspace.us/projects/tritan-cms/issues">
                                 <i class="fa fa-ticket"></i> <span><?= _t('Submit Issue', 'tritan-cms'); ?></span>
                             </a>
                         </li>
