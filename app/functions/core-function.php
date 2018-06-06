@@ -2063,7 +2063,7 @@ function ttcms_generate_password($length = 12, $special_chars = true, $extra_spe
         $chars .= '-_ []{}<>~`+=,.;:/?|';
     }
 
-    $password = _ttcms_random_lib()->generate($length, $chars);
+    $password = _ttcms_random_lib()->generateString($length, $chars);
 
     /**
      * Filters the system generated password.
