@@ -1082,20 +1082,20 @@ function ttcms_update_user($userdata)
  */
 function send_reset_password_email($user, $password)
 {
-    $site_name = app()->hook->get_option('sitename');
+    $site_name = app()->hook->{'get_option'}('sitename');
 
     $message .= sprintf(_t("<p>Hello %s! You requested that your password be reset. Please see your new password below: <br />", 'tritan-cms'), _escape($user['user_fname']));
     $message .= sprintf(_t('Password: %s', 'tritan-cms'), $password) . "</p>";
     $message .= sprintf(_t('<p>If you still have problems with logging in, please contact us at %s.', 'tritan-cms'), app()->hook->{'get_option'}('admin_email')) . "</p>";
 
-    $message = process_email_html($message, sprint(_t('[%s] Password Reset', 'tritan-cms'), $site_name));
+    $message = process_email_html($message, sprintf(_t('[%s] Password Reset', 'tritan-cms'), $site_name));
     $headers[] = sprintf("From: %s <auto-reply@%s>", $site_name, get_domain_name());
     if (!function_exists('ttcms_smtp')) {
         $headers[] = 'Content-Type: text/html; charset="UTF-8"';
         $headers[] = sprintf("X-Mailer: TriTan CMS %s", CURRENT_RELEASE);
     }
     try {
-        _ttcms_email()->ttcmsMail(_escape($user['user_email']), sprint(_t('[%s] Notice of Password Reset', 'tritan-cms'), $site_name), $message, $headers);
+        _ttcms_email()->ttcmsMail(_escape($user['user_email']), sprintf(_t('[%s] Notice of Password Reset', 'tritan-cms'), $site_name), $message, $headers);
     } catch (PHPMailer\PHPMailer\Exception $ex) {
         _ttcms_flash()->error($ex->getMessage());
     } catch (Exception $ex) {
@@ -1116,9 +1116,9 @@ function send_reset_password_email($user, $password)
  */
 function send_password_change_email($user, $password, $userdata)
 {
-    $site_name = app()->hook->get_option('sitename');
+    $site_name = app()->hook->{'get_option'}('sitename');
 
-    $message .= sprintf(_t("<p>Hello %s! This is confirmation that your password on %s was updated to: <br />", 'tritan-cms'), _escape($user['user_fname']));
+    $message .= sprintf(_t("<p>Hello %s! This is confirmation that your password on %s was updated to: <br />", 'tritan-cms'), _escape($user['user_fname']), app()->hook->{'get_option'}('sitename'));
     $message .= sprintf(_t('Password: %s', 'tritan-cms'), $password) . "</p>";
     $message .= sprintf(_t('<p>If you did not initiate a password change/update, please contact us at %s.', 'tritan-cms'), app()->hook->{'get_option'}('admin_email')) . "</p>";
 
@@ -1147,7 +1147,7 @@ function send_password_change_email($user, $password, $userdata)
  */
 function send_email_change_email($user, $userdata)
 {
-    $site_name = app()->hook->get_option('sitename');
+    $site_name = app()->hook->{'get_option'}('sitename');
 
     $message .= sprintf(_t("<p>Hello %s! This is confirmation that your email on %s was updated to: <br />", 'tritan-cms'), _escape($user['user_fname']), $site_name);
     $message .= sprintf(_t('Email: %s', 'tritan-cms'), _escape($userdata['user_email'])) . "</p>";
