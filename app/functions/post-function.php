@@ -18,6 +18,8 @@ use TriTan\Config;
  * This function checks to see if the current TriTan CMS query has any
  * results to loop over.
  * 
+ * @file app/functions/post-function.php
+ * 
  * @since 0.9
  * @access private
  * @return int
@@ -31,6 +33,10 @@ function has_posts()
 }
 
 /**
+ * 
+ * @file app/functions/post-function.php
+ * 
+ * @since 0.9
  * @access private
  * @return object
  */
@@ -44,6 +50,8 @@ function the_post()
 
 /**
  * Retrieves post data given a post ID or post array.
+ * 
+ * @file app/functions/post-function.php
  *
  * @since 0.9
  * @param int|Post|null $post
@@ -88,8 +96,10 @@ function get_post($post, $object = false)
 /**
  * A function which retrieves TriTan CMS post date.
  * 
- * Purpose of this function is for the post_date
+ * Purpose of this function is for the `post_date`
  * filter.
+ * 
+ * @file app/functions/post-function.php
  *
  * @since 0.9
  * @param int $post_id The unique id of a post.
@@ -113,8 +123,10 @@ function get_post_date($post_id = 0)
 /**
  * A function which retrieves TriTan CMS post time.
  * 
- * Purpose of this function is for the post_time
+ * Purpose of this function is for the `post_time`
  * filter.
+ * 
+ * @file app/functions/post-function.php
  *
  * @since 0.9
  * @param int $post_id The unique id of a post.
@@ -138,8 +150,10 @@ function get_post_time($post_id = 0)
 /**
  * A function which retrieves TriTan CMS post datetime.
  * 
- * Purpose of this function is for the post_datetime
+ * Purpose of this function is for the `post_datetime`
  * filter.
+ * 
+ * @file app/functions/post-function.php
  *
  * @since 0.9
  * @param int $post_id The unique id of a post.
@@ -162,8 +176,10 @@ function get_post_datetime($post_id = 0)
 /**
  * A function which retrieves TriTan CMS post modified datetime.
  * 
- * Purpose of this function is for the post_modified
+ * Purpose of this function is for the `post_modified`
  * filter.
+ * 
+ * @file app/functions/post-function.php
  *
  * @since 0.9
  * @param int $post_id The unique id of a post.
@@ -188,8 +204,7 @@ function get_post_modified($post_id = 0)
 /**
  * A function which retrieves a TriTan CMS post content.
  * 
- * Purpose of this function is for the_post_content
- * filter.
+ * @file app/functions/post-function.php
  *
  * @since 0.9
  * @param int $post_id The unique id of a post.
@@ -204,8 +219,10 @@ function get_post_content($post_id = 0)
 /**
  * A function which retrieves a TriTan CMS post posttype name.
  * 
- * Purpose of this function is for the post_posttype_name
+ * Purpose of this function is for the `post_posttype_name`
  * filter.
+ * 
+ * @file app/functions/post-function.php
  *
  * @since 0.9
  * @param int $post_id The unique id of a post.
@@ -230,8 +247,10 @@ function get_post_type_name($post_id = 0)
 /**
  * A function which retrieves a TriTan CMS post posttype slug.
  * 
- * Purpose of this function is for the post_posttype_slug
+ * Purpose of this function is for the `post_posttype_slug`
  * filter.
+ * 
+ * @file app/functions/post-function.php
  *
  * @since 0.9
  * @param int $post_id The unique id of a post.
@@ -256,8 +275,10 @@ function get_post_posttype_slug($post_id = 0)
 /**
  * A function which retrieves a TriTan CMS post posttype link.
  * 
- * Purpose of this function is for the post_posttype_link
+ * Purpose of this function is for the `post_posttype_link`
  * filter.
+ * 
+ * @file app/functions/post-function.php
  *
  * @since 0.9
  * @param into $post_id The unique id of a post.
@@ -280,8 +301,10 @@ function get_post_posttype_link($post_id = 0)
 /**
  * A function which retrieves a TriTan CMS post title.
  * 
- * Purpose of this function is for the post_title
+ * Purpose of this function is for the `post_title`
  * filter.
+ * 
+ * @file app/functions/post-function.php
  *
  * @since 0.9
  * @param int $post_id The unique id of a post.
@@ -305,8 +328,10 @@ function get_post_title($post_id = 0)
 /**
  * A function which retrieves a TriTan CMS post slug.
  * 
- * Purpose of this function is for the post_slug
+ * Purpose of this function is for the `post_slug`
  * filter.
+ * 
+ * @file app/functions/post-function.php
  *
  * @since 0.9
  * @param int $post_id The unique id of a post.
@@ -330,8 +355,10 @@ function get_post_slug($post_id = 0)
 /**
  * A function which retrieves a TriTan CMS post's relative url.
  * 
- * Purpose of this function is for the post_relative_url
+ * Purpose of this function is for the `post_relative_url`
  * filter.
+ * 
+ * @file app/functions/post-function.php
  *
  * @since 0.9.5
  * @param int|array $post Post id or array.
@@ -358,14 +385,16 @@ function get_relative_url($post = 0)
      * @param string $relative_url The post's relative url.
      * @param string|array  $_post The post id or array.
      */
-    return app()->hook->{'apply_filter'}('permalink', $relative_url, $_post);
+    return app()->hook->{'apply_filter'}('post_relative_url', $relative_url, $_post);
 }
 
 /**
  * A function which retrieves a TriTan CMS post's permalink.
  * 
- * Purpose of this function is for the permalink
+ * Purpose of this function is for the `permalink`
  * filter.
+ * 
+ * @file app/functions/post-function.php
  *
  * @since 0.9
  * @param int|array $post Post id or array.
@@ -397,6 +426,10 @@ function get_permalink($post = 0)
 
 /**
  * The TriTan CMS post filter.
+ * 
+ * Uses `the_content` filter.
+ * 
+ * @file app/functions/post-function.php
  *
  * @since 0.9
  * @param int $post_id The unique id of a post.
@@ -413,20 +446,26 @@ function the_content($post_id = 0)
 /**
  * Wrapper function for get_all_posts.
  * 
+ * @file app/functions/post-function.php
+ * 
  * @since 0.9
  * @param string $post_type The post type.
+ * @param int $limit        Number of posts to show.
+ * @param null|int $offset  The offset of the first row to be returned.
  * @return object
  */
-function the_posts($post_type = null)
+function the_posts($post_type = null, $limit = 0, $offset = null)
 {
-    return get_all_posts($post_type);
+    return get_all_posts($post_type, $limit, $offset);
 }
 
 /**
  * A function which retrieves TriTan CMS post css.
  * 
- * Purpose of this function is for the post_css
+ * Purpose of this function is for the `post_css`
  * filter.
+ * 
+ * @file app/functions/post-function.php
  *
  * @since 0.9
  * @param int $post_id The unique id of a post.
@@ -450,8 +489,10 @@ function post_css($post_id = 0)
 /**
  * A function which retrieves TriTan CMS post javascript.
  * 
- * Purpose of this function is for the post_js
+ * Purpose of this function is for the `post_js`
  * filter.
+ * 
+ * @file app/functions/post-function.php
  *
  * @since 0.9
  * @param int $post_id The unique id of a post.
@@ -475,6 +516,8 @@ function post_js($post_id = 0)
 /**
  * Adds label to post's status.
  * 
+ * @file app/functions/post-function.php
+ * 
  * @since 0.9
  * @param string $status
  * @return string
@@ -492,6 +535,8 @@ function ttcms_post_status_label($status)
 
 /**
  * Retrieve post meta field for a post.
+ * 
+ * @file app/functions/post-function.php
  *
  * @since 0.9
  * @param int    $post_id Post ID.
@@ -508,6 +553,8 @@ function get_post_meta($post_id, $key = '', $single = false)
 
 /**
  * Get post meta data by meta ID.
+ * 
+ * @file app/functions/post-function.php
  *
  * @since 0.9
  * @param int $mid
@@ -525,6 +572,8 @@ function get_post_meta_by_mid($mid)
  * same key and post ID.
  *
  * If the meta field for the post does not exist, it will be added.
+ * 
+ * @file app/functions/post-function.php
  *
  * @since 0.9
  * @param int    $post_id    Post ID.
@@ -542,6 +591,8 @@ function update_post_meta($post_id, $meta_key, $meta_value, $prev_value = '')
 
 /**
  * Update post meta data by meta ID.
+ * 
+ * @file app/functions/post-function.php
  *
  * @since 0.9
  * @param int $mid
@@ -558,6 +609,8 @@ function update_post_meta_by_mid($mid, $meta_key, $meta_value)
 
 /**
  * Add meta data field to a post.
+ * 
+ * @file app/functions/post-function.php
  *
  * @since 0.9
  * @param int    $post_id    Post ID.
@@ -578,6 +631,8 @@ function add_post_meta($post_id, $meta_key, $meta_value, $unique = false)
  * You can match based on the key, or key and value. Removing based on key and
  * value, will keep from removing duplicate metadata with the same key. It also
  * allows removing all metadata matching key, if needed.
+ * 
+ * @file app/functions/post-function.php
  *
  * @since 0.9
  * @param int    $post_id    Post ID.
@@ -593,6 +648,8 @@ function delete_post_meta($post_id, $meta_key, $meta_value = '')
 
 /**
  * Delete post meta data by meta ID.
+ * 
+ * @file app/functions/post-function.php
  *
  * @since 0.9
  * @param int $mid
@@ -608,6 +665,8 @@ function delete_post_meta_by_mid($mid)
  *
  * The post meta fields are retrieved from the cache where possible,
  * so the function is optimized to be called more than once.
+ * 
+ * @file app/functions/post-function.php
  *
  * @since 0.9
  * @param int $post_id The post's id.
@@ -623,6 +682,8 @@ function get_post_custom($post_id = 0)
  * Retrieve meta field names for a post.
  *
  * If there are no meta fields, then nothing (null) will be returned.
+ * 
+ * @file app/functions/post-function.php
  *
  * @since 0.9
  * @param int $post_id The post's id.
@@ -644,6 +705,8 @@ function get_post_custom_keys($post_id = 0)
  *
  * The parameters must not be considered optional. All of the post meta fields
  * will be retrieved and only the meta field key values returned.
+ * 
+ * @file app/functions/post-function.php
  *
  * @since 0.9
  * @param string $key     Optional. Meta field key. Default empty.
@@ -661,6 +724,10 @@ function get_post_custom_values($key = '', $post_id = 0)
 
 /**
  * Displays the permalink for the current post.
+ * 
+ * Uses `the_permalink` filter.
+ * 
+ * @file app/functions/post-function.php
  * 
  * @since 0.9
  * @param int|array $post Post ID or post array.

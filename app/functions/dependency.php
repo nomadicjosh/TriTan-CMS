@@ -367,4 +367,4 @@ require( APP_PATH . 'functions' . DS . 'db-function.php' );
 require( APP_PATH . 'functions' . DS . 'post-function.php' );
 require( APP_PATH . 'functions' . DS . 'posttype-function.php' );
 require( APP_PATH . 'functions' . DS . 'user-function.php' );
-require( APP_PATH . 'functions' . DS . 'parsecode-function.php' );
+require( APP_PATH . 'functions' . DS . 'deprecated-function.php' );

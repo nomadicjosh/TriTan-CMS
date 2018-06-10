@@ -277,23 +277,36 @@ function number_posts_per_type($slug)
  * Retrieve all published posts or all published posts by post type.
  * 
  * @since 0.9
- * @access private
  * @param string $post_type Post type.
+ * @param int $limit        Number of posts to show.
+ * @param null|int $offset  The offset of the first row to be returned.
  * @return array
  */
-function get_all_posts($post_type = null)
+function get_all_posts($post_type = null, $limit = 0, $offset = null)
 {
     if ($post_type != null) {
         $posts = app()->db->table(Config::get('tbl_prefix') . 'post')
                 ->where('post_type.post_posttype', $post_type)
-                ->where('post_status', 'published')
-                ->get();
-        return $posts;
+                ->where('post_status', 'published');
+        if ($limit > 0 && $offset != null) {
+            $posts->take($limit, $offset);
+        } elseif ($limit > 0 && $offset == null) {
+            $posts->take($limit);
+        } elseif ($limit <= 0 && $offset != null) {
+            $posts->skip($offset);
+        }
+        return $posts->get();
     } else {
         $posts = app()->db->table(Config::get('tbl_prefix') . 'post')
-                ->where('post_status', 'published')
-                ->get();
-        return $posts;
+                ->where('post_status', 'published');
+        if ($limit > 0 && $offset != null) {
+            $posts->take($limit, $offset);
+        } elseif ($limit > 0 && $offset == null) {
+            $posts->take($limit);
+        } elseif ($limit <= 0 && $offset != null) {
+            $posts->skip($offset);
+        }
+        return $posts->get();
     }
 }
 

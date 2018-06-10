@@ -29,7 +29,7 @@ use TriTan\Config;
  */
 function register_admin_page($slug, $title, $function)
 {
-    return app()->hook->register_admin_page($slug, $title, $function);
+    return app()->hook->{'register_admin_page'}($slug, $title, $function);
 }
 
 /**
@@ -45,7 +45,7 @@ function register_admin_page($slug, $title, $function)
  */
 function activate_plugin($id)
 {
-    return app()->hook->activate_plugin($id);
+    return app()->hook->{'activate_plugin'}($id);
 }
 
 /**
@@ -61,7 +61,7 @@ function activate_plugin($id)
  */
 function deactivate_plugin($id)
 {
-    return app()->hook->deactivate_plugin($id);
+    return app()->hook->{'deactivate_plugin'}($id);
 }
 
 /**
@@ -77,7 +77,7 @@ function deactivate_plugin($id)
  */
 function load_activated_plugins($plugins_dir = '')
 {
-    return app()->hook->load_activated_plugins($plugins_dir);
+    return app()->hook->{'load_activated_plugins'}($plugins_dir);
 }
 
 /**
@@ -93,7 +93,7 @@ function load_activated_plugins($plugins_dir = '')
  */
 function is_plugin_activated($plugin)
 {
-    return app()->hook->is_plugin_activated($plugin);
+    return app()->hook->{'is_plugin_activated'}($plugin);
 }
 
 /**
@@ -103,7 +103,7 @@ function is_plugin_activated($plugin)
  * to get the backtrace up to what file and function called the deprecated
  * function.
  *
- * The current behavior is to trigger a user error if APP_ENV is DEV.
+ * Default behavior is to trigger a user error if `APP_ENV` is set to `DEV`.
  *
  * This function is to be used in every function that is deprecated.
  *
@@ -164,7 +164,7 @@ function _deprecated_function($function_name, $release, $replacement = null)
  * to get the backtrace up to what file, function/class called the deprecated
  * class.
  *
- * The current behavior is to trigger a user error if APP_ENV is DEV.
+ * Default behavior is to trigger a user error if `APP_ENV` is set to `DEV`.
  *
  * This function is to be used in every class that is deprecated.
  *
@@ -225,7 +225,7 @@ function _deprecated_class($class_name, $release, $replacement = null)
  * to get the backtrace up to what file, function/class called the deprecated
  * method.
  *
- * The current behavior is to trigger a user error if APP_ENV is DEV.
+ * Default behavior is to trigger a user error if `APP_ENV` is set to `DEV`.
  *
  * This function is to be used in every class's method that is deprecated.
  *
@@ -285,18 +285,18 @@ function _deprecated_class_method($method_name, $release, $replacement = null)
  * This function is to be used whenever a deprecated function argument is used.
  * Before this function is called, the argument must be checked for whether it was
  * used by comparing it to its default value or evaluating whether it is empty.
- * For example:
  *
- * if ( ! empty( $deprecated ) ) {
- * _deprecated_argument( __FUNCTION__, '0.9' );
- * }
- *
- *
- * There is a hook deprecated_argument_run that will be called that can be used
+ * There is a hook `deprecated_argument_run` that will be called that can be used
  * to get the backtrace up to what file and function used the deprecated
  * argument.
  *
- * The current behavior is to trigger a user error if APP_ENV is set to DEV.
+ * Default behavior is to trigger a user error if `APP_ENV` is set to `DEV`.
+ * 
+ * Example Usage:
+ *
+ *      if ( ! empty( $deprecated ) ) {
+ *          _deprecated_argument( __FUNCTION__, '0.9' );
+ *      }
  *
  * @since 0.9
  *       
@@ -350,10 +350,7 @@ function _deprecated_argument($function_name, $release, $message = null)
 /**
  * Marks a deprecated action or filter hook as deprecated and throws a notice.
  *
- * Default behavior is to trigger a user error if `APP_ENV` is set to DEV.
- *
- * This function is called by the hook::do_action_deprecated() and Hook::apply_filter_deprecated()
- * functions, and so generally does not need to be called directly.
+ * Default behavior is to trigger a user error if `APP_ENV` is set to `DEV`.
  *
  * @since 0.9
  * 
@@ -401,7 +398,7 @@ function _deprecated_hook($hook, $release, $replacement = null, $message = null)
  * to get the backtrace up to what file and function called the deprecated
  * function.
  *
- * The current behavior is to trigger a user error if APP_ENV is set to DEV.
+ * Default behavior is to trigger a user error if `APP_ENV` is set to `DEV`.
  *
  * @since 0.9
  *       
@@ -1138,7 +1135,7 @@ function get_theme_url()
 {
     $site_id = Config::get('site_id');
     $url = get_base_url() . 'private/sites/' . $site_id . '/themes/';
-    return app()->hook->{'apply_filter'}("the_theme_url_site{$site_id}", $url);
+    return app()->hook->{'apply_filter'}("the_theme_url_site_{$site_id}", $url);
 }
 
 /**
@@ -1184,7 +1181,7 @@ function themes_url($path = '', $theme = '')
      * @param string $_theme    A site's theme file path to be relative to. Blank string if no site's theme
      *                          is specified.
      */
-    return app()->hook->{'apply_filter'}("themes_url_site{$site_id}", $url, $_path, $_theme);
+    return app()->hook->{'apply_filter'}("themes_url_site_{$site_id}", $url, $_path, $_theme);
 }
 
 /**
@@ -1197,7 +1194,7 @@ function get_private_site_url()
 {
     $site_id = Config::get('site_id');
     $url = get_base_url() . 'private/sites/' . $site_id . '/';
-    return app()->hook->{'apply_filter'}("private_site_url{$site_id}", $url);
+    return app()->hook->{'apply_filter'}("private_site_url_{$site_id}", $url);
 }
 
 /**
@@ -1210,7 +1207,7 @@ function get_private_site_upload_url()
 {
     $site_id = Config::get('site_id');
     $url = get_private_site_url() . 'uploads/';
-    return app()->hook->{'apply_filter'}("private_site_upload_url{$site_id}", $url);
+    return app()->hook->{'apply_filter'}("private_site_upload_url_{$site_id}", $url);
 }
 
 /**
@@ -1604,7 +1601,7 @@ function add_files_cache_directory()
         Cascade::getLogger('error')->error(sprintf('IOSTATE[%s]: Forbidden: %s', $e->getCode(), $e->getMessage()));
     }
 
-    $key = _ttcms_random_lib()->generate(25, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+    $key = _ttcms_random_lib()->generateString(25, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
 
     if (!file_exists($dir . '.htaccess')) {
         $content = "# BEGIN Privatization" . "\n";
@@ -1627,11 +1624,22 @@ function add_files_cache_directory()
 }
 
 /**
+ * Loads javascript for backend dashboard.
+ * 
+ * @since 0.9.8
+ */
+function admin_dashboard_js()
+{
+    ttcms_enqueue_js('default', get_base_url() . 'static/assets/js/pages/dashboard.js');
+}
+
+/**
  * Default actions and filters.
  * 
  * @since 0.9
  */
 app()->hook->{'add_action'}('ttcms_admin_head', 'head_release_meta', 5);
+//app()->hook->{'add_action'}('ttcms_admin_footer', 'admin_dashboard_js', 5);
 app()->hook->{'add_action'}('ttcms_head', 'head_release_meta', 5);
 app()->hook->{'add_action'}('ttcms_head', 'post_css', 5, 2);
 app()->hook->{'add_action'}('ttcms_footer', 'post_js', 5, 2);
@@ -1660,3 +1668,5 @@ app()->hook->{'add_filter'}('the_content', 'do_parsecode', 5);
 app()->hook->{'add_filter'}('the_content', 'eae_encode_emails', EAE_FILTER_PRIORITY);
 app()->hook->{'add_filter'}('ttcms_authenticate_user', 'ttcms_authenticate', 5, 3);
 app()->hook->{'add_filter'}('ttcms_auth_cookie', 'ttcms_set_auth_cookie', 5, 2);
+app()->hook->{'add_filter'}('pre_user_email', '_trim', 5);
+app()->hook->{'add_filter'}('pre_user_url', 'ttcms_strip_tags', 5);
