@@ -50,7 +50,7 @@ $app->group('/admin', function() use ($app, $user) {
 
         $sites = $app->db->table('site')->all();
 
-        $app->view->display('admin/site/index', [
+        $app->foil->render('main::admin/site/index', [
             'title' => _t('Sites', 'tritan-cms'),
             'sites' => $sites
                 ]
@@ -104,7 +104,7 @@ $app->group('/admin', function() use ($app, $user) {
          * the results in a jhtml format.
          */ else {
 
-            $app->view->display('admin/site/update', [
+            $app->foil->render('main::admin/site/update', [
                 'title' => _t('Update Site', 'tritan-cms'),
                 'site' => $q,
                     ]
@@ -163,7 +163,7 @@ $app->group('/admin', function() use ($app, $user) {
     $app->get('/site/users/', function () use($app) {
         $users = $app->db->table('user')->all();
 
-        $app->view->display('admin/site/users', [
+        $app->foil->render('main::admin/site/users', [
             'title' => _t('Manage Site Users', 'tritan-cms'),
             'users' => $users
                 ]

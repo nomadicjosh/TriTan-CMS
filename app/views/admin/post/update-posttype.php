@@ -1,7 +1,6 @@
 <?php if (!defined('BASE_PATH')) exit('No direct script access allowed');
-$app = \Liten\Liten::getInstance();
-$app->view->extend('_layouts/admin');
-$app->view->block('admin');
+$this->layout('main::_layouts/admin-layout');
+$this->section('backend');
 TriTan\Config::set('screen_parent', 'post_type');
 ?>
 
@@ -15,7 +14,7 @@ $(function(){
 </script>
 
 <!-- form start -->
-<form method="post" action="<?=get_base_url(); ?>admin/post-type/<?=_escape($posttype['posttype_id']);?>/" data-toggle="validator" autocomplete="off">
+<form method="post" action="<?=get_base_url(); ?>admin/post-type/<?=$this->posttype['posttype_id'];?>/" data-toggle="validator" autocomplete="off">
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -42,18 +41,18 @@ $(function(){
                     <div class="col-md-12">
                         <div class="form-group">
                             <label><font color="red">*</font> <?= _t('Post Type Name', 'tritan-cms'); ?></label>
-                            <input type="text" class="form-control input-lg" name="posttype_title" id="posttype_title" value="<?=_escape($posttype['posttype_title']);?>" required/>
+                            <input type="text" class="form-control input-lg" name="posttype_title" id="posttype_title" value="<?=$this->posttype['posttype_title'];?>" required/>
                         </div>
                         <div class="form-group">
                             <label><?= _t('Post Type Slug', 'tritan-cms'); ?></label>
-                            <input type="text" class="form-control" name="posttype_slug" id="posttype_slug" value="<?=_escape($posttype['posttype_slug']);?>" />
+                            <input type="text" class="form-control" name="posttype_slug" id="posttype_slug" value="<?=$this->posttype['posttype_slug'];?>" />
                         </div>
 
                         <div class="form-group">
                             <label><?= _t('Post Type Description', 'tritan-cms'); ?></label>
-                            <textarea class="form-control" rows="3" name="posttype_description"><?=_escape($posttype['posttype_description']);?></textarea>
+                            <textarea class="form-control" rows="3" name="posttype_description"><?=$this->posttype['posttype_description'];?></textarea>
                         </div>
-                        <?php $app->hook->{'do_action'}('update_posttype_form_fields', _escape($posttype['posttype_id'])); ?>
+                        <?php $this->app->hook->{'do_action'}('update_posttype_form_fields', $this->posttype['posttype_id']); ?>
                     </div>
                     <!-- /.col -->
                 </div>
@@ -70,4 +69,4 @@ $(function(){
 <!-- /.content-wrapper -->
 </form>
 
-<?php $app->view->stop(); ?>
+<?php $this->stop(); ?>

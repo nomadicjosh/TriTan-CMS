@@ -57,7 +57,7 @@ $app->group('/admin', function() use ($app, $current_user) {
                 _ttcms_flash()->{'error'}($ex->getMessage());
             }
         }
-        $app->view->display('admin/user/profile', [
+        $app->foil->render('main::admin/user/profile', [
             'title' => _t('User Profile', 'tritan-cms'),
                 ]
         );
@@ -75,7 +75,7 @@ $app->group('/admin', function() use ($app, $current_user) {
 
     $app->get('/user/', function () use($app) {
 
-        $app->view->display('admin/user/index', [
+        $app->foil->render('main::admin/user/index', [
             'title' => _t('Manage Users', 'tritan-cms'),
             'users' => get_multisite_users()
                 ]
@@ -143,7 +143,7 @@ $app->group('/admin', function() use ($app, $current_user) {
             }
         }
 
-        $app->view->display('admin/user/create', [
+        $app->foil->render('main::admin/user/create', [
             'title' => _t('Create New User', 'tritan-cms')
                 ]
         );
@@ -214,7 +214,7 @@ $app->group('/admin', function() use ($app, $current_user) {
          * the results in a html format.
          */ else {
 
-            $app->view->display('admin/user/update', [
+            $app->foil->render('main::admin/user/update', [
                 'title' => _t('Update User', 'tritan-cms'),
                 'user' => $_user
                     ]

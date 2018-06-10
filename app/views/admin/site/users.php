@@ -7,13 +7,12 @@ use TriTan\Config;
  *  
  * @license GPLv3
  * 
- * @since       1.0.0
+ * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
  */
-$app = \Liten\Liten::getInstance();
-$app->view->extend('_layouts/admin');
-$app->view->block('admin');
+$this->layout('main::_layouts/admin-layout');
+$this->section('backend');
 Config::set('screen_parent', 'sites');
 Config::set('screen_child', 'sites-user');
 
@@ -47,33 +46,33 @@ Config::set('screen_child', 'sites-user');
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($users as $user) : ?>
+                        <?php foreach ($this->users as $user) : ?>
                             <tr class="gradeX">
-                                <td class="text-center"><?= _escape($user['user_login']); ?></td>
-                                <td class="text-center"><?= _escape($user['user_fname']); ?></td>
-                                <td class="text-center"><?= _escape($user['user_lname']); ?></td>
+                                <td class="text-center"><?= $user['user_login']; ?></td>
+                                <td class="text-center"><?= $user['user_fname']; ?></td>
+                                <td class="text-center"><?= $user['user_lname']; ?></td>
                                 <td class="text-center">
-                                    <?php if (!isset($app->req->cookie['SWITCH_USERBACK']) && (int) _escape($user['user_id']) != get_current_user_id()) : ?>
-                                        <a<?= ae('switch_user'); ?> href="<?= get_base_url(); ?>admin/user/<?= (int) _escape($user['user_id']); ?>/switch-to/" data-toggle="tooltip" data-placement="top" title="Switch to"><button type="button" class="btn bg-blue"><i class="fa fa-exchange"></i></button></a>
+                                    <?php if (!isset($this->app->req->cookie['SWITCH_USERBACK']) && (int) $user['user_id'] !== $this->current_user_id) : ?>
+                                        <a<?= ae('switch_user'); ?> href="<?= get_base_url(); ?>admin/user/<?= (int) $user['user_id']; ?>/switch-to/" data-toggle="tooltip" data-placement="top" title="Switch to"><button type="button" class="btn bg-blue"><i class="fa fa-exchange"></i></button></a>
                                     <?php endif; ?>
-                                    <?php if ((int) _escape($user['user_id']) != 1) : ?>
-                                        <a<?= ae('delete_users'); ?> href="#" data-toggle="modal" data-target="#delete-<?= (int) _escape($user['user_id']); ?>"><button type="button" class="btn bg-red"><i class="fa fa-trash-o"></i></button></a>
+                                    <?php if ((int) $user['user_id'] !== 1) : ?>
+                                        <a<?= ae('delete_users'); ?> href="#" data-toggle="modal" data-target="#delete-<?= (int) $user['user_id']; ?>"><button type="button" class="btn bg-red"><i class="fa fa-trash-o"></i></button></a>
                                     <?php endif; ?>
 
-                                    <div class="modal" id="delete-<?= (int) _escape($user['user_id']); ?>">
+                                    <div class="modal" id="delete-<?= (int) $user['user_id']; ?>">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <div class="modal-header">
                                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                         <span aria-hidden="true">&times;</span></button>
-                                                    <h4 class="modal-title"><?= get_name((int) _escape($user['user_id'])); ?></h4>
+                                                    <h4 class="modal-title"><?= get_name((int) $user['user_id']); ?></h4>
                                                 </div>
                                                 <div class="modal-body">
                                                     <p><?= _t('Are you sure you want to permanently delete this user?'); ?></p>
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><?= _t('Close'); ?></button>
-                                                    <button type="button" class="btn btn-primary" onclick="window.location = '<?= get_base_url(); ?>admin/site/users/<?= (int) _escape($user['user_id']); ?>/d/'"><?= _t('Confirm'); ?></button>
+                                                    <button type="button" class="btn btn-primary" onclick="window.location = '<?= get_base_url(); ?>admin/site/users/<?= (int) $user['user_id']; ?>/d/'"><?= _t('Confirm'); ?></button>
                                                 </div>
                                             </div>
                                             <!-- /.modal-content -->
@@ -103,4 +102,4 @@ Config::set('screen_child', 'sites-user');
     <!-- /.content -->
 </div>
 <!-- /.content-wrapper -->
-<?php $app->view->stop(); ?>
+<?php $this->stop(); ?>

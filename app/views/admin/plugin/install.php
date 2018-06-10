@@ -1,9 +1,8 @@
 <?php
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
-$app = \Liten\Liten::getInstance();
-$app->view->extend('_layouts/admin');
-$app->view->block('admin');
+$this->layout('main::_layouts/admin-layout');
+$this->section('backend');
 TriTan\Config::set('screen_parent', 'plugins');
 TriTan\Config::set('screen_child', 'plugin-new');
 
@@ -56,4 +55,4 @@ TriTan\Config::set('screen_child', 'plugin-new');
     <!-- /.content-wrapper -->
 </form>
 
-<?php $app->view->stop(); ?>
+<?php $this->stop(); ?>

@@ -11,9 +11,8 @@ use TriTan\Config;
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
  */
-$app = \Liten\Liten::getInstance();
-$app->view->extend('_layouts/admin');
-$app->view->block('admin');
+$this->layout('main::_layouts/admin-layout');
+$this->section('backend');
 Config::set('screen_parent', 'users');
 Config::set('screen_child', 'auser');
 ?>
@@ -118,7 +117,7 @@ $(document).ready(function(){
                              * 
                              * @since 0.9
                              */
-                            $app->hook->{'do_action'}('create_user_profile_name');
+                            $this->app->hook->{'do_action'}('create_user_profile_name');
                             ?>
                         </div>
                     </div>
@@ -141,7 +140,7 @@ $(document).ready(function(){
                              * 
                              * @since 0.9
                              */
-                            $app->hook->{'do_action'}('create_user_profile_contact');
+                            $this->app->hook->{'do_action'}('create_user_profile_contact');
                             ?>
                             
                         </div>
@@ -180,7 +179,7 @@ $(document).ready(function(){
                              * 
                              * @since 0.9
                              */
-                            $app->hook->{'do_action'}('create_user_profile_status');
+                            $this->app->hook->{'do_action'}('create_user_profile_status');
                             ?>
                         </div>
                     </div>
@@ -206,7 +205,7 @@ $(document).ready(function(){
                              * 
                              * @since 0.9
                              */
-                            $app->hook->{'do_action'}('create_user_profile_password');
+                            $this->app->hook->{'do_action'}('create_user_profile_password');
                             ?>
                         </div>
                     </div>
@@ -217,7 +216,7 @@ $(document).ready(function(){
                      * 
                      * @since 0.9
                      */
-                    $app->hook->{'do_action'}('create_user_profile');
+                    $this->app->hook->{'do_action'}('create_user_profile');
                     ?>
                     
                 </div>
@@ -231,4 +230,4 @@ $(document).ready(function(){
     <!-- /.content-wrapper -->
 </form>
 <!-- form end -->
-<?php $app->view->stop(); ?>
+<?php $this->app->view->stop(); ?>

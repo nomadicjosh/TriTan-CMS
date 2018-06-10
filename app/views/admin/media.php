@@ -1,8 +1,6 @@
 <?php if (!defined('BASE_PATH')) exit('No direct script access allowed');
-$app = \Liten\Liten::getInstance();
-$app->view->extend('_layouts/admin');
-$app->view->block('admin');
-define('SCREEN_PARENT', 'media');
+$this->layout('main::_layouts/admin-layout');
+$this->section('backend');
 TriTan\Config::set('screen_parent', 'media');
 ?>
 
@@ -47,4 +45,4 @@ TriTan\Config::set('screen_parent', 'media');
     <!-- /.content -->
 </div>
 <!-- /.content-wrapper -->
-<?php $app->view->stop(); ?>
+<?php $this->stop(); ?>

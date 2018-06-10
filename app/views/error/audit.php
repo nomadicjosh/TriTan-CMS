@@ -3,21 +3,20 @@ if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use Jenssegers\Date\Date;
 use TriTan\Config;
+
 /**
  * Audit Trail View
  *  
  * @license GPLv3
  * 
- * @since       1.0.0
+ * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
  */
-$app = \Liten\Liten::getInstance();
-$app->view->extend('_layouts/admin');
-$app->view->block('admin');
+$this->layout('main::_layouts/admin-layout');
+$this->section('backend');
 Config::set('screen_parent', 'dashboard');
 Config::set('screen_child', 'audit');
-
 ?>        
 
 <!-- Content Wrapper. Contains page content -->
@@ -50,14 +49,14 @@ Config::set('screen_child', 'audit');
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($audit as $aud) : ?>
+                        <?php foreach ($this->audit as $aud) : ?>
                             <tr class="gradeX">
-                                <td class="text-center"><?= _escape($aud['action']); ?></td>
-                                <td class="text-center"><?= _escape($aud['process']); ?></td>
-                                <td class="text-center"><?= _escape($aud['record']); ?></td>
-                                <td class="text-center"><?= _escape($aud['uname']); ?></td>
-                                <td class="text-center"><?= Date::parse(_escape($aud['created_at']))->format('D, M d, o'); ?></td>
-                                <td class="text-center"><?= Date::parse(_escape($aud['expires_at']))->format('D, M d, o'); ?></td>
+                                <td class="text-center"><?= $aud['action']; ?></td>
+                                <td class="text-center"><?= $aud['process']; ?></td>
+                                <td class="text-center"><?= $aud['record']; ?></td>
+                                <td class="text-center"><?= $aud['uname']; ?></td>
+                                <td class="text-center"><?= Date::parse($aud['created_at'])->format('D, M d, o'); ?></td>
+                                <td class="text-center"><?= Date::parse($aud['expires_at'])->format('D, M d, o'); ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -81,4 +80,4 @@ Config::set('screen_child', 'audit');
     <!-- /.content -->
 </div>
 <!-- /.content-wrapper -->
-<?php $app->view->stop(); ?>
+<?php $this->stop(); ?>

@@ -7,13 +7,12 @@ use TriTan\Config;
  *  
  * @license GPLv3
  * 
- * @since       1.0.0
+ * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
  */
-$app = \Liten\Liten::getInstance();
-$app->view->extend('_layouts/admin');
-$app->view->block('admin');
+$this->layout('main::_layouts/admin-layout');
+$this->section('backend');
 $perms = new \TriTan\ACL();
 Config::set('screen_parent', 'roles');
 Config::set('screen_child', 'perm');
@@ -82,4 +81,4 @@ Config::set('screen_child', 'perm');
     <!-- /.content -->
 </div>
 <!-- /.content-wrapper -->
-<?php $app->view->stop(); ?>
+<?php $this->stop(); ?>

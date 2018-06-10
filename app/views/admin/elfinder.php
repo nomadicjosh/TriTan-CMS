@@ -9,13 +9,12 @@ if (!defined('BASE_PATH'))
  *  
  * @license GPLv3
  * 
- * @since       1.0.0
+ * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
  */
-$app = \Liten\Liten::getInstance();
-$app->view->extend('_layouts/blank');
-$app->view->block('blank');
+$this->layout('main::_layouts/blank-layout');
+$this->section('blank');
 error_reporting(0);
 ?>
 
@@ -25,7 +24,7 @@ error_reporting(0);
         <base href="<?= get_base_url(); ?>">
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title><?=$title . ' &lsaquo; ' . $app->hook->{'get_option'}('sitename'); ?> &#8212; <?=_t('TriTan CMS', 'tritan-cms');?></title>
+        <title><?=$this->title . ' &lsaquo; ' . $this->app->hook->{'get_option'}('sitename'); ?> &#8212; <?=_t('TriTan CMS', 'tritan-cms');?></title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
@@ -64,4 +63,4 @@ error_reporting(0);
 
     </body>
 </html>
-<?php $app->view->stop(); ?>
+<?php $this->stop(); ?>

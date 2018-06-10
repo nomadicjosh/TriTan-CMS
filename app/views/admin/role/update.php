@@ -7,13 +7,12 @@ use TriTan\Config;
  *  
  * @license GPLv3
  * 
- * @since       1.0.0
+ * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
  */
-$app = \Liten\Liten::getInstance();
-$app->view->extend('_layouts/admin');
-$app->view->block('admin');
+$this->layout('main::_layouts/admin-layout');
+$this->section('backend');
 $eRole = new \TriTan\ACL();
 Config::set('screen_parent', 'roles');
 Config::set('screen_child', 'role');
@@ -31,7 +30,7 @@ Config::set('screen_child', 'role');
                 <h3 class="box-title"><?= _t('Update Role', 'tritan-cms'); ?></h3>
 
                 <div class="pull-right">
-                    <input type="hidden" name="role_id" value="<?= _escape((int) $role['role_id']); ?>" />
+                    <input type="hidden" name="role_id" value="<?= (int) $this->role['role_id']; ?>" />
                     <button type="submit" class="btn btn-success"><i class="fa fa-pencil"></i> <?= _t('Update', 'tritan-cms'); ?></button>
                     <button type="button" class="btn btn-primary" onclick="window.location = '<?= get_base_url(); ?>admin/role/'"><i class="fa fa-ban"></i> <?= _t('Cancel', 'tritan-cms'); ?></button>
                 </div>
@@ -50,7 +49,7 @@ Config::set('screen_child', 'role');
                     <!-- Group -->
                     <div class="form-group">
                         <label class="col-md-3 control-label"><font color="red">*</font> <?= _t('Role Name'); ?></label>
-                        <div class="col-md-12"><input class="form-control" name="role_name" type="text" value="<?= _escape($role['role_name']); ?>" required/></div>
+                        <div class="col-md-12"><input class="form-control" name="role_name" type="text" value="<?= $this->role['role_name']; ?>" required/></div>
                     </div>
                     <!-- // Group END -->
 
@@ -62,7 +61,7 @@ Config::set('screen_child', 'role');
                             </tr>
                         </thead>
                         <tbody>
-                            <?php role_perm(_escape((int) $role['role_id'])); ?>
+                            <?php role_perm((int) $this->role['role_id']); ?>
                         </tbody>
                         <tfoot>
                             <tr>
@@ -81,4 +80,4 @@ Config::set('screen_child', 'role');
     </div>
     <!-- /.content-wrapper -->
 </form>
-<?php $app->view->stop(); ?>
+<?php $this->stop(); ?>

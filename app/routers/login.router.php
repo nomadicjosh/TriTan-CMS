@@ -16,7 +16,7 @@ $app->group('/login', function() use ($app) {
      */
     $app->before('GET|POST', '/', function() use($app) {
         if (is_user_logged_in()) {
-            $redirect_to = ($app->req->get['redirect_to'] != null ? $app->req->get['redirect_to'] : get_base_url());
+            $redirect_to = ($app->req->get['redirect_to'] != null ? $app->req->get['redirect_to'] : get_base_url() . 'admin' . '/');
             ttcms_redirect($redirect_to);
         }
 
@@ -45,7 +45,7 @@ $app->group('/login', function() use ($app) {
             ttcms_redirect($login_link);
         }
 
-        $app->view->display('login/index', [
+        $app->foil->render('main::login/index', [
             'title' => _t('Login', 'tritan-cms')
             ]
         );

@@ -1,9 +1,8 @@
 <?php
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
-$app = \Liten\Liten::getInstance();
-$app->view->extend('_layouts/admin');
-$app->view->block('admin');
+$this->layout('main::_layouts/admin-layout');
+$this->section('backend');
 TriTan\Config::set('screen_parent', 'sites');
 TriTan\Config::set('screen_child', 'sites');
 ?>
@@ -41,7 +40,7 @@ TriTan\Config::set('screen_child', 'sites');
                         <div class="box-body">
                             <div class="form-group">
                                 <label><?= _t('Subdomain', 'tritan-cms'); ?></label>
-                                <input type="text" class="form-control input-lg" name="subdomain" value="<?= __return_post('subdomain'); ?>" required/>.<?= $app->req->server['HTTP_HOST']; ?>
+                                <input type="text" class="form-control input-lg" name="subdomain" value="<?= __return_post('subdomain'); ?>" required/>.<?= $this->app->req->server['HTTP_HOST']; ?>
                             </div>
                             <div class="form-group">
                                 <label><?= _t('Site Name', 'tritan-cms'); ?></label>
@@ -49,7 +48,7 @@ TriTan\Config::set('screen_child', 'sites');
                             </div>
                             <div class="form-group">
                                 <label><?= _t('Path', 'tritan-cms'); ?> <a href="#path" data-toggle="modal"><span class="badge"><i class="fa fa-question"></i></span></a></label>
-                                <input type="text" class="form-control" name="site_path" value="<?=str_replace('index.php', '', $app->req->server['PHP_SELF']);?>" required/>
+                                <input type="text" class="form-control" name="site_path" value="<?=str_replace('index.php', '', $this->app->req->server['PHP_SELF']);?>" required/>
                             </div>
                             <div class="form-group">
                                 <label><?= _t('Administrator', 'tritan-cms'); ?></label>
@@ -85,35 +84,35 @@ TriTan\Config::set('screen_child', 'sites');
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php foreach ($sites as $site) : ?>
+                                    <?php foreach ($this->sites as $site) : ?>
                                         <tr class="gradeX">
-                                            <td class="text-center"><a href="//<?= _escape($site['site_domain']); ?><?= _escape($site['site_path']); ?>" target="new"><?= _escape($site['site_domain']); ?></a></td>
-                                            <td class="text-center"><?= _escape($site['site_name']); ?></td>
-                                            <td class="text-center"><?= get_name(_escape($site['site_owner'])); ?></td>
+                                            <td class="text-center"><a href="//<?= $site['site_domain']; ?><?= $site['site_path']; ?>" target="new"><?= $site['site_domain']; ?></a></td>
+                                            <td class="text-center"><?= $site['site_name']; ?></td>
+                                            <td class="text-center"><?= get_name((int) $site['site_owner']); ?></td>
                                             <td class="text-center">
-                                                <span class="label <?= ttcms_site_status_label(_escape($site['site_status'])); ?>" style="font-size:1em;font-weight: bold;">
-                                                    <?= ucfirst(_escape($site['site_status'])); ?>
+                                                <span class="label <?= ttcms_site_status_label($site['site_status']); ?>" style="font-size:1em;font-weight: bold;">
+                                                    <?= ucfirst($site['site_status']); ?>
                                                 </span>
                                             </td>
                                             <td class="text-center">
-                                                <button type="button"<?=ae('update_sites');?> class="btn btn-success" onclick="window.location = '<?= get_base_url(); ?>admin/site/<?= (int) _escape($site['site_id']); ?>/'"><i class="fa fa-pencil"></i></button>
-                                                <?php if((int)_escape($site['site_id']) <> 1) : ?>
-                                                <button type="button"<?= ae('delete_sites'); ?> class="btn bg-red" data-toggle="modal" data-target="#delete-<?= _escape($site['site_id']); ?>"><i class="fa fa-trash-o"></i></button>
+                                                <button type="button"<?=ae('update_sites');?> class="btn btn-success" onclick="window.location = '<?= get_base_url(); ?>admin/site/<?= (int) $site['site_id']; ?>/'"><i class="fa fa-pencil"></i></button>
+                                                <?php if((int) $site['site_id'] <> 1) : ?>
+                                                <button type="button"<?= ae('delete_sites'); ?> class="btn bg-red" data-toggle="modal" data-target="#delete-<?= $site['site_id']; ?>"><i class="fa fa-trash-o"></i></button>
                                                 <?php endif; ?>
-                                                <div class="modal" id="delete-<?= _escape($site['site_id']); ?>">
+                                                <div class="modal" id="delete-<?= $site['site_id']; ?>">
                                                     <div class="modal-dialog">
                                                         <div class="modal-content">
                                                             <div class="modal-header">
                                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                                     <span aria-hidden="true">&times;</span></button>
-                                                                <h4 class="modal-title"><?= _escape($site['site_domain']); ?></h4>
+                                                                <h4 class="modal-title"><?= $site['site_domain']; ?></h4>
                                                             </div>
                                                             <div class="modal-body">
                                                                 <p><?= _t("Are you sure you want to delete this site and all it's content"); ?></p>
                                                             </div>
                                                             <div class="modal-footer">
                                                                 <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><?= _t('Close'); ?></button>
-                                                                <button type="button" class="btn btn-primary" onclick="window.location = '<?= get_base_url(); ?>admin/site/<?= _escape($site['site_id']); ?>/d/'"><?= _t('Confirm'); ?></button>
+                                                                <button type="button" class="btn btn-primary" onclick="window.location = '<?= get_base_url(); ?>admin/site/<?= (int) $site['site_id']; ?>/d/'"><?= _t('Confirm'); ?></button>
                                                             </div>
                                                         </div>
                                                         <!-- /.modal-content -->
@@ -172,4 +171,4 @@ TriTan\Config::set('screen_child', 'sites');
     </div>
 </form>
 <!-- /.Content Wrapper. Contains page content -->
-<?php $app->view->stop(); ?>
+<?php $this->stop(); ?>

@@ -37,7 +37,7 @@ $app->post('/reset-password/', function () use($app) {
             ->where('user_email', $app->req->post['email'])
             ->first();
 
-    if ((int) _escape($user['user_id']) > 1) {
+    if ((int) _escape($user['user_id']) >= 1) {
         $password = ttcms_generate_password();
         $reset = $app->db->table('user');
         $reset->begin();

@@ -7,16 +7,15 @@ use TriTan\Config;
  *  
  * @license GPLv3
  * 
- * @since       0.9.0
+ * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
  */
-$app = \Liten\Liten::getInstance();
-$app->view->extend('_layouts/admin');
-$app->view->block('admin');
+$this->layout('main::_layouts/admin-layout');
+$this->section('backend');
 Config::set('screen_parent', 'users');
 Config::set('screen_child', 'profile');
-$user = get_userdata(get_current_user_id());
+$user = get_userdata($this->current_user_id);
 ?>
 
 <!-- form start -->
@@ -121,7 +120,7 @@ $user = get_userdata(get_current_user_id());
                                         </a>
                                     </li>
                                     <li style="float:left; width: 25%; padding: 5px;">
-                                        <input type="radio" class="flat-red" name="user_admin_skin"<?= checked('skin-black-light', get_user_option('skin-red', (int) _escape($user->user_id))); ?> value="skin-black-light" />
+                                        <input type="radio" class="flat-red" name="user_admin_skin"<?= checked('skin-black-light', get_user_option('admin_skin', (int) _escape($user->user_id))); ?> value="skin-black-light" />
                                         <a href="javascript:void(0)" data-skin="skin-black-light" style="display: block; box-shadow: 0 0 3px rgba(0,0,0,0.4)" class="clearfix full-opacity-hover">
                                         <div style="box-shadow: 0 0 2px rgba(0,0,0,0.1)" class="clearfix"><span style="display:block; width: 20%; float: left; height: 7px; background: #fefefe"></span><span style="display:block; width: 80%; float: left; height: 7px; background: #fefefe"></span></div>
                                         <div><span style="display:block; width: 20%; float: left; height: 20px; background: #f9fafc"></span><span style="display:block; width: 80%; float: left; height: 20px; background: #f4f5f7"></span></div>
@@ -162,10 +161,10 @@ $user = get_userdata(get_current_user_id());
                             /**
                              * Fires at the end of the 'Layout Options' section on the 'Profile' screen.
                              * 
-                             * @since 0.9.0
+                             * @since 0.9
                              * @param array $user User object.
                              */
-                            $app->hook->{'do_action'}('user_profile_layout', $user);
+                            $this->app->hook->{'do_action'}('user_profile_layout', $user);
                             ?>
                         </div>
                     </div>
@@ -195,10 +194,10 @@ $user = get_userdata(get_current_user_id());
                             /**
                              * Fires at the end of the 'Name' section on the 'Profile' screen.
                              * 
-                             * @since 0.9.0
+                             * @since 0.9
                              * @param array $user User object.
                              */
-                            $app->hook->{'do_action'}('user_profile_name', $user);
+                            $this->app->hook->{'do_action'}('user_profile_name', $user);
                             ?>
                         </div>
                     </div>
@@ -217,17 +216,17 @@ $user = get_userdata(get_current_user_id());
                             
                             <div class="form-group">
                                 <label><strong><?= _t('URL', 'tritan-cms'); ?></strong></label>
-                                <input type="text" class="form-control" name="user_url" value="<?= get_user_option('user_url', (int) _escape($user->user_id)); ?>" />
+                                <input type="text" class="form-control" name="user_url" value="<?= get_userdata((int) _escape($user->user_id))->user_url; ?>" />
                             </div>
                             
                             <?php
                             /**
                              * Fires at the end of the 'Contact info' section on the 'Profile' screen.
                              * 
-                             * @since 0.9.0
+                             * @since 0.9
                              * @param array $user User object.
                              */
-                            $app->hook->{'do_action'}('user_profile_contact', $user);
+                            $this->app->hook->{'do_action'}('user_profile_contact', $user);
                             ?>
                             
                         </div>
@@ -250,10 +249,10 @@ $user = get_userdata(get_current_user_id());
                             /**
                              * Fires at the end of the 'New Password' section on the 'Profile' screen.
                              * 
-                             * @since 0.9.0
+                             * @since 0.9
                              * @param array $user User object.
                              */
-                            $app->hook->{'do_action'}('user_profile_password', $user);
+                            $this->app->hook->{'do_action'}('user_profile_password', $user);
                             ?>
                             
                         </div>
@@ -281,10 +280,10 @@ $user = get_userdata(get_current_user_id());
                             /**
                              * Fires at the end of the 'About yourself' section on the 'Profile' screen.
                              * 
-                             * @since 0.9.0
+                             * @since 0.9
                              * @param array $user User object.
                              */
-                            $app->hook->{'do_action'}('user_profile_about', $user);
+                            $this->app->hook->{'do_action'}('user_profile_about', $user);
                             ?>
                             
                         </div>
@@ -294,10 +293,10 @@ $user = get_userdata(get_current_user_id());
                     /**
                      * Fires after the 'About yourself' section on the 'Profile' screen.
                      * 
-                     * @since 0.9.0
+                     * @since 0.9
                      * @param array $user User object.
                      */
-                    $app->hook->{'do_action'}('user_profile', $user);
+                    $this->app->hook->{'do_action'}('user_profile', $user);
                     ?>
                     
                 </div>
@@ -311,4 +310,4 @@ $user = get_userdata(get_current_user_id());
     <!-- /.content-wrapper -->
 </form>
 <!-- form end -->
-<?php $app->view->stop(); ?>
+<?php $this->stop(); ?>

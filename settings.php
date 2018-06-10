@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Settings
  *  
@@ -14,9 +15,9 @@ use TriTan\Config;
  * Set the current site based on HTTP_HOST.
  */
 $current_site_id = $app->db->table('site')
-    ->where('site_domain', $app->req->server['HTTP_HOST'])
-    ->where('site_path', str_replace('index.php', '', $app->req->server['PHP_SELF']))
-    ->first();
+        ->where('site_domain', $app->req->server['HTTP_HOST'])
+        ->where('site_path', str_replace('index.php', '', $app->req->server['PHP_SELF']))
+        ->first();
 
 $site_id = (int) $current_site_id['site_id'];
 
@@ -82,6 +83,23 @@ $app->inst->singleton('fenom', function () use($app) {
     $fenom->setCompileDir(Config::get('cache_path'));
     $app->hook->{'get_option'}('site_cache') == 0 ? $fenom->setOptions(Fenom::DISABLE_CACHE) : '';
     return $fenom;
+});
+
+if (ttcms_file_exists(Config::get('theme_path') . 'views' . DS, false)) {
+    $templates = ['main' => APP_PATH . 'views' . DS, 'theme' => Config::get('theme_path') . 'views' . DS, 'plugin' => TTCMS_PLUGIN_DIR];
+} else {
+    $templates = ['main' => APP_PATH . 'views' . DS, 'plugin' => TTCMS_PLUGIN_DIR];
+}
+
+/**
+ * Sets up the Foil global variable.
+ */
+$app->inst->singleton('foil', function () use($app, $templates) {
+    $engine = Foil\engine([
+        'folders' => $templates
+    ]);
+    $engine->useData(['app' => $app, 'current_user_id' => get_current_user_id()]);
+    return $engine;
 });
 
 /**

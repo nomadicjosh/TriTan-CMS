@@ -7,13 +7,12 @@ use TriTan\Config;
  *  
  * @license GPLv3
  * 
- * @since       1.0.0
+ * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
  */
-$app = \Liten\Liten::getInstance();
-$app->view->extend('_layouts/admin');
-$app->view->block('admin');
+$this->layout('main::_layouts/admin-layout');
+$this->section('backend');
 $ePerm = new \TriTan\ACL();
 Config::set('screen_parent', 'roles');
 Config::set('screen_child', 'perm');
@@ -21,7 +20,7 @@ Config::set('screen_child', 'perm');
 ?>
 
 <!-- form start -->
-<form method="post" action="<?= get_base_url(); ?>admin/permission/<?= _escape((int) $perm['permission_id']); ?>/" data-toggle="validator" autocomplete="off">
+<form method="post" action="<?= get_base_url(); ?>admin/permission/<?= _escape((int) $this->perm['permission_id']); ?>/" data-toggle="validator" autocomplete="off">
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
@@ -51,7 +50,7 @@ Config::set('screen_child', 'perm');
 
                             <div class="form-group">
                                 <label><font color="red">*</font> <?= _t('Name'); ?></label>
-                                <input type="text" class="form-control" name="permission_name" value="<?= $ePerm->getPermNameFromID(_escape((int) $perm['permission_id'])); ?>" required>
+                                <input type="text" class="form-control" name="permission_name" value="<?= $ePerm->getPermNameFromID(_escape((int) $this->perm['permission_id'])); ?>" required>
                             </div>
 
                         </div>
@@ -61,7 +60,7 @@ Config::set('screen_child', 'perm');
 
                             <div class="form-group">
                                 <label><font color="red">*</font> <?= _t('Key'); ?></label>
-                                <input type="text" class="form-control" name="permission_key" value="<?= $ePerm->getPermKeyFromID(_escape((int) $perm['permission_id'])); ?>" required>
+                                <input type="text" class="form-control" name="permission_key" value="<?= $ePerm->getPermKeyFromID(_escape((int) $this->perm['permission_id'])); ?>" required>
                             </div>
 
                         </div>
@@ -78,4 +77,4 @@ Config::set('screen_child', 'perm');
     </div>
     <!-- /.content-wrapper -->
 </form>
-<?php $app->view->stop(); ?>
+<?php $this->stop(); ?>

@@ -27,7 +27,7 @@ $app->group('/admin', function() use ($app, $user) {
 
     $app->get('/', function () use($app) {
 
-        $app->view->display('admin/index', [
+        $app->foil->render('main::admin/index', [
             'title' => _t('Admin Dashboard', 'tritan-cms')
                 ]
         );
@@ -42,7 +42,7 @@ $app->group('/admin', function() use ($app, $user) {
 
     $app->get('/media/', function () use($app) {
 
-        $app->view->display('admin/media', [
+        $app->foil->render('main::admin/media', [
             'title' => _t('Media Library', 'tritan-cms')
                 ]
         );
@@ -57,7 +57,7 @@ $app->group('/admin', function() use ($app, $user) {
 
     $app->get('/ftp/', function () use($app) {
 
-        $app->view->display('admin/ftp', [
+        $app->foil->render('main::admin/ftp', [
             'title' => _t('FTP', 'tritan-cms')
                 ]
         );
@@ -104,7 +104,7 @@ $app->group('/admin', function() use ($app, $user) {
             _ttcms_flash()->{'success'}(_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
         }
 
-        $app->view->display('admin/options-general', [
+        $app->foil->render('main::admin/options-general', [
             'title' => _t('General Options', 'tritan-cms'),
                 ]
         );
@@ -135,7 +135,7 @@ $app->group('/admin', function() use ($app, $user) {
             _ttcms_flash()->{'success'}(_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
         }
 
-        $app->view->display('admin/options-reading', [
+        $app->foil->render('main::admin/options-reading', [
             'title' => _t('Reading Options', 'tritan-cms'),
                 ]
         );
@@ -151,7 +151,7 @@ $app->group('/admin', function() use ($app, $user) {
     });
 
     $app->get('/plugin/', function() use($app) {
-        $app->view->display('admin/plugin/index', ['title' => _t('Plugins')]);
+        $app->foil->render('main::admin/plugin/index', ['title' => _t('Plugins')]);
     });
 
     /**
@@ -200,7 +200,7 @@ $app->group('/admin', function() use ($app, $user) {
             }
         }
 
-        $app->view->display('admin/plugin/install', ['title' => _t('Install Plugins')]);
+        $app->foil->render('main::admin/plugin/install', ['title' => _t('Install Plugins')]);
     });
 
     $app->before('GET|POST', '/plugin/activate/', function () {
@@ -609,7 +609,7 @@ $app->group('/admin', function() use ($app, $user) {
 
     $app->match('GET|POST', '/elfinder/', function () use($app) {
 
-        $app->view->display('admin/elfinder', [
+        $app->foil->render('main::admin/elfinder', [
             'title' => 'elfinder 2.1'
                 ]
         );
@@ -628,7 +628,7 @@ $app->group('/admin', function() use ($app, $user) {
     $app->match('GET|POST', '/permission/', function () use($app) {
 
 
-        $app->view->display('admin/permission/index', [
+        $app->foil->render('main::admin/permission/index', [
             'title' => _t('Manage Permissions', 'tritan-cms')
                 ]
         );
@@ -688,7 +688,7 @@ $app->group('/admin', function() use ($app, $user) {
          * the results in a html format.
          */ else {
 
-            $app->view->display('admin/permission/update', [
+            $app->foil->render('main::admin/permission/update', [
                 'title' => _t('Update Permission', 'tritan-cms'),
                 'perm' => $perm
                     ]
@@ -718,7 +718,7 @@ $app->group('/admin', function() use ($app, $user) {
             }
         }
 
-        $app->view->display('admin/permission/create', [
+        $app->foil->render('main::admin/permission/create', [
             'title' => _t('Create New Permission', 'tritan-cms')
                 ]
         );
@@ -736,7 +736,7 @@ $app->group('/admin', function() use ($app, $user) {
 
     $app->match('GET|POST', '/role/', function () use($app) {
 
-        $app->view->display('admin/role/index', [
+        $app->foil->render('main::admin/role/index', [
             'title' => _t('Manage Roles', 'tritan-cms')
                 ]
         );
@@ -779,7 +779,7 @@ $app->group('/admin', function() use ($app, $user) {
          * the results in a html format.
          */ else {
 
-            $app->view->display('admin/role/update', [
+            $app->foil->render('main::admin/role/update', [
                 'title' => _t('Update Role', 'tritan-cms'),
                 'role' => $role
                     ]
@@ -807,7 +807,7 @@ $app->group('/admin', function() use ($app, $user) {
             }
         }
 
-        $app->view->display('admin/role/create', [
+        $app->foil->render('main::admin/role/create', [
             'title' => _t('Create Role', 'tritan-cms')
                 ]
         );
@@ -844,7 +844,7 @@ $app->group('/admin', function() use ($app, $user) {
     $app->get('/system-snapshot/', function () use($app) {
         $user = $app->db->table('user')->where('user_status', 'A');
         $error = $app->db->table(Config::get('tbl_prefix') . 'error');
-        $app->view->display('admin/system-snapshot', [
+        $app->foil->render('main::admin/system-snapshot', [
             'title' => _t('System Snapshot Report', 'tritan-cms'),
             'user' => (int) $user->count(),
             'error' => (int) $error->count()
@@ -862,7 +862,7 @@ $app->group('/admin', function() use ($app, $user) {
         $errors = $app->db->table(Config::get('tbl_prefix') . 'error')
                 ->all();
 
-        $app->view->display('error/index', [
+        $app->foil->render('main::error/index', [
             'title' => _t('Error Logs', 'tritan-cms'),
             'errors' => $errors
                 ]
@@ -883,7 +883,7 @@ $app->group('/admin', function() use ($app, $user) {
             _ttcms_flash()->{'error'}($ex->getMessage());
         }
 
-        $app->view->display('error/index', [
+        $app->foil->render('main::error/index', [
             'title' => _t('Error Logs', 'tritan-cms'),
             'errors' => $errors
                 ]
@@ -903,7 +903,7 @@ $app->group('/admin', function() use ($app, $user) {
                 ->sortBy('created_at', 'DESC')
                 ->get();
 
-        $app->view->display('error/audit', [
+        $app->foil->render('main::error/audit', [
             'title' => _t('Audit Trail', 'tritan-cms'),
             'audit' => $audit
                 ]

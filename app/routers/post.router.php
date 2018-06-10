@@ -45,7 +45,7 @@ $app->group('/admin', function() use ($app, $user) {
                     ->sortBy('post_created', 'desc')
                     ->get();
 
-            $app->view->display('admin/post/index', [
+            $app->foil->render('main::admin/post/index', [
                 'title' => _escape($post_type['posttype_title']),
                 'posts' => $posts,
                 'posttype' => _escape($post_type['posttype_slug'])
@@ -129,7 +129,7 @@ $app->group('/admin', function() use ($app, $user) {
 
             $post_count = $app->db->table(Config::get('tbl_prefix') . 'post')->count();
 
-            $app->view->display('admin/post/create', [
+            $app->foil->render('main::admin/post/create', [
                 'title' => _t('Create', 'tritan-cms') . ' ' . _escape($post_type['posttype_title']),
                 'posttype_title' => _escape($post_type['posttype_title']),
                 'posttype' => _escape($post_type['posttype_slug']),
@@ -261,7 +261,7 @@ $app->group('/admin', function() use ($app, $user) {
              * the results in a jhtml format.
              */ else {
 
-                $app->view->display('admin/post/update-post', [
+                $app->foil->render('main::admin/post/update-post', [
                     'title' => _t('Update', 'tritan-cms') . ' ' . _escape($post_type['posttype_title']),
                     'posttype_title' => _escape($post_type['posttype_title']),
                     'posttype' => _escape($post_type['posttype_slug']),
@@ -371,7 +371,7 @@ $app->group('/admin', function() use ($app, $user) {
 
         $posttypes = $app->db->table(Config::get('tbl_prefix') . 'posttype')->all();
 
-        $app->view->display('admin/post/posttype', [
+        $app->foil->render('main::admin/post/posttype', [
             'title' => _t('Post Types', 'tritan-cms'),
             'posttypes' => $posttypes
                 ]
@@ -456,7 +456,7 @@ $app->group('/admin', function() use ($app, $user) {
          * the results in a jhtml format.
          */ else {
 
-            $app->view->display('admin/post/update-posttype', [
+            $app->foil->render('main::admin/post/update-posttype', [
                 'title' => _t('Update Post Type', 'tritan-cms'),
                 'posttype' => $q,
                 'posttypes' => $posttypes

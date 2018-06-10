@@ -1,6 +1,7 @@
 <?php $app = \Liten\Liten::getInstance();
 ob_start();
 ob_implicit_flush(0);
+$app->hook->{'do_action'}('login_init');
 ?>
 <!DOCTYPE html>
 <html>
@@ -21,7 +22,8 @@ ob_implicit_flush(0);
 </head>
 <body>
 
-  <?= $app->view->show('login'); ?>
+    <?php $this->section('login'); ?>
+    <?php $this->stop(); ?>
 
 <!-- jQuery 2.2.4 -->
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.js"></script>

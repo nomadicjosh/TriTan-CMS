@@ -1,7 +1,6 @@
 <?php if (!defined('BASE_PATH')) exit('No direct script access allowed');
-$app = \Liten\Liten::getInstance();
-$app->view->extend('_layouts/admin');
-$app->view->block('admin');
+$this->layout('main::_layouts/admin-layout');
+$this->section('backend');
 TriTan\Config::set('screen_parent', 'post_types');
 ?>
 
@@ -57,7 +56,7 @@ $(function(){
                   <label><?=_t('Post Type Description', 'tritan-cms');?></label>
                   <textarea class="form-control" name="posttype_description"><?= __return_post('posttype_description'); ?></textarea>
                 </div>
-                <?php $app->hook->{'do_action'}('create_posttype_form_fields'); ?>
+                <?php $this->app->hook->{'do_action'}('create_posttype_form_fields'); ?>
               </div>
               <!-- /.box-body -->
           </div>
@@ -85,28 +84,28 @@ $(function(){
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($posttypes as $posttype) : ?>
+                        <?php foreach ($this->posttypes as $posttype) : ?>
                             <tr class="gradeX">
-                                <td class="text-center"><a href="<?=get_base_url();?>admin/post-type/<?=_escape($posttype['posttype_id']);?>/"><?= _escape($posttype['posttype_title']); ?></a></td>
-                                <td class="text-center"><?= _escape($posttype['posttype_description']); ?></td>
-                                <td class="text-center"><?= _escape($posttype['posttype_slug']); ?></td>
-                                <td class="text-center"><a href="<?=get_base_url();?>admin/<?= _escape($posttype['posttype_slug']); ?>/"><?=number_posts_per_type(_escape($posttype['posttype_slug'])); ?></a></td>
+                                <td class="text-center"><a href="<?=get_base_url();?>admin/post-type/<?=$posttype['posttype_id'];?>/"><?= $posttype['posttype_title']; ?></a></td>
+                                <td class="text-center"><?= $posttype['posttype_description']; ?></td>
+                                <td class="text-center"><?= $posttype['posttype_slug']; ?></td>
+                                <td class="text-center"><a href="<?=get_base_url();?>admin/<?= $posttype['posttype_slug']; ?>/"><?=number_posts_per_type($posttype['posttype_slug']); ?></a></td>
                                 <td class="text-center">
-                                    <a<?=ae('delete_posts');?> href="#" data-toggle="modal" data-target="#delete-<?= _escape($posttype['posttype_id']); ?>"><button type="button" class="btn bg-red"><i class="fa fa-trash-o"></i></button></a>
-                                    <div class="modal" id="delete-<?= _escape($posttype['posttype_id']); ?>">
+                                    <a<?=ae('delete_posts');?> href="#" data-toggle="modal" data-target="#delete-<?= $posttype['posttype_id']; ?>"><button type="button" class="btn bg-red"><i class="fa fa-trash-o"></i></button></a>
+                                    <div class="modal" id="delete-<?= $posttype['posttype_id']; ?>">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <div class="modal-header">
                                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                         <span aria-hidden="true">&times;</span></button>
-                                                    <h4 class="modal-title"><?= _escape($posttype['posttype_title']); ?></h4>
+                                                    <h4 class="modal-title"><?= $posttype['posttype_title']; ?></h4>
                                                 </div>
                                                 <div class="modal-body">
                                                     <p><?=_t('Are you sure you want to delete this post type? By deleting this post type, you also delete all posts connected to this post type as well.');?></p>
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><?= _t('Close'); ?></button>
-                                                    <button type="button" class="btn btn-primary" onclick="window.location='<?=get_base_url();?>admin/post-type/<?= _escape($posttype['posttype_id']); ?>/d/'"><?= _t('Confirm'); ?></button>
+                                                    <button type="button" class="btn btn-primary" onclick="window.location='<?=get_base_url();?>admin/post-type/<?= $posttype['posttype_id']; ?>/d/'"><?= _t('Confirm'); ?></button>
                                                 </div>
                                             </div>
                                             <!-- /.modal-content -->
@@ -165,4 +164,4 @@ $(function(){
 </div>
 </form>
 <!-- /.Content Wrapper. Contains page content -->
-<?php $app->view->stop(); ?>
+<?php $this->stop(); ?>

@@ -1,16 +1,15 @@
 <?php
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
-$app = \Liten\Liten::getInstance();
-$app->view->extend('_layouts/admin');
-$app->view->block('admin');
+$this->layout('main::_layouts/admin-layout');
+$this->section('backend');
 TriTan\Config::set('screen_parent', 'sites');
 TriTan\Config::set('screen_child', 'sites');
 
 ?>
 
 <!-- form start -->
-<form method="post" action="<?= get_base_url(); ?>admin/site/<?= _escape($site['site_id']); ?>/" data-toggle="validator" autocomplete="off">
+<form method="post" action="<?= get_base_url(); ?>admin/site/<?= $this->site['site_id']; ?>/" data-toggle="validator" autocomplete="off">
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
@@ -38,24 +37,24 @@ TriTan\Config::set('screen_child', 'sites');
                         <div class="box-body">
                             <div class="form-group">
                                 <label><font color="red">*</font> <?= _t('Site Domain', 'tritan-cms'); ?></label>
-                                <input type="text" class="form-control" name="site_domain" value="<?= _escape($site['site_domain']); ?>" required/>
+                                <input type="text" class="form-control" name="site_domain" value="<?= $this->site['site_domain']; ?>" required/>
                             </div>
                             
                             <div class="form-group">
                                 <label><font color="red">*</font> <?= _t('Site Name', 'tritan-cms'); ?></label>
-                                <input type="text" class="form-control" name="site_name" value="<?= _escape($site['site_name']); ?>" required/>
+                                <input type="text" class="form-control" name="site_name" value="<?= $this->site['site_name']; ?>" required/>
                             </div>
 
                             <div class="form-group">
                                 <label><?= _t('Path', 'tritan-cms'); ?></label>
-                                <input type="text" class="form-control" name="site_path" value="<?= _escape($site['site_path']); ?>" />
+                                <input type="text" class="form-control" name="site_path" value="<?= $this->site['site_path']; ?>" />
                             </div>
 
                             <div class="form-group">
                                 <label><?= _t('Administrator', 'tritan-cms'); ?></label>
                                 <select class="form-control select2" name="site_owner" style="width: 100%;" required>
                                     <option>&nbsp;</option>
-                                    <?php get_users_list((int) _escape($site['site_owner'])); ?>
+                                    <?php get_users_list((int) $this->site['site_owner']); ?>
                                 </select>
                             </div>
 
@@ -63,11 +62,11 @@ TriTan\Config::set('screen_child', 'sites');
                                 <label><?= _t('Status', 'tritan-cms'); ?></label>
                                 <select class="form-control select2" name="site_status" style="width: 100%;" required>
                                     <option>&nbsp;</option>
-                                    <option value="public"<?= selected('public', _escape($site['site_status']), false); ?>><?= _t('Public', 'tritan-cms'); ?></option>
-                                    <option value="archive"<?= selected('archive', _escape($site['site_status']), false); ?>><?= _t('Archive', 'tritan-cms'); ?></option>
+                                    <option value="public"<?= selected('public', $this->site['site_status'], false); ?>><?= _t('Public', 'tritan-cms'); ?></option>
+                                    <option value="archive"<?= selected('archive', $this->site['site_status'], false); ?>><?= _t('Archive', 'tritan-cms'); ?></option>
                                 </select>
                             </div>
-                            <?php $app->hook->{'do_action'}('update_site_form_fields', (int) _escape($site['site_id'])); ?>
+                            <?php $this->app->hook->{'do_action'}('update_site_form_fields', (int) $this->site['site_id']); ?>
                         </div>
                         <!-- /.box-body -->
                     </div>
@@ -84,4 +83,4 @@ TriTan\Config::set('screen_child', 'sites');
     <!-- /.content-wrapper -->
 </form>
 
-<?php $app->view->stop(); ?>
+<?php $this->stop(); ?>

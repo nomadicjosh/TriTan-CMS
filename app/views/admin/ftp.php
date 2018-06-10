@@ -1,7 +1,6 @@
 <?php if (!defined('BASE_PATH')) exit('No direct script access allowed');
-$app = \Liten\Liten::getInstance();
-$app->view->extend('_layouts/admin');
-$app->view->block('admin');
+$this->layout('main::_layouts/admin-layout');
+$this->section('backend');
 TriTan\Config::set('screen_parent', 'dashboard');
 TriTan\Config::set('screen_child', 'ftp');
 ?>
@@ -48,4 +47,4 @@ TriTan\Config::set('screen_child', 'ftp');
     <!-- /.content -->
 </div>
 <!-- /.content-wrapper -->
-<?php $app->view->stop(); ?>
+<?php $this->stop(); ?>

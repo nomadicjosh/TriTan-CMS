@@ -13,7 +13,7 @@ use TriTan\Config;
         <base href="<?= get_base_url(); ?>">
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title><?= $title . ' &lsaquo; ' . $app->hook->{'get_option'}('sitename'); ?> &#8212; <?= _t('TriTan CMS', 'tritan-cms'); ?></title>
+        <title><?= $this->title . ' &lsaquo; ' . $app->hook->{'get_option'}('sitename'); ?> &#8212; <?= _t('TriTan CMS', 'tritan-cms'); ?></title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=6, user-scalable=yes" name="viewport">
         <meta name="theme-color" content="#ffffff">
@@ -260,7 +260,8 @@ use TriTan\Config;
                 <!-- /.sidebar -->
             </aside>
             
-            <?= $app->view->show('admin'); ?>
+            <?php $this->section('backend'); ?>
+            <?php $this->stop(); ?>
 
             <footer class="main-footer">
                 <div class="pull-right hidden-xs">

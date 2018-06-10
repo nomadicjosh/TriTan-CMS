@@ -1,7 +1,6 @@
 <?php if (!defined('BASE_PATH')) exit('No direct script access allowed');
-$app = \Liten\Liten::getInstance();
-$app->view->extend('_layouts/admin');
-$app->view->block('admin');
+$this->layout('main::_layouts/admin-layout');
+$this->section('backend');
 TriTan\Config::set('screen_parent', 'options');
 TriTan\Config::set('screen_child', 'options-reading');
 ?>
@@ -40,22 +39,22 @@ TriTan\Config::set('screen_child', 'options-reading');
                                     <label><strong><?= _t('Site Theme', 'tritan-cms'); ?></strong></label>
                                     <select class="form-control select2" name="current_site_theme" style="width: 100%;">
                                         <option value=""> ------------------------- </option>
-                                        <?php get_site_themes($app->hook->{'get_option'}( 'current_site_theme' )); ?>
+                                        <?php get_site_themes($this->app->hook->{'get_option'}( 'current_site_theme' )); ?>
                                     </select>
                                 </div>
                                 <div class="form-group">
                                     <label><strong><?= _t('Posts per Page', 'tritan-cms'); ?></strong></label>
-                                    <input type="text" class="form-control" name="posts_per_page" value="<?= $app->hook->{'get_option'}('posts_per_page'); ?>" />
+                                    <input type="text" class="form-control" name="posts_per_page" value="<?= $this->app->hook->{'get_option'}('posts_per_page'); ?>" />
                                 </div>
                                 <div class="form-group">
                                     <label><strong><?= _t('Date Format', 'tritan-cms'); ?></strong></label>
-                                    <input type="text" class="form-control" name="date_format" value="<?= $app->hook->{'get_option'}('date_format'); ?>" />
+                                    <input type="text" class="form-control" name="date_format" value="<?= $this->app->hook->{'get_option'}('date_format'); ?>" />
                                 </div>
                                 <div class="form-group">
                                     <label><strong><?= _t('Time Format', 'tritan-cms'); ?></strong></label>
-                                    <input type="text" class="form-control" name="time_format" value="<?= $app->hook->{'get_option'}('time_format'); ?>" />
+                                    <input type="text" class="form-control" name="time_format" value="<?= $this->app->hook->{'get_option'}('time_format'); ?>" />
                                 </div>
-                                <?php $app->hook->{'do_action'}('options_reading_form'); ?>
+                                <?php $this->app->hook->{'do_action'}('options_reading_form'); ?>
                             </div>
                             <!-- /.box-body -->
                         </div>
@@ -70,4 +69,4 @@ TriTan\Config::set('screen_child', 'options-reading');
     </div>
 </form>
 <!-- /.Content Wrapper. Contains post content -->
-<?php $app->view->stop(); ?>
+<?php $this->stop(); ?>

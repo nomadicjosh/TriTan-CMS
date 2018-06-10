@@ -1,10 +1,9 @@
 <?php if (!defined('BASE_PATH')) exit('No direct script access allowed');
-$app = \Liten\Liten::getInstance();
-$app->view->extend('_layouts/admin');
-$app->view->block('admin');
+$this->layout('main::_layouts/admin-layout');
+$this->section('backend');
 TriTan\Config::set('screen_parent', 'plugins');
 TriTan\Config::set('screen_child', 'installed-plugins');
-$plugins_header = $app->hook->{'get_plugins_header'}(BASE_PATH . 'plugins' . DS);
+$plugins_header = $this->app->hook->{'get_plugins_header'}(BASE_PATH . 'plugins' . DS);
 ?>
 
 <!-- Content Wrapper. Contains page content -->
@@ -47,17 +46,17 @@ $plugins_header = $app->hook->{'get_plugins_header'}(BASE_PATH . 'plugins' . DS)
                     </thead>
                     <tbody>
                         <?php foreach ($plugins_header as $plugin) : ?>
-                        <?php if ($app->hook->is_plugin_activated($plugin['filename']) == true) : ?>
+                        <?php if ($this->app->hook->{'is_plugin_activated'}($plugin['filename']) == true) : ?>
                             <tr class="gradeX" style="background-color:#B0E0E6 !important;">
                         <?php else : ?>
                             <tr class="gradeX">
                         <?php endif; ?>
                                 <td class="text-center"><?=$plugin['Name'];?></td>
                                 <td class="text-center"><?= $plugin['Description']; ?></td>
-                                <?php if ($app->hook->is_plugin_activated($plugin['filename']) == true) : ?>
-                                <td class="text-center"><a class="btn btn-danger" href="<?=get_base_url();?>admin/plugin/deactivate/?id=<?=urlencode($plugin['filename']);?>"><i class="fa fa-minus-circle"></i></a></td>
+                                <?php if ($this->app->hook->{'is_plugin_activated'}($plugin['filename']) == true) : ?>
+                                <td class="text-center"><a class="btn btn-danger" href="<?=sanitize_url(get_base_url() . 'admin/plugin/deactivate/?id=' . $plugin['filename'], true);?>"><i class="fa fa-minus-circle"></i></a></td>
                                 <?php else : ?>
-                                <td class="text-center"><a class="btn btn-success" href="<?=get_base_url();?>admin/plugin/activate/?id=<?=urlencode($plugin['filename']);?>"><i class="fa fa-plus-circle"></i></a></td>
+                                <td class="text-center"><a class="btn btn-success" href="<?=sanitize_url(get_base_url() . 'admin/plugin/activate/?id=' . $plugin['filename'], true);?>"><i class="fa fa-plus-circle"></i></a></td>
                                 <?php endif; ?>
                         <?php endforeach; ?>
                     </tbody>
@@ -83,4 +82,4 @@ $plugins_header = $app->hook->{'get_plugins_header'}(BASE_PATH . 'plugins' . DS)
     
 </div>
 <!-- /.Content Wrapper. Contains page content -->
-<?php $app->view->stop(); ?>
+<?php $this->stop(); ?>
