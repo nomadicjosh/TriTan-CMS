@@ -1,4 +1,6 @@
-<?php namespace TriTan;
+<?php
+
+namespace TriTan;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
@@ -189,19 +191,14 @@ class FlashMessages
     public function showMessage()
     {
         $this->app->hook->{'do_action'}('admin_notices');
-        
+
         $plugin_success_message[] = $this->app->req->cookie['plugin_success_message'];
         $plugin_error_message[] = $this->app->req->cookie['plugin_error_message'];
         $pnotify[] = $this->app->req->cookie['pnotify'];
 
-        // echo out positive messages
-        if ($this->hasMessages(self::SUCCESS)) {
-            return $this->display(self::SUCCESS, false);
-        }
-
-        // echo out negative messages
-        if ($this->hasMessages(self::ERROR)) {
-            return $this->display(self::ERROR, false);
+        // echo out messages
+        if ($this->hasMessages()) {
+            $this->display();
         }
 
         // echo out positive plugin messages
@@ -353,7 +350,7 @@ class FlashMessages
         $formattedMessage = $msgBefore . $msgDataArray['message'] . $this->msgAfter;
 
         return sprintf(
-            $this->msgWrapper, $cssClass, $formattedMessage
+                $this->msgWrapper, $cssClass, $formattedMessage
         );
     }
 
@@ -503,4 +500,5 @@ class FlashMessages
 
         return $this;
     }
+
 }
