@@ -122,7 +122,7 @@ class Hooks
      *            string (optional) $plugins_dir Loads plugins from specified folder
      * @return mixed
      */
-    public function getplugins_header($plugins_dir = '')
+    public function get_plugins_header($plugins_dir = '')
     {
         if ($handle = opendir($plugins_dir)) {
 
@@ -152,7 +152,7 @@ class Hooks
                     'plugin_slug'
                         ] as $field) {
                             if (!empty(${$field})) {
-                                ${$field} = _trim(${$field}[1]);
+                                ${$field} = trim(${$field}[1]);
                             } else {
                                 ${$field} = '';
                             }
@@ -171,7 +171,7 @@ class Hooks
                     }
                 } else
                 if ((is_dir($plugins_dir . $file)) && ($file != '.') && ($file != '..')) {
-                    $this->getplugins_header($plugins_dir . $file . '/');
+                    $this->get_plugins_header($plugins_dir . $file . '/');
                 }
             }
 
@@ -975,7 +975,7 @@ class Hooks
     public function parsecode_autop($pee, $br = 1)
     {
 
-        if (_trim($pee) === '') {
+        if (trim($pee) === '') {
             return '';
         }
         $pee = $pee . "\n"; // just to make things a little easier, pad the end
@@ -994,7 +994,7 @@ class Hooks
         $pees = preg_split('/\n\s*\n/', $pee, -1, PREG_SPLIT_NO_EMPTY);
         $pee = '';
         foreach ($pees as $tinkle) {
-            $pee .= '<p>' . _trim($tinkle, "\n") . "</p>\n";
+            $pee .= '<p>' . trim($tinkle, "\n") . "</p>\n";
         }
         $pee = preg_replace('|<p>\s*</p>|', '', $pee); // under certain strange conditions it could create a P of entirely whitespace
         $pee = preg_replace('!<p>([^<]+)</(div|address|form)>!', "<p>$1</p></$2>", $pee);
