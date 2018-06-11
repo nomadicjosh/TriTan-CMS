@@ -1,0 +1,15 @@
+#!/usr/bin/env php
+<?php
+require_once __DIR__ . '/../vendor/autoload.php';
+
+// Create the Application
+$application = new Symfony\Component\Console\Application;
+
+// Register all Commands
+$application->add(new \App\Command\HashPasswordCommand);
+$application->add(new \App\Command\SystemCommand);
+$application->add(new \App\Command\CheckUpdateCommand);
+$application->add(new \App\Command\UpdateCommand);
+
+// Run it
+$application->run();
