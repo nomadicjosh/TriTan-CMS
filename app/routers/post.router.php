@@ -17,7 +17,7 @@ $app->before('GET|POST', '/admin(.*)', function() {
         _ttcms_flash()->{'error'}(_t('401 - Error: Unauthorized.', 'tritan-cms'), get_base_url() . 'login' . '/');
         exit();
     }
-    if (!hasPermission('access_admin')) {
+    if (!current_user_can('access_admin')) {
         _ttcms_flash()->{'error'}(_t('403 - Error: Forbidden.', 'tritan-cms'), get_base_url());
         exit();
     }
@@ -31,7 +31,7 @@ $app->group('/admin', function() use ($app, $user) {
          * has permission to create a new post.
          */
         $app->before('GET|POST', '/' . _escape($post_type['posttype_slug']) . '/', function() {
-            if (!hasPermission('manage_posts')) {
+            if (!current_user_can('manage_posts')) {
                 _ttcms_flash()->{'error'}(_t('You do not have permission to manage posts.', 'tritan-cms'), get_base_url() . 'admin' . '/');
                 exit();
             }
@@ -58,7 +58,7 @@ $app->group('/admin', function() use ($app, $user) {
          * has permission to create a new post.
          */
         $app->before('GET|POST', '/' . _escape($post_type['posttype_slug']) . '/create/', function() {
-            if (!hasPermission('create_posts')) {
+            if (!current_user_can('create_posts')) {
                 _ttcms_flash()->{'error'}(_t('You do not have permission to create posts.', 'tritan-cms'), get_base_url() . 'admin' . '/');
                 exit();
             }
@@ -143,7 +143,7 @@ $app->group('/admin', function() use ($app, $user) {
          * user has the permission to edit a post.
          */
         $app->before('GET|POST', '/' . _escape($post_type['posttype_slug']) . '/(\d+)/', function() {
-            if (!hasPermission('update_posts')) {
+            if (!current_user_can('update_posts')) {
                 _ttcms_flash()->{'error'}(_t('You do not have permission to update posts.', 'tritan-cms'), get_base_url() . 'admin' . '/');
                 exit();
             }
@@ -276,7 +276,7 @@ $app->group('/admin', function() use ($app, $user) {
          * is allowed to delete posts.
          */
         $app->before('GET|POST', '/' . _escape($post_type['posttype_slug']) . '/(\d+)/remove-featured-image/', function() {
-            if (!hasPermission('update_posts')) {
+            if (!current_user_can('update_posts')) {
                 _ttcms_flash()->{'error'}(_t('You do not have permission to update posts.', 'tritan-cms'), get_base_url() . 'admin' . '/');
                 exit();
             }
@@ -304,7 +304,7 @@ $app->group('/admin', function() use ($app, $user) {
          * is allowed to delete posts.
          */
         $app->before('GET', '/' . _escape($post_type['posttype_slug']) . '/(\d+)/d/', function() {
-            if (!hasPermission('delete_posts')) {
+            if (!current_user_can('delete_posts')) {
                 _ttcms_flash()->{'error'}(_t('You do not have permission to delete posts.', 'tritan-cms'), get_base_url() . 'admin' . '/');
                 exit();
             }
@@ -331,7 +331,7 @@ $app->group('/admin', function() use ($app, $user) {
      * is allowed to delete posts.
      */
     $app->before('GET|POST', '/post-type/', function() {
-        if (!hasPermission('manage_posts')) {
+        if (!current_user_can('manage_posts')) {
             _ttcms_flash()->{'error'}(_t('You do not have permission to manage posts or post types.', 'tritan-cms'), get_base_url() . 'admin' . '/');
             exit();
         }
@@ -383,7 +383,7 @@ $app->group('/admin', function() use ($app, $user) {
      * user has the permission to edit a posttype.
      */
     $app->before('GET|POST', '/post-type/(\d+)/', function() {
-        if (!hasPermission('update_posts')) {
+        if (!current_user_can('update_posts')) {
             _ttcms_flash()->{'error'}(_t('You do not have permission to update posts or post types.', 'tritan-cms'), get_base_url() . 'admin' . '/');
             exit();
         }
@@ -470,7 +470,7 @@ $app->group('/admin', function() use ($app, $user) {
      * us allowed to delete posttypes.
      */
     $app->before('GET|POST', '/post-type/(\d+)/d/', function() {
-        if (!hasPermission('delete_posts')) {
+        if (!current_user_can('delete_posts')) {
             _ttcms_flash()->{'error'}(_t('You do not have permission to delete posts or post types.', 'tritan-cms'), get_base_url() . 'admin' . '/');
             exit();
         }

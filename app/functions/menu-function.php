@@ -28,7 +28,7 @@ use TriTan\Config;
 function add_admin_submenu($location, $menu_title, $menu_route, $screen, $permission = null)
 {
     if ($permission !== null) {
-        if (!hasPermission($permission)) {
+        if (!current_user_can($permission)) {
             return false;
         }
     }

@@ -17,7 +17,7 @@ $app->before('GET|POST', '/admin(.*)', function() {
         _ttcms_flash()->{'error'}(_t('401 - Error: Unauthorized.', 'tritan-cms'), get_base_url() . 'login' . '/');
         exit();
     }
-    if (!hasPermission('access_admin')) {
+    if (!current_user_can('access_admin')) {
         _ttcms_flash()->{'error'}(_t('403 - Error: Forbidden.', 'tritan-cms'), get_base_url());
         exit();
     }
@@ -34,7 +34,7 @@ $app->group('/admin', function() use ($app, $user) {
     });
 
     $app->before('GET', '/media/', function() {
-        if (!hasPermission('manage_media')) {
+        if (!current_user_can('manage_media')) {
             _ttcms_flash()->{'error'}(_t('You do not have permission to manage the media library.', 'tritan-cms'), get_base_url() . 'admin' . '/');
             exit();
         }
@@ -49,7 +49,7 @@ $app->group('/admin', function() use ($app, $user) {
     });
 
     $app->before('GET', '/ftp/', function() {
-        if (!hasPermission('manage_ftp')) {
+        if (!current_user_can('manage_ftp')) {
             _ttcms_flash()->{'error'}(_t('You do not have permission to manage FTP.', 'tritan-cms'), get_base_url() . 'admin' . '/');
             exit();
         }
@@ -68,7 +68,7 @@ $app->group('/admin', function() use ($app, $user) {
      * us allowed to manage options/settings.
      */
     $app->before('GET|POST', '/options-general/', function() {
-        if (!hasPermission('manage_options')) {
+        if (!current_user_can('manage_options')) {
             _ttcms_flash()->{'error'}(_t('You do not have permission to manage options.', 'tritan-cms'), get_base_url() . 'admin' . '/');
             exit();
         }
@@ -115,7 +115,7 @@ $app->group('/admin', function() use ($app, $user) {
      * us allowed to manage options/settings.
      */
     $app->before('GET|POST', '/options-reading/', function() {
-        if (!hasPermission('manage_options')) {
+        if (!current_user_can('manage_options')) {
             _ttcms_flash()->{'error'}(_t('You do not have permission to manage options.', 'tritan-cms'), get_base_url() . 'admin' . '/');
             exit();
         }
@@ -145,7 +145,7 @@ $app->group('/admin', function() use ($app, $user) {
      * Before route check.
      */
     $app->before('GET|POST', '/plugin/', function() {
-        if (!hasPermission('manage_plugins')) {
+        if (!current_user_can('manage_plugins')) {
             _ttcms_flash()->{'error'}(_t("You do not have permission to manage plugins.", 'tritan-cms'), get_base_url() . 'admin' . '/');
         }
     });
@@ -158,7 +158,7 @@ $app->group('/admin', function() use ($app, $user) {
      * Before route check.
      */
     $app->before('GET|POST', '/plugin/install/', function() {
-        if (!hasPermission('install_plugins')) {
+        if (!current_user_can('install_plugins')) {
             _ttcms_flash()->{'error'}(_t("You do not have permission to install plugins.", 'tritan-cms'), get_base_url() . 'admin' . '/');
         }
     });
@@ -204,7 +204,7 @@ $app->group('/admin', function() use ($app, $user) {
     });
 
     $app->before('GET|POST', '/plugin/activate/', function () {
-        if (!hasPermission('manage_plugins')) {
+        if (!current_user_can('manage_plugins')) {
             _ttcms_flash()->{'error'}(_t('Permission denied to activate a plugin.'), get_base_url() . 'admin' . '/');
             exit();
         }
@@ -235,7 +235,7 @@ $app->group('/admin', function() use ($app, $user) {
     });
 
     $app->before('GET|POST', '/deactivate/', function () {
-        if (!hasPermission('manage_plugins')) {
+        if (!current_user_can('manage_plugins')) {
             _ttcms_flash()->{'error'}(_t('Permission denied to deactivate a plugin.'), get_base_url() . 'admin' . '/');
             exit();
         }
@@ -619,7 +619,7 @@ $app->group('/admin', function() use ($app, $user) {
      * Before route check.
      */
     $app->before('GET|POST', '/permission.*', function() {
-        if (!hasPermission('manage_roles')) {
+        if (!current_user_can('manage_roles')) {
             _ttcms_flash()->{'error'}(_t("You don't have permission to manage roles/permissions.", 'tritan-cms'), get_base_url() . 'admin' . '/');
             exit();
         }
@@ -728,7 +728,7 @@ $app->group('/admin', function() use ($app, $user) {
      * Before route check.
      */
     $app->before('GET|POST', '/role(.*)', function() {
-        if (!hasPermission('manage_roles')) {
+        if (!current_user_can('manage_roles')) {
             _ttcms_flash()->{'error'}(_t("You don't have permission to manage roles/permissions."), get_base_url() . 'admin' . '/');
             exit();
         }
@@ -836,7 +836,7 @@ $app->group('/admin', function() use ($app, $user) {
      * Before route check.
      */
     $app->before('GET|POST', '/system-snapshot/', function () {
-        if (!hasPermission('manage_settings')) {
+        if (!current_user_can('manage_settings')) {
             _ttcms_flash()->{'error'}(_t("You don't have permission to view the System Snapshot Report screen.", 'tritan-cms'), get_base_url() . 'admin' . '/');
         }
     });
@@ -852,7 +852,7 @@ $app->group('/admin', function() use ($app, $user) {
     });
 
     $app->before('GET|POST', '/error/(.*)', function () {
-        if (!hasPermission('manage_settings')) {
+        if (!current_user_can('manage_settings')) {
             _ttcms_flash()->{'error'}(_t("You don't have permission to view the Error Log screen.", 'tritan-cms'), get_base_url() . 'admin' . '/');
             exit();
         }
@@ -891,7 +891,7 @@ $app->group('/admin', function() use ($app, $user) {
     });
 
     $app->before('GET|POST', '/audit-trail/', function () {
-        if (!hasPermission('manage_settings')) {
+        if (!current_user_can('manage_settings')) {
             _ttcms_flash()->{'error'}(_t("You don't have permission to view the Audit Trail screen.", 'tritan-cms'), get_base_url() . 'admin' . '/');
             exit();
         }
@@ -914,7 +914,7 @@ $app->group('/admin', function() use ($app, $user) {
      * Before route check.
      */
     $app->before('GET|POST', '/flush-cache/', function () {
-        if (!hasPermission('manage_settings')) {
+        if (!current_user_can('manage_settings')) {
             _ttcms_flash()->{'error'}(_t("You are not allowed to flush the site cache.", 'tritan-cms'), get_base_url() . 'admin' . '/');
             exit();
         }

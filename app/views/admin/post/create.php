@@ -113,7 +113,7 @@ $(function(){
                                     <label><strong><font color="red">*</font> <?= _t('Status', 'tritan-cms'); ?></strong></label>
                                     <select class="form-control select2" name="post_status" style="width: 100%;" required>
                                         <option>&nbsp;</option>
-                                        <?php if(hasPermission('publish_posts')) : ?>
+                                        <?php if(current_user_can('publish_posts')) : ?>
                                         <option value="published"<?= selected('published', __return_post('post_status'), false); ?>><?= _t('Publish', 'tritan-cms'); ?></option>
                                         <?php endif; ?>
                                         <option value="draft"<?= selected('draft', __return_post('post_status'), false); ?>><?= _t('Draft', 'tritan-cms'); ?></option>

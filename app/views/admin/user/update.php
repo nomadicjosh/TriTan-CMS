@@ -58,7 +58,7 @@ Config::set('screen_child', 'user');
                             <div class="form-group">
                                 <label><strong><?= _t('Username', 'tritan-cms'); ?></strong></label>
                                 <input type="text" class="form-control" id="user_login" name="user_login" value="<?= get_user_option('username', (int) $this->user->user_id); ?>" readonly="readonly" required/>
-                                <?php if(hasPermission('update_users')) : ?>
+                                <?php if(current_user_can('update_users')) : ?>
                                 <button type="button" class="btn btn-primary" id="enable_button" style="display:none"><?= _t('Change username', 'tritan-cms'); ?></button>
                                 <button type="button" class="btn btn-danger" id="disable_button" style="display:none"><?= _t('Cancel', 'tritan-cms'); ?></button>
                                 <?php endif; ?>

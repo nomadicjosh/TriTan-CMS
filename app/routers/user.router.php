@@ -19,7 +19,7 @@ $app->before('GET|POST', '/admin(.*)', function() {
         _ttcms_flash()->{'error'}(_t('401 - Error: Unauthorized.', 'tritan-cms'), get_base_url() . 'login' . '/');
         exit();
     }
-    if (!hasPermission('access_admin')) {
+    if (!current_user_can('access_admin')) {
         _ttcms_flash()->{'error'}(_t('403 - Error: Forbidden.', 'tritan-cms'), get_base_url());
         exit();
     }
@@ -67,7 +67,7 @@ $app->group('/admin', function() use ($app, $current_user) {
      * Before route check.
      */
     $app->before('GET|POST', '/user/', function () {
-        if (!hasPermission('manage_users')) {
+        if (!current_user_can('manage_users')) {
             _ttcms_flash()->{'error'}(_t("You don't have permission to manage users.", 'tritan-cms'), get_base_url() . 'admin' . '/');
             exit();
         }
@@ -86,7 +86,7 @@ $app->group('/admin', function() use ($app, $current_user) {
      * Before route check.
      */
     $app->before('GET|POST', '/user/create/', function() {
-        if (!hasPermission('create_users')) {
+        if (!current_user_can('create_users')) {
             _ttcms_flash()->{'error'}(_t("You don't have permission to create users.", 'tritan-cms'), get_base_url() . 'admin' . '/');
             exit();
         }
@@ -153,7 +153,7 @@ $app->group('/admin', function() use ($app, $current_user) {
      * Before route check.
      */
     $app->before('GET|POST', '/user/(\d+)/', function() {
-        if (!hasPermission('update_users')) {
+        if (!current_user_can('update_users')) {
             _ttcms_flash()->{'error'}(_t("You don't have permission to update users.", 'tritan-cms'), get_base_url() . 'admin' . '/');
             exit();
         }
@@ -226,7 +226,7 @@ $app->group('/admin', function() use ($app, $current_user) {
      * Before route check.
      */
     $app->before('GET', '/user/(\d+)/switch-to/', function() use($app) {
-        if (!hasPermission('switch_user')) {
+        if (!current_user_can('switch_user')) {
             _ttcms_flash()->{'error'}(_t("You don't have permission to log in as another user.", 'tritan-cms'), $app->req->server['HTTP_REFERER']);
             exit();
         }
@@ -348,7 +348,7 @@ $app->group('/admin', function() use ($app, $current_user) {
      * Before route check.
      */
     $app->before('GET', '/user/(\d+)/d/', function() use($app) {
-        if (!hasPermission('delete_users')) {
+        if (!current_user_can('delete_users')) {
             _ttcms_flash()->{'error'}(_t("You don't have permission to delete users.", 'tritan-cms'), $app->req->server['HTTP_REFERER']);
             exit();
         }
@@ -415,7 +415,7 @@ $app->group('/admin', function() use ($app, $current_user) {
      * Before route check.
      */
     $app->before('GET|POST', '/user/(\d+)/reset-password/', function () use($app) {
-        if (!hasPermission('update_users')) {
+        if (!current_user_can('update_users')) {
             _ttcms_flash()->{'error'}(_t("You are not allowed to reset user passwords.", 'tritan-cms'), $app->req->server['HTTP_REFERER']);
             exit();
         }

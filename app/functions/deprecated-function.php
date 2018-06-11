@@ -425,3 +425,18 @@ function parsecode_unautop($pee)
 
     return preg_replace($pattern, '$1', $pee);
 }
+
+/**
+ * Checks the permission of the logged in user.
+ * 
+ * @deprecated since release 0.9.8
+ * @since 0.9
+ * @param string $perm Permission to check for.
+ * @return bool Return true if permission matches or false otherwise.
+ */
+function hasPermission($perm)
+{
+    _deprecated_function(__FUNCTION__, '0.9.8', 'current_user_can');
+
+    return current_user_can($perm);
+}

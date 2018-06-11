@@ -19,12 +19,11 @@ use Cascade\Cascade;
 /**
  * Checks the permission of the logged in user.
  * 
- * @since 0.9
+ * @since 0.9.8
  * @param string $perm Permission to check for.
  * @return bool Return true if permission matches or false otherwise.
  */
-function hasPermission($perm)
-{
+function current_user_can($perm) {
     $acl = new TriTan\ACL(get_current_user_id());
 
     if ($acl->hasPermission($perm) && is_user_logged_in()) {
@@ -110,7 +109,7 @@ function is_user_logged_in()
  */
 function ae($perm)
 {
-    if (!hasPermission($perm)) {
+    if (!current_user_can($perm)) {
         return ' style="display:none !important;"';
     }
 }

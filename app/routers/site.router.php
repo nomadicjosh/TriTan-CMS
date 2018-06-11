@@ -17,7 +17,7 @@ $app->before('GET|POST', '/admin(.*)', function() {
         _ttcms_flash()->{'error'}(_t('401 - Error: Unauthorized.', 'tritan-cms'), get_base_url() . 'login' . '/');
         exit();
     }
-    if (!hasPermission('access_admin')) {
+    if (!current_user_can('access_admin')) {
         _ttcms_flash()->{'error'}(_t('403 - Error: Forbidden.', 'tritan-cms'), get_base_url());
         exit();
     }
@@ -30,7 +30,7 @@ $app->group('/admin', function() use ($app, $user) {
      * is allowed to delete posts.
      */
     $app->before('GET|POST', '/site/', function() {
-        if (!hasPermission('manage_sites')) {
+        if (!current_user_can('manage_sites')) {
             _ttcms_flash()->{'error'}(_t('You do not have permission to manage sites.', 'tritan-cms'), get_base_url() . 'admin' . '/');
             exit();
         }
@@ -62,7 +62,7 @@ $app->group('/admin', function() use ($app, $user) {
      * user has the permission to edit a posttype.
      */
     $app->before('GET|POST', '/site/(\d+)/', function() {
-        if (!hasPermission('update_sites')) {
+        if (!current_user_can('update_sites')) {
             _ttcms_flash()->{'error'}(_t('You do not have permission to update sites.', 'tritan-cms'), get_base_url() . 'admin' . '/');
             exit();
         }
@@ -117,7 +117,7 @@ $app->group('/admin', function() use ($app, $user) {
      * us allowed to delete posttypes.
      */
     $app->before('GET|POST', '/site/(\d+)/d/', function() {
-        if (!hasPermission('delete_sites')) {
+        if (!current_user_can('delete_sites')) {
             _ttcms_flash()->{'error'}(_t('You do not have permission to delete sites.', 'tritan-cms'), get_base_url() . 'admin' . '/');
             exit();
         }
@@ -154,7 +154,7 @@ $app->group('/admin', function() use ($app, $user) {
      * Before route check.
      */
     $app->before('GET|POST', '/site/users/', function () {
-        if (!hasPermission('manage_sites')) {
+        if (!current_user_can('manage_sites')) {
             _ttcms_flash()->{'error'}(_t("You don't have permission to manage sites.", 'tritan-cms'), get_base_url() . 'admin' . '/');
             exit();
         }
@@ -175,7 +175,7 @@ $app->group('/admin', function() use ($app, $user) {
      * us allowed to delete posttypes.
      */
     $app->before('GET|POST', '/site/users/(\d+)/d/', function() {
-        if (!hasPermission('delete_users') && !hasPermission('manage_sites')) {
+        if (!current_user_can('delete_users') && !current_user_can('manage_sites')) {
             _ttcms_flash()->{'error'}(_t('You do not have permission to delete site users.', 'tritan-cms'), get_base_url() . 'admin/site/users/');
             exit();
         }
