@@ -19,7 +19,6 @@ class Query
     const TYPE_SAVE = 'save';
 
     protected $collection;
-
     protected $pipes = [];
 
     public function __construct(Collection $collection)
@@ -38,7 +37,7 @@ class Query
     }
 
     public function where($filter)
-    {   
+    {
         $args = func_get_args();
         array_unshift($args, 'AND');
         call_user_func_array([$this, 'addWhere'], $args);
@@ -46,7 +45,7 @@ class Query
     }
 
     public function orWhere($filter)
-    {   
+    {
         $args = func_get_args();
         array_unshift($args, 'OR');
         call_user_func_array([$this, 'addWhere'], $args);
@@ -62,7 +61,7 @@ class Query
     public function select(array $columns)
     {
         $resolvedColumns = [];
-        foreach($columns as $column) {
+        foreach ($columns as $column) {
             $exp = explode(':', $column);
             $col = $exp[0];
             if (count($exp) > 1) {
@@ -72,24 +71,21 @@ class Query
             }
             $resolvedColumns[$col] = $keyAlias;
         }
-
         $keyAliases = array_values($resolvedColumns);
-        
+
         return $this->map(function($row) use ($resolvedColumns, $keyAliases) {
-            foreach($resolvedColumns as $col => $keyAlias) {
-                if (!isset($row[$keyAlias])) {
-                    $row[$keyAlias] = $row[$col];
-                }
-            }
-
-            foreach($row->toArray() as $col => $value) {
-                if (!in_array($col, $keyAliases)) {
-                    unset($row[$col]);
-                }
-            }
-
-            return $row;
-        });
+                    foreach ($resolvedColumns as $col => $keyAlias) {
+                        if (!isset($row[$keyAlias])) {
+                            $row[$keyAlias] = $row[$col];
+                        }
+                    }
+                    foreach ($row->toArray() as $col => $value) {
+                        if (!in_array($col, $keyAliases)) {
+                            unset($row[$col]);
+                        }
+                    }
+                    return $row;
+                });
     }
 
     public function withOne($relation, $as, $otherKey, $operator = '=', $thisKey = '_id')
@@ -98,10 +94,10 @@ class Query
             throw new \InvalidArgumentException("Relation must be instanceof Query or Collection", 1);
         }
         return $this->map(function($row) use ($relation, $as, $otherKey, $operator, $thisKey) {
-            $otherData = $relation->where($otherKey, $operator, $row[$thisKey])->first();
-            $row[$as] = $otherData;
-            return $row;
-        });
+                    $otherData = $relation->where($otherKey, $operator, $row[$thisKey])->first();
+                    $row[$as] = $otherData;
+                    return $row;
+                });
     }
 
     public function withMany($relation, $as, $otherKey, $operator = '=', $thisKey = '_id')
@@ -110,10 +106,10 @@ class Query
             throw new \InvalidArgumentException("Relation must be instanceof Query or Collection", 1);
         }
         return $this->map(function($row) use ($relation, $as, $otherKey, $operator, $thisKey) {
-            $otherData = $relation->where($otherKey, $operator, $row[$thisKey])->get();
-            $row[$as] = $otherData;
-            return $row;
-        }); 
+                    $otherData = $relation->where($otherKey, $operator, $row[$thisKey])->get();
+                    $row[$as] = $otherData;
+                    return $row;
+                });
     }
 
     public function sortBy($key, $asc = 'asc')
@@ -122,7 +118,6 @@ class Query
         if (!in_array($asc, ['asc', 'desc'])) {
             throw new \InvalidArgumentException("Ascending must be 'asc' or 'desc'", 1);
         }
-
         if ($key instanceof Closure) {
             $value = $key;
         } else {
@@ -130,7 +125,6 @@ class Query
                 return $row[$key];
             };
         }
-
         $this->addSorter(function($row) use ($value) {
             return $value(new ArrayExtra($row));
         }, $asc);
@@ -186,7 +180,7 @@ class Query
     public function sum($key)
     {
         $sum = 0;
-        foreach($this->get() as $data) {
+        foreach ($this->get() as $data) {
             $data = new ArrayExtra($data);
             $sum += $data[$key];
         }
@@ -195,9 +189,9 @@ class Query
 
     public function avg($key)
     {
-        $sum = 0; 
+        $sum = 0;
         $count = 0;
-        foreach($this->get() as $data) {
+        foreach ($this->get() as $data) {
             $data = new ArrayExtra($data);
             $sum += $data[$key];
             $count++;
@@ -208,7 +202,7 @@ class Query
     public function lists($key, $resultKey = null)
     {
         $result = [];
-        foreach($this->get() as $i => $data) {
+        foreach ($this->get() as $i => $data) {
             $data = new ArrayExtra($data);
             $k = $resultKey ? $data[$resultKey] : $i;
             $result[$k] = $data[$key];
@@ -246,7 +240,6 @@ class Query
         if ($filter instanceof Closure) {
             return $this->addFilter($filter, $type);
         }
-
         $args = func_get_args();
         $key = $args[1];
         if (count($args) > 3) {
@@ -256,9 +249,8 @@ class Query
             $operator = '=';
             $value = $args[2];
         }
-
-        switch($operator) {
-            case '=': 
+        switch ($operator) {
+            case '=':
                 $filter = function($row) use ($key, $value) {
                     return $row[$key] == $value;
                 };
@@ -308,11 +300,9 @@ class Query
                 };
                 break;
         }
-
         if (!$filter) {
             throw new \InvalidArgumentException("Operator {$operator} is not available");
         }
-
         $this->addFilter($filter, $type);
     }
 
@@ -325,12 +315,10 @@ class Query
         } else {
             $pipe = $lastPipe;
         }
-
         $newFilter = function($row) use ($filter) {
             $row = new ArrayExtra($row);
             return $filter($row);
         };
-
         $pipe->add($newFilter, $type);
     }
 
@@ -343,31 +331,26 @@ class Query
         } else {
             $pipe = $lastPipe;
         }
-
         $keyId = $this->getCollection()->getKeyId();
         $keyOldId = $this->getCollection()->getKeyOldId();
-
         $newMapper = function($row) use ($mapper, $keyId, $keyOldId) {
             $row = new ArrayExtra($row);
             $result = $mapper($row);
-            
+
             if (is_array($result)) {
                 $new = $result;
-            } elseif($result instanceof ArrayExtra) {
+            } elseif ($result instanceof ArrayExtra) {
                 $new = $result->toArray();
             } else {
                 $new = null;
             }
-
             if (is_array($new) AND isset($new[$keyId])) {
                 if ($row[$keyId] != $new[$keyId]) {
                     $new[$keyOldId] = $row[$keyId];
                 }
             }
-
             return $new;
         };
-
         $pipe->add($newMapper);
     }
 
@@ -386,7 +369,6 @@ class Query
         } else {
             $limiter = $lastPipe;
         }
-
         return $limiter;
     }
 
@@ -397,7 +379,17 @@ class Query
 
     protected function getLastPipe()
     {
-        return !empty($this->pipes)? $this->pipes[count($this->pipes) - 1] : null;
+        return !empty($this->pipes) ? $this->pipes[count($this->pipes) - 1] : null;
+    }
+
+    public function __call($method, $args)
+    {
+        $macro = $this->collection->getMacro($method);
+        if ($macro) {
+            return call_user_func_array($macro, array_merge([$this], $args));
+        } else {
+            throw new \TriTan\Exception\UndefinedMethodException("Undefined method or macro '{$method}'.");
+        }
     }
 
 }

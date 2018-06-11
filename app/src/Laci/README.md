@@ -1,3 +1,4 @@
+
 LaciDB - Flat File JSON DBMS
 ======================================
 
@@ -350,3 +351,31 @@ try {
 
 }
 ```
+
+#### Macro Query
+
+Macro query memungkinkan kita menambahkan method baru kedalam instance `Emsifa\Laci\Collection` sehingga dapat kita gunakan berulang-ulang secara lebih fluent.
+
+Sebagai contoh kita ingin mengambil data user yang aktif, jika dengan cara biasa kita dapat melakukan query seperti ini:
+
+```php
+$users->where('active', 1)->get();
+```
+
+Cara seperti diatas jika digunakan berulang-ulang, terkadang kita lupa mengenali user aktif itu yang nilai `active`-nya `1`, atau `true`, atau `'yes'`, atau `'YES'`, atau `'yes'`, atau `'y'`, atau `'Y'`, atau `'Ya'`, atau `'ya'`, dsb?
+
+Jadi untuk mempermudahnya, kita dapat menggunakan macro sebagai berikut:
+
+```php
+$users->macro('active', function ($query) {
+    return $query->where('active', 1);
+});
+```
+
+Sehingga kita dapat mengambil user aktif dengan cara seperti ini:
+
+```php
+$users->active()->get();
+```
+
+Tampak lebih praktis bukan?

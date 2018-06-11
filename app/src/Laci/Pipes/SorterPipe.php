@@ -26,16 +26,15 @@ class SorterPipe implements PipeInterface
         $values = array_map(function($row) use ($value) {
             return $value($row);
         }, $array);
-
-        switch($ascending) {
-            case 'asc': asort($values); break;
-            case 'desc': arsort($values); break;
+        switch ($ascending) {
+            case 'asc': asort($values);
+                break;
+            case 'desc': arsort($values);
+                break;
         }
-
         $keys = array_keys($values);
-
         $result = [];
-        foreach($keys as $key) {
+        foreach ($keys as $key) {
             $result[$key] = $array[$key];
         }
         return $result;

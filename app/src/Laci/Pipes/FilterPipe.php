@@ -14,16 +14,16 @@ class FilterPipe implements PipeInterface
         $filters = $this->filters;
         return array_filter($data, function($row) use ($filters) {
             $result = true;
-            foreach($filters as $i => $filter) {
+            foreach ($filters as $i => $filter) {
                 list($filter, $type) = $filter;
-                switch($type) {
+                switch ($type) {
                     case 'and':
                         $result = ($result AND $filter($row));
                         break;
                     case 'or':
                         $result = ($result OR $filter($row));
                         break;
-                    default: 
+                    default:
                         throw new \InvalidArgumentException("Filter type must be 'AND' or 'OR'.", 1);
                 }
             }

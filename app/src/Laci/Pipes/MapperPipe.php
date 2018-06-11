@@ -11,11 +11,9 @@ class MapperPipe implements PipeInterface
 
     public function process(array $data)
     {
-        foreach($this->mappers as $mapper)
-        {
+        foreach ($this->mappers as $mapper) {
             $data = array_map($mapper, $data);
         }
-
         return $data;
     }
 
