@@ -107,14 +107,14 @@ $app->group('/admin', function() use ($app, $user) {
                     /**
                      * Action hook triggered after the post is created.
                      * 
-                     * @since 1.0.0
+                     * @since 0.9
                      * @param int $lastId Post ID.
                      */
                     $app->hook->{'do_action'}('create_post', $lastId);
                     /**
                      * Action hook triggered depending on page status.
                      * 
-                     * @since 1.0.0
+                     * @since 0.9
                      * @param string $page_status Posted status of page.
                      * @param int $lastId Post ID.
                      */
@@ -164,7 +164,7 @@ $app->group('/admin', function() use ($app, $user) {
                     /**
                      * Can be used to filter the relative url.
                      * 
-                     * @since 1.0.0
+                     * @since 0.9
                      */
                     $url_filter = $app->hook->{'apply_filter'}('relative_url', _escape($post_type['posttype_slug']) . '/', $post_type);
                     $relative_url = $url_filter . $post_slug . '/';
@@ -204,14 +204,14 @@ $app->group('/admin', function() use ($app, $user) {
                     /**
                      * Action hook triggered after the post is updated.
                      * 
-                     * @since 1.0.0
+                     * @since 0.9
                      * @param int $id Post ID.
                      */
                     $app->hook->{'do_action'}('update_post', (int) $id);
                     /**
                      * Action hook triggered depending on post status.
                      * 
-                     * @since 1.0.0
+                     * @since 0.9
                      * @param string $post_status Posted status of post.
                      * @param int $id Post ID.
                      */
@@ -357,7 +357,7 @@ $app->group('/admin', function() use ($app, $user) {
                 /**
                  * Action hook triggered after the posttype is created.
                  * 
-                 * @since 1.0.0
+                 * @since 0.9
                  * @param int $lastId posttype ID.
                  */
                 $app->hook->{'do_action'}('create_posttype', (int) $lastId);
@@ -419,7 +419,7 @@ $app->group('/admin', function() use ($app, $user) {
                 /**
                  * Action hook triggered after the posttype is updated.
                  * 
-                 * @since 1.0.0
+                 * @since 0.9
                  * @param int $id Post Type ID.
                  */
                 $app->hook->{'do_action'}('update_posttype', (int) $id);

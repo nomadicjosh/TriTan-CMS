@@ -211,7 +211,7 @@ TriTan\Config::set('post_id', $this->post['post_id']);
 /**
  * Fires before the update post screen is fully loaded.
  * 
- * @since 1.0.0
+ * @since 0.9
  */
 $this->app->hook->{'do_action'}('enqueue_ttcms_editor');
 ?>

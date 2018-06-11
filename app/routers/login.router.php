@@ -1,4 +1,5 @@
 <?php
+
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 
@@ -23,7 +24,7 @@ $app->group('/login', function() use ($app) {
         /**
          * Fires before a user has logged in.
          *
-         * @since 1.0.0
+         * @since 0.9
          */
         $app->hook->{'do_action'}('ttcms_login');
     });
@@ -38,7 +39,7 @@ $app->group('/login', function() use ($app) {
             /**
              * This function is documented in app/functions/auth-function.php.
              * 
-             * @since 1.0.0
+             * @since 0.9
              */
             ttcms_authenticate_user($app->req->post['user_login'], $app->req->post['user_pass'], $app->req->post['rememberme']);
 
@@ -47,7 +48,7 @@ $app->group('/login', function() use ($app) {
 
         $app->foil->render('main::login/index', [
             'title' => _t('Login', 'tritan-cms')
-            ]
+                ]
         );
     });
 });

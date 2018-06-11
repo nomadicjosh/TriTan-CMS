@@ -219,7 +219,7 @@ $app->group('/admin', function() use ($app, $user) {
          * This function will validate a plugin and make sure
          * there are no errors before activating it.
          *
-         * @since 1.0.0
+         * @since 0.9
          */
         ttcms_validate_plugin($plugin_name);
 
@@ -249,7 +249,7 @@ $app->group('/admin', function() use ($app, $user) {
          * $pluginName refers to the plugin's
          * name (i.e. smtp.plugin.php).
          *
-         * @since 1.0.0
+         * @since 0.9
          * @param string $pluginName
          *            The plugin's base name.
          */
@@ -261,7 +261,7 @@ $app->group('/admin', function() use ($app, $user) {
          * $pluginName refers to the plugin's
          * name (i.e. smtp.plugin.php).
          *
-         * @since 1.0.0
+         * @since 0.9
          * @param string $pluginName
          *            The plugin's base name.
          */
@@ -275,7 +275,7 @@ $app->group('/admin', function() use ($app, $user) {
          * $pluginName refers to the plugin's
          * name (i.e. smtp.plugin.php).
          *
-         * @since 1.0.0
+         * @since 0.9
          * @param string $pluginName
          *            The plugin's base name.
          */
