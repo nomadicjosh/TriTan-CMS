@@ -75,6 +75,7 @@ As mentioned previously, TriTan CMS is also a content management framework. You 
 | [Validation](//github.com/Respect/Validation)  | The most awesome validation engine ever created for PHP.  |
 | [Zebra Pagination](//github.com/stefangabos/Zebra_Pagination)  | A generic, Twitter Bootstrap compatible, pagination library that automatically generates navigation links.  |
 | [Fenom](//github.com/fenom-template/fenom)  | Lightweight and fast template engine for PHP.  |
+| [Foil](//github.com/FoilPHP/Foil)  | PHP template engine for native PHP templates.  |
 | [Form](//github.com/adamwathan/form)  | Builds form HTML with a fluent-ish, hopefully intuitive syntax.  |
 | [Mobile Detect](//github.com/serbanghita/Mobile-Detect)  | Mobile_Detect is a lightweight PHP class for detecting mobile devices (including tablets). It uses the User-Agent string combined with specific HTTP headers to detect the mobile environment.  |
 | [Graphql](//github.com/webonyx/graphql-php)  | This is a PHP implementation of the GraphQL specification based on the reference implementation in JavaScript.  |
