@@ -14,7 +14,7 @@ use TriTan\Config;
 $this->layout('main::_layouts/admin-layout');
 $this->section('backend');
 Config::set('screen_parent', 'roles');
-Config::set('screen_child', 'arole');
+Config::set('screen_child', 'crole');
 
 ?>   
 

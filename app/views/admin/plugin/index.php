@@ -51,7 +51,7 @@ $plugins_header = $this->app->hook->{'get_plugins_header'}(BASE_PATH . 'plugins'
                         <?php else : ?>
                             <tr class="gradeX">
                         <?php endif; ?>
-                                <td class="text-center"><?=$plugin['Name'];?></td>
+                                <td class="text-center"><?= $plugin['Name']; ?></td>
                                 <td class="text-center"><?= $plugin['Description']; ?></td>
                                 <?php if ($this->app->hook->{'is_plugin_activated'}($plugin['filename']) == true) : ?>
                                 <td class="text-center"><a class="btn btn-danger" href="<?=sanitize_url(get_base_url() . 'admin/plugin/deactivate/?id=' . $plugin['filename'], true);?>"><i class="fa fa-minus-circle"></i></a></td>

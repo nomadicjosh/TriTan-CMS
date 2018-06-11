@@ -232,7 +232,7 @@ use TriTan\Config;
                                 <li<?= (Config::get('screen_child') === 'role' ? ' class="active"' : ''); ?><?= ae('manage_roles'); ?>><a href="<?= get_base_url(); ?>admin/role/"><i class="fa fa-circle-o"></i> <?= _t('Roles', 'tritan-cms'); ?></a></li>
                                 <li<?= (Config::get('screen_child') === 'crole' ? ' class="active"' : ''); ?><?= ae('manage_roles'); ?>><a href="<?= get_base_url(); ?>admin/role/create/"><i class="fa fa-circle-o"></i> <?= _t('Create Role', 'tritan-cms'); ?></a></li>
                                 <li<?= (Config::get('screen_child') === 'perm' ? ' class="active"' : ''); ?><?= ae('manage_roles'); ?>><a href="<?= get_base_url(); ?>admin/permission/"><i class="fa fa-circle-o"></i> <?= _t('Permissions', 'tritan-cms'); ?></a></li>
-                                <li<?= (Config::get('screen_child') === 'aperm' ? ' class="active"' : ''); ?><?= ae('manage_roles'); ?>><a href="<?= get_base_url(); ?>admin/permission/create/"><i class="fa fa-circle-o"></i> <?= _t('Create Permission', 'tritan-cms'); ?></a></li>
+                                <li<?= (Config::get('screen_child') === 'cperm' ? ' class="active"' : ''); ?><?= ae('manage_roles'); ?>><a href="<?= get_base_url(); ?>admin/permission/create/"><i class="fa fa-circle-o"></i> <?= _t('Create Permission', 'tritan-cms'); ?></a></li>
                                 <?php $app->hook->{'do_action'}('role_submenu'); ?>
                             </ul>
                         </li>

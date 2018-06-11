@@ -230,4 +230,4 @@ $(document).ready(function(){
     <!-- /.content-wrapper -->
 </form>
 <!-- form end -->
-<?php $this->app->view->stop(); ?>
+<?php $this->stop(); ?>
