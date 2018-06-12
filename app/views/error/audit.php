@@ -3,6 +3,7 @@ if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use Jenssegers\Date\Date;
 use TriTan\Config;
+use TriTan\Functions as func;
 
 /**
  * Audit Trail View
@@ -25,14 +26,14 @@ Config::set('screen_child', 'audit');
     <div class="box box-solid">
         <div class="box-header with-border">
             <i class="fa fa-road"></i>
-            <h3 class="box-title"><?= _t('Audit Trail', 'tritan-cms'); ?></h3>
+            <h3 class="box-title"><?= func\_t('Audit Trail', 'tritan-cms'); ?></h3>
         </div>
     </div>
 
     <!-- Main content -->
     <section class="content">
 
-        <?= _ttcms_flash()->showMessage(); ?> 
+        <?= func\_ttcms_flash()->showMessage(); ?> 
 
         <!-- SELECT2 EXAMPLE -->
         <div class="box box-default">
@@ -40,12 +41,12 @@ Config::set('screen_child', 'audit');
                 <table id="example2" class="table table-bordered table-hover">
                     <thead>
                         <tr>
-                            <th class="text-center"><?= _t('Action', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= _t('Process', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= _t('Record', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= _t('Username', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= _t('Action Date', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= _t('Expire Date', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('Action', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('Process', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('Record', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('Username', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('Action Date', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('Expire Date', 'tritan-cms'); ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -62,12 +63,12 @@ Config::set('screen_child', 'audit');
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th class="text-center"><?= _t('Action', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= _t('Process', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= _t('Record', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= _t('Username', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= _t('Action Date', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= _t('Expire Date', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('Action', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('Process', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('Record', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('Username', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('Action Date', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('Expire Date', 'tritan-cms'); ?></th>
                         </tr>
                     </tfoot>
                 </table>

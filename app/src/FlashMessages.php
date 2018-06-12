@@ -2,6 +2,8 @@
 
 namespace TriTan;
 
+use TriTan\Functions as func;
+
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 
@@ -213,7 +215,7 @@ class FlashMessages
         if (isset($this->app->req->cookie['plugin_error_message'])) {
             foreach ($plugin_error_message as $message) {
                 $this->app->cookies->remove('plugin_error_message');
-                return '<section class="flash_message"><div class="alert alert-danger alert-dismissable center"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' . sprintf(_t('Plugin could not be activated because it triggered a <strong>fatal error</strong>. <br /><br /> %s</div></section>'), $message);
+                return '<section class="flash_message"><div class="alert alert-danger alert-dismissable center"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' . sprintf(func\_t('Plugin could not be activated because it triggered a <strong>fatal error</strong>. <br /><br /> %s</div></section>'), $message);
             }
         }
 
@@ -228,10 +230,10 @@ class FlashMessages
 
     public function notice($num)
     {
-        $msg[200] = _t('200 - Success: Ok');
-        $msg[201] = _t('201 - Success: Created');
-        $msg[204] = _t('204 - Error: No Content');
-        $msg[409] = _t('409 - Error: Conflict');
+        $msg[200] = func\_t('200 - Success: Ok');
+        $msg[201] = func\_t('201 - Success: Created');
+        $msg[204] = func\_t('204 - Error: No Content');
+        $msg[409] = func\_t('409 - Error: Conflict');
         return $msg[$num];
     }
 

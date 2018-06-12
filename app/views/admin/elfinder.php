@@ -1,6 +1,7 @@
 <?php
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
+use TriTan\Functions as func;
 /**
  * File Manager Window
  * 
@@ -21,10 +22,10 @@ error_reporting(0);
 <!DOCTYPE html>
 <html>
     <head>
-        <base href="<?= get_base_url(); ?>">
+        <base href="<?= func\get_base_url(); ?>">
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title><?=$this->title . ' &lsaquo; ' . $this->app->hook->{'get_option'}('sitename'); ?> &#8212; <?=_t('TriTan CMS', 'tritan-cms');?></title>
+        <title><?=$this->title . ' &lsaquo; ' . $this->app->hook->{'get_option'}('sitename'); ?> &#8212; <?=func\_t('TriTan CMS', 'tritan-cms');?></title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
@@ -38,7 +39,7 @@ error_reporting(0);
         <script src="//oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
         <script>
-            var rootPath = '<?= get_base_url(); ?>';
+            var rootPath = '<?= func\get_base_url(); ?>';
         </script>
         <!-- jQuery 2.2.3 -->
         <script src="static/assets/js/jQuery/jquery-2.2.3.min.js"></script>

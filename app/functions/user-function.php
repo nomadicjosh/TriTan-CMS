@@ -1,4 +1,4 @@
-<?php
+<?php namespace TriTan\Functions;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
@@ -763,7 +763,7 @@ function ttcms_insert_user($userdata)
 {
     if ($userdata instanceof \stdClass) {
         $userdata = get_object_vars($userdata);
-    } elseif ($userdata instanceof TriTan\User) {
+    } elseif ($userdata instanceof \TriTan\User) {
         $userdata = $userdata->to_array();
     }
 
@@ -1063,7 +1063,7 @@ function ttcms_update_user($userdata)
 {
     if ($userdata instanceof \stdClass) {
         $userdata = get_object_vars($userdata);
-    } elseif ($userdata instanceof TriTan\User) {
+    } elseif ($userdata instanceof \TriTan\User) {
         $userdata = $userdata->to_array();
     }
 
@@ -1085,7 +1085,6 @@ function ttcms_update_user($userdata)
     foreach ($additional_user_keys as $key) {
         $user[$key] = get_user_option($key, (int) _escape($user['user_id']));
     }
-
 
     if (!empty($userdata['user_pass']) && $userdata['user_pass'] !== $user_obj->user_pass) {
         // If password is changing, hash it now
@@ -1393,7 +1392,7 @@ function blacklisted_usernames()
         'user', 'username', 'users', 'uucp', 'var', 'verify', 'video', 'view',
         'void', 'vote', 'webmail', 'webmaster', 'website', 'widget', 'widgets',
         'wiki', 'wpad', 'write', 'www', 'www-data', 'www1', 'www2', 'www3',
-        'www4', 'you', 'yourname', 'yourusername', 'zlib', 'ttcms'
+        'www4', 'you', 'yourname', 'yourusername', 'zlib', 'tritan', 'ttcms'
     ];
 
     return app()->hook->{'apply_filter'}('blacklisted_usernames', $blacklist);

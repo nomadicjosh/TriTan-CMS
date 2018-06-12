@@ -1,4 +1,7 @@
 <?php
+
+namespace TriTan\Functions;
+
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 
@@ -15,6 +18,8 @@ if (!defined('BASE_PATH'))
 /**
  * Retrieves post type data given a post type ID or post type array.
  *
+ * @file app/functions/posttype-function.php
+ * 
  * @since 0.9
  * @param string|Post Type|null $posttype
  *            Post Type ID or post type array.
@@ -43,14 +48,14 @@ function get_posttype($posttype, $array = true)
     if ($array == false) {
         $_posttype = array_to_object($_posttype);
     }
-    
+
     /**
-	 * Fires after a post type is retrieved.
-	 *
-	 * @since 0.9
-	 * @param Posttype $_posttype Posttype data.
-	 */
-	$_posttype = app()->hook->{'apply_filter'}( 'get_posttype', $_posttype );
+     * Fires after a post type is retrieved.
+     *
+     * @since 0.9
+     * @param Posttype $_posttype Posttype data.
+     */
+    $_posttype = app()->hook->{'apply_filter'}('get_posttype', $_posttype);
 
     return $_posttype;
 }

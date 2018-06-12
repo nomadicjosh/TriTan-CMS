@@ -1,4 +1,5 @@
 <?php if (!defined('BASE_PATH')) exit('No direct script access allowed');
+use TriTan\Functions as func;
 $this->layout('main::_layouts/admin-layout');
 $this->section('backend');
 TriTan\Config::set('screen_parent', 'media');
@@ -11,7 +12,7 @@ TriTan\Config::set('screen_parent', 'media');
 <script type="text/javascript">
 	$().ready(function() {
 		var elf = $('#elfinder').elfinder({
-			url : '<?=get_base_url();?>admin/connector/',
+			url : '<?=func\get_base_url();?>admin/connector/',
 			modal: true,
 			resizable:false
 		}).elfinder('instance');
@@ -24,14 +25,14 @@ TriTan\Config::set('screen_parent', 'media');
     <div class="box box-solid">
         <div class="box-header with-border">
             <i class="fa fa-camera"></i>
-            <h3 class="box-title"><?= _t('Media Library'); ?></h3>
+            <h3 class="box-title"><?= func\_t('Media Library'); ?></h3>
         </div>
     </div>
 
     <!-- Main content -->
     <section class="content">
         
-        <?= _ttcms_flash()->showMessage(); ?>
+        <?= func\_ttcms_flash()->showMessage(); ?>
         
         <div class="box box-default">
             <div class="box-body">

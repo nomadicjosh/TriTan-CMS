@@ -1,4 +1,7 @@
 <?php
+
+namespace TriTan\Functions;
+
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 /**
@@ -15,6 +18,8 @@ $t->register();
 
 /**
  * Loads the current or default locale.
+ * 
+ * @file app/functions/textdomain-function.php
  * 
  * @since 0.9
  * @return string The locale.
@@ -33,6 +38,8 @@ function load_core_locale()
 /**
  * Load a .mo file into the text domain.
  *
+ * @file app/functions/textdomain-function.php
+ * 
  * @since 0.9
  *
  * @param string $domain Text domain. Unique identifier for retrieving translated strings.
@@ -91,6 +98,8 @@ function load_textdomain($domain, $path)
 /**
  * Load default translated strings based on locale.
  *
+ * @file app/functions/textdomain-function.php
+ * 
  * @since 0.9
  * @param string $domain Text domain. Unique identifier for retrieving translated strings.
  * @param string $path Path to the .mo file.
@@ -112,6 +121,8 @@ function load_default_textdomain($domain, $path)
  *
  * If the path is not given then it will be the root of the plugin directory.
  *
+ * @file app/functions/textdomain-function.php
+ * 
  * @since 0.9
  * @param string $domain          Unique identifier for retrieving translated strings
  * @param string $plugin_rel_path Optional. Relative path to TTCMS_PLUGIN_DIR where the locale directory resides.
@@ -147,6 +158,8 @@ function load_plugin_textdomain($domain, $plugin_rel_path = false)
 
 /**
  * Retrieves a list of available locales.
+ * 
+ * @file app/functions/textdomain-function.php
  * 
  * @since 0.9
  * @param string $active
@@ -537,6 +550,8 @@ function ttcms_dropdown_languages($active = '')
  * | -------- | ----- | ----------- | --------------------------------------- |
  * | U+00B7   | l·l   | ll          | Flown dot (between two Ls)              |
  *
+ * @file app/functions/textdomain-function.php
+ * 
  * @since 0.9
  *
  * @param string $string Text that might have accent characters
@@ -548,7 +563,7 @@ function ttcms_remove_accents($string)
         return $string;
 
     if (mb_check_encoding($string, 'UTF-8')) {
-        $chars = array(
+        $chars = [
             // Decompositions for Greek Upper Case Supplement
             'Α' => 'A', 'Ά' => 'A',
             'Β' => 'V', 'Γ' => 'G',
@@ -759,7 +774,7 @@ function ttcms_remove_accents($string)
             'Ǚ' => 'U', 'ǚ' => 'u',
             // grave accent
             'Ǜ' => 'U', 'ǜ' => 'u',
-        );
+        ];
 
         // Used for locale-specific rules
         $locale = load_core_locale();
@@ -788,15 +803,15 @@ function ttcms_remove_accents($string)
         $chars = [];
         // Assume ISO-8859-1 if not UTF-8
         $chars['in'] = "\x80\x83\x8a\x8e\x9a\x9e"
-            . "\x9f\xa2\xa5\xb5\xc0\xc1\xc2"
-            . "\xc3\xc4\xc5\xc7\xc8\xc9\xca"
-            . "\xcb\xcc\xcd\xce\xcf\xd1\xd2"
-            . "\xd3\xd4\xd5\xd6\xd8\xd9\xda"
-            . "\xdb\xdc\xdd\xe0\xe1\xe2\xe3"
-            . "\xe4\xe5\xe7\xe8\xe9\xea\xeb"
-            . "\xec\xed\xee\xef\xf1\xf2\xf3"
-            . "\xf4\xf5\xf6\xf8\xf9\xfa\xfb"
-            . "\xfc\xfd\xff";
+                . "\x9f\xa2\xa5\xb5\xc0\xc1\xc2"
+                . "\xc3\xc4\xc5\xc7\xc8\xc9\xca"
+                . "\xcb\xcc\xcd\xce\xcf\xd1\xd2"
+                . "\xd3\xd4\xd5\xd6\xd8\xd9\xda"
+                . "\xdb\xdc\xdd\xe0\xe1\xe2\xe3"
+                . "\xe4\xe5\xe7\xe8\xe9\xea\xeb"
+                . "\xec\xed\xee\xef\xf1\xf2\xf3"
+                . "\xf4\xf5\xf6\xf8\xf9\xfa\xfb"
+                . "\xfc\xfd\xff";
 
         $chars['out'] = "EfSZszYcYuAAAAAACEEEEIIIINOOOOOOUUUUYaaaaaaceeeeiiiinoooooouuuuyy";
 
@@ -817,6 +832,8 @@ function ttcms_remove_accents($string)
  * via the plugin API. If $string is empty and $fallback_string is set, the latter
  * will be used.
  *
+ * @file app/functions/textdomain-function.php
+ * 
  * @since 0.9
  *
  * @param string $string          The string to be sanitized.

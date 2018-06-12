@@ -1,8 +1,11 @@
-<?php namespace TriTan\Cache;
+<?php
+
+namespace TriTan\Cache;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use TriTan\Exception\Exception;
+use TriTan\Functions as func;
 
 /**
  * TriTan CMS XCache Cache Class.
@@ -55,7 +58,7 @@ class Cache_XCache extends \TriTan\Cache\Abstract_Cache
          * @since 0.9
          * @var bool
          */
-        $this->enable = $this->app->hook->apply_filter('enable_caching', true);
+        $this->enable = $this->app->hook->{'apply_filter'}('enable_caching', true);
     }
 
     /**
@@ -265,11 +268,11 @@ class Cache_XCache extends \TriTan\Cache\Abstract_Cache
         $info = xcache_info(XC_TYPE_VAR, 0);
 
         echo "<p>";
-        echo "<strong>" . _t('Cache Hits:') . "</strong> " . $info['hits'] . "<br />";
-        echo "<strong>" . _t('Cache Misses:') . "</strong> " . $info['misses'] . "<br />";
-        echo "<strong>" . _t('Uptime:') . "</strong> " . null . "<br />";
-        echo "<strong>" . _t('Memory Usage:') . "</strong> " . $info['size'] . "<br />";
-        echo "<strong>" . _t('Memory Available:') . "</strong> " . $info['avail'] . "<br />";
+        echo "<strong>" . func\_t('Cache Hits:', 'tritan-cms') . "</strong> " . $info['hits'] . "<br />";
+        echo "<strong>" . func\_t('Cache Misses:', 'tritan-cms') . "</strong> " . $info['misses'] . "<br />";
+        echo "<strong>" . func\_t('Uptime:', 'tritan-cms') . "</strong> " . null . "<br />";
+        echo "<strong>" . func\_t('Memory Usage:', 'tritan-cms') . "</strong> " . $info['size'] . "<br />";
+        echo "<strong>" . func\_t('Memory Available:', 'tritan-cms') . "</strong> " . $info['avail'] . "<br />";
         echo "</p>";
     }
 
@@ -378,4 +381,5 @@ class Cache_XCache extends \TriTan\Cache\Abstract_Cache
         $namespace = explode(':', $value);
         return $namespace[0] . ':';
     }
+
 }

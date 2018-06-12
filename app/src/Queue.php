@@ -1,4 +1,6 @@
-<?php namespace TriTan;
+<?php
+
+namespace TriTan;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
@@ -6,6 +8,7 @@ use TriTan\Config;
 use TriTan\Exception\Exception;
 use TriTan\Exception\IOException;
 use Cascade\Cascade;
+use TriTan\Functions as func;
 
 /**
  * Task Manager Queue
@@ -76,7 +79,7 @@ class Queue
             /**
              * Creates a directory with proper permissions.
              */
-            _mkdir(Config::get('cache_path') . 'ttcms_queue');
+            func\_mkdir(Config::get('cache_path') . 'ttcms_queue');
         } catch (IOException $e) {
             Cascade::getLogger('error')->error(sprintf('IOSTATE[%s]: Forbidden: %s', $e->getCode(), $e->getMessage()));
             Cascade::getLogger('system_email')->alert(sprintf('IOSTATE[%s]: Forbidden: %s', $e->getCode(), $e->getMessage()));
@@ -166,25 +169,25 @@ class Queue
      */
     public function enqueue($args)
     {
-        $tasks = ttcms_parse_args($args);
+        $tasks = func\ttcms_parse_args($args);
 
         $count = $this->app->db->table($this->node())
-            ->where('pid', (int) $tasks['task_worker']['pid'])
-            ->get();
+                ->where('pid', (int) $tasks['task_worker']['pid'])
+                ->get();
         if (count($count) >= 1) {
             $node = $this->app->db->table($this->node());
             $node->begin();
             try {
                 $node->where('pid', (int) $tasks['task_worker']['pid'])
-                    ->update([
-                        'pid' => if_null($tasks['task_worker']['pid']),
-                        'name' => if_null($tasks['task_worker']['name']),
-                        'task_callback' => if_null($tasks['task_worker']['task_callback']),
-                        'action_hook' => if_null($tasks['task_worker']['action_hook']),
-                        'schedule' => if_null($tasks['task_worker']['schedule']),
-                        'debug' => if_null($tasks['task_worker']['debug']),
-                        'max_runtime' => if_null($tasks['task_worker']['max_runtime']),
-                        'enabled' => if_null($tasks['task_worker']['enabled'])
+                        ->update([
+                            'pid' => func\if_null($tasks['task_worker']['pid']),
+                            'name' => func\if_null($tasks['task_worker']['name']),
+                            'task_callback' => func\if_null($tasks['task_worker']['task_callback']),
+                            'action_hook' => func\if_null($tasks['task_worker']['action_hook']),
+                            'schedule' => func\if_null($tasks['task_worker']['schedule']),
+                            'debug' => func\if_null($tasks['task_worker']['debug']),
+                            'max_runtime' => func\if_null($tasks['task_worker']['max_runtime']),
+                            'enabled' => func\if_null($tasks['task_worker']['enabled'])
                 ]);
                 $node->commit();
             } catch (Exception $ex) {
@@ -196,15 +199,15 @@ class Queue
             $node->begin();
             try {
                 $node->insert([
-                    'tasks_id' => auto_increment($this->node(), 'tasks_id'),
-                    'pid' => if_null($tasks['task_worker']['pid']),
-                    'name' => if_null($tasks['task_worker']['name']),
-                    'task_callback' => if_null($tasks['task_worker']['task_callback']),
-                    'action_hook' => if_null($tasks['task_worker']['action_hook']),
-                    'schedule' => if_null($tasks['task_worker']['schedule']),
-                    'debug' => if_null($tasks['task_worker']['debug']),
-                    'max_runtime' => if_null($tasks['task_worker']['max_runtime']),
-                    'enabled' => if_null($tasks['task_worker']['enabled'])
+                    'tasks_id' => func\auto_increment($this->node(), 'tasks_id'),
+                    'pid' => func\if_null($tasks['task_worker']['pid']),
+                    'name' => func\if_null($tasks['task_worker']['name']),
+                    'task_callback' => func\if_null($tasks['task_worker']['task_callback']),
+                    'action_hook' => func\if_null($tasks['task_worker']['action_hook']),
+                    'schedule' => func\if_null($tasks['task_worker']['schedule']),
+                    'debug' => func\if_null($tasks['task_worker']['debug']),
+                    'max_runtime' => func\if_null($tasks['task_worker']['max_runtime']),
+                    'enabled' => func\if_null($tasks['task_worker']['enabled'])
                 ]);
                 $node->commit();
             } catch (Exception $ex) {
@@ -253,7 +256,7 @@ class Queue
             return 0;
         }
 
-        $pid = _file_get_contents($lockFile);
+        $pid = func\_file_get_contents($lockFile);
         if (!empty($pid)) {
             return 0;
         }
@@ -347,10 +350,10 @@ class Queue
                  * time it ran.
                  */
                 $upd->where('pid', (int) $config['pid'])
-                    ->update([
-                        'executions' => +1,
-                        'lastrun' => (string) \Jenssegers\Date\Date::now()->format('Y-m-d h:i:s'),
-                        'last_runtime' => (double) $time_end
+                        ->update([
+                            'executions' => +1,
+                            'lastrun' => (string) \Jenssegers\Date\Date::now()->format('Y-m-d h:i:s'),
+                            'last_runtime' => (double) $time_end
                 ]);
                 $upd->commit();
             } catch (Exception $e) {
@@ -359,4 +362,5 @@ class Queue
             }
         }
     }
+
 }

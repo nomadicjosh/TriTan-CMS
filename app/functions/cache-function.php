@@ -1,4 +1,7 @@
 <?php
+
+namespace TriTan\Functions;
+
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 
@@ -15,6 +18,8 @@ if (!defined('BASE_PATH'))
 /**
  * Adds data to the cache, if the cache key doesn't already exist.
  *
+ * @file app/functions/cache-function.php
+ * 
  * @since 0.9
  * @uses _ttcms_cache_init()
  * @param int|string $key
@@ -46,6 +51,8 @@ function ttcms_cache_add($key, $data, $namespace = '', $expire = 3600)
 /**
  * Retrieves the cache contents from the cache by key and group.
  *
+ * @file app/functions/cache-function.php
+ * 
  * @since 0.9
  * @uses _ttcms_cache_init()
  * @param int|string $key
@@ -64,6 +71,8 @@ function ttcms_cache_get($key, $namespace = '')
 /**
  * Replaces the contents of the cache with new data.
  *
+ * @file app/functions/cache-function.php
+ * 
  * @since 0.9
  * @uses _ttcms_cache_init()
  * @param int|string $key
@@ -95,6 +104,8 @@ function ttcms_cache_replace($key, $data, $namespace = '', $expire = 3600)
 /**
  * Removes the cache contents matching key and group.
  *
+ * @file app/functions/cache-function.php
+ * 
  * @since 0.9
  * @uses _ttcms_cache_init()
  * @param int|string $key
@@ -112,6 +123,8 @@ function ttcms_cache_delete($key, $namespace = '')
 /**
  * Removes all cache items.
  *
+ * @file app/functions/cache-function.php
+ * 
  * @since 0.9
  * @uses _ttcms_cache_init()
  * @return bool False on failure, true on success
@@ -125,6 +138,8 @@ function ttcms_cache_flush()
 /**
  * Removes all cache items from a particular namespace.
  *
+ * @file app/functions/cache-function.php
+ * 
  * @since 0.9
  * @uses _ttcms_cache_init()
  * @param string $value
@@ -140,6 +155,8 @@ function ttcms_cache_flush_namespace($value)
 /**
  * Sets the data contents into the cache.
  *
+ * @file app/functions/cache-function.php
+ * 
  * @since 0.9
  * @param int|string $key
  *            Unique key of the cache file.
@@ -172,6 +189,8 @@ function ttcms_cache_set($key, $data, $namespace = '', $expire = 3600)
  *
  * Gives the cache hits, cache misses and cache uptime.
  *
+ * @file app/functions/cache-function.php
+ * 
  * @since 0.9
  * @uses _ttcms_cache_init()
  */
@@ -184,6 +203,8 @@ function ttcms_cache_get_stats()
 /**
  * Increments numeric cache item's value.
  *
+ * @file app/functions/cache-function.php
+ * 
  * @since 0.9
  * @uses _ttcms_cache_init()
  * @param int|string $key
@@ -203,6 +224,8 @@ function ttcms_cache_increment($key, $offset = 1, $namespace = '')
 /**
  * Decrements numeric cache item's value.
  *
+ * @file app/functions/cache-function.php
+ * 
  * @since 0.9
  * @uses _ttcms_cache_init()
  * @param int|string $key

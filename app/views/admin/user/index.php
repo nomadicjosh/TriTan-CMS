@@ -2,6 +2,7 @@
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use TriTan\Config;
+use TriTan\Functions as func;
 /**
  * User's List View
  *  
@@ -24,10 +25,10 @@ Config::set('screen_child', 'all-users');
     <div class="box box-solid">
         <div class="box-header with-border">
             <i class="fa fa-user"></i>
-            <h3 class="box-title"><?= _t('Users', 'tritan-cms'); ?></h3>
+            <h3 class="box-title"><?= func\_t('Users', 'tritan-cms'); ?></h3>
             
             <div class="pull-right">
-                <button type="button"<?=ae('create_users');?> class="btn btn-warning" onclick="window.location='<?=get_base_url();?>admin/user/create/'"><i class="fa fa-plus"></i> <?= _t('New User', 'tritan-cms'); ?></button>
+                <button type="button"<?=func\ae('create_users');?> class="btn btn-warning" onclick="window.location='<?=func\get_base_url();?>admin/user/create/'"><i class="fa fa-plus"></i> <?= func\_t('New User', 'tritan-cms'); ?></button>
             </div>
         </div>
     </div>
@@ -35,7 +36,7 @@ Config::set('screen_child', 'all-users');
     <!-- Main content -->
     <section class="content">
 
-        <?= _ttcms_flash()->showMessage(); ?> 
+        <?= func\_ttcms_flash()->showMessage(); ?> 
 
         <!-- SELECT2 EXAMPLE -->
         <div class="box box-default">
@@ -43,35 +44,35 @@ Config::set('screen_child', 'all-users');
                 <table id="example1" class="table table-bordered table-hover">
                     <thead>
                         <tr>
-                            <th class="text-center"><?= _t('Username'); ?></th>
-                            <th class="text-center"><?= _t('First Name'); ?></th>
-                            <th class="text-center"><?= _t('Last Name'); ?></th>
-                            <th class="text-center"><?= _t('Status'); ?></th>
-                            <th class="text-center"><?= _t('Role'); ?></th>
-                            <th class="text-center"><?= _t('Action'); ?></th>
+                            <th class="text-center"><?= func\_t('Username'); ?></th>
+                            <th class="text-center"><?= func\_t('First Name'); ?></th>
+                            <th class="text-center"><?= func\_t('Last Name'); ?></th>
+                            <th class="text-center"><?= func\_t('Status'); ?></th>
+                            <th class="text-center"><?= func\_t('Role'); ?></th>
+                            <th class="text-center"><?= func\_t('Action'); ?></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($this->users as $user) : $role = get_role_by_id($user['user_role']); ?>
+                        <?php foreach ($this->users as $user) : $role = func\get_role_by_id($user['user_role']); ?>
                             <tr class="gradeX">
                                 <td class="text-center"><?= $user['user_login']; ?></td>
                                 <td class="text-center"><?= $user['user_fname']; ?></td>
                                 <td class="text-center"><?= $user['user_lname']; ?></td>
                                 <td class="text-center">
-                                    <span class="label <?= ttcms_user_status_label($user['user_status']); ?>" style="font-size:1em;font-weight: bold;">
-                                        <?= ($user['user_status'] == 'A' ? _t('Active') : _t('Inactive')); ?>
+                                    <span class="label <?= func\ttcms_user_status_label($user['user_status']); ?>" style="font-size:1em;font-weight: bold;">
+                                        <?= ($user['user_status'] == 'A' ? func\_t('Active') : func\_t('Inactive')); ?>
                                     </span>
                                 </td>
-                                <td class="text-center"><?=get_role_by_id($user['user_role'])['role']['role_name'];?></td>
+                                <td class="text-center"><?=func\get_role_by_id($user['user_role'])['role']['role_name'];?></td>
                                 <td class="text-center">
-                                    <a href="<?= get_base_url(); ?>admin/user/<?= (int) $user['user_id']; ?>/" data-toggle="tooltip" data-placement="top" title="Update"><button type="button" class="btn bg-yellow"><i class="fa fa-edit"></i></button></a>
-                                    <!--<a href="<?= get_base_url(); ?>admin/user/<?= (int) $user['user_id']; ?>/perm/" data-toggle="tooltip" data-placement="top" title="Edit Permissions"><button type="button" class="btn bg-purple"><i class="fa fa-key"></i></button></a>-->
-                                    <a href="<?= get_base_url(); ?>admin/user/<?= (int) $user['user_id']; ?>/reset-password/" data-toggle="tooltip" data-placement="top" title="Reset Password"><button type="button" class="btn bg-purple"><i class="fa fa-refresh"></i></button></a>
+                                    <a href="<?= func\get_base_url(); ?>admin/user/<?= (int) $user['user_id']; ?>/" data-toggle="tooltip" data-placement="top" title="Update"><button type="button" class="btn bg-yellow"><i class="fa fa-edit"></i></button></a>
+                                    <!--<a href="<?= func\get_base_url(); ?>admin/user/<?= (int) $user['user_id']; ?>/perm/" data-toggle="tooltip" data-placement="top" title="Edit Permissions"><button type="button" class="btn bg-purple"><i class="fa fa-key"></i></button></a>-->
+                                    <a href="<?= func\get_base_url(); ?>admin/user/<?= (int) $user['user_id']; ?>/reset-password/" data-toggle="tooltip" data-placement="top" title="Reset Password"><button type="button" class="btn bg-purple"><i class="fa fa-refresh"></i></button></a>
                                     <?php if (!isset($this->app->req->cookie['SWITCH_USERBACK']) && (int) $user['user_id'] !== (int) $this->current_user_id) : ?>
-                                        <a<?= ae('switch_user'); ?> href="<?= get_base_url(); ?>admin/user/<?= (int) _escape($user['user_id']); ?>/switch-to/" data-toggle="tooltip" data-placement="top" title="Switch to"><button type="button" class="btn bg-blue"><i class="fa fa-exchange"></i></button></a>
+                                        <a<?= func\ae('switch_user'); ?> href="<?= func\get_base_url(); ?>admin/user/<?= (int) func\_escape($user['user_id']); ?>/switch-to/" data-toggle="tooltip" data-placement="top" title="Switch to"><button type="button" class="btn bg-blue"><i class="fa fa-exchange"></i></button></a>
                                     <?php endif; ?>
                                     <?php if ((int) $user['user_id'] !== (int) 1 && (int) $user['user_id'] !== (int) $this->current_user_id) : ?>
-                                        <a<?= ae('delete_users'); ?> href="#" data-toggle="modal" data-target="#delete-<?= (int) $user['user_id']; ?>"><button type="button" class="btn bg-red"><i class="fa fa-trash-o"></i></button></a>
+                                        <a<?= func\ae('delete_users'); ?> href="#" data-toggle="modal" data-target="#delete-<?= (int) $user['user_id']; ?>"><button type="button" class="btn bg-red"><i class="fa fa-trash-o"></i></button></a>
                                     <?php endif; ?>
 
                                     <div class="modal" id="delete-<?= (int) $user['user_id']; ?>">
@@ -80,14 +81,14 @@ Config::set('screen_child', 'all-users');
                                                 <div class="modal-header">
                                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                         <span aria-hidden="true">&times;</span></button>
-                                                    <h4 class="modal-title"><?= get_name((int) $user['user_id']); ?></h4>
+                                                    <h4 class="modal-title"><?= func\get_name((int) $user['user_id']); ?></h4>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <p><?= _t('Are you sure you want to remove the user from this site?'); ?></p>
+                                                    <p><?= func\_t('Are you sure you want to remove the user from this site?'); ?></p>
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><?= _t('Close'); ?></button>
-                                                    <button type="button" class="btn btn-primary" onclick="window.location = '<?= get_base_url(); ?>admin/user/<?= (int) $user['user_id']; ?>/d/'"><?= _t('Confirm'); ?></button>
+                                                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><?= func\_t('Close'); ?></button>
+                                                    <button type="button" class="btn btn-primary" onclick="window.location = '<?= func\get_base_url(); ?>admin/user/<?= (int) $user['user_id']; ?>/d/'"><?= func\_t('Confirm'); ?></button>
                                                 </div>
                                             </div>
                                             <!-- /.modal-content -->
@@ -101,12 +102,12 @@ Config::set('screen_child', 'all-users');
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th class="text-center"><?= _t('Username'); ?></th>
-                            <th class="text-center"><?= _t('First Name'); ?></th>
-                            <th class="text-center"><?= _t('Last Name'); ?></th>
-                            <th class="text-center"><?= _t('Status'); ?></th>
-                            <th class="text-center"><?= _t('Role'); ?></th>
-                            <th class="text-center"><?= _t('Action'); ?></th>
+                            <th class="text-center"><?= func\_t('Username'); ?></th>
+                            <th class="text-center"><?= func\_t('First Name'); ?></th>
+                            <th class="text-center"><?= func\_t('Last Name'); ?></th>
+                            <th class="text-center"><?= func\_t('Status'); ?></th>
+                            <th class="text-center"><?= func\_t('Role'); ?></th>
+                            <th class="text-center"><?= func\_t('Action'); ?></th>
                         </tr>
                     </tfoot>
                 </table>

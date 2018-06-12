@@ -2,6 +2,7 @@
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use TriTan\Config;
+use TriTan\Functions as func;
 /**
  * Error Log View
  *  
@@ -25,14 +26,14 @@ Config::set('screen_child', 'error');
     <div class="box box-solid">
         <div class="box-header with-border">
             <i class="fa fa-exclamation-triangle"></i>
-            <h3 class="box-title"><?= _t('Error Logs', 'tritan-cms'); ?></h3>
+            <h3 class="box-title"><?= func\_t('Error Logs', 'tritan-cms'); ?></h3>
         </div>
     </div>
 
     <!-- Main content -->
     <section class="content">
 
-        <?= _ttcms_flash()->showMessage(); ?> 
+        <?= func\_ttcms_flash()->showMessage(); ?> 
 
         <!-- SELECT2 EXAMPLE -->
         <div class="box box-default">
@@ -40,11 +41,11 @@ Config::set('screen_child', 'error');
                 <table id="example2" class="table table-bordered table-hover">
                     <thead>
                         <tr>
-                            <th class="text-center"><?= _t('Error Type', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= _t('String', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= _t('File', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= _t('Line Number', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= _t('Action', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('Error Type', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('String', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('File', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('Line Number', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('Action', 'tritan-cms'); ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -55,18 +56,18 @@ Config::set('screen_child', 'error');
                                 <td class="text-center"><?= $error['file']; ?></td>
                                 <td class="text-center"><?= $error['line']; ?></td>
                                 <td class="text-center">
-                                    <a href="<?= get_base_url(); ?>admin/error/<?= $error['error_id']; ?>/delete/" class="btn btn-danger"><i class="fa fa-trash-o"></i></a>
+                                    <a href="<?= func\get_base_url(); ?>admin/error/<?= $error['error_id']; ?>/delete/" class="btn btn-danger"><i class="fa fa-trash-o"></i></a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th class="text-center"><?= _t('Error Type', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= _t('String', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= _t('File', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= _t('Line Number', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= _t('Action', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('Error Type', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('String', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('File', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('Line Number', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('Action', 'tritan-cms'); ?></th>
                         </tr>
                     </tfoot>
                 </table>

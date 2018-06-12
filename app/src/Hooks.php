@@ -5,6 +5,7 @@ namespace TriTan;
 use TriTan\Config;
 use TriTan\Exception\Exception;
 use Cascade\Cascade;
+use TriTan\Functions as func;
 
 /**
  * Hooks API: Hook Class
@@ -192,7 +193,7 @@ class Hooks
     public function activate_plugin($plugin)
     {
         $this->app->db->table(Config::get('tbl_prefix') . 'plugin')->insert([
-            'plugin_id' => auto_increment(Config::get('tbl_prefix') . 'plugin', 'plugin_id'),
+            'plugin_id' => func\auto_increment(Config::get('tbl_prefix') . 'plugin', 'plugin_id'),
             'plugin_location' => $plugin
         ]);
     }
@@ -227,26 +228,26 @@ class Hooks
         $q = $plugin->all();
 
         foreach ($q as $v) {
-            $pluginFile = _escape($v['plugin_location']);
+            $pluginFile = func\_escape($v['plugin_location']);
             $plugin = str_replace('.plugin.php', '', $pluginFile);
 
-            if (!ttcms_file_exists($plugins_dir . $plugin . DS . $pluginFile, false)) {
+            if (!func\ttcms_file_exists($plugins_dir . $plugin . DS . $pluginFile, false)) {
                 $file = $plugins_dir . $pluginFile;
             } else {
                 $file = $plugins_dir . $plugin . DS . $pluginFile;
             }
 
-            $error = ttcms_php_check_syntax($file);
-            if (is_ttcms_exception($error)) {
-                $this->deactivate_plugin(_escape($v['plugin_location']));
-                _ttcms_flash()->error(sprintf(_t('The plugin <strong>%s</strong> has been deactivated because your changes resulted in a <strong>fatal error</strong>. <br /><br />') . $error->getMessage(), _escape($v['plugin_location'])));
+            $error = func\ttcms_php_check_syntax($file);
+            if (func\is_ttcms_exception($error)) {
+                $this->deactivate_plugin(func\_escape($v['plugin_location']));
+                func\_ttcms_flash()->error(sprintf(func\_t('The plugin <strong>%s</strong> has been deactivated because your changes resulted in a <strong>fatal error</strong>. <br /><br />') . $error->getMessage(), func\_escape($v['plugin_location'])));
                 return false;
             }
 
-            if (ttcms_file_exists($file, false)) {
+            if (func\ttcms_file_exists($file, false)) {
                 require_once ($file);
             } else {
-                $this->deactivate_plugin(_escape($v['plugin_location']));
+                $this->deactivate_plugin(func\_escape($v['plugin_location']));
             }
         }
     }
@@ -463,11 +464,18 @@ class Hooks
         }
 
         do {
-            foreach ((array) current($this->filters[$hook]) as $the_)
-                if (!is_null($the_['function'])) {
-                    $args[1] = $value;
-                    $value = call_user_func_array($the_['function'], array_slice($args, 1, (int) $the_['accepted_args']));
+            foreach ((array) current($this->filters[$hook]) as $the_) {
+                if (!function_exists($the_['function'])) {
+                    $the_function = 'TriTan\\Functions\\' . $the_['function'];
+                } else {
+                    $the_function = $the_['function'];
                 }
+
+                if (!is_null($the_function)) {
+                    $args[1] = $value;
+                    $value = call_user_func_array($the_function, array_slice($args, 1, (int) $the_['accepted_args']));
+                }
+            }
         } while (next($this->filters[$hook]) !== false);
 
         array_pop($this->current_filter);
@@ -509,12 +517,18 @@ class Hooks
         reset($this->filters[$tag]);
         do {
             foreach ((array) current($this->filters[$tag]) as $the_) {
-                if (null !== $the_['function']) {
+                if (!function_exists($the_['function'])) {
+                    $the_function = 'TriTan\\Functions\\' . $the_['function'];
+                } else {
+                    $the_function = $the_['function'];
+                }
+
+                if (null !== $the_function) {
                     if (null !== $the_['include_path']) {
                         /** @noinspection PhpIncludeInspection */
                         include_once $the_['include_path'];
                     }
-                    $args[0] = call_user_func_array($the_['function'], $args);
+                    $args[0] = call_user_func_array($the_function, $args);
                 }
             }
         } while (next($this->filters[$tag]) !== false);
@@ -565,9 +579,16 @@ class Hooks
         reset($this->filters[$hook]);
 
         do {
-            foreach ((array) current($this->filters[$hook]) as $the_)
-                if (!is_null($the_['function']))
-                    call_user_func_array($the_['function'], array_slice($args, 0, (int) $the_['accepted_args']));
+            foreach ((array) current($this->filters[$hook]) as $the_) {
+                if (!function_exists($the_['function'])) {
+                    $the_function = 'TriTan\\Functions\\' . $the_['function'];
+                } else {
+                    $the_function = $the_['function'];
+                }
+                if (!is_null($the_function)) {
+                    call_user_func_array($the_function, array_slice($args, 0, (int) $the_['accepted_args']));
+                }
+            }
         } while (next($this->filters[$hook]) !== false);
 
         array_pop($this->current_filter);
@@ -577,9 +598,16 @@ class Hooks
     {
         reset($this->filters['all']);
         do {
-            foreach ((array) current($this->filters['all']) as $the_)
-                if (!is_null($the_['function']))
-                    call_user_func_array($the_['function'], $args);
+            foreach ((array) current($this->filters['all']) as $the_) {
+                if (!function_exists($the_['function'])) {
+                    $the_function = 'TriTan\\Functions\\' . $the_['function'];
+                } else {
+                    $the_function = $the_['function'];
+                }
+                if (!is_null($the_function)) {
+                    call_user_func_array($the_function, $args);
+                }
+            }
         } while (next($this->filters['all']) !== false);
     }
 
@@ -653,15 +681,15 @@ class Hooks
     public function add_parsecode($tag, $func)
     {
         if ('' == _trim($tag)) {
-            $message = _t('Invalid parsecode name: empty name given.');
-            _incorrectly_called(__METHOD__, $message, '0.9');
+            $message = func\_t('Invalid parsecode name: empty name given.');
+            func\_incorrectly_called(__METHOD__, $message, '0.9');
             return;
         }
 
         if (0 !== preg_match('@[<>&/\[\]\x00-\x20]@', $tag)) {
             /* translators: %s: parsecode name */
-            $message = sprintf(_t('Invalid parsecode name: %s. Do not use spaces or reserved characters: & / < > [ ]'), $tag);
-            _incorrectly_called(__METHOD__, $message, '0.9');
+            $message = sprintf(func\_t('Invalid parsecode name: %s. Do not use spaces or reserved characters: & / < > [ ]'), $tag);
+            func\_incorrectly_called(__METHOD__, $message, '0.9');
             return;
         }
 
@@ -684,8 +712,8 @@ class Hooks
     public function remove_parsecode($tag)
     {
         if ('' == _trim($tag)) {
-            $message = _t('Invalid parsecode name: empty name given.');
-            _incorrectly_called(__METHOD__, $message, '0.9');
+            $message = func\_t('Invalid parsecode name: empty name given.');
+            func\_incorrectly_called(__METHOD__, $message, '0.9');
             return;
         }
 
@@ -1113,10 +1141,16 @@ class Hooks
         reset($this->filters[$hook]);
 
         do {
-            foreach ((array) current($this->filters[$hook]) as $the_)
-                if (!is_null($the_['function'])) {
-                    call_user_func_array($the_['function'], array_slice($args, 0, (int) $the_['accepted_args']));
+            foreach ((array) current($this->filters[$hook]) as $the_) {
+                if (!function_exists($the_['function'])) {
+                    $the_function = 'TriTan\\Functions\\' . $the_['function'];
+                } else {
+                    $the_function = $the_['function'];
                 }
+                if (!is_null($the_function)) {
+                    call_user_func_array($the_function, array_slice($args, 0, (int) $the_['accepted_args']));
+                }
+            }
         } while (next($this->filters[$hook]) !== false);
 
         array_pop($this->current_filter);
@@ -1334,18 +1368,18 @@ class Hooks
 
         if (!isset($this->app->db->option[$option_key])) {
             $meta = $this->app->db->table(Config::get('tbl_prefix') . 'option');
-            $result = ttcms_cache_get($option_key, 'option');
+            $result = func\ttcms_cache_get($option_key, 'option');
             if (empty($result)) {
                 $result = $meta->where('option_key', '=', $option_key)
                         ->first();
-                ttcms_cache_add($option_key, $result, 'option');
+                func\ttcms_cache_add($option_key, $result, 'option');
             }
 
             if (is_object($meta)) {
-                $value = _escape($result['option_value']);
+                $value = func\_escape($result['option_value']);
                 //return _escape($value);
             } else { // option does not exist, so we must cache its non-existence
-                $value = _escape($default);
+                $value = func\_escape($default);
                 //return _escape($value);
             }
             $this->app->db->option[$option_key] = $this->maybe_unserialize($value);
@@ -1383,7 +1417,7 @@ class Hooks
 
         // Fallback to the current site if a site_id is not specified.
         if (!$site_id) {
-            $site_id = get_current_site_id();
+            $site_id = func\get_current_site_id();
         }
 
         $_site_id = (int) $site_id;
@@ -1413,15 +1447,15 @@ class Hooks
         }
 
         $cache_key = "{$_site_id}_{$option}";
-        $value = ttcms_cache_get($cache_key, 'site-options');
+        $value = func\ttcms_cache_get($cache_key, 'site-options');
 
         if (!isset($value) || false === $value) {
             $row = $this->app->db->table('sitemeta')->where('meta_key', $option)->where('site_id', $_site_id)->first();
 
             if (is_array($row)) {
-                $value = _escape($row['meta_value']);
+                $value = func\_escape($row['meta_value']);
                 $value = $this->maybe_unserialize($value);
-                ttcms_cache_set($cache_key, $value, 'site-options');
+                func\ttcms_cache_set($cache_key, $value, 'site-options');
             } else {
                 $value = $this->apply_filter("default_site_option_{$option}", $default, $option, $_site_id);
             }
@@ -1452,14 +1486,14 @@ class Hooks
             return false;
         }
 
-        if (!is_option_exist($option_key)) {
+        if (!func\is_option_exist($option_key)) {
             $this->add_option($option_key, $newvalue);
             return true;
         }
 
         $_newvalue = $this->maybe_serialize($newvalue);
 
-        ttcms_cache_delete($option_key, 'option');
+        func\ttcms_cache_delete($option_key, 'option');
 
         $this->do_action('update_option', $option_key, $oldvalue, $newvalue);
 
@@ -1468,7 +1502,7 @@ class Hooks
         $option_value = $_newvalue;
         try {
             $key->where('option_key', $option_key)->update([
-                'option_value' => if_null($option_value)
+                'option_value' => func\if_null($option_value)
             ]);
 
             if (@count($key) > 0) {
@@ -1478,7 +1512,7 @@ class Hooks
         } catch (Exception $e) {
             $key->rollback();
             Cascade::getLogger('error')->error(sprintf('SQLSTATE[%s]: Error: %s', $e->getCode(), $e->getMessage()));
-            _ttcms_flash()->error(_ttcms_flash()->notice(409));
+            func\_ttcms_flash()->error(func\_ttcms_flash()->notice(409));
         }
     }
 
@@ -1499,7 +1533,7 @@ class Hooks
 
         // Fallback to the current site if a site ID is not specified.
         if (!$site_id) {
-            $site_id = get_current_site_id();
+            $site_id = func\get_current_site_id();
         }
 
         $_site_id = (int) $site_id;
@@ -1517,7 +1551,7 @@ class Hooks
          * @param string $option    Option name.
          * @param int    $_site_id  ID of the site.
          */
-        $value = applyfilters("pre_update_site_option_{$option}", $value, $old_value, $option, $_site_id);
+        $value = $this->apply_filter("pre_update_site_option_{$option}", $value, $old_value, $option, $_site_id);
 
         if ($value === $old_value) {
             return false;
@@ -1544,7 +1578,7 @@ class Hooks
 
         if ($result) {
             $cache_key = "{$_site_id}_{$option}";
-            ttcms_cache_set($cache_key, $value, 'site-options');
+            func\ttcms_cache_set($cache_key, $value, 'site-options');
         }
 
         if ($result) {
@@ -1585,13 +1619,13 @@ class Hooks
     public function add_option($name, $value = '')
     {
         // Make sure the option doesn't already exist
-        if (is_option_exist($name)) {
+        if (func\is_option_exist($name)) {
             return;
         }
 
         $_value = $this->maybe_serialize($value);
 
-        ttcms_cache_delete($name, 'option');
+        func\ttcms_cache_delete($name, 'option');
 
         $this->do_action('add_option', $name, $_value);
 
@@ -1600,9 +1634,9 @@ class Hooks
         try {
             $option_value = $_value;
             $add->insert([
-                'option_id' => (int) auto_increment(Config::get('tbl_prefix') . 'option', 'option_id'),
+                'option_id' => (int) func\auto_increment(Config::get('tbl_prefix') . 'option', 'option_id'),
                 'option_key' => (string) $name,
-                'option_value' => if_null($option_value)
+                'option_value' => func\if_null($option_value)
             ]);
             $this->app->db->option[$name] = $value;
             $add->commit();
@@ -1610,7 +1644,7 @@ class Hooks
         } catch (Exception $e) {
             $add->rollback();
             Cascade::getLogger('error')->error(sprintf('SQLSTATE[%s]: Error: %s', $e->getCode(), $e->getMessage()));
-            _ttcms_flash()->error(_ttcms_flash()->notice(409));
+            func\_ttcms_flash()->error(func\_ttcms_flash()->notice(409));
         }
     }
 
@@ -1633,7 +1667,7 @@ class Hooks
 
         // Fallback to the current site if a site ID is not specified.
         if (!$site_id) {
-            $site_id = get_current_site_id();
+            $site_id = func\get_current_site_id();
         }
 
         $_site_id = (int) $site_id;
@@ -1663,7 +1697,7 @@ class Hooks
         $result->begin();
         try {
             $result->insert([
-                'meta_id' => auto_increment('sitemeta', 'meta_id'),
+                'meta_id' => func\auto_increment('sitemeta', 'meta_id'),
                 'site_id' => (int) $_site_id,
                 'meta_key' => (string) $option,
                 'meta_value' => $this->maybe_serialize($value)
@@ -1679,7 +1713,7 @@ class Hooks
             return false;
         }
 
-        ttcms_cache_set($cache_key, $value, 'site-options');
+        func\ttcms_cache_set($cache_key, $value, 'site-options');
 
         if ($result) {
 
@@ -1726,7 +1760,7 @@ class Hooks
                 return false;
             }
 
-            ttcms_cache_delete($name, 'option');
+            func\ttcms_cache_delete($name, 'option');
 
             $this->do_action('delete_option', $name);
 
@@ -1737,7 +1771,7 @@ class Hooks
         } catch (Exception $e) {
             $delete->rollback();
             Cascade::getLogger('error')->error(sprintf('SQLSTATE[%s]: Error: %s', $e->getCode(), $e->getMessage()));
-            _ttcms_flash()->error(_ttcms_flash()->notice(409));
+            func\_ttcms_flash()->error(func\_ttcms_flash()->notice(409));
         }
     }
 
@@ -1757,7 +1791,7 @@ class Hooks
 
         // Fallback to the current site if a site ID is not specified.
         if (!$site_id) {
-            $site_id = get_current_site_id();
+            $site_id = func\get_current_site_id();
         }
 
         $_site_id = (int) $site_id;
@@ -1778,7 +1812,7 @@ class Hooks
             return false;
         }
         $cache_key = "{$_site_id}_{$option}";
-        ttcms_cache_delete($cache_key, 'site-options');
+        func\ttcms_cache_delete($cache_key, 'site-options');
 
         $result = $this->app->db->table('sitemeta');
         $result->begin();

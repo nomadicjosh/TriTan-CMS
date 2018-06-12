@@ -6,6 +6,7 @@ use TriTan\Exception\Exception;
 use TriTan\Config;
 use TriTan\Queue\NodeqQueue as Queue;
 use Cascade\Cascade;
+use TriTan\Functions as func;
 
 /**
  * Cron Router
@@ -46,8 +47,8 @@ $app->get('/cronjob/', function () use($app) {
         }
     }
 
-    ttcms_logger_error_log_purge();
-    ttcms_logger_activity_log_purge();
+    func\ttcms_logger_error_log_purge();
+    func\ttcms_logger_activity_log_purge();
 
     try {
 

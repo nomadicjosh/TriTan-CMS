@@ -1,4 +1,4 @@
-<?php
+<?php namespace TriTan\Functions;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');

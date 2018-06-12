@@ -3,6 +3,7 @@
 namespace TriTan;
 
 use TriTan\Config;
+use TriTan\Functions as func;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
@@ -90,7 +91,7 @@ class User
      */
     public function init($data, $site_id = '')
     {
-        $this->data = array_to_object($data);
+        $this->data = func\array_to_object($data);
         $this->user_id = (int) $data['user_id'];
 
         $this->for_site($site_id);
@@ -136,12 +137,12 @@ class User
                 $db_field = 'user_id';
                 break;
             case 'email':
-                $user_id = ttcms_cache_get($value, 'useremail');
+                $user_id = func\ttcms_cache_get($value, 'useremail');
                 $db_field = 'user_email';
                 break;
             case 'login':
-                $value = sanitize_user($value);
-                $user_id = ttcms_cache_get($value, 'userlogins');
+                $value = func\sanitize_user($value);
+                $user_id = func\ttcms_cache_get($value, 'userlogins');
                 $db_field = 'user_login';
                 break;
             default:
@@ -149,7 +150,7 @@ class User
         }
 
         if (false !== $user_id) {
-            if ($user = ttcms_cache_get($user_id, 'users')) {
+            if ($user = func\ttcms_cache_get($user_id, 'users')) {
                 return $user;
             }
         }
@@ -158,7 +159,7 @@ class User
             return false;
         }
 
-        update_user_caches($user);
+        func\update_user_caches($user);
 
         return $user;
     }
@@ -175,7 +176,7 @@ class User
         if (isset($this->data->$key)) {
             return true;
         }
-        return metadata_exists('user', $this->user_id, Config::get('tbl_prefix') . $key);
+        return func\metadata_exists('user', $this->user_id, Config::get('tbl_prefix') . $key);
     }
 
     /**
@@ -194,7 +195,7 @@ class User
         if (isset($this->data->$key)) {
             $value = $this->data->$key;
         } else {
-            $value = get_user_meta($this->user_id, Config::get('tbl_prefix') . $key, true);
+            $value = func\get_user_meta($this->user_id, Config::get('tbl_prefix') . $key, true);
         }
 
         return $value;
@@ -295,7 +296,7 @@ class User
         if (!empty($site_id)) {
             $this->site_id = absint($site_id);
         } else {
-            $this->site_id = get_current_site_id();
+            $this->site_id = func\get_current_site_id();
         }
     }
 

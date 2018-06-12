@@ -1,19 +1,21 @@
 <?php
 $app = \Liten\Liten::getInstance();
+use TriTan\Functions as func;
+use TriTan\Config;
+
 ob_start();
 ob_implicit_flush(0);
-$cookie = get_secure_cookie_data('SWITCH_USERBACK');
-$user = get_userdata(get_current_user_id());
+$cookie = func\get_secure_cookie_data('SWITCH_USERBACK');
+$user = func\get_userdata(func\get_current_user_id());
 $app->hook->{'do_action'}('admin_init');
-use TriTan\Config;
 ?>
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <base href="<?= get_base_url(); ?>">
+        <base href="<?= func\get_base_url(); ?>">
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title><?= $this->title . ' &lsaquo; ' . $app->hook->{'get_option'}('sitename'); ?> &#8212; <?= _t('TriTan CMS', 'tritan-cms'); ?></title>
+        <title><?= $this->title . ' &lsaquo; ' . $app->hook->{'get_option'}('sitename'); ?> &#8212; <?= func\_t('TriTan CMS', 'tritan-cms'); ?></title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=6, user-scalable=yes" name="viewport">
         <meta name="theme-color" content="#ffffff">
@@ -50,24 +52,24 @@ use TriTan\Config;
         <!-- AdminLTE Skins. Choose a skin from the css/skins
              folder instead of downloading all of them to reduce the load. -->
         <link rel="stylesheet" href="static/assets/css/skins/_all-skins.min.css">
-        <?php admin_head(); ?>
+        <?php func\admin_head(); ?>
     </head>
-    <body class="hold-transition <?=get_user_option('admin_skin', _escape($user->user_id));?> <?=(get_user_option('admin_layout', _escape($user->user_id)) == 1 ? 'fixed ' : '');?><?=(get_user_option('admin_sidebar', _escape($user->user_id)) == 1 ? 'sidebar-collapse ' : '');?>sidebar-mini">
+    <body class="hold-transition <?= func\get_user_option('admin_skin', func\_escape($user->user_id)); ?> <?= (func\get_user_option('admin_layout', func\_escape($user->user_id)) == 1 ? 'fixed ' : ''); ?><?= (func\get_user_option('admin_sidebar', func\_escape($user->user_id)) == 1 ? 'sidebar-collapse ' : ''); ?>sidebar-mini">
         <div class="wrapper">
 
             <header class="main-header">
                 <!-- Logo -->
-                <a href="<?= get_base_url(); ?>admin/" class="logo">
+                <a href="<?= func\get_base_url(); ?>admin/" class="logo">
                     <!-- mini logo for sidebar mini 50x50 pixels -->
-                    <span class="logo-mini"><?= get_logo_mini(); ?></span>
+                    <span class="logo-mini"><?= func\get_logo_mini(); ?></span>
                     <!-- logo for regular state and mobile devices -->
-                    <span class="logo-lg"><?= get_logo_large(); ?></span>
+                    <span class="logo-lg"><?= func\get_logo_large(); ?></span>
                 </a>
                 <!-- Header Navbar: style can be found in header.less -->
                 <nav class="navbar navbar-static-top">
                     <!-- Sidebar toggle button-->
                     <!--<a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
-                      <span class="sr-only"><?= _t('Toggle navigation', 'tritan-cms'); ?></span>
+                      <span class="sr-only"><?= func\_t('Toggle navigation', 'tritan-cms'); ?></span>
                     </a>-->
 
                     <div class="navbar-custom-menu">
@@ -75,31 +77,31 @@ use TriTan\Config;
                             <!-- User Account: style can be found in dropdown.less -->
                             <li class="dropdown user user-menu">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                    <?= get_user_avatar(_escape($user->user_email), 160, 'user-image'); ?>
-                                    <span class="hidden-xs"><?= get_name(get_current_user_id()); ?></span>
+                                    <?= func\get_user_avatar(func\_escape($user->user_email), 160, 'user-image'); ?>
+                                    <span class="hidden-xs"><?= func\get_name(func\get_current_user_id()); ?></span>
                                 </a>
                                 <ul class="dropdown-menu">
                                     <!-- User image -->
                                     <li class="user-header">
-                                        <?= get_user_avatar(_escape($user->user_email), 160, 'image-circle'); ?>
+                                    <?= func\get_user_avatar(func\_escape($user->user_email), 160, 'image-circle'); ?>
 
                                         <p>
-                                            <?= get_name(get_current_user_id()); ?>
-                                            <small><?= _t('Member since', 'tritan-cms'); ?> <?= Jenssegers\Date\Date::parse(_escape($user->user_registered))->format('M Y'); ?></small>
+                                            <?= func\get_name(func\get_current_user_id()); ?>
+                                            <small><?= func\_t('Member since', 'tritan-cms'); ?> <?= Jenssegers\Date\Date::parse(func\_escape($user->user_registered))->format('M Y'); ?></small>
                                         </p>
                                     </li>
                                     <!-- Menu Footer-->
                                     <li class="user-footer">
                                         <div class="pull-left">
-                                            <a href="<?= get_base_url(); ?>admin/user/profile/" class="btn btn-default btn-flat"><?= _t('Profile', 'tritan-cms'); ?></a>
+                                            <a href="<?= func\get_base_url(); ?>admin/user/profile/" class="btn btn-default btn-flat"><?= func\_t('Profile', 'tritan-cms'); ?></a>
                                         </div>
-                                            <?php if (isset($app->req->cookie['SWITCH_USERBACK'])) : ?>
+                                        <?php if (isset($app->req->cookie['SWITCH_USERBACK'])) : ?>
                                             <div class="pull-left">
-                                                <a href="<?= get_base_url(); ?>admin/user/<?= $cookie->user_id; ?>/switch-back/" class="btn btn-default btn-flat"><?= _t('Switch back', 'tritan-cms'); ?></a>
+                                                <a href="<?= func\get_base_url(); ?>admin/user/<?= $cookie->user_id; ?>/switch-back/" class="btn btn-default btn-flat"><?= func\_t('Switch back', 'tritan-cms'); ?></a>
                                             </div>
-                                            <?php endif; ?>
+                                        <?php endif; ?>
                                         <div class="pull-right">
-                                            <a href="<?= get_base_url(); ?>logout/" class="btn btn-default btn-flat"><?= _t('Logout', 'tritan-cms'); ?></a>
+                                            <a href="<?= func\get_base_url(); ?>logout/" class="btn btn-default btn-flat"><?= func\_t('Logout', 'tritan-cms'); ?></a>
                                         </div>
                                     </li>
                                 </ul>
@@ -117,163 +119,163 @@ use TriTan\Config;
                     <!-- Sidebar user panel -->
                     <div class="user-panel">
                         <div class="pull-left image">
-                            <?= get_user_avatar(_escape($user->user_email), 160, 'img-circle'); ?>
+                            <?= func\get_user_avatar(func\_escape($user->user_email), 160, 'img-circle'); ?>
                         </div>
                         <div class="pull-left info">
-                            <p><?= get_name(get_current_user_id()); ?></p>
-                            <a><i class="fa fa-circle text-success"></i> <?= _t('Online', 'tritan-cms'); ?></a>
+                            <p><?= func\get_name(func\get_current_user_id()); ?></p>
+                            <a><i class="fa fa-circle text-success"></i> <?= func\_t('Online', 'tritan-cms'); ?></a>
                         </div>
                     </div>
                     <!-- sidebar menu: : style can be found in sidebar.less -->
                     <ul class="sidebar-menu">
-                        <li class="header"><?= _t('MAIN NAVIGATION', 'tritan-cms'); ?></li>
+                        <li class="header"><?= func\_t('MAIN NAVIGATION', 'tritan-cms'); ?></li>
                         <li class="treeview<?= (Config::get('screen_parent') === 'dashboard' ? ' active' : ''); ?>">
                             <a href="#">
                                 <i class="fa fa-clock-o"></i>
-                                <span><?= _t('Dashboard', 'tritan-cms'); ?></span>
+                                <span><?= func\_t('Dashboard', 'tritan-cms'); ?></span>
                                 <span class="pull-right-container">
                                     <i class="fa fa-angle-left pull-right"></i>
                                 </span>
                             </a>
                             <ul class="treeview-menu">
-                                <li<?= (Config::get('screen_child') === 'home' ? ' class="active"' : ''); ?>><a href="<?= get_base_url(); ?>admin/"><i class="fa fa-circle-o"></i> <?= _t('Home', 'tritan-cms'); ?></a></li>
-                                <li<?=ae('manage_ftp');?><?= (Config::get('screen_child') === 'ftp' ? ' class="active"' : ''); ?>><a href="<?= get_base_url(); ?>admin/ftp/"><i class="fa fa-circle-o"></i> <?= _t('FTP', 'tritan-cms'); ?></a></li>
-                                <li<?= (Config::get('screen_child') === 'snapshot' ? ' class="active"' : ''); ?><?= ae('manage_settings'); ?>><a href="<?= get_base_url(); ?>admin/system-snapshot/"><i class="fa fa-circle-o"></i> <?= _t('Snapshot Report', 'tritan-cms'); ?></a></li>
-                                <li<?= (Config::get('screen_child') === 'error' ? ' class="active"' : ''); ?><?= ae('manage_settings'); ?>><a href="<?= get_base_url(); ?>admin/error/"><i class="fa fa-circle-o"></i> <?= _t('Error Logs', 'tritan-cms'); ?></a></li>
-                                <li<?= (Config::get('screen_child') === 'audit' ? ' class="active"' : ''); ?><?= ae('manage_settings'); ?>><a href="<?= get_base_url(); ?>admin/audit-trail/"><i class="fa fa-circle-o"></i> <?= _t('Audit Trail', 'tritan-cms'); ?></a></li>
+                                <li<?= (Config::get('screen_child') === 'home' ? ' class="active"' : ''); ?>><a href="<?= func\get_base_url(); ?>admin/"><i class="fa fa-circle-o"></i> <?= func\_t('Home', 'tritan-cms'); ?></a></li>
+                                <li<?= func\ae('manage_ftp'); ?><?= (Config::get('screen_child') === 'ftp' ? ' class="active"' : ''); ?>><a href="<?= func\get_base_url(); ?>admin/ftp/"><i class="fa fa-circle-o"></i> <?= func\_t('FTP', 'tritan-cms'); ?></a></li>
+                                <li<?= (Config::get('screen_child') === 'snapshot' ? ' class="active"' : ''); ?><?= func\ae('manage_settings'); ?>><a href="<?= func\get_base_url(); ?>admin/system-snapshot/"><i class="fa fa-circle-o"></i> <?= func\_t('Snapshot Report', 'tritan-cms'); ?></a></li>
+                                <li<?= (Config::get('screen_child') === 'error' ? ' class="active"' : ''); ?><?= func\ae('manage_settings'); ?>><a href="<?= func\get_base_url(); ?>admin/error/"><i class="fa fa-circle-o"></i> <?= func\_t('Error Logs', 'tritan-cms'); ?></a></li>
+                                <li<?= (Config::get('screen_child') === 'audit' ? ' class="active"' : ''); ?><?= func\ae('manage_settings'); ?>><a href="<?= func\get_base_url(); ?>admin/audit-trail/"><i class="fa fa-circle-o"></i> <?= func\_t('Audit Trail', 'tritan-cms'); ?></a></li>
                                 <?php $app->hook->{'do_action'}('dashboard_submenu'); ?>
                             </ul>
                         </li>
-                        <li<?= ae('manage_settings'); ?> class="treeview">
-                            <a href="<?= get_base_url(); ?>admin/flush-cache/">
-                                <i class="fa fa-file-text"></i> <span><?= _t('Flush Cache', 'tritan-cms'); ?></span>
+                        <li<?= func\ae('manage_settings'); ?> class="treeview">
+                            <a href="<?= func\get_base_url(); ?>admin/flush-cache/">
+                                <i class="fa fa-file-text"></i> <span><?= func\_t('Flush Cache', 'tritan-cms'); ?></span>
                             </a>
                         </li>
-                        <li<?= ae('manage_sites'); ?> class="treeview<?= (Config::get('screen_parent') === 'sites' ? ' active' : ''); ?>">
+                        <li<?= func\ae('manage_sites'); ?> class="treeview<?= (Config::get('screen_parent') === 'sites' ? ' active' : ''); ?>">
                             <a href="#">
                                 <i class="fa fa-globe"></i>
-                                <span><?= _t('Sites', 'tritan-cms'); ?></span>
+                                <span><?= func\_t('Sites', 'tritan-cms'); ?></span>
                                 <span class="pull-right-container">
                                     <i class="fa fa-angle-left pull-right"></i>
                                 </span>
                             </a>
                             <ul class="treeview-menu">
-                                <li<?= (Config::get('screen_child') === "sites" ? ' class="active"' : ''); ?>><a href="<?= get_base_url(); ?>admin/site/"><i class="fa fa-circle-o"></i> <?= _t('Manage', 'tritan-cms'); ?></a></li>
-                                <li<?= (Config::get('screen_child') === "sites-user" ? ' class="active"' : ''); ?>><a href="<?= get_base_url(); ?>admin/site/users/"><i class="fa fa-circle-o"></i> <?= _t('Users', 'tritan-cms'); ?></a></li>
+                                <li<?= (Config::get('screen_child') === "sites" ? ' class="active"' : ''); ?>><a href="<?= func\get_base_url(); ?>admin/site/"><i class="fa fa-circle-o"></i> <?= func\_t('Manage', 'tritan-cms'); ?></a></li>
+                                <li<?= (Config::get('screen_child') === "sites-user" ? ' class="active"' : ''); ?>><a href="<?= func\get_base_url(); ?>admin/site/users/"><i class="fa fa-circle-o"></i> <?= func\_t('Users', 'tritan-cms'); ?></a></li>
                                 <?php $app->hook->{'do_action'}('sites_submenu'); ?>
                             </ul>
                         </li>
-                        <li<?= ae('manage_posts'); ?> class="treeview<?= (Config::get('screen_parent') === 'post_types' ? ' active' : ''); ?>">
-                            <a href="<?= get_base_url(); ?>admin/post-type/">
-                                <i class="fa fa-thumb-tack"></i> <span><?= _t('Post Types', 'tritan-cms'); ?></span>
+                        <li<?= func\ae('manage_posts'); ?> class="treeview<?= (Config::get('screen_parent') === 'post_types' ? ' active' : ''); ?>">
+                            <a href="<?= func\get_base_url(); ?>admin/post-type/">
+                                <i class="fa fa-thumb-tack"></i> <span><?= func\_t('Post Types', 'tritan-cms'); ?></span>
                             </a>
                         </li>
-                        <?php foreach (get_all_post_types() as $post_type) : ?>
-                            <li<?= ae('manage_posts'); ?> class="treeview<?= (Config::get('screen_parent') === _escape($post_type['posttype_slug']) ? ' active' : ''); ?>">
+                        <?php foreach (func\get_all_post_types() as $post_type) : ?>
+                            <li<?= func\ae('manage_posts'); ?> class="treeview<?= (Config::get('screen_parent') === func\_escape($post_type['posttype_slug']) ? ' active' : ''); ?>">
                                 <a href="#">
                                     <i class="fa fa-text-width"></i>
-                                    <span><?= _escape($post_type['posttype_title']); ?></span>
+                                    <span><?= func\_escape($post_type['posttype_title']); ?></span>
                                     <span class="pull-right-container">
                                         <i class="fa fa-angle-left pull-right"></i>
                                     </span>
                                 </a>
                                 <ul class="treeview-menu">
-                                    <li<?= (Config::get('screen_child') === _escape($post_type['posttype_slug']) ? ' class="active"' : ''); ?>><a href="<?= get_base_url(); ?>admin/<?= _escape($post_type['posttype_slug']); ?>/"><i class="fa fa-circle-o"></i> <?= _t('All', 'tritan-cms'); ?> <?= _escape($post_type['posttype_title']); ?></a></li>
-                                    <li<?= (Config::get('screen_child') === _escape($post_type['posttype_slug']) . "-create" ? ' class="active"' : ''); ?>><a href="<?= get_base_url(); ?>admin/<?= _escape($post_type['posttype_slug']); ?>/create/"><i class="fa fa-circle-o"></i> <?= _t('Add New', 'tritan-cms'); ?></a></li>
-                                    <?php $app->hook->{'do_action'}('posttype_submenu', _escape($post_type['posttype_slug'])); ?>
+                                    <li<?= (Config::get('screen_child') === func\_escape($post_type['posttype_slug']) ? ' class="active"' : ''); ?>><a href="<?= func\get_base_url(); ?>admin/<?= func\_escape($post_type['posttype_slug']); ?>/"><i class="fa fa-circle-o"></i> <?= func\_t('All', 'tritan-cms'); ?> <?= func\_escape($post_type['posttype_title']); ?></a></li>
+                                    <li<?= (Config::get('screen_child') === func\_escape($post_type['posttype_slug']) . "-create" ? ' class="active"' : ''); ?>><a href="<?= func\get_base_url(); ?>admin/<?= func\_escape($post_type['posttype_slug']); ?>/create/"><i class="fa fa-circle-o"></i> <?= func\_t('Add New', 'tritan-cms'); ?></a></li>
+                                    <?php $app->hook->{'do_action'}('posttype_submenu', func\_escape($post_type['posttype_slug'])); ?>
                                 </ul>
                             </li>
                         <?php endforeach; ?>
                         <?php $app->hook->{'do_action'}('posttype_menu'); ?>
-                        <li<?= ae('manage_media'); ?> class="treeview<?= (Config::get('screen_parent') === 'media' ? ' active' : ''); ?>">
-                            <a href="<?= get_base_url(); ?>admin/media/">
-                                <i class="fa fa-camera"></i> <span><?= _t('Media Library', 'tritan-cms'); ?></span>
+                        <li<?= func\ae('manage_media'); ?> class="treeview<?= (Config::get('screen_parent') === 'media' ? ' active' : ''); ?>">
+                            <a href="<?= func\get_base_url(); ?>admin/media/">
+                                <i class="fa fa-camera"></i> <span><?= func\_t('Media Library', 'tritan-cms'); ?></span>
                             </a>
                         </li>
-                        <li<?= ae('manage_plugins'); ?> class="treeview<?= (Config::get('screen_parent') === 'plugins' ? ' active' : ''); ?>">
+                        <li<?= func\ae('manage_plugins'); ?> class="treeview<?= (Config::get('screen_parent') === 'plugins' ? ' active' : ''); ?>">
                             <a href="#">
                                 <i class="fa fa-plug"></i>
-                                <span><?= _t('Plugins', 'tritan-cms'); ?></span>
+                                <span><?= func\_t('Plugins', 'tritan-cms'); ?></span>
                                 <span class="pull-right-container">
                                     <i class="fa fa-angle-left pull-right"></i>
                                 </span>
                             </a>
                             <ul class="treeview-menu">
-                                <li<?= (Config::get('screen_child') === 'installed-plugins' ? ' class="active"' : ''); ?>><a href="<?= get_base_url(); ?>admin/plugin/"><i class="fa fa-circle-o"></i> <?= _t('Installed Plugins', 'tritan-cms'); ?></a></li>
-                                <li<?= (Config::get('screen_child') === 'plugin-new' ? ' class="active"' : ''); ?><?=ae('install_plugins');?>><a href="<?= get_base_url(); ?>admin/plugin/install/"><i class="fa fa-circle-o"></i> <?= _t('Add New', 'tritan-cms'); ?></a></li>
+                                <li<?= (Config::get('screen_child') === 'installed-plugins' ? ' class="active"' : ''); ?>><a href="<?= func\get_base_url(); ?>admin/plugin/"><i class="fa fa-circle-o"></i> <?= func\_t('Installed Plugins', 'tritan-cms'); ?></a></li>
+                                <li<?= (Config::get('screen_child') === 'plugin-new' ? ' class="active"' : ''); ?><?= func\ae('install_plugins'); ?>><a href="<?= func\get_base_url(); ?>admin/plugin/install/"><i class="fa fa-circle-o"></i> <?= func\_t('Add New', 'tritan-cms'); ?></a></li>
                                 <?php $app->hook->{'do_action'}('plugins_submenu'); ?>
                             </ul>
                         </li>
                         <li class="treeview<?= (Config::get('screen_parent') === 'users' ? ' active' : ''); ?>">
                             <a href="#">
                                 <i class="fa fa-user"></i>
-                                <span><?= _t('Users', 'tritan-cms'); ?></span>
+                                <span><?= func\_t('Users', 'tritan-cms'); ?></span>
                                 <span class="pull-right-container">
                                     <i class="fa fa-angle-left pull-right"></i>
                                 </span>
                             </a>
                             <ul class="treeview-menu">
                                 <?php $app->hook->{'do_action'}('admin_submenu_users'); ?>
-                                <li<?= (Config::get('screen_child') === 'all-users' ? ' class="active"' : ''); ?><?= ae('manage_users'); ?>><a href="<?= get_base_url(); ?>admin/user/"><i class="fa fa-circle-o"></i> <?= _t('All Users', 'tritan-cms'); ?></a></li>
-                                <li<?= (Config::get('screen_child') === 'create-user' ? ' class="active"' : ''); ?><?= ae('create_users'); ?>><a href="<?= get_base_url(); ?>admin/user/create/"><i class="fa fa-circle-o"></i> <?= _t('Add New', 'tritan-cms'); ?></a></li>
-                                <li<?= (Config::get('screen_child') === 'profile' ? ' class="active"' : ''); ?>><a href="<?= get_base_url(); ?>admin/user/profile/"><i class="fa fa-circle-o"></i> <?= _t('Your Profile', 'tritan-cms'); ?></a></li>
+                                <li<?= (Config::get('screen_child') === 'all-users' ? ' class="active"' : ''); ?><?= func\ae('manage_users'); ?>><a href="<?= func\get_base_url(); ?>admin/user/"><i class="fa fa-circle-o"></i> <?= func\_t('All Users', 'tritan-cms'); ?></a></li>
+                                <li<?= (Config::get('screen_child') === 'create-user' ? ' class="active"' : ''); ?><?= func\ae('create_users'); ?>><a href="<?= func\get_base_url(); ?>admin/user/create/"><i class="fa fa-circle-o"></i> <?= func\_t('Add New', 'tritan-cms'); ?></a></li>
+                                <li<?= (Config::get('screen_child') === 'profile' ? ' class="active"' : ''); ?>><a href="<?= func\get_base_url(); ?>admin/user/profile/"><i class="fa fa-circle-o"></i> <?= func\_t('Your Profile', 'tritan-cms'); ?></a></li>
                                 <?php $app->hook->{'do_action'}('users_submenu'); ?>
                             </ul>
                         </li>
-                        <li<?= ae('manage_roles'); ?> class="treeview<?= (Config::get('screen_parent') === 'roles') ? ' active' : ''; ?>">
+                        <li<?= func\ae('manage_roles'); ?> class="treeview<?= (Config::get('screen_parent') === 'roles') ? ' active' : ''; ?>">
                             <a href="#">
                                 <i class="fa fa-key"></i>
-                                <span><?= _t('User Roles', 'tritan-cms'); ?></span>
+                                <span><?= func\_t('User Roles', 'tritan-cms'); ?></span>
                                 <span class="pull-right-container">
                                     <i class="fa fa-angle-left pull-right"></i>
                                 </span>
                             </a>
                             <ul class="treeview-menu">
-                                <li<?= (Config::get('screen_child') === 'role' ? ' class="active"' : ''); ?><?= ae('manage_roles'); ?>><a href="<?= get_base_url(); ?>admin/role/"><i class="fa fa-circle-o"></i> <?= _t('Roles', 'tritan-cms'); ?></a></li>
-                                <li<?= (Config::get('screen_child') === 'crole' ? ' class="active"' : ''); ?><?= ae('manage_roles'); ?>><a href="<?= get_base_url(); ?>admin/role/create/"><i class="fa fa-circle-o"></i> <?= _t('Create Role', 'tritan-cms'); ?></a></li>
-                                <li<?= (Config::get('screen_child') === 'perm' ? ' class="active"' : ''); ?><?= ae('manage_roles'); ?>><a href="<?= get_base_url(); ?>admin/permission/"><i class="fa fa-circle-o"></i> <?= _t('Permissions', 'tritan-cms'); ?></a></li>
-                                <li<?= (Config::get('screen_child') === 'cperm' ? ' class="active"' : ''); ?><?= ae('manage_roles'); ?>><a href="<?= get_base_url(); ?>admin/permission/create/"><i class="fa fa-circle-o"></i> <?= _t('Create Permission', 'tritan-cms'); ?></a></li>
+                                <li<?= (Config::get('screen_child') === 'role' ? ' class="active"' : ''); ?><?= func\ae('manage_roles'); ?>><a href="<?= func\get_base_url(); ?>admin/role/"><i class="fa fa-circle-o"></i> <?= func\_t('Roles', 'tritan-cms'); ?></a></li>
+                                <li<?= (Config::get('screen_child') === 'crole' ? ' class="active"' : ''); ?><?= func\ae('manage_roles'); ?>><a href="<?= func\get_base_url(); ?>admin/role/create/"><i class="fa fa-circle-o"></i> <?= func\_t('Create Role', 'tritan-cms'); ?></a></li>
+                                <li<?= (Config::get('screen_child') === 'perm' ? ' class="active"' : ''); ?><?= func\ae('manage_roles'); ?>><a href="<?= func\get_base_url(); ?>admin/permission/"><i class="fa fa-circle-o"></i> <?= func\_t('Permissions', 'tritan-cms'); ?></a></li>
+                                <li<?= (Config::get('screen_child') === 'cperm' ? ' class="active"' : ''); ?><?= func\ae('manage_roles'); ?>><a href="<?= func\get_base_url(); ?>admin/permission/create/"><i class="fa fa-circle-o"></i> <?= func\_t('Create Permission', 'tritan-cms'); ?></a></li>
                                 <?php $app->hook->{'do_action'}('role_submenu'); ?>
                             </ul>
                         </li>
-                        <li<?= ae('manage_options'); ?> class="treeview<?= (Config::get('screen_parent') === 'options') ? ' active' : ''; ?>">
+                        <li<?= func\ae('manage_options'); ?> class="treeview<?= (Config::get('screen_parent') === 'options') ? ' active' : ''; ?>">
                             <a href="#">
                                 <i class="fa fa-cogs"></i>
-                                <span><?= _t('Options', 'tritan-cms'); ?></span>
+                                <span><?= func\_t('Options', 'tritan-cms'); ?></span>
                                 <span class="pull-right-container">
                                     <i class="fa fa-angle-left pull-right"></i>
                                 </span>
                             </a>
                             <ul class="treeview-menu">
-                                <li<?= (Config::get('screen_child') === 'options-general' ? ' class="active"' : ''); ?>><a href="<?= get_base_url(); ?>admin/options-general/"><i class="fa fa-circle-o"></i> <?= _t('General', 'tritan-cms'); ?></a></li>
-                                <li<?= (Config::get('screen_child') === 'options-reading' ? ' class="active"' : ''); ?>><a href="<?= get_base_url(); ?>admin/options-reading/"><i class="fa fa-circle-o"></i> <?= _t('Reading', 'tritan-cms'); ?></a></li>
+                                <li<?= (Config::get('screen_child') === 'options-general' ? ' class="active"' : ''); ?>><a href="<?= func\get_base_url(); ?>admin/options-general/"><i class="fa fa-circle-o"></i> <?= func\_t('General', 'tritan-cms'); ?></a></li>
+                                <li<?= (Config::get('screen_child') === 'options-reading' ? ' class="active"' : ''); ?>><a href="<?= func\get_base_url(); ?>admin/options-reading/"><i class="fa fa-circle-o"></i> <?= func\_t('Reading', 'tritan-cms'); ?></a></li>
                                 <?php $app->hook->{'do_action'}('options_submenu'); ?>
                             </ul>
                         </li>
                         <li>
                             <a href="//gitspace.us/projects/tritan-cms/issues">
-                                <i class="fa fa-ticket"></i> <span><?= _t('Submit Issue', 'tritan-cms'); ?></span>
+                                <i class="fa fa-ticket"></i> <span><?= func\_t('Submit Issue', 'tritan-cms'); ?></span>
                             </a>
                         </li>
                     </ul>
                 </section>
                 <!-- /.sidebar -->
             </aside>
-            
+
             <?php $this->section('backend'); ?>
             <?php $this->stop(); ?>
 
             <footer class="main-footer">
                 <div class="pull-right hidden-xs">
-                    <b><?= _t('Release', 'tritan-cms'); ?></b> <?= ttcms_release(); ?>
+                    <b><?= func\_t('Release', 'tritan-cms'); ?></b> <?= func\ttcms_release(); ?>
                 </div>
-                <?=ttcms_admin_copyright_footer();?>
+                <?= func\ttcms_admin_copyright_footer(); ?>
             </footer>
         </div>
         <!-- ./wrapper -->
 
         <script>
-            var basePath = '<?= get_base_url(); ?>';
+            var basePath = '<?= func\get_base_url(); ?>';
         </script>
         <!-- Bootstrap 3.3.6 -->
         <script src="static/assets/js/bootstrap/bootstrap.min.js"></script>
@@ -302,7 +304,7 @@ use TriTan\Config;
             });
         </script>
 
-        <?php admin_footer(); ?>
+        <?php func\admin_footer(); ?>
     </body>
 </html>
-<?php print_gzipped_page(); ?>
+<?php func\print_gzipped_page(); ?>

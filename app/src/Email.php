@@ -3,6 +3,7 @@
 namespace TriTan;
 
 use Cascade\Cascade;
+use TriTan\Functions as func;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
@@ -24,7 +25,7 @@ class Email
 
     public function __construct()
     {
-        $this->mailer = _ttcms_phpmailer();
+        $this->mailer = func\_ttcms_phpmailer();
         $this->app = \Liten\Liten::getInstance();
     }
 
@@ -194,7 +195,7 @@ class Email
         }
 
         if (!isset($from_email)) {
-            $from_email = 'tritan@' . get_domain_name();
+            $from_email = 'tritan@' . func\get_domain_name();
         }
 
         /**
@@ -390,23 +391,23 @@ class Email
      */
     public function sendNewUserEmail($user_id, $pass)
     {
-        $user = get_userdata((int) $user_id);
+        $user = func\get_userdata((int) $user_id);
 
-        $message = _t('Hi there,', 'tritan-cms') . "<br />";
-        $message .= sprintf(_t("<p>Welcome to %s! Here's how to log in: ", 'tritan-cms'), $this->app->hook->{'get_option'}('sitename'));
-        $message .= get_base_url() . "</p>";
-        $message .= sprintf(_t('Username: %s', 'tritan-cms'), _escape($user->user_login)) . "<br />";
-        $message .= sprintf(_t('Password: %s', 'tritan-cms'), $pass) . "<br />";
-        $message .= sprintf(_t('<p>If you have any problems, please contact us at %s.', 'tritan-cms'), $this->app->hook->{'get_option'}('admin_email')) . "</p>";
+        $message = func\_t('Hi there,', 'tritan-cms') . "<br />";
+        $message .= sprintf(func\_t("<p>Welcome to %s! Here's how to log in: ", 'tritan-cms'), $this->app->hook->{'get_option'}('sitename'));
+        $message .= func\get_base_url() . "</p>";
+        $message .= sprintf(func\_t('Username: %s', 'tritan-cms'), func\_escape($user->user_login)) . "<br />";
+        $message .= sprintf(func\_t('Password: %s', 'tritan-cms'), $pass) . "<br />";
+        $message .= sprintf(func\_t('<p>If you have any problems, please contact us at %s.', 'tritan-cms'), $this->app->hook->{'get_option'}('admin_email')) . "</p>";
 
-        $message = process_email_html($message, _t("New Account", 'tritan-cms'));
-        $headers[] = sprintf("From: %s <auto-reply@%s>", $this->app->hook->{'get_option'}('sitename'), get_domain_name());
+        $message = func\process_email_html($message, func\_t("New Account", 'tritan-cms'));
+        $headers[] = sprintf("From: %s <auto-reply@%s>", $this->app->hook->{'get_option'}('sitename'), func\get_domain_name());
         if (!function_exists('ttcms_smtp')) {
             $headers[] = 'Content-Type: text/html; charset="UTF-8"';
             $headers[] = sprintf("X-Mailer: TriTan CMS %s", CURRENT_RELEASE);
         }
         try {
-            $this->ttcmsMail(_escape($user->user_email), _t('New Account'), $message, $headers);
+            $this->ttcmsMail(func\_escape($user->user_email), func\_t('New Account'), $message, $headers);
         } catch (\PHPMailer\PHPMailer\Exception $e) {
             _ttcms_flash()->error($e->getMessage());
         }

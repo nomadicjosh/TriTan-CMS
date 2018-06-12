@@ -1,5 +1,7 @@
 <?php
 
+namespace TriTan\Functions;
+
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use TriTan\Config;
@@ -23,6 +25,8 @@ use Cascade\Cascade;
 /**
  * Auto increments the table's primary key.
  * 
+ * @file app/functions/db-function.php
+ * 
  * @since 0.9
  * @param string $table Table in the document.
  * @param int $pk Primary key field name.
@@ -45,6 +49,8 @@ function auto_increment($table, $pk)
  * Used by ttcms_check_password in order to rehash
  * an old password that was hashed using MD5 function.
  *
+ * @file app/functions/db-function.php
+ * 
  * @since 0.9
  * @param string $password
  *            User password.
@@ -72,6 +78,8 @@ function ttcms_set_password($password, $user_id)
 /**
  * Retrieve post type by a given field from the post type table.
  *
+ * @file app/functions/db-function.php
+ * 
  * @since 0.9
  * @param string $field The field to retrieve the post type with.
  * @param string $value A value for $field (_id, post_id, posttype_slug).
@@ -88,6 +96,8 @@ function get_posttype_by($field, $value)
 /**
  * Retrieve post by a given field from the post table.
  *
+ * @file app/functions/db-function.php
+ * 
  * @since 0.9
  * @param string $field The field to retrieve the post with.
  * @param string|int|string $value A value for $field (_id, post_id, post_slug).
@@ -104,6 +114,8 @@ function get_post_by($field, $value)
 /**
  * A function which retrieves a TriTan CMS post id.
  *
+ * @file app/functions/db-function.php
+ * 
  * @since 0.9
  * @param string $post_slug The unique slug of a post.
  * @return integer
@@ -119,9 +131,13 @@ function get_post_id($post_slug = null)
 
 /**
  * Creates unique slug based on title
- * @param type $title
- * @param type $table
- * @return type
+ * 
+ * @file app/functions/db-function.php
+ * 
+ * @since 0.9
+ * @param string $title Text to be slugified.
+ * @param string $table Table the text is saved to (i.e. post, posttype)
+ * @return string
  */
 function ttcms_slugify($title, $table = null)
 {
@@ -228,6 +244,8 @@ function ttcms_slugify($title, $table = null)
  * Function used to dynamically generate post screens
  * based on post type.
  * 
+ * @file app/functions/db-function.php
+ * 
  * @since 0.9
  * @access private
  * @return array
@@ -241,10 +259,12 @@ function get_all_post_types()
 /**
  * Retrieves all posts
  * 
+ * @file app/functions/db-function.php
+ * 
  * @since 0.9
  * @access private
- * @param string Post slug.
- * @param int Post id.
+ * @param string $slug  Post slug.
+ * @param int $post_id  Post id.
  * @return array
  */
 function get_post_dropdown_list($slug = null, $post_id = 0)
@@ -261,6 +281,8 @@ function get_post_dropdown_list($slug = null, $post_id = 0)
 /**
  * Returns the number of posts within a given post type.
  * 
+ * @file app/functions/db-function.php
+ * 
  * @since 0.9
  * @param int $slug Post type slug.
  * @return int
@@ -275,6 +297,8 @@ function number_posts_per_type($slug)
 
 /**
  * Retrieve all published posts or all published posts by post type.
+ * 
+ * @file app/functions/db-function.php
  * 
  * @since 0.9
  * @param string $post_type Post type.
@@ -313,6 +337,8 @@ function get_all_posts($post_type = null, $limit = 0, $offset = null)
 /**
  * Returns a list of internal links for TinyMCE.
  * 
+ * @file app/functions/db-function.php
+ * 
  * @since 0.9
  * @return array
  */
@@ -327,6 +353,8 @@ function tinymce_link_list()
 /**
  * Update the metadata cache for the specified arrays.
  *
+ * @file app/functions/db-function.php
+ * 
  * @since 0.9
  * @param string    $meta_type  Type of array metadata is for (e.g., post or user)
  * @param int|array $array_ids Array or comma delimited list of array IDs to update cache for
@@ -403,6 +431,8 @@ function update_meta_cache($meta_type, $array_ids)
 /**
  * Generates the encryption table if it does not exist.
  * 
+ * @file app/functions/db-function.php
+ * 
  * @since 0.9
  * @access private
  * @return bool
@@ -433,6 +463,8 @@ function generate_php_encryption()
 /**
  * Checks if a key exists in the option table.
  * 
+ * @file app/functions/db-function.php
+ * 
  * @since 0.9.4
  * @param string $option_key Key to check against.
  * @return bool
@@ -452,6 +484,8 @@ function is_option_exist($option_key)
 
 /**
  * Update post's relative url if posttype slug has been updated.
+ * 
+ * @file app/functions/db-function.php
  * 
  * @since 0.9.6
  * @access private

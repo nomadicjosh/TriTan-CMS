@@ -1,4 +1,7 @@
 <?php
+
+namespace TriTan\Functions;
+
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use Spatie\ImageOptimizer\OptimizerChainFactory;
@@ -17,11 +20,13 @@ use Spatie\ImageOptimizer\OptimizerChainFactory;
  * Sets up object cache global scope and assigns it based on
  * the type of caching system used.
  *
+ * @file app/functions/global-function.php
+ * 
  * @since 0.9
  */
 function _ttcms_cache_init()
 {
-    $driver = app()->hook->apply_filter('ttcms_cache_driver', 'json');
+    $driver = app()->hook->{'apply_filter'}('ttcms_cache_driver', 'json');
     $cache = new \TriTan\Cache\Object_Cache($driver);
     return $cache;
 }
@@ -29,6 +34,8 @@ function _ttcms_cache_init()
 /**
  * Sets up PHPMailer global scope.
  *
+ * @file app/functions/global-function.php
+ * 
  * @since 0.9
  * @param bool $bool
  *            Set whether to use exceptions for error handling. Default: true.
@@ -42,6 +49,8 @@ function _ttcms_phpmailer($bool = true)
 /**
  * Sets up TriTan CMS Email global scope.
  *
+ * @file app/functions/global-function.php
+ * 
  * @since 0.9
  */
 function _ttcms_email()
@@ -53,6 +62,8 @@ function _ttcms_email()
 /**
  * Sets up TriTan CMS Logger global scope.
  *
+ * @file app/functions/global-function.php
+ * 
  * @since 0.9
  */
 function _ttcms_logger()
@@ -64,6 +75,8 @@ function _ttcms_logger()
 /**
  * Sets up TriTan CMS Flash Messages global scope.
  *
+ * @file app/functions/global-function.php
+ * 
  * @since 0.9
  */
 function _ttcms_flash()
@@ -75,18 +88,22 @@ function _ttcms_flash()
 /**
  * Sets up random number and string generator global scope.
  * 
+ * @file app/functions/global-function.php
+ * 
  * @since 0.9
  * @return type
  */
 function _ttcms_random_lib()
 {
-    $factory = new RandomLib\Factory;
-    $generator = $factory->getGenerator(new SecurityLib\Strength(SecurityLib\Strength::MEDIUM));
+    $factory = new \RandomLib\Factory;
+    $generator = $factory->getGenerator(new \SecurityLib\Strength(\SecurityLib\Strength::MEDIUM));
     return $generator;
 }
 
 /**
  * Image optimizer.
+ * 
+ * @file app/functions/global-function.php
  * 
  * @since 0.9
  * @param string $pathToImage       Path to original image.

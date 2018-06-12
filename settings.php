@@ -54,9 +54,6 @@ Config::set('theme_dir', Config::get('site_path') . 'themes' . DS);
  * or preliminary functions for your application.
  */
 require( APP_PATH . 'functions.php' );
-require( APP_PATH . 'functions' . DS . 'dependency.php' );
-require( APP_PATH . 'functions' . DS . 'hook-function.php' );
-require( APP_PATH . 'application.php' );
 
 /**
  * Fires before the site's theme is loaded.
@@ -85,7 +82,7 @@ $app->inst->singleton('fenom', function () use($app) {
     return $fenom;
 });
 
-if (ttcms_file_exists(Config::get('theme_path') . 'views' . DS, false)) {
+if (\TriTan\Functions\ttcms_file_exists(Config::get('theme_path') . 'views' . DS, false)) {
     $templates = ['main' => APP_PATH . 'views' . DS, 'theme' => Config::get('theme_path') . 'views' . DS, 'plugin' => TTCMS_PLUGIN_DIR];
 } else {
     $templates = ['main' => APP_PATH . 'views' . DS, 'plugin' => TTCMS_PLUGIN_DIR];
@@ -98,7 +95,7 @@ $app->inst->singleton('foil', function () use($app, $templates) {
     $engine = Foil\engine([
         'folders' => $templates
     ]);
-    $engine->useData(['app' => $app, 'current_user_id' => get_current_user_id()]);
+    $engine->useData(['app' => $app, 'current_user_id' => \TriTan\Functions\get_current_user_id()]);
     return $engine;
 });
 

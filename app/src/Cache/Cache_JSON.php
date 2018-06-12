@@ -8,6 +8,7 @@ use TriTan\Config;
 use TriTan\Exception\Exception;
 use TriTan\Exception\IOException;
 use Cascade\Cascade;
+use TriTan\Functions as func;
 
 /**
  * TriTan CMS JSON Cache Class.
@@ -152,9 +153,9 @@ class Cache_JSON extends \TriTan\Cache\Abstract_Cache
          * If the cache directory does not exist, the create it first
          * before trying to call it for use.
          */
-        if (!is_dir($cacheDir) || !ttcms_file_exists($cacheDir, false)) {
+        if (!is_dir($cacheDir) || !func\ttcms_file_exists($cacheDir, false)) {
             try {
-                _mkdir($cacheDir);
+                func\_mkdir($cacheDir);
             } catch (IOException $e) {
                 Cascade::getLogger('error')->error(sprintf('IOSTATE[%s]: Forbidden: %s', $e->getCode(), $e->getMessage()));
             } catch (Exception $e) {
@@ -165,7 +166,7 @@ class Cache_JSON extends \TriTan\Cache\Abstract_Cache
         /**
          * If the directory isn't writable, throw an exception.
          */
-        if (!ttcms_is_writable($cacheDir)) {
+        if (!func\ttcms_is_writable($cacheDir)) {
             throw new IOException(_t('Could not create the file cache directory.'));
         }
 
@@ -240,7 +241,7 @@ class Cache_JSON extends \TriTan\Cache\Abstract_Cache
 
         $filename = $this->keyToPath($key, $namespace);
 
-        $get_data = _file_get_contents($filename, LOCK_EX);
+        $get_data = func\_file_get_contents($filename, LOCK_EX);
 
         $data = json_decode($get_data, true);
 
@@ -261,16 +262,16 @@ class Cache_JSON extends \TriTan\Cache\Abstract_Cache
 
             if (is_readable($files[0])) {
                 $result = $files[0];
-                $time = $data[0] - file_mod_time($result);
+                $time = $data[0] - func\file_mod_time($result);
 
                 $now = time();
-                if ((file_mod_time($result) + $time < $now)) {
+                if ((func\file_mod_time($result) + $time < $now)) {
                     $this->cacheMisses();
                     unlink($result);
                     return false;
                 }
 
-                if ((file_mod_time($result) + $time > $now)) {
+                if ((func\file_mod_time($result) + $time > $now)) {
                     $this->cacheHits();
                     settype($result, 'string');
                     $this->_cache[$namespace][$key] = $data[1];
@@ -453,10 +454,10 @@ class Cache_JSON extends \TriTan\Cache\Abstract_Cache
         // truncate the file
         ftruncate($h, 0);
         // Serializing along with the TTL
-        $data = json_encode(array(
+        $data = json_encode([
             time() + (int) $ttl,
             $data
-                ), JSON_PRETTY_PRINT);
+                ], JSON_PRETTY_PRINT);
         if (fwrite($h, $data) === false) {
             throw new IOException(_t('Could not write to cache.'));
         }
@@ -479,9 +480,9 @@ class Cache_JSON extends \TriTan\Cache\Abstract_Cache
         }
 
         echo "<p>";
-        echo "<strong>" . _t('Cache Hits:') . "</strong> " . _file_get_contents($this->_dir . 'cache_hits.txt') . "<br />";
-        echo "<strong>" . _t('Cache Misses:') . "</strong> " . _file_get_contents($this->_dir . 'cache_misses.txt') . "<br />";
-        echo "<strong>" . _t('Uptime:') . "</strong> " . timeAgo(file_mod_time($this->_dir)) . "<br />";
+        echo "<strong>" . func\_t('Cache Hits:', 'tritan-cms') . "</strong> " . func\_file_get_contents($this->_dir . 'cache_hits.txt') . "<br />";
+        echo "<strong>" . func\_t('Cache Misses:', 'tritan-cms') . "</strong> " . func\_file_get_contents($this->_dir . 'cache_misses.txt') . "<br />";
+        echo "<strong>" . func\_t('Uptime:', 'tritan-cms') . "</strong> " . time_ago(func\file_mod_time($this->_dir)) . "<br />";
         echo "</p>";
     }
 
@@ -718,7 +719,7 @@ class Cache_JSON extends \TriTan\Cache\Abstract_Cache
         $stale = glob($this->_dir . $namespace . DS . '*');
         if (is_array($stale)) {
             foreach ($stale as $filename) {
-                if (ttcms_file_exists($filename, false)) {
+                if (func\ttcms_file_exists($filename, false)) {
                     if (time() - filemtime($filename) > (int) $ttl) {
                         unlink($filename);
                     }
@@ -740,9 +741,9 @@ class Cache_JSON extends \TriTan\Cache\Abstract_Cache
     private function keyToPath($key, $namespace)
     {
         $dir = $this->_dir . urlencode($namespace);
-        if (!ttcms_file_exists($dir, false)) {
+        if (!func\ttcms_file_exists($dir, false)) {
             try {
-                _mkdir($dir);
+                func\_mkdir($dir);
             } catch (IOException $e) {
                 Cascade::getLogger('error')->error(sprintf('IOSTATE[%s]: Forbidden: %s', $e->getCode(), $e->getMessage()));
                 return;

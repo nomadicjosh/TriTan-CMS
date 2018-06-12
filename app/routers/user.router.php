@@ -2,25 +2,25 @@
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
-use TriTan\Validators;
 use TriTan\Config;
 use TriTan\Exception\Exception;
 use TriTan\Exception\NotFoundException;
 use Cascade\Cascade;
+use TriTan\Functions as func;
 
-$current_user = get_userdata(get_current_user_id());
+$current_user = func\get_userdata(func\get_current_user_id());
 
 /**
  * Before router checks to make sure the logged in user
  * us allowed to access admin.
  */
 $app->before('GET|POST', '/admin(.*)', function() {
-    if (!is_user_logged_in()) {
-        _ttcms_flash()->{'error'}(_t('401 - Error: Unauthorized.', 'tritan-cms'), get_base_url() . 'login' . '/');
+    if (!func\is_user_logged_in()) {
+        func\_ttcms_flash()->{'error'}(func\_t('401 - Error: Unauthorized.', 'tritan-cms'), func\get_base_url() . 'login' . '/');
         exit();
     }
-    if (!current_user_can('access_admin')) {
-        _ttcms_flash()->{'error'}(_t('403 - Error: Forbidden.', 'tritan-cms'), get_base_url());
+    if (!func\current_user_can('access_admin')) {
+        func\_ttcms_flash()->{'error'}(func\_t('403 - Error: Forbidden.', 'tritan-cms'), func\get_base_url());
         exit();
     }
 });
@@ -31,8 +31,8 @@ $app->group('/admin', function() use ($app, $current_user) {
      * Before route check.
      */
     $app->before('GET|POST', '/user/profile/', function() {
-        if (!is_user_logged_in()) {
-            _ttcms_flash()->{'error'}(_t('You must be logged in to update your profile.', 'tritan-cms'), get_base_url() . 'login' . '/');
+        if (!func\is_user_logged_in()) {
+            func\_ttcms_flash()->{'error'}(func\_t('You must be logged in to update your profile.', 'tritan-cms'), func\get_base_url() . 'login' . '/');
             exit();
         }
     });
@@ -40,25 +40,17 @@ $app->group('/admin', function() use ($app, $current_user) {
     $app->match('GET|POST', '/user/profile/', function() use($app) {
         if ($app->req->isPost()) {
             try {
-                $post = $app->req->post + compact('user_id');
-                $user_id = get_current_user_id();
-                ttcms_update_user($post);
-
-                unset($post['user_pass']);
-                unset($post['user_id']);
-                foreach ($post as $key => $value) {
-                    update_user_option((int) $user_id, $key, if_null($value));
-                }
-
-                clean_user_cache($user_id);
-
-                _ttcms_flash()->{'success'}(_ttcms_flash()->notice(200), get_base_url() . 'admin/user/profile/');
+                
+                func\ttcms_update_user($app->req->post);
+                func\clean_user_cache($app->req->post['user_id']);
+                func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), func\get_base_url() . 'admin/user/profile/');
+                
             } catch (Exception $ex) {
-                _ttcms_flash()->{'error'}($ex->getMessage());
+                func\_ttcms_flash()->{'error'}($ex->getMessage());
             }
         }
         $app->foil->render('main::admin/user/profile', [
-            'title' => _t('User Profile', 'tritan-cms'),
+            'title' => func\_t('User Profile', 'tritan-cms'),
                 ]
         );
     });
@@ -67,8 +59,8 @@ $app->group('/admin', function() use ($app, $current_user) {
      * Before route check.
      */
     $app->before('GET|POST', '/user/', function () {
-        if (!current_user_can('manage_users')) {
-            _ttcms_flash()->{'error'}(_t("You don't have permission to manage users.", 'tritan-cms'), get_base_url() . 'admin' . '/');
+        if (!func\current_user_can('manage_users')) {
+            func\_ttcms_flash()->{'error'}(func\_t("You don't have permission to manage users.", 'tritan-cms'), func\get_base_url() . 'admin' . '/');
             exit();
         }
     });
@@ -76,8 +68,8 @@ $app->group('/admin', function() use ($app, $current_user) {
     $app->get('/user/', function () use($app) {
 
         $app->foil->render('main::admin/user/index', [
-            'title' => _t('Manage Users', 'tritan-cms'),
-            'users' => get_multisite_users()
+            'title' => func\_t('Manage Users', 'tritan-cms'),
+            'users' => func\get_multisite_users()
                 ]
         );
     });
@@ -86,8 +78,8 @@ $app->group('/admin', function() use ($app, $current_user) {
      * Before route check.
      */
     $app->before('GET|POST', '/user/create/', function() {
-        if (!current_user_can('create_users')) {
-            _ttcms_flash()->{'error'}(_t("You don't have permission to create users.", 'tritan-cms'), get_base_url() . 'admin' . '/');
+        if (!func\current_user_can('create_users')) {
+            func\_ttcms_flash()->{'error'}(func\_t("You don't have permission to create users.", 'tritan-cms'), func\get_base_url() . 'admin' . '/');
             exit();
         }
     });
@@ -95,13 +87,13 @@ $app->group('/admin', function() use ($app, $current_user) {
     $app->match('GET|POST', '/user/create/', function () use($app, $current_user) {
 
         if ($app->req->isPost()) {
-            $user = get_user_by('email', $app->req->post['user_email']);
+            $user = func\get_user_by('email', $app->req->post['user_email']);
 
-            $password = ttcms_generate_password();
+            $password = func\ttcms_generate_password();
 
-            if ((int) _escape($user->user_id) > 0) {
+            if ((int) func\_escape($user->user_id) > 0) {
                 $update = true;
-                $user_login = _escape($user->user_login);
+                $user_login = func\_escape($user->user_login);
                 $extra = ['user_pass' => (string) $password, 'user_login' => (string) $user_login];
             } else {
                 $update = false;
@@ -110,41 +102,41 @@ $app->group('/admin', function() use ($app, $current_user) {
             }
 
             if (empty($user_login)) {
-                _ttcms_flash()->{'error'}(_t('Username cannot be null.', 'tritan-cms'), $app->req->server['HTTP_REFERER']);
+                func\_ttcms_flash()->{'error'}(func\_t('Username cannot be null.', 'tritan-cms'), $app->req->server['HTTP_REFERER']);
                 exit();
             }
 
-            if (!validate_email($app->req->post['user_email'])) {
-                ttcms_redirect($app->req->server['HTTP_REFERER']);
+            if (!func\validate_email($app->req->post['user_email'])) {
+                func\ttcms_redirect($app->req->server['HTTP_REFERER']);
                 exit();
             }
 
-            if (!validate_username($user_login)) {
-                ttcms_redirect($app->req->server['HTTP_REFERER']);
+            if (!func\validate_username($user_login)) {
+                func\ttcms_redirect($app->req->server['HTTP_REFERER']);
                 exit();
             }
 
             try {
                 $array_merge = array_merge($extra, $app->req->post);
-                $object = array_to_object($array_merge);
+                $object = func\array_to_object($array_merge);
                 if ($update) {
-                    $user_id = ttcms_update_user($object);
+                    $user_id = func\ttcms_update_user($object);
                 } else {
-                    $user_id = ttcms_insert_user($object);
+                    $user_id = func\ttcms_insert_user($object);
                 }
 
                 if ($app->req->post['sendemail'] == '1') {
-                    _ttcms_email()->sendNewUserEmail((int) $user_id, $password);
+                    func\_ttcms_email()->sendNewUserEmail((int) $user_id, $password);
                 }
-                ttcms_logger_activity_log_write('New Record', 'User', get_name((int) $user_id), (string) _escape($current_user->user_login));
-                _ttcms_flash()->{'success'}(_ttcms_flash()->notice(200), get_base_url() . 'admin/user' . '/' . (int) $user_id . '/');
+                func\ttcms_logger_activity_log_write('New Record', 'User', func\get_name((int) $user_id), (string) func\_escape($current_user->user_login));
+                func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), func\get_base_url() . 'admin/user' . '/' . (int) $user_id . '/');
             } catch (Exception $ex) {
-                _ttcms_flash()->{'error'}($ex->getMessage());
+                func\_ttcms_flash()->{'error'}($ex->getMessage());
             }
         }
 
         $app->foil->render('main::admin/user/create', [
-            'title' => _t('Create New User', 'tritan-cms')
+            'title' => func\_t('Create New User', 'tritan-cms')
                 ]
         );
     });
@@ -153,8 +145,8 @@ $app->group('/admin', function() use ($app, $current_user) {
      * Before route check.
      */
     $app->before('GET|POST', '/user/(\d+)/', function() {
-        if (!current_user_can('update_users')) {
-            _ttcms_flash()->{'error'}(_t("You don't have permission to update users.", 'tritan-cms'), get_base_url() . 'admin' . '/');
+        if (!func\current_user_can('update_users')) {
+            func\_ttcms_flash()->{'error'}(func\_t("You don't have permission to update users.", 'tritan-cms'), func\get_base_url() . 'admin' . '/');
             exit();
         }
     });
@@ -173,15 +165,15 @@ $app->group('/admin', function() use ($app, $current_user) {
 
             try {
                 $user = array_merge(['user_id' => $id], $app->req->post);
-                ttcms_update_user($user);
-                ttcms_logger_activity_log_write('Update Record', 'User', get_name((int) $id), (string) _escape($current_user->user_login));
-                _ttcms_flash()->{'success'}(_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
+                func\ttcms_update_user($user);
+                func\ttcms_logger_activity_log_write('Update Record', 'User', func\get_name((int) $id), (string) func\_escape($current_user->user_login));
+                func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
             } catch (Exception $ex) {
-                _ttcms_flash()->{'error'}($ex->getMessage());
+                func\_ttcms_flash()->{'error'}($ex->getMessage());
             }
         }
 
-        $_user = get_userdata((int) $id);
+        $_user = func\get_userdata((int) $id);
 
         /**
          * If the database table doesn't exist, then it
@@ -203,7 +195,7 @@ $app->group('/admin', function() use ($app, $current_user) {
         }
         /**
          * If data is zero, 404 not found.
-         */ elseif ((int) _escape($_user->user_id) <= 0) {
+         */ elseif ((int) func\_escape($_user->user_id) <= 0) {
 
             $app->res->_format('json', 404);
             exit();
@@ -215,7 +207,7 @@ $app->group('/admin', function() use ($app, $current_user) {
          */ else {
 
             $app->foil->render('main::admin/user/update', [
-                'title' => _t('Update User', 'tritan-cms'),
+                'title' => func\_t('Update User', 'tritan-cms'),
                 'user' => $_user
                     ]
             );
@@ -226,8 +218,8 @@ $app->group('/admin', function() use ($app, $current_user) {
      * Before route check.
      */
     $app->before('GET', '/user/(\d+)/switch-to/', function() use($app) {
-        if (!current_user_can('switch_user')) {
-            _ttcms_flash()->{'error'}(_t("You don't have permission to log in as another user.", 'tritan-cms'), $app->req->server['HTTP_REFERER']);
+        if (!func\current_user_can('switch_user')) {
+            func\_ttcms_flash()->{'error'}(func\_t("You don't have permission to log in as another user.", 'tritan-cms'), $app->req->server['HTTP_REFERER']);
             exit();
         }
     });
@@ -237,9 +229,9 @@ $app->group('/admin', function() use ($app, $current_user) {
         if (isset($app->req->cookie['TTCMS_COOKIENAME'])) {
             $switch_cookie = [
                 'key' => 'SWITCH_USERBACK',
-                'user_id' => (int) get_current_user_id(),
-                'user_login' => _escape($current_user->user_login),
-                'remember' => $app->hook->{'get_option'}('cookieexpire') - time() > 86400 ? _t('yes', 'tritan-cms') : _t('no', 'tritan-cms'),
+                'user_id' => (int) func\get_current_user_id(),
+                'user_login' => func\_escape($current_user->user_login),
+                'remember' => $app->hook->{'get_option'}('cookieexpire') - time() > 86400 ? func\_t('yes', 'tritan-cms') : func\_t('no', 'tritan-cms'),
                 'exp' => (int) $app->hook->{'get_option'}('cookieexpire') + time()
             ];
             $app->cookies->setSecureCookie($switch_cookie);
@@ -253,7 +245,7 @@ $app->group('/admin', function() use ($app, $current_user) {
          */
         $file = $app->config('cookies.savepath') . 'cookies.' . $vars['data'];
         try {
-            if (ttcms_file_exists($file)) {
+            if (func\ttcms_file_exists($file)) {
                 unlink($file);
             }
         } catch (NotFoundException $e) {
@@ -268,26 +260,26 @@ $app->group('/admin', function() use ($app, $current_user) {
         $auth_cookie = [
             'key' => 'TTCMS_COOKIENAME',
             'user_id' => (int) $id,
-            'user_login' => get_user_value((int) $id, 'user_login'),
-            'remember' => time() - (int) $app->hook->{'get_option'}('cookieexpire') > 86400 ? _t('yes', 'tritan-cms') : _t('no', 'tritan-cms'),
+            'user_login' => func\get_user_value((int) $id, 'user_login'),
+            'remember' => time() - (int) $app->hook->{'get_option'}('cookieexpire') > 86400 ? func\_t('yes', 'tritan-cms') : func\_t('no', 'tritan-cms'),
             'exp' => (int) $app->hook->{'get_option'}('cookieexpire') + time()
         ];
 
         $app->cookies->setSecureCookie($auth_cookie);
 
-        _ttcms_flash()->{'success'}(_t('User switching was successful.', 'tritan-cms'), $app->req->server['HTTP_REFERER']);
+        func\_ttcms_flash()->{'success'}(func\_t('User switching was successful.', 'tritan-cms'), $app->req->server['HTTP_REFERER']);
     });
 
     /**
      * Before route check.
      */
     $app->before('GET', '/user/(\d+)/switch-back/', function() use($app) {
-        if (!is_user_logged_in()) {
-            _ttcms_flash()->{'error'}(_t('401 - Error: Unauthorized.', 'tritan-cms'), get_base_url() . 'login' . '/');
+        if (!func\is_user_logged_in()) {
+            func\_ttcms_flash()->{'error'}(func\_t('401 - Error: Unauthorized.', 'tritan-cms'), func\get_base_url() . 'login' . '/');
             exit();
         }
         if (!isset($app->req->cookie['SWITCH_USERBACK'])) {
-            _ttcms_flash()->{'error'}(_t('Cookie is not properly set for user switching', 'tritan-cms'), get_base_url() . 'admin' . '/');
+            func\_ttcms_flash()->{'error'}(func\_t('Cookie is not properly set for user switching', 'tritan-cms'), func\get_base_url() . 'admin' . '/');
             exit();
         }
     });
@@ -301,7 +293,7 @@ $app->group('/admin', function() use ($app, $current_user) {
          */
         $file1 = $app->config('cookies.savepath') . 'cookies.' . $vars1['data'];
         try {
-            if (ttcms_file_exists($file1)) {
+            if (func\ttcms_file_exists($file1)) {
                 unlink($file1);
             }
         } catch (NotFoundException $e) {
@@ -318,7 +310,7 @@ $app->group('/admin', function() use ($app, $current_user) {
          */
         $file2 = $app->config('cookies.savepath') . 'cookies.' . $vars2['data'];
         try {
-            if (ttcms_file_exists($file2)) {
+            if (func\ttcms_file_exists($file2)) {
                 unlink($file2);
             }
         } catch (NotFoundException $e) {
@@ -336,27 +328,27 @@ $app->group('/admin', function() use ($app, $current_user) {
         $switch_cookie = [
             'key' => 'TTCMS_COOKIENAME',
             'user_id' => (int) $id,
-            'user_login' => get_user_value((int) $id, 'user_login'),
-            'remember' => time() - (int) $app->hook->{'get_option'}('cookieexpire') > 86400 ? _t('yes', 'tritan-cms') : _t('no', 'tritan-cms'),
+            'user_login' => func\get_user_value((int) $id, 'user_login'),
+            'remember' => time() - (int) $app->hook->{'get_option'}('cookieexpire') > 86400 ? func\_t('yes', 'tritan-cms') : func\_t('no', 'tritan-cms'),
             'exp' => (int) $app->hook->{'get_option'}('cookieexpire') + time()
         ];
         $app->cookies->setSecureCookie($switch_cookie);
-        _ttcms_flash()->{'success'}(_t('Switching back to previous session was successful.', 'tritan-cms'), $app->req->server['HTTP_REFERER']);
+        func\_ttcms_flash()->{'success'}(func\_t('Switching back to previous session was successful.', 'tritan-cms'), $app->req->server['HTTP_REFERER']);
     });
 
     /**
      * Before route check.
      */
     $app->before('GET', '/user/(\d+)/d/', function() use($app) {
-        if (!current_user_can('delete_users')) {
-            _ttcms_flash()->{'error'}(_t("You don't have permission to delete users.", 'tritan-cms'), $app->req->server['HTTP_REFERER']);
+        if (!func\current_user_can('delete_users')) {
+            func\_ttcms_flash()->{'error'}(func\_t("You don't have permission to delete users.", 'tritan-cms'), $app->req->server['HTTP_REFERER']);
             exit();
         }
     });
 
     $app->get('/user/(\d+)/d/', function ($id) use($app) {
         if ((int) $id == (int) '1') {
-            _ttcms_flash()->{'error'}(_t('You are not allowed to delete the super administrator account.', 'tritan-cms'), get_base_url() . 'user/');
+            func\_ttcms_flash()->{'error'}(func\_t('You are not allowed to delete the super administrator account.', 'tritan-cms'), func\get_base_url() . 'user/');
             exit();
         }
 
@@ -377,15 +369,15 @@ $app->group('/admin', function() use ($app, $current_user) {
                         ->delete();
 
                 $user->commit();
-                clean_user_cache($id);
-                ttcms_cache_flush_namespace('user_meta');
-                _ttcms_flash()->{'success'}(_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
+                func\clean_user_cache($id);
+                func\ttcms_cache_flush_namespace('user_meta');
+                func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
             } catch (Exception $e) {
                 $user->rollback();
-                _ttcms_flash()->{'error'}($e->getMessage(), $app->req->server['HTTP_REFERER']);
+                func\_ttcms_flash()->{'error'}($e->getMessage(), $app->req->server['HTTP_REFERER']);
             }
         } else {
-            _ttcms_flash()->{'success'}(_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
+            func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
         }
     });
 
@@ -393,8 +385,8 @@ $app->group('/admin', function() use ($app, $current_user) {
      * Before route check.
      */
     $app->before('GET', '/user/lookup/', function() use($app) {
-        if (!is_user_logged_in()) {
-            _ttcms_flash()->{'error'}(_t("401 - Error: Unauthorized.", 'tritan-cms'), $app->req->server['HTTP_REFERER']);
+        if (!func\is_user_logged_in()) {
+            func\_ttcms_flash()->{'error'}(func\_t("401 - Error: Unauthorized.", 'tritan-cms'), $app->req->server['HTTP_REFERER']);
             exit();
         }
     });
@@ -405,8 +397,8 @@ $app->group('/admin', function() use ($app, $current_user) {
                 ->first();
 
         $json = [
-            'input#fname' => _escape($user['user_fname']), 'input#lname' => _escape($user['user_lname']),
-            'input#email' => _escape($user['user_email'])
+            'input#fname' => func\_escape($user['user_fname']), 'input#lname' => func\_escape($user['user_lname']),
+            'input#email' => func\_escape($user['user_email'])
         ];
         echo json_encode($json);
     });
@@ -415,29 +407,29 @@ $app->group('/admin', function() use ($app, $current_user) {
      * Before route check.
      */
     $app->before('GET|POST', '/user/(\d+)/reset-password/', function () use($app) {
-        if (!current_user_can('update_users')) {
-            _ttcms_flash()->{'error'}(_t("You are not allowed to reset user passwords.", 'tritan-cms'), $app->req->server['HTTP_REFERER']);
+        if (!func\current_user_can('update_users')) {
+            func\_ttcms_flash()->{'error'}(func\_t("You are not allowed to reset user passwords.", 'tritan-cms'), $app->req->server['HTTP_REFERER']);
             exit();
         }
     });
 
     $app->get('/user/(\d+)/reset-password/', function ($id) use($app) {
-        $password = ttcms_generate_password();
+        $password = func\ttcms_generate_password();
         $data = ['user_id' => $id, 'user_pass' => $password];
 
         try {
-            $user = ttcms_update_user($data);
+            $user = func\ttcms_update_user($data);
 
             if ($user > 0) {
-                _ttcms_flash()->{'success'}(sprintf(_t('Password successfully updated for <strong>%s</strong>.'), get_name($id)));
+                func\_ttcms_flash()->{'success'}(sprintf(func\_t('Password successfully updated for <strong>%s</strong>.'), func\get_name($id)));
             } else {
-                _ttcms_flash()->{'error'}(_t('Could not update password.'));
+                func\_ttcms_flash()->{'error'}(func\_t('Could not update password.'));
             }
         } catch (Exception $ex) {
-            _ttcms_flash()->{'error'}($ex->getMessage());
+            func\_ttcms_flash()->{'error'}($ex->getMessage());
         }
 
-        ttcms_redirect($app->req->server['HTTP_REFERER']);
+        func\ttcms_redirect($app->req->server['HTTP_REFERER']);
     });
 
     /**

@@ -1,4 +1,7 @@
 <?php
+
+namespace TriTan\Functions;
+
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 /**
@@ -16,6 +19,8 @@ use TriTan\Config;
  * Add an admin submenu page link.
  * 
  * Uses admin_submenu_$location filter hook.
+ * 
+ * @file app/functions/menu-function.php
  * 
  * @since 0.9
  * @param string $location      Submenu location.
@@ -39,6 +44,8 @@ function add_admin_submenu($location, $menu_title, $menu_route, $screen, $permis
 /**
  * Adds an admin dashboard submenu page link.
  * 
+ * @file app/functions/menu-function.php
+ * 
  * @since 0.9
  * @param string $menu_title    The text to be used for the menu.
  * @param string $menu_route    The route part of the url.
@@ -53,6 +60,8 @@ function add_dashboard_submenu($menu_title, $menu_route, $screen, $permission = 
 
 /**
  * Adds a sites submenu page link.
+ * 
+ * @file app/functions/menu-function.php
  * 
  * @since 0.9
  * @param string $menu_title    The text to be used for the menu.
@@ -69,6 +78,8 @@ function add_sites_submenu($menu_title, $menu_route, $screen, $permission = null
 /**
  * Adds a plugin submenu page link.
  * 
+ * @file app/functions/menu-function.php
+ * 
  * @since 0.9
  * @param string $menu_title    The text to be used for the menu.
  * @param string $menu_route    The route part of the url.
@@ -84,6 +95,8 @@ function add_plugins_submenu($menu_title, $menu_route, $screen, $permission = nu
 /**
  * Adds a users submenu page link.
  * 
+ * @file app/functions/menu-function.php
+ * 
  * @since 0.9
  * @param string $menu_title    The text to be used for the menu.
  * @param string $menu_route    The route part of the url.
@@ -98,6 +111,8 @@ function add_users_submenu($menu_title, $menu_route, $screen, $permission = null
 
 /**
  * Adds an options submenu page link.
+ * 
+ * @file app/functions/menu-function.php
  * 
  * @since 0.9
  * @param string $menu_title    The text to be used for the menu.

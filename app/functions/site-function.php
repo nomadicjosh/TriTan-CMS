@@ -1,5 +1,7 @@
 <?php
 
+namespace TriTan\Functions;
+
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 /**
@@ -18,6 +20,8 @@ use Cascade\Cascade;
 /**
  * Retrieves site data given a site ID or post array.
  *
+ * @file app/functions/site-function.php
+ * 
  * @since 0.9
  * @param int|Site|null $site
  *            Site ID or site array.
@@ -61,6 +65,8 @@ function get_site($site, $object = false)
 /**
  * Checks whether the given site domain exists.
  *
+ * @file app/functions/site-function.php
+ * 
  * @since 0.9
  * @param string $sitedomain Site domain to check against.
  * @return bool If site domain exists, return true otherwise return false.
@@ -88,6 +94,8 @@ function site_domain_exists($sitedomain)
 /**
  * Checks whether the given site exists.
  *
+ * @file app/functions/site-function.php
+ * 
  * @since 0.9
  * @param string $site_domain   Site domain to check against.
  * @param string $site_path     Site path to check against.
@@ -120,6 +128,8 @@ function site_exists($site_domain, $site_path)
 /**
  * Creates/updates user meta data for specified site.
  * 
+ * @file app/functions/site-function.php
+ * 
  * @since 0.9
  * @param int $_site_id Site ID.
  * @param int $user_id  User ID.
@@ -149,6 +159,8 @@ function update_site_user_meta($_site_id, $user_id)
 /**
  * Deletes user meta data when site/user is deleted.
  * 
+ * @file app/functions/site-function.php
+ * 
  * @since 0.9
  * @param int $_site_id Site ID.
  */
@@ -171,6 +183,8 @@ function delete_site_user_meta($_site_id)
 /**
  * Deletes site tables when site is deleted.
  * 
+ * @file app/functions/site-function.php
+ * 
  * @since 0.9
  * @param int $_site_id Site ID.
  */
@@ -189,6 +203,8 @@ function delete_site_tables($_site_id)
 /**
  * Retrieve the current site id.
  * 
+ * @file app/functions/site-function.php
+ * 
  * @since 0.9
  * @global int $site_id
  * @return int Site ID.
@@ -200,6 +216,8 @@ function get_current_site_id()
 
 /**
  * Update main site based Constants in config file.
+ * 
+ * @file app/functions/site-function.php
  * 
  * @since 0.9
  * @return boolean
@@ -230,6 +248,8 @@ function update_main_site()
 /**
  * Retrieve a list of users based on site.
  * 
+ * @file app/functions/site-function.php
+ * 
  * @since 0.9
  * @return array Users data.
  */
@@ -252,9 +272,20 @@ function get_multisite_users()
     return $list_users;
 }
 
+/**
+ * Add user to a site.
+ * 
+ * @file app/functions/site-function.php
+ * 
+ * @since 0.9
+ * @param object|int $user  User to add to a site.
+ * @param object|in $site   Site to add user to.
+ * @param int $role         Role id to assign to user for this site.
+ * @return int
+ */
 function add_user_to_site($user, $site, $role)
 {
-    if ($user instanceof TriTan\User) {
+    if ($user instanceof \TriTan\User) {
         $_user = $user;
     } else {
         $_user = get_userdata($user);
@@ -338,6 +369,8 @@ function add_user_to_site($user, $site, $role)
  * followed by the field name. An example using 'site_name' would have the filter called,
  * 'pre_site_name' that can be hooked into.
  *
+ * @file app/functions/site-function.php
+ * 
  * @since 0.9
  * @param array|User $sitedata {
  *     An array or User array of user data arguments.
@@ -525,6 +558,8 @@ function ttcms_insert_site($sitedata)
  * 
  * See ttcms_insert_site() For what fields can be set in $sitedata.
  *
+ * @file app/functions/site-function.php
+ * 
  * @since 0.9
  * @param int|object|Site $sitedata An array of site data or a site object or site id.
  * @return int|Exception The updated site's id or throw an Exception if the site could not be updated.
@@ -551,6 +586,8 @@ function ttcms_update_site($sitedata)
 /**
  * Populates site options and user meta for site admin after new site
  * is created.
+ * 
+ * @file app/functions/site-function.php
  * 
  * @since 0.9
  * @access private Used when the action hook `site_register` is called.
@@ -696,6 +733,8 @@ function new_site_data($site_id, $site_owner)
 
 /**
  * Adds status label for site's table.
+ * 
+ * @file app/functions/site-function.php
  * 
  * @since 0.9
  * @param string $status Status to check for.

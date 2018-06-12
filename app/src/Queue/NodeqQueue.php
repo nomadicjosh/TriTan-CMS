@@ -7,6 +7,7 @@ if (!defined('BASE_PATH'))
 use TriTan\Config;
 use TriTan\Exception\Exception;
 use Cascade\Cascade;
+use TriTan\Functions as func;
 
 /**
  * NodeQ Task Manager Queue
@@ -144,13 +145,13 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
 
         $query = $this->app->db->table($this->node());
         $query->begin();
-        $lastId = auto_increment($this->node(), 'queue_id');
+        $lastId = func\auto_increment($this->node(), 'queue_id');
         try {
             $query->insert([
-                'queue_id' => (int) $lastId,
-                'name' => if_null($this->name),
-                'data' => if_null($this->app->hook->{'maybe_serialize'}($data)),
-                'created' => if_null(time()),
+                'quevue_id' => (int) $lastId,
+                'name' => func\if_null($this->name),
+                'data' => func\if_null($this->app->hook->{'maybe_serialize'}($data)),
+                'created' => func\if_null(time()),
                 'expire' => (int) 0
             ]);
             $query->commit();
@@ -220,7 +221,7 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
                      * and will tend to reset items before the lease should really
                      * expire.
                      */
-                    $update->where('expire', (int) 0)->where('queue_id', (int) _escape($item['queue_id']))
+                    $update->where('expire', (int) 0)->where('queue_id', (int) func\_escape($item['queue_id']))
                             ->update([
                                 'expire' => (int) time() + ($this->lease_time <= (int) 0 ? (int) $lease_time : (int) $this->lease_time)
                     ]);
@@ -395,7 +396,7 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
         try {
             $task->where('pid', (int) $data['pid'])
                     ->update([
-                        'executions' => if_null(_escape($runs['executions']) + 1),
+                        'executions' => func\if_null(func\_escape($runs['executions']) + 1),
                         'lastrun' => (string) \Jenssegers\Date\Date::now()->format('Y-m-d h:i:s'),
                         'last_runtime' => (double) $time_end
             ]);

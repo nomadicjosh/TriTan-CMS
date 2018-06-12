@@ -1,4 +1,4 @@
-<?php
+<?php namespace TriTan\Functions;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
@@ -383,7 +383,7 @@ function ttcms_hash_password($password)
     }
 
     // By default, use the portable hash from phpass
-    $hasher = new TriTan\PasswordHash(8, false);
+    $hasher = new \TriTan\PasswordHash(8, false);
 
     return $hasher->HashPassword($password);
 }
@@ -419,7 +419,7 @@ function ttcms_check_password($password, $hash, $user_id = '')
 
     // If the stored hash is longer than an MD5, presume the
     // new style phpass portable hash.
-    $hasher = new TriTan\PasswordHash(8, false);
+    $hasher = new \TriTan\PasswordHash(8, false);
 
     $check = $hasher->CheckPassword($password, $hash);
 
@@ -457,7 +457,7 @@ function generate_timezone_list()
     $timezone_offsets = array();
     foreach ($timezones as $timezone) {
         $tz = new \DateTimeZone($timezone);
-        $timezone_offsets[$timezone] = $tz->getOffset(new DateTime());
+        $timezone_offsets[$timezone] = $tz->getOffset(new \DateTime());
     }
 
     // sort timezone by timezone name
@@ -1558,7 +1558,7 @@ function ttcms_system_backup($source, $destination)
     }
 
     $zip = new \ZipArchive();
-    if (!$zip->open($destination, ZIPARCHIVE::CREATE)) {
+    if (!$zip->open($destination, $zip::CREATE)) {
         return false;
     }
 
@@ -1702,7 +1702,7 @@ function validate_url($url)
 function stripslashes_deep($value)
 {
     $_value = is_array($value) ?
-            array_map('stripslashes_deep', $value) :
+            array_map('TriTan\\Functions\\stripslashes_deep', $value) :
             stripslashes($value);
 
     return $_value;
@@ -1930,7 +1930,7 @@ function ttcms_enqueue_css($config, $asset, $minify = false, $plugin_slug = null
                 'switchery-css' => 'bootstrap-switchery/switchery.min.css'
             ]
         ];
-        $default = new Stolz\Assets\Manager($options);
+        $default = new \Stolz\Assets\Manager($options);
         $default->reset()->add($asset);
     } elseif ($config === 'plugin') {
         $options = [
@@ -1939,7 +1939,7 @@ function ttcms_enqueue_css($config, $asset, $minify = false, $plugin_slug = null
             'pipeline' => app()->hook->{'apply_filter'}('plugin_css_pipeline', $minify),
             'pipeline_dir' => 'minify'
         ];
-        $default = new Stolz\Assets\Manager($options);
+        $default = new \Stolz\Assets\Manager($options);
         $default->reset()->add($asset);
     } elseif ($config === 'theme') {
         $options = [
@@ -1948,7 +1948,7 @@ function ttcms_enqueue_css($config, $asset, $minify = false, $plugin_slug = null
             'pipeline' => app()->hook->{'apply_filter'}('theme_css_pipeline', $minify),
             'pipeline_dir' => 'minify'
         ];
-        $default = new Stolz\Assets\Manager($options);
+        $default = new \Stolz\Assets\Manager($options);
         $default->reset()->add($asset);
     }
     echo $default->css();
@@ -2008,7 +2008,7 @@ function ttcms_enqueue_js($config, $asset, $minify = false, $plugin_slug = null)
                 'switchery-js' => 'bootstrap-switchery/switchery.min.js'
             ]
         ];
-        $default = new Stolz\Assets\Manager($options);
+        $default = new \Stolz\Assets\Manager($options);
         $default->reset()->add($asset);
     } elseif ($config === 'plugin') {
         $options = [
@@ -2017,7 +2017,7 @@ function ttcms_enqueue_js($config, $asset, $minify = false, $plugin_slug = null)
             'pipeline' => app()->hook->{'apply_filter'}('plugin_js_pipeline', $minify),
             'pipeline_dir' => 'minify'
         ];
-        $default = new Stolz\Assets\Manager($options);
+        $default = new \Stolz\Assets\Manager($options);
         $default->reset()->add($asset);
     } elseif ($config === 'theme') {
         $options = [
@@ -2026,7 +2026,7 @@ function ttcms_enqueue_js($config, $asset, $minify = false, $plugin_slug = null)
             'pipeline' => app()->hook->{'apply_filter'}('theme_js_pipeline', $minify),
             'pipeline_dir' => 'minify'
         ];
-        $default = new Stolz\Assets\Manager($options);
+        $default = new \Stolz\Assets\Manager($options);
         $default->reset()->add($asset);
     }
     echo $default->js();
