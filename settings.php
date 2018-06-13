@@ -125,6 +125,13 @@ unset($mu_plugin);
 $app->hook->{'do_action'}('muplugins_loaded');
 
 /**
+ * Fires once activated plugins have loaded.
+ * 
+ * @since 0.9
+ */
+$app->hook->{'do_action'}('plugins_loaded');
+
+/**
  * Include the routers needed
  *
  * Lazy load the routers. A router is loaded

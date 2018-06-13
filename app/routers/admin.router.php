@@ -184,7 +184,7 @@ $app->group('/admin', function() use ($app, $user) {
             $continue = strtolower($name[1]) == 'zip' ? true : false;
 
             if (!$continue) {
-                _tc_flash()->{'error'}(func\_t('The file you are trying to upload is not the accepted file type (.zip). Please try again.'));
+                func\_ttcms_flash()->{'error'}(func\_t('The file you are trying to upload is not the accepted file type (.zip). Please try again.'));
             }
             $target_path = BASE_PATH . 'plugins' . DS . $_FILES["plugin_zip"]["name"];
             if (move_uploaded_file($_FILES["plugin_zip"]["tmp_name"], $target_path)) {
@@ -222,7 +222,7 @@ $app->group('/admin', function() use ($app, $user) {
          *
          * @since 0.9
          */
-        ttcms_validate_plugin($plugin_name);
+        func\ttcms_validate_plugin($plugin_name);
 
         if (ob_get_length() > 0) {
             $output = ob_get_clean();
@@ -232,7 +232,7 @@ $app->group('/admin', function() use ($app, $user) {
         }
         ob_end_clean();
 
-        ttcms_redirect($app->req->server['HTTP_REFERER']);
+        func\ttcms_redirect($app->req->server['HTTP_REFERER']);
     });
 
     $app->before('GET|POST', '/deactivate/', function () {
@@ -268,7 +268,7 @@ $app->group('/admin', function() use ($app, $user) {
          */
         $app->hook->{'do_action'}('deactivate_' . $pluginName);
 
-        deactivate_plugin($pluginName);
+        func\deactivate_plugin($pluginName);
 
         /**
          * Fires after a specific plugin has been deactivated.
@@ -282,7 +282,7 @@ $app->group('/admin', function() use ($app, $user) {
          */
         $app->hook->{'do_action'}('deactivated_plugin', $pluginName);
 
-        ttcms_redirect($app->req->server['HTTP_REFERER']);
+        func\ttcms_redirect($app->req->server['HTTP_REFERER']);
     });
 
     /**
