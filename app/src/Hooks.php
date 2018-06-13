@@ -995,12 +995,11 @@ class Hooks
 
     /**
      * @since 0.9.8
-     * @uses _trim()
-     * @param unknown $pee
-     * @param number $br
+     * @param string $pee
+     * @param bool $br
      * @return string|mixed
      */
-    public function parsecode_autop($pee, $br = 1)
+    public function parsecode_autop($pee, $br = true)
     {
 
         if (trim($pee) === '') {
