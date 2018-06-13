@@ -219,6 +219,6 @@ function ttcms_set_environment()
         ini_set('display_errors', 'Off');
         ini_set('log_errors', 'On');
         ini_set('error_log', Config::get('site_path') . 'files' . DS . 'logs' . DS . 'ttcms-error-' . \Jenssegers\Date\Date::now()->format('Y-m-d') . '.txt');
-        set_error_handler('ttcms_error_handler', E_ALL & ~E_NOTICE);
+        set_error_handler('TriTan\\Functions\\ttcms_error_handler', E_ALL & ~E_NOTICE);
     }
 }
