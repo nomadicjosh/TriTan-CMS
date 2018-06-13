@@ -9,7 +9,7 @@ $app->hook->{'do_action'}('login_init');
 <!DOCTYPE html>
 <html>
     <head>
-        <base href="<?= get_base_url(); ?>">
+        <base href="<?= func\get_base_url(); ?>">
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title><?= func\_t('Login', 'tritan-cms') . ' &lsaquo; ' . $app->hook->{'get_option'}('sitename'); ?> &#8212; <?= func\_t('TriTan CMS', 'tritan-cms'); ?></title>

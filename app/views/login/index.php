@@ -14,7 +14,7 @@ $this->section('login');
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-lg-12">
-                            <form id="login-form" action="<?= get_base_url(); ?>login/" method="post" role="form" style="display: block;" autocomplete="off">
+                            <form id="login-form" action="<?= func\get_base_url(); ?>login/" method="post" role="form" style="display: block;" autocomplete="off">
                                 <h2><?= func\_t('Login', 'tritan-cms'); ?></h2>
                                 <div class="form-group">
                                     <input type="text" name="user_login" id="username" tabindex="1" class="form-control" placeholder="Username" required/>
@@ -30,7 +30,7 @@ $this->section('login');
                                     <input type="submit" name="login-submit" id="login-submit" tabindex="4" class="form-control btn btn-login" value="<?= func\_t('Log In', 'tritan-cms'); ?>">
                                 </div>
                             </form>
-                            <form id="register-form" action="<?= get_base_url(); ?>reset-password/" method="post" role="form" style="display: none;">
+                            <form id="register-form" action="<?= func\get_base_url(); ?>reset-password/" method="post" role="form" style="display: none;">
                                 <h2><?= func\_t('Lost Password', 'tritan-cms'); ?></h2>
                                 <div class="form-group">
                                     <input type="text" name="username" id="username" tabindex="1" class="form-control" placeholder="Username" value="">
