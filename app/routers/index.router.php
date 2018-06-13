@@ -8,7 +8,7 @@ if (!defined('BASE_PATH'))
 $app->get('/logout/', function () use($app) {
     $user = func\ttcms_get_current_user();
 
-    func\ttcms_logger_activity_log_write(_t('Authentication', 'tritan-cms'), func\_t('Logout', 'tritan-cms'), func\get_name(func\_escape($user->user_id)), func\_escape($user->user_login));
+    func\ttcms_logger_activity_log_write(func\_t('Authentication', 'tritan-cms'), func\_t('Logout', 'tritan-cms'), func\get_name(func\_escape($user->user_id)), func\_escape($user->user_login));
 
     if (strpos($app->req->server['HTTP_REFERER'], 'admin') !== FALSE) {
         $logout_link = $app->hook->{'apply_filter'}('user_logout_redirect', func\get_base_url() . 'login' . '/');
@@ -57,7 +57,7 @@ $app->post('/reset-password/', function () use($app) {
              * @param string $password  Plaintext password.
              */
             $app->hook->{'do_action'}('reset_password_route', $user, $password);
-            func\_ttcms_flash()->{'success'}(_t('A new password was sent to your email.', 'tritan-cms'), $app->req->server['HTTP_REFERER']);
+            func\_ttcms_flash()->{'success'}(func\_t('A new password was sent to your email.', 'tritan-cms'), $app->req->server['HTTP_REFERER']);
         } catch (Exception $ex) {
             $reset->rollback();
             Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
