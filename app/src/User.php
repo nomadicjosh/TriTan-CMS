@@ -310,11 +310,12 @@ class User
         }
     }
 
-    public function get_role_id($role)
-    {
-        
-    }
-
+    /**
+     * Set the user's role.
+     * 
+     * @since 0.9.8
+     * @param string $role Role key.
+     */
     public function set_role($role)
     {
         $old_role = func\get_user_meta($this->user_id, Config::get('tbl_prefix') . 'role', true);
@@ -330,12 +331,12 @@ class User
         func\update_user_meta($this->user_id, Config::get('tbl_prefix') . 'role', $new_role, $old_role);
 
         /**
-         * Fires after the user's role has changed.
+         * Fires after the user's role has been added/changed.
          *
          * @since 0.9.8
-         * @param int       $user_id    The user id.
-         * @param string    $role       The new role.
-         * @param string    $old_role   The user's previous role.
+         * @param int   $user_id    The user id.
+         * @param int   $new_role   The new role.
+         * @param int   $old_role   The user's previous role.
          */
         app()->hook->{'do_action'}('set_user_role', $this->user_id, $new_role, $old_role);
     }
