@@ -98,6 +98,15 @@ class ACL
 
         return func\_escape($role['role_name']);
     }
+    
+    public function getRoleIDFromKey($roleKey)
+    {
+        $role = $this->app->db->table('role')
+                ->where('role_key', (string) $roleKey)
+                ->first();
+
+        return (int) func\_escape($role['role_id']);
+    }
 
     public function getUserRoles()
     {
@@ -125,7 +134,7 @@ class ACL
         $resp = [];
         foreach ($strSQL as $r) {
             if ($_format == 'full') {
-                $resp[] = ["ID" => func\_escape($r['role_id']), "Name" => func\_escape($r['role_name'])];
+                $resp[] = ["ID" => func\_escape($r['role_id']), "Name" => func\_escape($r['role_name']), "Key" => func\_escape($r['role_key'])];
             } else {
                 $resp[] = $r->id;
             }

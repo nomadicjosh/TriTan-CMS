@@ -884,15 +884,6 @@ function ttcms_insert_user($userdata)
      */
     $meta['bio'] = app()->hook->{'apply_filter'}('pre_user_bio', $user_bio);
 
-    $user_role = if_null($userdata['user_role']);
-    /**
-     * Filters a user's role before the user is created or updated.
-     *
-     * @since 0.9
-     * @param string $user_role The user's role.
-     */
-    $meta['role'] = app()->hook->{'apply_filter'}('pre_user_role', $user_role);
-
     $user_status = if_null($userdata['user_status']);
     /**
      * Filters a user's status before the user is created or updated.
@@ -914,13 +905,13 @@ function ttcms_insert_user($userdata)
 
     $meta['admin_skin'] = if_null($user_admin_skin);
 
-    $user_addedby = (int) get_current_user_id();
+    $user_addedby = (int) get_current_user_id() <= (int) 0 ? (int) 1 : (int) get_current_user_id();
 
     $user_registered = (string) \Jenssegers\Date\Date::now();
 
     $user_modified = (string) \Jenssegers\Date\Date::now();
 
-    $compacted = compact('user_login', 'user_fname', 'user_lname', 'user_pass', 'user_email', 'user_url', 'user_status', 'user_role');
+    $compacted = compact('user_login', 'user_fname', 'user_lname', 'user_pass', 'user_email', 'user_url');
     $data = ttcms_unslash($compacted);
 
     /**
@@ -938,8 +929,6 @@ function ttcms_insert_user($userdata)
      *      @type string $user_pass         The user's password.
      *      @type string $user_email        The user's email.
      *      @type string $user_url          The user's url.
-     *      @type string $user_status       The user's status.
-     *      @type string $user_role         The user's role.
      *      @type string $user_addedby      User who registered user.
      *      @type string $user_registered   Timestamp describing the moment when the user registered. Defaults to
      *                                      Y-m-d h:i:s

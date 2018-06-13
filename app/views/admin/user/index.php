@@ -59,11 +59,11 @@ Config::set('screen_child', 'all-users');
                                 <td class="text-center"><?= $user['user_fname']; ?></td>
                                 <td class="text-center"><?= $user['user_lname']; ?></td>
                                 <td class="text-center">
-                                    <span class="label <?= func\ttcms_user_status_label($user['user_status']); ?>" style="font-size:1em;font-weight: bold;">
-                                        <?= ($user['user_status'] == 'A' ? func\_t('Active') : func\_t('Inactive')); ?>
+                                    <span class="label <?= func\ttcms_user_status_label(func\get_user_option('status', $user['user_id'])); ?>" style="font-size:1em;font-weight: bold;">
+                                        <?= (func\get_user_option('status', $user['user_id']) == 'A' ? func\_t('Active') : func\_t('Inactive')); ?>
                                     </span>
                                 </td>
-                                <td class="text-center"><?=func\get_role_by_id($user['user_role'])['role']['role_name'];?></td>
+                                <td class="text-center"><?=func\get_role_by_id(func\get_user_option('role', $user['user_id']))['role']['role_name'];?></td>
                                 <td class="text-center">
                                     <a href="<?= func\get_base_url(); ?>admin/user/<?= (int) $user['user_id']; ?>/" data-toggle="tooltip" data-placement="top" title="Update"><button type="button" class="btn bg-yellow"><i class="fa fa-edit"></i></button></a>
                                     <!--<a href="<?= func\get_base_url(); ?>admin/user/<?= (int) $user['user_id']; ?>/perm/" data-toggle="tooltip" data-placement="top" title="Edit Permissions"><button type="button" class="btn bg-purple"><i class="fa fa-key"></i></button></a>-->

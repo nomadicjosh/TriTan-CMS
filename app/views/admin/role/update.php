@@ -3,6 +3,7 @@ if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use TriTan\Config;
 use TriTan\Functions as func;
+
 /**
  * Update Role View
  *  
@@ -17,7 +18,6 @@ $this->section('backend');
 $eRole = new \TriTan\ACL();
 Config::set('screen_parent', 'roles');
 Config::set('screen_child', 'role');
-
 ?>
 
 <!-- form start -->
@@ -45,15 +45,35 @@ Config::set('screen_child', 'role');
 
             <!-- SELECT2 EXAMPLE -->
             <div class="box box-default">
+
                 <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label><font color="red">*</font> <?= func\_t('Role Name'); ?></label>
+                                <input class="form-control" name="role_name" type="text" value="<?= $this->role['role_name']; ?>" required/>
+                            </div>
+                        </div>
+                        <!-- /.col -->
 
-                    <!-- Group -->
-                    <div class="form-group">
-                        <label class="col-md-3 control-label"><font color="red">*</font> <?= func\_t('Role Name'); ?></label>
-                        <div class="col-md-12"><input class="form-control" name="role_name" type="text" value="<?= $this->role['role_name']; ?>" required/></div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label><font color="red">*</font> <?= func\_t('Role Key'); ?></label>
+                                <input class="form-control" name="role_key" type="text" value="<?= $this->role['role_key']; ?>" required/>
+                            </div>
+                        </div>
+                        <!-- /.col -->
                     </div>
-                    <!-- // Group END -->
+                    <!-- /.row -->
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
 
+            <!-- SELECT2 EXAMPLE -->
+            <div class="box box-default">
+
+                <div class="box-body">
                     <table class="table table-bordered table-hover">
                         <thead>
                             <tr>

@@ -46,6 +46,7 @@ Config::set('screen_child', 'role');
                     <thead>
                         <tr>
                             <th class="text-center"><?= func\_t('Name'); ?></th>
+                            <th class="text-center"><?= func\_t('Key'); ?></th>
                             <th class="text-center"><?= func\_t('Edit'); ?></th>
                         </tr>
                     </thead>
@@ -56,6 +57,7 @@ Config::set('screen_child', 'role');
                             foreach ($listRoles as $k => $v) {
                                 echo '<tr class="gradeX">' . "\n";
                                 echo '<td class="text-center">' . func\_escape($v['Name']) . '</td>' . "\n";
+                                echo '<td class="text-center">' . func\_escape($v['Key']) . '</td>' . "\n";
                                 echo '<td class="text-center"><a href="' . func\get_base_url() . 'admin/role/' . func\_escape((int) $v['ID']) . '/" data-toggle="tooltip" data-placement="top" title="View/Edit" class="btn bg-yellow"><i class="fa fa-edit"></i></a></td>';
                                 echo '</tr>';
                             }

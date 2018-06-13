@@ -29,6 +29,14 @@ class User
     public $data;
 
     /**
+     * ACL data container.
+     * 
+     * @since 0.9.8
+     * @var object
+     */
+    public $acl;
+
+    /**
      * User user_id.
      *
      * @since 0.9
@@ -56,6 +64,8 @@ class User
      */
     public function __construct($user_id = 0, $name = '', $site_id = '')
     {
+        $this->acl = new ACL();
+
         if ($user_id instanceof User) {
             $this->init($user_id->data, $site_id);
             return;
@@ -298,6 +308,36 @@ class User
         } else {
             $this->site_id = func\get_current_site_id();
         }
+    }
+
+    public function get_role_id($role)
+    {
+        
+    }
+
+    public function set_role($role)
+    {
+        $old_role = func\get_user_meta($this->user_id, Config::get('tbl_prefix') . 'role', true);
+
+        if (is_numeric($role)) {
+            $message = func\_t('Invalid role. Must use role_key (super, admin, editor, etc.) and not role_id.', 'tritan-cms');
+            func\_incorrectly_called(__FUNCTION__, $message, '0.9.8');
+            return;
+        }
+
+        $new_role = $this->acl->getRoleIDFromKey($role);
+
+        func\update_user_meta($this->user_id, Config::get('tbl_prefix') . 'role', $new_role, $old_role);
+
+        /**
+         * Fires after the user's role has changed.
+         *
+         * @since 0.9.8
+         * @param int       $user_id    The user id.
+         * @param string    $role       The new role.
+         * @param string    $old_role   The user's previous role.
+         */
+        app()->hook->{'do_action'}('set_user_role', $this->user_id, $new_role, $old_role);
     }
 
 }

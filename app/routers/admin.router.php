@@ -798,6 +798,7 @@ $app->group('/admin', function() use ($app, $user) {
                 $role->insert([
                     'role_id' => (int) $role_id,
                     'role_name' => (string) $app->req->post['role_name'],
+                    'role_key' => (string) _trim($app->req->post['role_key']),
                     'role_permission' => $app->hook->{'maybe_serialize'}($app->req->post['role_permission'])
                 ]);
                 $role->commit();
@@ -821,6 +822,7 @@ $app->group('/admin', function() use ($app, $user) {
             $role->where('role_id', (int) $app->req->post['role_id'])
                     ->update([
                         'role_name' => (string) $app->req->post['role_name'],
+                        'role_key' => (string) _trim($app->req->post['role_key']),
                         'role_permission' => $app->hook->{'maybe_serialize'}($app->req->post['role_permission'])
             ]);
             $role->commit();

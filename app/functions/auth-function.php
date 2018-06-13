@@ -74,6 +74,7 @@ function get_role_by_id($role = 0)
     $data['role'] = [
         'role_id' => _escape($sql['role_id']),
         'role_name' => _escape($sql['role_name']),
+        'role_key' => _escape($sql['role_key']),
         'role_permission' => _escape($sql['role_permission'])
     ];
 
