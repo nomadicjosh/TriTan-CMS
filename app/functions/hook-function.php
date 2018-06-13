@@ -87,6 +87,9 @@ function deactivate_plugin($id)
  */
 function load_activated_plugins($plugins_dir = '')
 {
+    if (null == $plugins_dir) {
+        $plugins_dir = app()->hook->{'apply_filter'}('plugins_directory', BASE_PATH . 'plugins' . DS);
+    }
     return app()->hook->{'load_activated_plugins'}($plugins_dir);
 }
 
@@ -488,15 +491,6 @@ function ttcms_admin_copyright_footer()
 }
 
 /**
- * Includes and loads all activated plugins.
- *
- * @file app/functions/hook-function.php
- * 
- * @since 0.9
- */
-load_activated_plugins(BASE_PATH . 'plugins' . DS);
-
-/**
  * An action called to add the plugin's link
  * to the menu structure.
  *
@@ -506,15 +500,6 @@ load_activated_plugins(BASE_PATH . 'plugins' . DS);
  * @uses app()->hook->{'do_action'}() Calls 'admin_menu' hook.
  */
 app()->hook->{'do_action'}('admin_menu');
-
-/**
- * Fires once activated plugins have loaded.
- *
- * @file app/functions/hook-function.php
- * 
- * @since 0.9
- */
-app()->hook->{'do_action'}('plugins_loaded');
 
 /**
  * Fires the admin_head action.
@@ -1784,9 +1769,10 @@ app()->hook->{'add_action'}('before_router_login', 'is_site_exist', 6);
 app()->hook->{'add_action'}('ttcms_login', 'generate_php_encryption', 5);
 app()->hook->{'add_action'}('enqueue_ttcms_editor', 'ttcms_editor', 5);
 app()->hook->{'add_action'}('protect_cache_dir', 'add_files_cache_directory', 5);
-app()->hook->{'add_filter'}('the_content', 'ttcms_autop');
-app()->hook->{'add_filter'}('the_content', 'parsecode_unautop');
-app()->hook->{'add_filter'}('the_content', 'do_parsecode', 5);
+app()->hook->{'add_action'}('plugins_loaded', 'load_activated_plugins', 1);
+app()->hook->{'add_filter'}('the_content', [new \TriTan\Hooks(),'parsecode_autop']);
+app()->hook->{'add_filter'}('the_content', [new \TriTan\Hooks(),'parsecode_unautop']);
+app()->hook->{'add_filter'}('the_content', [new \TriTan\Hooks(),'do_parsecode'], 5);
 app()->hook->{'add_filter'}('the_content', 'eae_encode_emails', EAE_FILTER_PRIORITY);
 app()->hook->{'add_filter'}('ttcms_authenticate_user', 'ttcms_authenticate', 5, 3);
 app()->hook->{'add_filter'}('ttcms_auth_cookie', 'ttcms_set_auth_cookie', 5, 2);

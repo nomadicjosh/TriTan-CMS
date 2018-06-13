@@ -465,7 +465,7 @@ class Hooks
 
         do {
             foreach ((array) current($this->filters[$hook]) as $the_) {
-                if (!function_exists($the_['function'])) {
+                if (!is_callable($the_['function'])) {
                     $the_function = 'TriTan\\Functions\\' . $the_['function'];
                 } else {
                     $the_function = $the_['function'];
@@ -517,7 +517,7 @@ class Hooks
         reset($this->filters[$tag]);
         do {
             foreach ((array) current($this->filters[$tag]) as $the_) {
-                if (!function_exists($the_['function'])) {
+                if (!is_callable($the_['function'])) {
                     $the_function = 'TriTan\\Functions\\' . $the_['function'];
                 } else {
                     $the_function = $the_['function'];
@@ -580,7 +580,7 @@ class Hooks
 
         do {
             foreach ((array) current($this->filters[$hook]) as $the_) {
-                if (!function_exists($the_['function'])) {
+                if (!is_callable($the_['function'])) {
                     $the_function = 'TriTan\\Functions\\' . $the_['function'];
                 } else {
                     $the_function = $the_['function'];
@@ -599,7 +599,7 @@ class Hooks
         reset($this->filters['all']);
         do {
             foreach ((array) current($this->filters['all']) as $the_) {
-                if (!function_exists($the_['function'])) {
+                if (!is_callable($the_['function'])) {
                     $the_function = 'TriTan\\Functions\\' . $the_['function'];
                 } else {
                     $the_function = $the_['function'];
@@ -804,7 +804,7 @@ class Hooks
         }
 
         $pattern = $this->get_parsecode_regex();
-        return preg_replace_callback("/$pattern/s", '_do_parsecode_tag', $content);
+        return preg_replace_callback("/$pattern/s", [$this, '_do_parsecode_tag'], $content);
     }
 
     /**
@@ -1033,14 +1033,14 @@ class Hooks
         $pee = preg_replace('!<p>\s*(</?' . $allblocks . '[^>]*>)!', "$1", $pee);
         $pee = preg_replace('!(</?' . $allblocks . '[^>]*>)\s*</p>!', "$1", $pee);
         if ($br) {
-            $pee = preg_replace_callback('/<(script|style).*?<\/\\1>/s', '_autop_newline_preservation_helper', $pee);
+            $pee = preg_replace_callback('/<(script|style).*?<\/\\1>/s', [$this, '_autop_newline_preservation_helper'], $pee);
             $pee = preg_replace('|(?<!<br />)\s*\n|', "<br />\n", $pee); // optionally make line breaks
             $pee = str_replace('<TTPreserveNewline />', "\n", $pee);
         }
         $pee = preg_replace('!(</?' . $allblocks . '[^>]*>)\s*<br />!', "$1", $pee);
         $pee = preg_replace('!<br />(\s*</?(?:p|li|div|dl|dd|dt|th|pre|td|ul|ol)[^>]*>)!', '$1', $pee);
         if (strpos($pee, '<pre') !== false) {
-            $pee = preg_replace_callback('!(<pre[^>]*>)(.*?)</pre>!is', 'clean_pre', $pee);
+            $pee = preg_replace_callback('!(<pre[^>]*>)(.*?)</pre>!is', [$this, 'clean_pre'], $pee);
         }
         $pee = preg_replace("|\n</p>$|", '</p>', $pee);
 
@@ -1142,7 +1142,7 @@ class Hooks
 
         do {
             foreach ((array) current($this->filters[$hook]) as $the_) {
-                if (!function_exists($the_['function'])) {
+                if (!is_callable($the_['function'])) {
                     $the_function = 'TriTan\\Functions\\' . $the_['function'];
                 } else {
                     $the_function = $the_['function'];
