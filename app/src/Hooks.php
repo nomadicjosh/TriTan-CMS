@@ -465,15 +465,9 @@ class Hooks
 
         do {
             foreach ((array) current($this->filters[$hook]) as $the_) {
-                if (!is_callable($the_['function'])) {
-                    $the_function = 'TriTan\\Functions\\' . $the_['function'];
-                } else {
-                    $the_function = $the_['function'];
-                }
-
-                if (!is_null($the_function)) {
+                if (!is_null($the_['function'])) {
                     $args[1] = $value;
-                    $value = call_user_func_array($the_function, array_slice($args, 1, (int) $the_['accepted_args']));
+                    $value = call_user_func_array($the_['function'], array_slice($args, 1, (int) $the_['accepted_args']));
                 }
             }
         } while (next($this->filters[$hook]) !== false);
@@ -517,18 +511,12 @@ class Hooks
         reset($this->filters[$tag]);
         do {
             foreach ((array) current($this->filters[$tag]) as $the_) {
-                if (!is_callable($the_['function'])) {
-                    $the_function = 'TriTan\\Functions\\' . $the_['function'];
-                } else {
-                    $the_function = $the_['function'];
-                }
-
-                if (null !== $the_function) {
+                if (null !== $the_['function']) {
                     if (null !== $the_['include_path']) {
                         /** @noinspection PhpIncludeInspection */
                         include_once $the_['include_path'];
                     }
-                    $args[0] = call_user_func_array($the_function, $args);
+                    $args[0] = call_user_func_array($the_['function'], $args);
                 }
             }
         } while (next($this->filters[$tag]) !== false);
@@ -580,13 +568,8 @@ class Hooks
 
         do {
             foreach ((array) current($this->filters[$hook]) as $the_) {
-                if (!is_callable($the_['function'])) {
-                    $the_function = 'TriTan\\Functions\\' . $the_['function'];
-                } else {
-                    $the_function = $the_['function'];
-                }
-                if (!is_null($the_function)) {
-                    call_user_func_array($the_function, array_slice($args, 0, (int) $the_['accepted_args']));
+                if (!is_null($the_['function'])) {
+                    call_user_func_array($the_['function'], array_slice($args, 0, (int) $the_['accepted_args']));
                 }
             }
         } while (next($this->filters[$hook]) !== false);
@@ -599,13 +582,8 @@ class Hooks
         reset($this->filters['all']);
         do {
             foreach ((array) current($this->filters['all']) as $the_) {
-                if (!is_callable($the_['function'])) {
-                    $the_function = 'TriTan\\Functions\\' . $the_['function'];
-                } else {
-                    $the_function = $the_['function'];
-                }
-                if (!is_null($the_function)) {
-                    call_user_func_array($the_function, $args);
+                if (!is_null($the_['function'])) {
+                    call_user_func_array($the_['function'], $args);
                 }
             }
         } while (next($this->filters['all']) !== false);
@@ -1141,13 +1119,8 @@ class Hooks
 
         do {
             foreach ((array) current($this->filters[$hook]) as $the_) {
-                if (!is_callable($the_['function'])) {
-                    $the_function = 'TriTan\\Functions\\' . $the_['function'];
-                } else {
-                    $the_function = $the_['function'];
-                }
-                if (!is_null($the_function)) {
-                    call_user_func_array($the_function, array_slice($args, 0, (int) $the_['accepted_args']));
+                if (!is_null($the_['function'])) {
+                    call_user_func_array($the_['function'], array_slice($args, 0, (int) $the_['accepted_args']));
                 }
             }
         } while (next($this->filters[$hook]) !== false);
