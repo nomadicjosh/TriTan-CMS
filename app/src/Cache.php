@@ -1,4 +1,6 @@
-<?php namespace TriTan;
+<?php
+
+namespace TriTan;
 
 use TriTan\Config;
 
@@ -33,418 +35,288 @@ use TriTan\Config;
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 
+defined('CACHE_PATH') or define('CACHE_PATH', Config::get('cache_path'));
+
 class Cache
 {
 
-    // cache compression
-    const CACHE_COMPRESSION = false;
-    // cache compression level
-    const CACHE_COMPRESSION_LEVEL = 9;
-    // cache debug
-    const CACHE_DEBUG = false;
-    // cache file extension
-    const CACHE_EXTENSION = '.php';
-    // cache security key
-    const CACHE_SECURITY = 'd15sdf8szefs698df15sd7';
-    // cache will be kept so long (in seconds)
-    const CACHE_TIME = 360;
-    // cache is data
-    const IS_DATA = 'data';
-    // cache is output
-    const IS_OUTPUT = 'view';
-
     /**
-     * All settings for cache will be saved here
+     * The path to the cache file folder
      *
-     * @var array
+     * @access protected
+     * @since 1.0.1
+     * @var string
      */
-    protected static $cache;
+    protected $_cachepath = CACHE_PATH;
 
     /**
-     * Cancel saving output to cache
+     * The key name of the cache file
+     *
+     * @access private
+     * @since 1.0.1
+     * @var string
      */
-    public static function cancel()
+    public $cachename = 'default';
+
+    /**
+     * The cache file extension
+     *
+     * @access protected
+     * @since 1.0.1
+     * @var string
+     */
+    protected $extension = '.screen';
+
+    /**
+     * Time to live for cache file
+     *
+     * @access private
+     * @since 1.0.1
+     * @var int
+     */
+    public $setTTL = '3600';
+
+    /**
+     * Full location of cache file
+     *
+     * @access protected
+     * @since 1.0.1
+     * @var string
+     */
+    protected $_cachefile;
+
+    /**
+     * Execution Time
+     *
+     * @access protected
+     * @since 1.0.1
+     * @var float
+     */
+    protected $_starttime;
+
+    /**
+     * Logs errors that may occur
+     *
+     * @access protected
+     * @since 1.0.1
+     * @var float
+     */
+    protected $_log;
+
+    public function __construct($name = '')
     {
-        self::$cache['output'] = false;
+        $this->cachename = $name;
+        if (!is_dir($this->_cachepath) || !is_writeable($this->_cachepath))
+            mkdir($this->_cachepath, 0755);
+        $this->_cachefile = $this->_cachepath . md5($this->cachename) . $this->extension;
+        $mtime = microtime();
+        $mtime = explode(" ", $mtime);
+        $mtime = $mtime[1] + $mtime[0];
+        $this->_starttime = $mtime;
     }
 
     /**
-     * Convert to object
-     *
-     * @param mixed $data
-     */
-    private static function convertToObject($data)
-    {
-        // define new class
-        $obj = new stdclass();
-        // data is an object
-        if (is_object($data)) {
-            // loop data
-            foreach ($data as $key => $value) {
-                // add key to object
-                $obj->$key = self::convertToObject($value);
-            }
-            // data is an array
-        } elseif (is_array($data)) {
-            // define keys
-            $keys = array_keys($data);
-            // we have keys
-            if (count($keys) > 0) {
-                // loop keys
-                foreach ($keys as $key) {
-                    // add key to object
-                    $obj->$key = self::convertToObject($data[$key]);
-                }
-            }
-            // else set data as object
-        } else
-            $obj = $data;
-        // return object
-        return $obj;
-    }
-
-    /**
-     * Delete cache
-     *
-     * @param string $filePath
-     */
-    protected static function delete($filePath)
-    {
-        // delete file if exists
-        if (file_exists($filePath))
-            @unlink($filePath);
-    }
-
-    /**
-     * Does cache exists?
-     *
-     * @param string $type
-     * @param string $folder
-     * @param string $name
-     */
-    public static function exists($type, $folder, $name)
-    {
-        // cache is enabled
-        if (self::isCacheEnabled()) {
-            // define cache file path
-            $cacheFilePath = self::getCachePathToFile($type, $folder, $name);
-            // it exists and is not yet over-time
-            if (file_exists($cacheFilePath) && filemtime($cacheFilePath) > time())
-                return true;
-        }
-        return false;
-    }
-
-    /**
-     * Get cache extension
-     *
-     * @return string
-     */
-    private static function getCacheExtension()
-    {
-        // if no cache extension set
-        if (!isset(self::$cache['extension'])) {
-            // define to the default cache extension
-            self::setCacheExtension(self::CACHE_EXTENSION);
-        }
-        return self::$cache['extension'];
-    }
-
-    /**
-     * Get cache path where the caches will be saved to
-     *
-     * @return string
-     */
-    public static function getCachePath()
-    {
-        // cache path not defined
-        if (!isset(self::$cache['path'])) {
-            // redefine cache path to default path
-            self::setCachePath($_SERVER['DOCUMENT_ROOT'] . '/cache/');
-        }
-        return self::$cache['path'];
-    }
-
-    /**
-     * Get path to the cached file
-     *
-     * @param  string $type
-     * @param  string $folder
-     * @param  string $name
-     * @return string
-     */
-    protected static function getCachePathToFile($type, $folder, $name)
-    {
-        // define id for filename
-        $name = (is_array($name)) ? implode('_', $name) : $name;
-        // define encrypted id
-        $encryptedId = md5(self::CACHE_SECURITY . $name);
-        // return path to the cached file
-        return self::getCachePath() . $folder . '/' . $encryptedId . $type . self::getCacheExtension();
-    }
-
-    /**
-     * Get data from cache
-     *
-     * @param  string         $folder
-     * @param  string         $name
-     * @param  bool[optional] $overwrite
+     * Sets objects that should be cached.
+     * 
+     * @access public
+     * @since 1.0.1
+     * @param string (required) $key Prefix of the cache file
+     * @param mixed (required) $data The object that should be cached
      * @return mixed
      */
-    public static function getData($folder, $name, $overwrite = false)
+    public function set($key, $data)
     {
-        // cache is enabled, data-file exists and it should not be overridden
-        if (self::isCacheEnabled() && !$overwrite && self::exists(self::IS_DATA, $folder, $name)) {
-            // we return the cached data-file
-            return self::unserialize(self::read(self::IS_DATA, $folder, $name));
+        $values = serialize($data);
+        $cachefile = $this->_cachepath . $key . $this->extension;
+        $cache = fopen($cachefile, 'w');
+        if ($cache) {
+            fwrite($cache, $values);
+            fclose($cache);
+        } else {
+            return $this->addLog('Unable to write key: ' . $key . ' file: ' . $cachefile);
         }
-        // otherwise return false
-        return false;
     }
 
     /**
-     * Is cache enabled
-     *
-     * @return bool
-     */
-    public static function isCacheEnabled()
-    {
-        // cache enabled not set
-        if (!isset(self::$cache['enabled'])) {
-            // redefine and enable cache
-            self::$cache['enabled'] = true;
-        }
-        return self::$cache['enabled'];
-    }
-
-    /**
-     * Read cache
-     *
-     * @param  string $type
-     * @param  string $folder
-     * @param  string $name
+     * Cached data by its Prefix
+     * 
+     * @access public
+     * @since 1.0.1
+     * @param string (required) $key Returns cached objects by its key.
      * @return mixed
      */
-    protected static function read($type, $folder, $name)
+    public function get($key)
     {
-        // define cache file path
-        $cacheFilePath = self::getCachePathToFile($type, $folder, $name);
-        // cache already exists
-        if (self::exists($type, $folder, $name)) {
-            // get content from existing cache
-            $content = file_get_contents($cacheFilePath);
-            // uncompress if necessary
-            if (self::CACHE_COMPRESSION && function_exists('gzuncompress'))
-                $content = gzuncompress($content);
-            // return content
-            return $content;
+        $cachefile = $this->_cachepath . $key . $this->extension;
+        $file = fopen($cachefile, 'r');
+        if (filemtime($cachefile) < (time() - $this->setTTL)) {
+            $this->clearCache($key);
+            return false;
         }
-        // delete cache
-        self::delete($cacheFilePath);
-        // return false
-        return false;
-    }
-
-    /**
-     * Set cache extension
-     *
-     * @param string $extension
-     */
-    public static function setCacheExtension($extension)
-    {
-        // redefine
-        $extension = (string) $extension;
-        // throw error when '.' not found
-        if (strpos($extension, '.') === false) {
-            throw new CacheException('The extension should contain a point.');
-        }
-        // redefine cache extension
-        self::$cache['extension'] = $extension;
-    }
-
-    /**
-     * Set cache path
-     *
-     * @param string $path
-     */
-    public static function setCachePath($path)
-    {
-        // redefine cache path
-        self::$cache['path'] = (string) $path;
-    }
-
-    /**
-     * Set data in cache
-     *
-     * @param string         $folder
-     * @param string         $name
-     * @param mixed          $data
-     * @param bool[optional] $lifetime
-     */
-    public static function setData($folder, $name, $data, $lifetime = false)
-    {
-        // cache is enabled
-        if (self::isCacheEnabled()) {
-            // we should write data to a cache file
-            self::write(self::IS_DATA, $folder, $name, self::serialize($data), $lifetime);
+        if ($file) {
+            $data = fread($file, filesize($cachefile));
+            fclose($file);
+            return unserialize($data);
         }
     }
 
     /**
-     * Start saving output to cache
-     *
-     * @param  string         $folder
-     * @param  string         $name
-     * @param  bool[optional] $lifetime
-     * @param  bool[optional] $overwrite
-     * @return bool
+     * Begins the section where caching begins
+     * 
+     * @access public
+     * @since 1.0.1
+     * @return mixed
      */
-    public static function start($folder, $name, $lifetime = false, $overwrite = false)
+    public function setCache()
     {
-        // define output per default as false
-        self::$cache['output'] = false;
-        // always override if debug is true
-        if ((bool) self::CACHE_DEBUG)
-            $overwrite = true;
-        // cache is enabled
-        if (self::isCacheEnabled()) {
-            // cache exists and we should not override
-            if (self::exists(self::IS_OUTPUT, $folder, $name) && !$overwrite) {
-                // read in cache and output it
-                echo self::read(self::IS_OUTPUT, $folder, $name);
-                return false;
-                // cache doesn't exists or we should override it
-            } else {
-                // start fetching output
-                ob_start();
-                // redefine variables
-                self::$cache['folder'] = $folder;
-                self::$cache['name'] = $name;
-                self::$cache['time'] = $lifetime ? $lifetime : self::CACHE_TIME;
-                self::$cache['output'] = !self::CACHE_DEBUG;
-            }
-        }
-        // return true
-        return true;
-    }
-
-    /**
-     * Stop saving output to cache
-     */
-    public static function stop()
-    {
-        // cache is enabled
-        if (self::isCacheEnabled()) {
-            // we should save output
-            if (self::$cache['output']) {
-                // get page content from memory
-                $content = ob_get_contents();
-                // save content to a cache file
-                self::write(self::IS_OUTPUT, self::$cache['folder'], self::$cache['name'], $content, self::$cache['time']);
-            }
-            // show output
-            ob_end_flush();
-            flush();
+        if (!$this->isCacheValid($this->_cachefile)) {
+            ob_start();
+            return $this->addLog('Could not find valid cachefile: ' . $this->_cachefile);
+        } else {
+            return true;
         }
     }
 
     /**
-     * Serialize
-     *
-     * @param  mixed  $data
-     * @return string
+     * Ends the section where caching stops and returns 
+     * the cached file.
+     * 
+     * @access public
+     * @since 1.0.1
+     * @return mixed
      */
-    public static function serialize($data)
+    public function getCache()
     {
-        // is object
-        if (is_object($data)) {
-            $data = self::convertToObject($data);
-            // is array
-        } elseif (is_array($data)) {
-            // define keys from array
-            $keys = array_keys($data);
-            // we have keys
-            if (count($keys) > 0) {
-                // loop keys
-                foreach ($keys as $key) {
-                    // add key and its serialized data
-                    $data[$key] = self::serialize($data[$key]);
-                }
-            }
+        if (!$this->isCacheValid($this->_cachefile)) {
+            $output = ob_get_contents();
+            ob_end_clean();
+            $this->writeCache($output, $this->_cachefile);
+        } else {
+            $output = $this->readCache($this->_cachefile);
         }
-        // return serialized data
-        return serialize($data);
+        return $output;
     }
 
     /**
-     * Unserialize
-     *
-     * @param  mixed $data
-     * @return array
+     * Reads a cache file if it exists and prints it out 
+     * to the screen.
+     * 
+     * @access public
+     * @since 1.0.1
+     * @param string (required) $filename Full path to the requested cache file
+     * @return mixed
      */
-    public static function unserialize($data)
+    public function readCache($filename)
     {
-        // unserialize data
-        $data = unserialize($data);
-        // data is array
-        if (is_array($data)) {
-            // define keys
-            $keys = array_keys($data);
-            // we have keys
-            if (count($keys) > 0) {
-                // loop keys
-                foreach ($keys as $key) {
-                    // add key and its unserialized data
-                    $data[$key] = self::unserialize($data[$key]);
-                }
-            }
+        if (file_exists($filename)) {
+            $cache = fopen($filename, 'r');
+            $output = fread($cache, filesize($filename));
+            fclose($cache);
+            return unserialize($output) . "\n" . $this->pageLoad();
+        } else {
+            return $this->addLog('Could not find filename: ' . $filename);
         }
-        // return unserialized data
-        return $data;
     }
 
-    public static function flush()
+    /**
+     * Writes cache data to be read
+     * 
+     * @access public
+     * @since 1.0.1
+     * @param string (required) $data Data that should be cached
+     * @param string (required) $filename Name of the cache file
+     * @return mixed
+     */
+    public function writeCache($data, $filename)
     {
-        $files = glob(Config::get('cache_path') . '*.tpl');
-        if (is_array($files)) {
-            foreach ($files as $file) {
-                if (file_exists($file)) {
-                    unlink($file);
-                }
+        $fp = fopen($filename, 'w');
+        if ($fp) {
+            $values = serialize($data);
+            fwrite($fp, $values);
+            fclose($fp);
+        } else {
+            return $this->addLog('Could not read filename: ' . $filename . ' data: ' . $data);
+        }
+    }
+
+    /**
+     * Checks if a cache file is valid
+     * 
+     * @access public
+     * @since 1.0.1
+     * @param string (required) $filename Name of the cache file
+     * @return mixed
+     */
+    public function isCacheValid($filename)
+    {
+        if (file_exists($filename) && (filemtime($filename) > (time() - $this->setTTL))) {
+            return true;
+        } else {
+            return $this->addLog('Could not find filename: ' . $filename);
+        }
+    }
+
+    /**
+     * Execution time of the cached page
+     * 
+     * @access public
+     * @since 1.0.1
+     * @return mixed
+     */
+    public function pageLoad()
+    {
+        $mtime = microtime();
+        $mtime = explode(" ", $mtime);
+        $mtime = $mtime[1] + $mtime[0];
+        $endtime = $mtime;
+        $totaltime = ($endtime - $this->_starttime);
+        return "<!-- This cache file was built for ( " . $_SERVER['SERVER_NAME'] . " ) in " . $totaltime . " seconds, on " . gmdate("M d, Y") . " @ " . gmdate("H:i:s A") . " UTC. -->" . "\n";
+    }
+
+    /**
+     * Clears the cache base on cache file name/key
+     * 
+     * @access public
+     * @since 1.0.1
+     * @param string (required) $filename Key name of cache
+     * @return mixed
+     */
+    public function clearCache($filename)
+    {
+        $cachelog = $this->_cachepath . md5($filename) . $this->extension;
+        if (file_exists($cachelog)) {
+            unlink($cachelog);
+        }
+    }
+
+    /**
+     * Clears all cache files
+     * 
+     * @access public
+     * @since 1.0.1
+     * @return mixed
+     */
+    public function purge()
+    {
+        foreach (glob($this->_cachepath . '*' . $this->extension) as $file) {
+            if (file_exists($file)) {
+                unlink($file);
             }
         }
     }
 
     /**
-     * Write
-     *
-     * @param string          $type
-     * @param string          $folder
-     * @param string          $name
-     * @param mixed           $content
-     * @param mixed[optional] $lifetime
+     * Prints a log if error occurs
+     * 
+     * @access public
+     * @since 1.0.1
+     * @param mixed (required) $value Message that should be returned
+     * @return mixed
      */
-    protected static function write($type, $folder, $name, $content, $lifetime = false)
+    public function addLog($value)
     {
-        // directory not exists
-        if (!is_dir(self::getCachePath() . $folder . '/')) {
-            // create directory
-            _mkdir(self::getCachePath() . $folder . '/');
-        }
-        // define file path
-        $filePath = self::getCachePathToFile($type, $folder, $name);
-        // define file stream
-        $fh = fopen($filePath, 'w');
-        // compress content when necessary
-        if (self::CACHE_COMPRESSION && function_exists('gzcompress'))
-            $content = gzcompress($content, self::CACHE_COMPRESSION_LEVEL);
-        // write data to file
-        fwrite($fh, $content);
-        // close file stream
-        fclose($fh);
-        // define file lifetime
-        $lifetime = ($lifetime) ? $lifetime : self::CACHE_TIME;
-        // set file lifetime
-        touch($filePath, time() + $lifetime);
+        $this->_log = [];
+        array_push($this->_log, round((microtime(true) - $this->_starttime), 5) . 's - ' . $value);
     }
+
 }

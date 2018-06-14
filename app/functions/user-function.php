@@ -1,4 +1,4 @@
-<?php
+<?php namespace TriTan\Functions;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
@@ -18,6 +18,8 @@ use Cascade\Cascade;
 
 /**
  * Used on the Role screen for permissions.
+ * 
+ * @file app/functions/user-function.php
  * 
  * @since 0.9
  * @param int $id Role id.
@@ -102,6 +104,8 @@ function user_perm($id)
 /**
  * Print a dropdown list of users.
  * 
+ * @file app/functions/user-function.php
+ * 
  * @since 0.9
  * @param int $active If working with active record, it will be the user's id.
  * @return array Dropdown list of users.
@@ -133,7 +137,9 @@ function get_users_dropdown($active = null)
  * Removes tags, octets, entities, and if strict is enabled, will only keep
  * alphanumeric, _, space, ., -, @. After sanitizing, it passes the username,
  * raw username (the username in the parameter), and the value of $strict as
- * parameters for the {@see 'sanitize_user'} filter.
+ * parameters for the `sanitize_user` filter.
+ * 
+ * @file app/functions/user-function.php
  *
  * @since 0.9
  * @param string $username The username to be sanitized.
@@ -170,6 +176,8 @@ function sanitize_user($username, $strict = false)
 
 /**
  * Get the current user's ID
+ * 
+ * @file app/functions/user-function.php
  *
  * @since 0.9
  * @return int The current user's ID, or 0 if no user is logged in.
@@ -186,6 +194,8 @@ function get_current_user_id()
 /**
  * Returns object of data for current user.
  * 
+ * @file app/functions/user-function.php
+ * 
  * @since 0.9
  * @return object
  */
@@ -197,6 +207,10 @@ function ttcms_get_current_user()
 
 /**
  * Returns the name of a particular user.
+ * 
+ * Uses `get_name` filter.
+ * 
+ * @file app/functions/user-function.php
  *
  * @since 0.9
  * @param int $id
@@ -231,6 +245,10 @@ function get_name($id, $reverse = false)
 /**
  * Shows selected user's initials instead of
  * his/her's full name.
+ * 
+ * Uses `get_initials` filter.
+ * 
+ * @file app/functions/user-function.php
  *
  * @since 0.9
  * @param int $id
@@ -267,6 +285,8 @@ function get_initials($id, $initials = 2)
 /**
  * Retrieve requested field from user table
  * based on user's id.
+ * 
+ * @file app/functions/user-function.php
  *
  * @since 0.9
  * @param string $id
@@ -284,6 +304,8 @@ function get_user_value($id, $field)
 
 /**
  * Retrieves a list of roles from the roles table.
+ * 
+ * @file app/functions/user-function.php
  *
  * @since 0.9
  * @return mixed
@@ -299,6 +321,10 @@ function get_perm_roles()
 
 /**
  * Checks whether the given username exists.
+ * 
+ * Uses `username_exists` filter.
+ * 
+ * @file app/functions/user-function.php
  *
  * @since 0.9
  * @param string $username
@@ -325,6 +351,10 @@ function username_exists($username)
 
 /**
  * Checks whether the given email exists.
+ * 
+ * Uses `email_exists` filter.
+ * 
+ * @file app/functions/user-function.php
  *
  * @since 0.9
  * @param string $email
@@ -352,11 +382,15 @@ function email_exists($email)
 /**
  * Checks whether the given username is valid.
  * 
+ * Uses `validate_username` filter.
+ * 
  * Example Usage:
  * 
  *      if(validate_username('batman')) {
  *          //do something;
  *      }
+ * 
+ * @file app/functions/user-function.php
  *
  * @since 0.9
  * @param string $username
@@ -381,11 +415,15 @@ function validate_username($username)
 /**
  * Validates an email address.
  * 
+ * Uses `validate_email` filter.
+ * 
  * Example Usage:
  * 
  *      if(validate_email('email@gmail.com')) {
  *          //do something;
  *      }
+ * 
+ * @file app/functions/user-function.php
  * 
  * @since 0.9
  * @param string $email Email address to validate.
@@ -408,6 +446,8 @@ function validate_email($email)
 /**
  * Adds label to user's status.
  * 
+ * @file app/functions/user-function.php
+ * 
  * @since 0.9
  * @param string $status
  * @return string
@@ -425,6 +465,8 @@ function ttcms_user_status_label($status)
 /**
  * Retrieve a list of available user roles.
  * 
+ * @file app/functions/user-function.php
+ * 
  * @since 0.9
  * @param type $active
  */
@@ -441,6 +483,8 @@ function get_user_roles($active = null)
 /**
  * Retrieve a list of all users.
  * 
+ * @file app/functions/user-function.php
+ * 
  * @since 0.9
  * @param type $active
  */
@@ -456,6 +500,8 @@ function get_users_list($active = null)
 
 /**
  * Retrieve user meta field for a user.
+ * 
+ * @file app/functions/user-function.php
  *
  * @since 0.9
  * @param int    $user_id User ID.
@@ -470,6 +516,8 @@ function get_user_meta($user_id, $key = '', $single = false)
 
 /**
  * Get user meta data by meta ID.
+ * 
+ * @file app/functions/user-function.php
  *
  * @since 0.9
  * @param int $mid
@@ -487,6 +535,8 @@ function get_user_meta_by_mid($mid)
  * same key and user ID.
  *
  * If the meta field for the user does not exist, it will be added.
+ * 
+ * @file app/functions/user-function.php
  *
  * @since 0.9
  * @param int    $user_id    User ID.
@@ -502,6 +552,8 @@ function update_user_meta($user_id, $meta_key, $meta_value, $prev_value = '')
 
 /**
  * Update user meta data by meta ID.
+ * 
+ * @file app/functions/user-function.php
  *
  * @since 0.9
  * @param int $mid
@@ -518,6 +570,8 @@ function update_user_meta_by_mid($mid, $meta_key, $meta_value)
 
 /**
  * Adds meta data to a user.
+ * 
+ * @file app/functions/user-function.php
  *
  * @since 0.9
  * @param int    $user_id    User ID.
@@ -537,6 +591,8 @@ function add_user_meta($user_id, $meta_key, $meta_value, $unique = false)
  * You can match based on the key, or key and value. Removing based on key and
  * value, will keep from removing duplicate metadata with the same key. It also
  * allows removing all metadata matching key, if needed.
+ * 
+ * @file app/functions/user-function.php
  *
  * @since 0.9
  * @param int    $user_id    User ID
@@ -551,6 +607,8 @@ function delete_user_meta($user_id, $meta_key, $meta_value = '')
 
 /**
  * Delete user meta data by meta ID.
+ * 
+ * @file app/functions/user-function.php
  *
  * @since 0.9
  * @param int $mid
@@ -570,6 +628,10 @@ function delete_user_meta_by_mid($mid)
  * object as the third parameter.
  *
  * The option will first check for the per site name and then the global name.
+ * 
+ * Uses `get_user_option_$option` filter.
+ * 
+ * @file app/functions/user-function.php
  *
  * @since 0.9
  * @param string $option     User option name.
@@ -617,6 +679,8 @@ function get_user_option($option, $user = 0)
  * it will prepend the TriTan CMS table prefix to the option name.
  *
  * Deletes the user option if $newvalue is empty.
+ * 
+ * @file app/functions/user-function.php
  *
  * @since 0.9
  * @param int    $user_id     User ID.
@@ -642,6 +706,8 @@ function update_user_option($user_id, $option_name, $newvalue, $global = false)
  * User options are just like user metadata except that they have support for
  * global site options. If the 'global' parameter is false, which it is by default
  * it will prepend the TriTan CMS table prefix to the option name.
+ * 
+ * @file app/functions/user-function.php
  *
  * @since 0.9
  * @param int    $user_id           User ID
@@ -667,6 +733,8 @@ function delete_user_option($user_id, $option_name, $global = false)
  * 'user_registered' and 'user_modified'. The filters have the prefix 'pre_' followed by
  * the field name. An example using 'user_bio' would have the filter called, 'pre_user_bio' that
  * can be hooked into.
+ * 
+ * @file app/functions/user-function.php
  *
  * @since 0.9
  * @param array|object|User $userdata {
@@ -695,7 +763,7 @@ function ttcms_insert_user($userdata)
 {
     if ($userdata instanceof \stdClass) {
         $userdata = get_object_vars($userdata);
-    } elseif ($userdata instanceof TriTan\User) {
+    } elseif ($userdata instanceof \TriTan\User) {
         $userdata = $userdata->to_array();
     }
 
@@ -816,15 +884,6 @@ function ttcms_insert_user($userdata)
      */
     $meta['bio'] = app()->hook->{'apply_filter'}('pre_user_bio', $user_bio);
 
-    $user_role = if_null($userdata['user_role']);
-    /**
-     * Filters a user's role before the user is created or updated.
-     *
-     * @since 0.9
-     * @param string $user_role The user's role.
-     */
-    $meta['role'] = app()->hook->{'apply_filter'}('pre_user_role', $user_role);
-
     $user_status = if_null($userdata['user_status']);
     /**
      * Filters a user's status before the user is created or updated.
@@ -846,13 +905,13 @@ function ttcms_insert_user($userdata)
 
     $meta['admin_skin'] = if_null($user_admin_skin);
 
-    $user_addedby = (int) get_current_user_id();
+    $user_addedby = (int) get_current_user_id() <= (int) 0 ? (int) 1 : (int) get_current_user_id();
 
     $user_registered = (string) \Jenssegers\Date\Date::now();
 
     $user_modified = (string) \Jenssegers\Date\Date::now();
 
-    $compacted = compact('user_login', 'user_fname', 'user_lname', 'user_pass', 'user_email', 'user_url', 'user_status', 'user_role');
+    $compacted = compact('user_login', 'user_fname', 'user_lname', 'user_pass', 'user_email', 'user_url');
     $data = ttcms_unslash($compacted);
 
     /**
@@ -870,8 +929,6 @@ function ttcms_insert_user($userdata)
      *      @type string $user_pass         The user's password.
      *      @type string $user_email        The user's email.
      *      @type string $user_url          The user's url.
-     *      @type string $user_status       The user's status.
-     *      @type string $user_role         The user's role.
      *      @type string $user_addedby      User who registered user.
      *      @type string $user_registered   Timestamp describing the moment when the user registered. Defaults to
      *                                      Y-m-d h:i:s
@@ -931,15 +988,16 @@ function ttcms_insert_user($userdata)
      * @param array $meta {
      *     Default meta values and keys for the user.
      *
-     *     @type string $user_login           The user's username
-     *     @type string $user_fname           The user's first name.
-     *     @type string $user_lname           The user's last name.
-     *     @type string $user_bio             The user's bio.
-     *     @type string $user_role            The user's role.
-     *     @type string $user_status          The user's status.
-     *     @type int    $user_admin_layout    The user's layout option.
-     *     @type int    $user_admin_sidebar   The user's sidebar option.
-     *     @type int    $user_admin_skin      The user's skin option.
+     *     @type string $username       The user's username
+     *     @type string $fname          The user's first name.
+     *     @type string $lname          The user's last name.
+     *     @type string $email          The user's email.
+     *     @type string $bio            The user's bio.
+     *     @type string $role           The user's role.
+     *     @type string $status         The user's status.
+     *     @type int    $admin_layout   The user's layout option.
+     *     @type int    $admin_sidebar  The user's sidebar option.
+     *     @type int    $admin_skin     The user's skin option.
      * }
      * @param object $user  User object.
      * @param bool $update  Whether the user is being updated rather than created.
@@ -983,6 +1041,8 @@ function ttcms_insert_user($userdata)
  * value in the $userdata parameter array.
  * 
  * @see ttcms_insert_user() For what fields can be set in $userdata.
+ * 
+ * @file app/functions/user-function.php
  *
  * @since 0.9
  * @param object|User $userdata An array of user data or a user object of type stdClass or User.
@@ -992,7 +1052,7 @@ function ttcms_update_user($userdata)
 {
     if ($userdata instanceof \stdClass) {
         $userdata = get_object_vars($userdata);
-    } elseif ($userdata instanceof TriTan\User) {
+    } elseif ($userdata instanceof \TriTan\User) {
         $userdata = $userdata->to_array();
     }
 
@@ -1014,7 +1074,6 @@ function ttcms_update_user($userdata)
     foreach ($additional_user_keys as $key) {
         $user[$key] = get_user_option($key, (int) _escape($user['user_id']));
     }
-
 
     if (!empty($userdata['user_pass']) && $userdata['user_pass'] !== $user_obj->user_pass) {
         // If password is changing, hash it now
@@ -1073,6 +1132,8 @@ function ttcms_update_user($userdata)
 /**
  * Email sent to user with new generated password.
  * 
+ * @file app/functions/user-function.php
+ * 
  * @since 0.9
  * @param int $user
  *            User array.
@@ -1082,20 +1143,20 @@ function ttcms_update_user($userdata)
  */
 function send_reset_password_email($user, $password)
 {
-    $site_name = app()->hook->get_option('sitename');
+    $site_name = app()->hook->{'get_option'}('sitename');
 
     $message .= sprintf(_t("<p>Hello %s! You requested that your password be reset. Please see your new password below: <br />", 'tritan-cms'), _escape($user['user_fname']));
     $message .= sprintf(_t('Password: %s', 'tritan-cms'), $password) . "</p>";
     $message .= sprintf(_t('<p>If you still have problems with logging in, please contact us at %s.', 'tritan-cms'), app()->hook->{'get_option'}('admin_email')) . "</p>";
 
-    $message = process_email_html($message, sprint(_t('[%s] Password Reset', 'tritan-cms'), $site_name));
+    $message = process_email_html($message, sprintf(_t('[%s] Password Reset', 'tritan-cms'), $site_name));
     $headers[] = sprintf("From: %s <auto-reply@%s>", $site_name, get_domain_name());
     if (!function_exists('ttcms_smtp')) {
         $headers[] = 'Content-Type: text/html; charset="UTF-8"';
         $headers[] = sprintf("X-Mailer: TriTan CMS %s", CURRENT_RELEASE);
     }
     try {
-        _ttcms_email()->ttcmsMail(_escape($user['user_email']), sprint(_t('[%s] Notice of Password Reset', 'tritan-cms'), $site_name), $message, $headers);
+        _ttcms_email()->ttcmsMail(_escape($user['user_email']), sprintf(_t('[%s] Notice of Password Reset', 'tritan-cms'), $site_name), $message, $headers);
     } catch (PHPMailer\PHPMailer\Exception $ex) {
         _ttcms_flash()->error($ex->getMessage());
     } catch (Exception $ex) {
@@ -1105,6 +1166,8 @@ function send_reset_password_email($user, $password)
 
 /**
  * Email sent to user with changed/updated password.
+ * 
+ * @file app/functions/user-function.php
  * 
  * @since 0.9
  * @param int $user
@@ -1116,9 +1179,9 @@ function send_reset_password_email($user, $password)
  */
 function send_password_change_email($user, $password, $userdata)
 {
-    $site_name = app()->hook->get_option('sitename');
+    $site_name = app()->hook->{'get_option'}('sitename');
 
-    $message .= sprintf(_t("<p>Hello %s! This is confirmation that your password on %s was updated to: <br />", 'tritan-cms'), _escape($user['user_fname']));
+    $message .= sprintf(_t("<p>Hello %s! This is confirmation that your password on %s was updated to: <br />", 'tritan-cms'), _escape($user['user_fname']), app()->hook->{'get_option'}('sitename'));
     $message .= sprintf(_t('Password: %s', 'tritan-cms'), $password) . "</p>";
     $message .= sprintf(_t('<p>If you did not initiate a password change/update, please contact us at %s.', 'tritan-cms'), app()->hook->{'get_option'}('admin_email')) . "</p>";
 
@@ -1140,6 +1203,8 @@ function send_password_change_email($user, $password, $userdata)
 /**
  * Email sent to user with changed/updated email.
  * 
+ * @file app/functions/user-function.php
+ * 
  * @since 0.9
  * @param array $user       Original user array.
  * @param array $userdata   Updated user array.
@@ -1147,7 +1212,7 @@ function send_password_change_email($user, $password, $userdata)
  */
 function send_email_change_email($user, $userdata)
 {
-    $site_name = app()->hook->get_option('sitename');
+    $site_name = app()->hook->{'get_option'}('sitename');
 
     $message .= sprintf(_t("<p>Hello %s! This is confirmation that your email on %s was updated to: <br />", 'tritan-cms'), _escape($user['user_fname']), $site_name);
     $message .= sprintf(_t('Email: %s', 'tritan-cms'), _escape($userdata['user_email'])) . "</p>";
@@ -1170,6 +1235,8 @@ function send_email_change_email($user, $userdata)
 
 /**
  * Update user caches.
+ * 
+ * @file app/functions/user-function.php
  *
  * @since 0.9
  * @param object $user User object to be cached.
@@ -1192,6 +1259,10 @@ function update_user_caches($user)
 
 /**
  * Clean user caches.
+ * 
+ * Uses `clean_user_cache` action.
+ * 
+ * @file app/functions/user-function.php
  *
  * @since 0.9
  * @param object|int $user User object or user_id to be cleaned from the cache.
@@ -1222,6 +1293,10 @@ function clean_user_cache($user)
 
 /**
  * An extensive list of blacklisted usernames.
+ * 
+ * Uses `blacklisted_usernames` filter.
+ * 
+ * @file app/functions/user-function.php
  * 
  * @since 0.9
  * @return array Array of blacklisted usernames.
@@ -1310,4 +1385,52 @@ function blacklisted_usernames()
     ];
 
     return app()->hook->{'apply_filter'}('blacklisted_usernames', $blacklist);
+}
+
+/**
+ * Recently published widget.
+ * 
+ * @file app/functions/user-function.php
+ * 
+ * @since 0.9.8
+ * @return 5 recently published posts.
+ */
+function recently_published_widget()
+{
+    $posts = get_all_posts(null, 5);
+    $_posts = ttcms_list_sort($posts, 'post_created', 'DESC');
+
+    foreach ($_posts as $post) {
+        echo '<div class="text-muted">' . get_post_datetime(_escape($post['post_id'])) . "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . sprintf('<a href="%s">%s</a>', get_base_url() . 'admin' . '/' . _escape($post['post_type']['post_posttype']) . '/' . _escape($post['post_id']) . '/', _escape($post['post_title'])) . '</div>';
+    }
+}
+
+function tritan_cms_feed_widget()
+{
+    $cache = new \TriTan\Cache('rss');
+    if (!$cache->setCache()) :
+        $rss1 = new \DOMDocument();
+        $rss1->load('https://www.tritancms.com/blog/rss/');
+        $feed = [];
+        foreach ($rss1->getElementsByTagName('item') as $node) {
+            $item = [
+                'title' => $node->getElementsByTagName('title')->item(0)->nodeValue,
+                'desc' => $node->getElementsByTagName('description')->item(0)->nodeValue,
+                'link' => $node->getElementsByTagName('link')->item(0)->nodeValue,
+                'date' => $node->getElementsByTagName('pubDate')->item(0)->nodeValue,
+            ];
+            array_push($feed, $item);
+        }
+        $limit = 3;
+        for ($x = 0; $x < $limit; $x++) {
+            $title = str_replace(' & ', ' &amp; ', $feed[$x]['title']);
+            $link = $feed[$x]['link'];
+            $description = $feed[$x]['desc'];
+            $date = date('l F d, Y', strtotime($feed[$x]['date']));
+            echo '<p><strong><a href="' . $link . '" title="' . $title . '">' . $title . '</a></strong><br />';
+            echo '<small><em>Posted on ' . $date . '</em></small></p>';
+            echo '<p>' . $description . '</p>';
+        }
+    endif;
+    echo $cache->getCache();
 }

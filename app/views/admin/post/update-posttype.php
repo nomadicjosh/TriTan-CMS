@@ -1,7 +1,7 @@
 <?php if (!defined('BASE_PATH')) exit('No direct script access allowed');
-$app = \Liten\Liten::getInstance();
-$app->view->extend('_layouts/admin');
-$app->view->block('admin');
+use TriTan\Functions as func;
+$this->layout('main::_layouts/admin-layout');
+$this->section('backend');
 TriTan\Config::set('screen_parent', 'post_type');
 ?>
 
@@ -15,18 +15,18 @@ $(function(){
 </script>
 
 <!-- form start -->
-<form method="post" action="<?=get_base_url(); ?>admin/post-type/<?=_escape($posttype['posttype_id']);?>/" data-toggle="validator" autocomplete="off">
+<form method="post" action="<?=func\get_base_url(); ?>admin/post-type/<?=$this->posttype['posttype_id'];?>/" data-toggle="validator" autocomplete="off">
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <div class="box box-solid">
         <div class="box-header with-border">
             <i class="fa fa-thumb-tack"></i>
-            <h3 class="box-title"><?= _t('Update Post Type', 'tritan-cms'); ?></h3>
+            <h3 class="box-title"><?= func\_t('Update Post Type', 'tritan-cms'); ?></h3>
 
             <div class="pull-right">
-                <button type="submit" class="btn btn-success"><i class="fa fa-pencil"></i> <?= _t('Update', 'tritan-cms'); ?></button>
-                <button type="button" class="btn btn-primary" onclick="window.location='<?=get_base_url();?>admin/post-type/'"><i class="fa fa-ban"></i> <?= _t('Cancel', 'tritan-cms'); ?></button>
+                <button type="submit" class="btn btn-success"><i class="fa fa-pencil"></i> <?= func\_t('Update', 'tritan-cms'); ?></button>
+                <button type="button" class="btn btn-primary" onclick="window.location='<?=func\get_base_url();?>admin/post-type/'"><i class="fa fa-ban"></i> <?= func\_t('Cancel', 'tritan-cms'); ?></button>
             </div>
         </div>
     </div>
@@ -34,26 +34,26 @@ $(function(){
     <!-- Main content -->
     <section class="content">
 
-    <?= _ttcms_flash()->showMessage(); ?>
+    <?= func\_ttcms_flash()->showMessage(); ?>
 
         <div class="box box-default">
             <div class="box-body">
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-group">
-                            <label><font color="red">*</font> <?= _t('Post Type Name', 'tritan-cms'); ?></label>
-                            <input type="text" class="form-control input-lg" name="posttype_title" id="posttype_title" value="<?=_escape($posttype['posttype_title']);?>" required/>
+                            <label><font color="red">*</font> <?= func\_t('Post Type Name', 'tritan-cms'); ?></label>
+                            <input type="text" class="form-control input-lg" name="posttype_title" id="posttype_title" value="<?=$this->posttype['posttype_title'];?>" required/>
                         </div>
                         <div class="form-group">
-                            <label><?= _t('Post Type Slug', 'tritan-cms'); ?></label>
-                            <input type="text" class="form-control" name="posttype_slug" id="posttype_slug" value="<?=_escape($posttype['posttype_slug']);?>" />
+                            <label><?= func\_t('Post Type Slug', 'tritan-cms'); ?></label>
+                            <input type="text" class="form-control" name="posttype_slug" id="posttype_slug" value="<?=$this->posttype['posttype_slug'];?>" />
                         </div>
 
                         <div class="form-group">
-                            <label><?= _t('Post Type Description', 'tritan-cms'); ?></label>
-                            <textarea class="form-control" rows="3" name="posttype_description"><?=_escape($posttype['posttype_description']);?></textarea>
+                            <label><?= func\_t('Post Type Description', 'tritan-cms'); ?></label>
+                            <textarea class="form-control" rows="3" name="posttype_description"><?=$this->posttype['posttype_description'];?></textarea>
                         </div>
-                        <?php $app->hook->{'do_action'}('update_posttype_form_fields', _escape($posttype['posttype_id'])); ?>
+                        <?php $this->app->hook->{'do_action'}('update_posttype_form_fields', $this->posttype['posttype_id']); ?>
                     </div>
                     <!-- /.col -->
                 </div>
@@ -70,4 +70,4 @@ $(function(){
 <!-- /.content-wrapper -->
 </form>
 
-<?php $app->view->stop(); ?>
+<?php $this->stop(); ?>

@@ -1,9 +1,10 @@
 <?php
+
+namespace TriTan\Functions;
+
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
-
 use TriTan\Config;
-
 /**
  * TriTan CMS Logging Functions
  *
@@ -108,6 +109,8 @@ Cascade::fileConfig(app()->hook->{'apply_filter'}('monolog_cascade_config', $con
  * Sets the default error handler to handle
  * PHP errors and exceptions.
  *
+ * @file app/functions/logger-function.php
+ * 
  * @since 0.9
  */
 function ttcms_error_handler($type, $string, $file, $line)
@@ -118,6 +121,8 @@ function ttcms_error_handler($type, $string, $file, $line)
 
 /**
  * Set Error Log for Debugging.
+ * 
+ * @file app/functions/logger-function.php
  * 
  * @since 0.9
  * @param string|array $value The data to be catched.
@@ -134,6 +139,8 @@ function ttcms_error_log($value)
 /**
  * Write Activity Logs to Database.
  *
+ * @file app/functions/logger-function.php
+ * 
  * @since 0.9
  */
 function ttcms_logger_activity_log_write($action, $process, $record, $uname)
@@ -145,6 +152,8 @@ function ttcms_logger_activity_log_write($action, $process, $record, $uname)
 /**
  * Purges the error log of old records.
  *
+ * @file app/functions/logger-function.php
+ * 
  * @since 0.9
  */
 function ttcms_logger_error_log_purge()
@@ -156,6 +165,8 @@ function ttcms_logger_error_log_purge()
 /**
  * Purges the activity log of old records.
  *
+ * @file app/functions/logger-function.php
+ * 
  * @since 0.9
  */
 function ttcms_logger_activity_log_purge()
@@ -166,6 +177,8 @@ function ttcms_logger_activity_log_purge()
 
 /**
  * Custom error log function for better PHP logging.
+ * 
+ * @file app/functions/logger-function.php
  * 
  * @since 0.9
  * @param string $name
@@ -182,6 +195,8 @@ function ttcms_monolog($name, $message)
 
 /**
  * Set the system environment.
+ * 
+ * @file app/functions/logger-function.php
  * 
  * @since 0.9
  */
@@ -204,6 +219,6 @@ function ttcms_set_environment()
         ini_set('display_errors', 'Off');
         ini_set('log_errors', 'On');
         ini_set('error_log', Config::get('site_path') . 'files' . DS . 'logs' . DS . 'ttcms-error-' . \Jenssegers\Date\Date::now()->format('Y-m-d') . '.txt');
-        set_error_handler('ttcms_error_handler', E_ALL & ~E_NOTICE);
+        set_error_handler('TriTan\\Functions\\ttcms_error_handler', E_ALL & ~E_NOTICE);
     }
 }

@@ -1,8 +1,11 @@
-<?php namespace TriTan;
+<?php
+
+namespace TriTan;
 
 use TriTan\Config;
 use TriTan\Exception;
 use Cascade\Cascade;
+use TriTan\Functions as func;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
@@ -40,15 +43,15 @@ class Logger
         $create = date("Y-m-d H:i:s", time());
         $current_date = strtotime($create);
         /* 20 days after creation date */
-        $expire = date("Y-m-d H:i:s", $current_date+=1728000);
+        $expire = date("Y-m-d H:i:s", $current_date += 1728000);
 
-        $expires_at = $this->app->hook->apply_filter('activity_log_expires', $expire);
+        $expires_at = $this->app->hook->{'apply_filter'}('activity_log_expires', $expire);
 
         $log = $this->app->db->table(Config::get('tbl_prefix') . 'activity');
         $log->begin();
         try {
             $log->insert([
-                'activity_id' => auto_increment(Config::get('tbl_prefix') . 'activity', 'activity_id'),
+                'activity_id' => func\auto_increment(Config::get('tbl_prefix') . 'activity', 'activity_id'),
                 'action' => $action,
                 'process' => $process,
                 'record' => $record,
@@ -60,7 +63,7 @@ class Logger
         } catch (Exception $ex) {
             $log->rollback();
             Cascade::getLogger('error')->error($ex->getMessage());
-            _ttcms_flash()->error(_ttcms_flash()->notice(409));
+            func\_ttcms_flash()->error(func\_ttcms_flash()->notice(409));
         }
     }
 
@@ -72,20 +75,20 @@ class Logger
     public function purgeActivityLog()
     {
         $log_count = $this->app->db->table(Config::get('tbl_prefix') . 'activity')
-            ->where('expires_at', '<=', date('Y-m-d H:i:s', time()))
-            ->get();
+                ->where('expires_at', '<=', date('Y-m-d H:i:s', time()))
+                ->get();
 
         if (count($log_count) > 0) {
             $delete = $this->app->db->table(Config::get('tbl_prefix') . 'activity');
             $delete->begin();
             try {
                 $delete->where('expires_at', '<=', date('Y-m-d H:i:s', time()))
-                    ->delete();
+                        ->delete();
                 $delete->commit();
             } catch (Exception $ex) {
                 $delete->rollback();
                 Cascade::getLogger('error')->error($ex->getMessage());
-                _ttcms_flash()->error(_ttcms_flash()->notice(409));
+                func\_ttcms_flash()->error(func\_ttcms_flash()->notice(409));
             }
         }
     }
@@ -100,7 +103,7 @@ class Logger
         $logs = glob(Config::get('site_path') . 'files' . DS . 'logs' . DS . '*.txt');
         if (is_array($logs)) {
             foreach ($logs as $log) {
-                $filelastmodified = file_mod_time($log);
+                $filelastmodified = func\file_mod_time($log);
                 if ((time() - $filelastmodified) >= 30 * 24 * 3600 && is_file($log)) {
                     unlink($log);
                 }
@@ -115,7 +118,7 @@ class Logger
         $log->begin();
         try {
             $log->insert([
-                'error_id' => auto_increment(Config::get('tbl_prefix') . 'error', 'error_id'),
+                'error_id' => func\auto_increment(Config::get('tbl_prefix') . 'error', 'error_id'),
                 'time' => $date->getTimestamp(),
                 'type' => (int) $type,
                 'string' => (string) $string,
@@ -127,7 +130,7 @@ class Logger
         } catch (Exception $ex) {
             $log->rollback();
             Cascade::getLogger('error')->error($ex->getMessage());
-            _ttcms_flash()->error(_ttcms_flash()->notice(409));
+            func\_ttcms_flash()->error(func\_ttcms_flash()->notice(409));
         }
     }
 
@@ -154,4 +157,5 @@ class Logger
 
         return $values[$value];
     }
+
 }

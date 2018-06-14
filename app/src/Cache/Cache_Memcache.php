@@ -1,8 +1,11 @@
-<?php namespace TriTan\Cache;
+<?php
+
+namespace TriTan\Cache;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use TriTan\Exception\Exception;
+use TriTan\Functions as func;
 
 /**
  * TriTan CMS \Memcache|\Memcached Class.
@@ -82,7 +85,7 @@ class Cache_Memcache extends \TriTan\Cache\Abstract_Cache
          * @since 0.9
          * @var bool
          */
-        $this->enable = $this->app->hook->apply_filter('enable_caching', true);
+        $this->enable = $this->app->hook->{'apply_filter'}('enable_caching', true);
     }
 
     /**
@@ -288,11 +291,11 @@ class Cache_Memcache extends \TriTan\Cache\Abstract_Cache
         if ($this->useMemcached == false) {
             $stats = $this->connection->getStats();
             echo "<p>";
-            echo "<strong>" . _t('Cache Hits:') . "</strong> " . $stats['get_hits'] . "<br />";
-            echo "<strong>" . _t('Cache Misses:') . "</strong> " . $stats['get_misses'] . "<br />";
-            echo "<strong>" . _t('Uptime:') . "</strong> " . $stats['uptime'] . "<br />";
-            echo "<strong>" . _t('Memory Usage:') . "</strong> " . $stats['bytes'] . "<br />";
-            echo "<strong>" . _t('Memory Available:') . "</strong> " . $stats['limit_maxbytes'] . "<br />";
+            echo "<strong>" . func\_t('Cache Hits:', 'tritan-cms') . "</strong> " . $stats['get_hits'] . "<br />";
+            echo "<strong>" . func\_t('Cache Misses:', 'tritan-cms') . "</strong> " . $stats['get_misses'] . "<br />";
+            echo "<strong>" . func\_t('Uptime:', 'tritan-cms') . "</strong> " . $stats['uptime'] . "<br />";
+            echo "<strong>" . func\_t('Memory Usage:', 'tritan-cms') . "</strong> " . $stats['bytes'] . "<br />";
+            echo "<strong>" . func\_t('Memory Available:', 'tritan-cms') . "</strong> " . $stats['limit_maxbytes'] . "<br />";
             echo "</p>";
         }
 
@@ -302,11 +305,11 @@ class Cache_Memcache extends \TriTan\Cache\Abstract_Cache
             $key = $servers[0]['host'] . ':' . $servers[0]['port'];
             $stats = $stats[$key];
             echo "<p>";
-            echo "<strong>" . _t('Cache Hits:') . "</strong> " . $stats['get_hits'] . "<br />";
-            echo "<strong>" . _t('Cache Misses:') . "</strong> " . $stats['get_misses'] . "<br />";
-            echo "<strong>" . _t('Uptime:') . "</strong> " . $stats['uptime'] . "<br />";
-            echo "<strong>" . _t('Memory Usage:') . "</strong> " . $stats['bytes'] . "<br />";
-            echo "<strong>" . _t('Memory Available:') . "</strong> " . $stats['limit_maxbytes'] . "<br />";
+            echo "<strong>" . func\_t('Cache Hits:', 'tritan-cms') . "</strong> " . $stats['get_hits'] . "<br />";
+            echo "<strong>" . func\_t('Cache Misses:', 'tritan-cms') . "</strong> " . $stats['get_misses'] . "<br />";
+            echo "<strong>" . func\_t('Uptime:', 'tritan-cms') . "</strong> " . $stats['uptime'] . "<br />";
+            echo "<strong>" . func\_t('Memory Usage:', 'tritan-cms') . "</strong> " . $stats['bytes'] . "<br />";
+            echo "<strong>" . func\_t('Memory Available:', 'tritan-cms') . "</strong> " . $stats['limit_maxbytes'] . "<br />";
             echo "</p>";
         }
     }
@@ -375,7 +378,7 @@ class Cache_Memcache extends \TriTan\Cache\Abstract_Cache
 
             foreach ($servers as $server) {
                 if (empty($existingServers) || !isset($existingServers[$server->host . ':' . $server->port])) {
-                    $this->connection->addServer($server->$host, $server->$port, $server->$weight);
+                    $this->connection->addServer($server->host, $server->port, $server->weight);
                 }
             }
         }
@@ -446,4 +449,5 @@ class Cache_Memcache extends \TriTan\Cache\Abstract_Cache
         $namespace = explode(':', $value);
         return $namespace[0] . ':';
     }
+
 }

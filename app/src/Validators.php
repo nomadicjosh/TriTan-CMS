@@ -7,6 +7,7 @@ if (!defined('BASE_PATH'))
 use Respect\Validation\Exceptions\ValidationException;
 use Respect\Validation\Validator;
 use Cascade\Cascade;
+use TriTan\Functions as func;
 
 /**
  * Validators
@@ -36,7 +37,7 @@ class Validators
             return true;
         } catch (ValidationException $ex) {
             Cascade::getLogger('error')->error(sprintf('VALIDATOR[%s]: %s', $ex->getCode(), $ex->getMessage()));
-            _ttcms_flash()->error($ex->getMessage());
+            func\_ttcms_flash()->error($ex->getMessage());
             return false;
         }
     }

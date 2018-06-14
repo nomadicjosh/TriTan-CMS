@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Settings
  *  
@@ -14,9 +15,9 @@ use TriTan\Config;
  * Set the current site based on HTTP_HOST.
  */
 $current_site_id = $app->db->table('site')
-    ->where('site_domain', $app->req->server['HTTP_HOST'])
-    ->where('site_path', str_replace('index.php', '', $app->req->server['PHP_SELF']))
-    ->first();
+        ->where('site_domain', $app->req->server['HTTP_HOST'])
+        ->where('site_path', str_replace('index.php', '', $app->req->server['PHP_SELF']))
+        ->first();
 
 $site_id = (int) $current_site_id['site_id'];
 
@@ -53,9 +54,6 @@ Config::set('theme_dir', Config::get('site_path') . 'themes' . DS);
  * or preliminary functions for your application.
  */
 require( APP_PATH . 'functions.php' );
-require( APP_PATH . 'functions' . DS . 'dependency.php' );
-require( APP_PATH . 'functions' . DS . 'hook-function.php' );
-require( APP_PATH . 'application.php' );
 
 /**
  * Fires before the site's theme is loaded.
@@ -84,6 +82,23 @@ $app->inst->singleton('fenom', function () use($app) {
     return $fenom;
 });
 
+if (\TriTan\Functions\ttcms_file_exists(Config::get('theme_path') . 'views' . DS, false)) {
+    $templates = ['main' => APP_PATH . 'views' . DS, 'theme' => Config::get('theme_path') . 'views' . DS, 'plugin' => TTCMS_PLUGIN_DIR];
+} else {
+    $templates = ['main' => APP_PATH . 'views' . DS, 'plugin' => TTCMS_PLUGIN_DIR];
+}
+
+/**
+ * Sets up the Foil global variable.
+ */
+$app->inst->singleton('foil', function () use($app, $templates) {
+    $engine = Foil\engine([
+        'folders' => $templates
+    ]);
+    $engine->useData(['app' => $app, 'current_user_id' => \TriTan\Functions\get_current_user_id()]);
+    return $engine;
+});
+
 /**
  * Fires after the site's theme is loaded.
  *
@@ -108,6 +123,13 @@ unset($mu_plugin);
  * @since 0.9
  */
 $app->hook->{'do_action'}('muplugins_loaded');
+
+/**
+ * Fires once activated plugins have loaded.
+ * 
+ * @since 0.9
+ */
+$app->hook->{'do_action'}('plugins_loaded');
 
 /**
  * Include the routers needed

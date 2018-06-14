@@ -2,18 +2,18 @@
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use TriTan\Config;
+use TriTan\Functions as func;
 /**
  * Manage Roles View
  *  
  * @license GPLv3
  * 
- * @since       1.0.0
+ * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
  */
-$app = \Liten\Liten::getInstance();
-$app->view->extend('_layouts/admin');
-$app->view->block('admin');
+$this->layout('main::_layouts/admin-layout');
+$this->section('backend');
 $roles = new \TriTan\ACL();
 Config::set('screen_parent', 'roles');
 Config::set('screen_child', 'role');
@@ -26,10 +26,10 @@ Config::set('screen_child', 'role');
     <div class="box box-solid">
         <div class="box-header with-border">
             <i class="fa fa-text-width"></i>
-            <h3 class="box-title"><?= _t('Roles', 'tritan-cms'); ?></h3>
+            <h3 class="box-title"><?= func\_t('Roles', 'tritan-cms'); ?></h3>
             
             <div class="pull-right">
-                <button type="button" class="btn btn-success" onclick="window.location = '<?= get_base_url(); ?>admin/role/create/'"><i class="fa fa-plus-circle"></i> <?= _t('Create a Role'); ?></button>
+                <button type="button" class="btn btn-success" onclick="window.location = '<?= func\get_base_url(); ?>admin/role/create/'"><i class="fa fa-plus-circle"></i> <?= func\_t('Create a Role'); ?></button>
             </div>
         </div>
     </div>
@@ -37,7 +37,7 @@ Config::set('screen_child', 'role');
     <!-- Main content -->
     <section class="content">
 
-        <?= _ttcms_flash()->showMessage(); ?>
+        <?= func\_ttcms_flash()->showMessage(); ?>
 
         <!-- SELECT2 EXAMPLE -->
         <div class="box box-default">
@@ -45,8 +45,9 @@ Config::set('screen_child', 'role');
                 <table id="example1" class="table table-bordered table-hover">
                     <thead>
                         <tr>
-                            <th class="text-center"><?= _t('Name'); ?></th>
-                            <th class="text-center"><?= _t('Edit'); ?></th>
+                            <th class="text-center"><?= func\_t('Name'); ?></th>
+                            <th class="text-center"><?= func\_t('Key'); ?></th>
+                            <th class="text-center"><?= func\_t('Edit'); ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -55,8 +56,9 @@ Config::set('screen_child', 'role');
                         if ($listRoles != '') {
                             foreach ($listRoles as $k => $v) {
                                 echo '<tr class="gradeX">' . "\n";
-                                echo '<td class="text-center">' . _escape($v['Name']) . '</td>' . "\n";
-                                echo '<td class="text-center"><a href="' . get_base_url() . 'admin/role/' . _escape((int) $v['ID']) . '/" data-toggle="tooltip" data-placement="top" title="View/Edit" class="btn bg-yellow"><i class="fa fa-edit"></i></a></td>';
+                                echo '<td class="text-center">' . func\_escape($v['Name']) . '</td>' . "\n";
+                                echo '<td class="text-center">' . func\_escape($v['Key']) . '</td>' . "\n";
+                                echo '<td class="text-center"><a href="' . func\get_base_url() . 'admin/role/' . func\_escape((int) $v['ID']) . '/" data-toggle="tooltip" data-placement="top" title="View/Edit" class="btn bg-yellow"><i class="fa fa-edit"></i></a></td>';
                                 echo '</tr>';
                             }
                         }
@@ -65,8 +67,8 @@ Config::set('screen_child', 'role');
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th class="text-center"><?= _t('Name'); ?></th>
-                            <th class="text-center"><?= _t('Edit'); ?></th>
+                            <th class="text-center"><?= func\_t('Name'); ?></th>
+                            <th class="text-center"><?= func\_t('Edit'); ?></th>
                         </tr>
                     </tfoot>
                 </table>
@@ -79,4 +81,4 @@ Config::set('screen_child', 'role');
     <!-- /.content -->
 </div>
 <!-- /.content-wrapper -->
-<?php $app->view->stop(); ?>
+<?php $this->stop(); ?>

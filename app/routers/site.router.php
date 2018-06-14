@@ -5,20 +5,21 @@ if (!defined('BASE_PATH'))
 use TriTan\Config;
 use TriTan\Exception\Exception;
 use Cascade\Cascade;
+use TriTan\Functions as func;
 
-$user = get_userdata(get_current_user_id());
+$user = func\get_userdata(func\get_current_user_id());
 
 /**
  * Before router checks to make sure the logged in user
  * us allowed to access admin.
  */
 $app->before('GET|POST', '/admin(.*)', function() {
-    if (!is_user_logged_in()) {
-        _ttcms_flash()->{'error'}(_t('401 - Error: Unauthorized.', 'tritan-cms'), get_base_url() . 'login' . '/');
+    if (!func\is_user_logged_in()) {
+        func\_ttcms_flash()->{'error'}(func\_t('401 - Error: Unauthorized.', 'tritan-cms'), func\get_base_url() . 'login' . '/');
         exit();
     }
-    if (!hasPermission('access_admin')) {
-        _ttcms_flash()->{'error'}(_t('403 - Error: Forbidden.', 'tritan-cms'), get_base_url());
+    if (!func\current_user_can('access_admin')) {
+        func\_ttcms_flash()->{'error'}(func\_t('403 - Error: Forbidden.', 'tritan-cms'), func\get_base_url());
         exit();
     }
 });
@@ -30,8 +31,8 @@ $app->group('/admin', function() use ($app, $user) {
      * is allowed to delete posts.
      */
     $app->before('GET|POST', '/site/', function() {
-        if (!hasPermission('manage_sites')) {
-            _ttcms_flash()->{'error'}(_t('You do not have permission to manage sites.', 'tritan-cms'), get_base_url() . 'admin' . '/');
+        if (!func\current_user_can('manage_sites')) {
+            func\_ttcms_flash()->{'error'}(func\_t('You do not have permission to manage sites.', 'tritan-cms'), func\get_base_url() . 'admin' . '/');
             exit();
         }
     });
@@ -40,18 +41,18 @@ $app->group('/admin', function() use ($app, $user) {
 
         if ($app->req->isPost()) {
             try {
-                ttcms_insert_site($app->req->post);
-                _ttcms_flash()->{'success'}(_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
+                func\ttcms_insert_site($app->req->post);
+                func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
             } catch (Exception $ex) {
                 Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
-                _ttcms_flash()->{'error'}($ex->getMessage());
+                func\_ttcms_flash()->{'error'}($ex->getMessage());
             }
         }
 
         $sites = $app->db->table('site')->all();
 
-        $app->view->display('admin/site/index', [
-            'title' => _t('Sites', 'tritan-cms'),
+        $app->foil->render('main::admin/site/index', [
+            'title' => func\_t('Sites', 'tritan-cms'),
             'sites' => $sites
                 ]
         );
@@ -62,8 +63,8 @@ $app->group('/admin', function() use ($app, $user) {
      * user has the permission to edit a posttype.
      */
     $app->before('GET|POST', '/site/(\d+)/', function() {
-        if (!hasPermission('update_sites')) {
-            _ttcms_flash()->{'error'}(_t('You do not have permission to update sites.', 'tritan-cms'), get_base_url() . 'admin' . '/');
+        if (!func\current_user_can('update_sites')) {
+            func\_ttcms_flash()->{'error'}(func\_t('You do not have permission to update sites.', 'tritan-cms'), func\get_base_url() . 'admin' . '/');
             exit();
         }
     });
@@ -72,15 +73,15 @@ $app->group('/admin', function() use ($app, $user) {
         if ($app->req->isPost()) {
             try {
                 $site = array_merge(['site_id' => $id], $app->req->post);
-                ttcms_update_site($site);
-                _ttcms_flash()->{'success'}(_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
+                func\ttcms_update_site($site);
+                func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
             } catch (Exception $ex) {
                 Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
-                _ttcms_flash()->{'error'}($ex->getMessage());
+                func\_ttcms_flash()->{'error'}($ex->getMessage());
             }
         }
 
-        $q = get_site((int) $id);
+        $q = func\get_site((int) $id);
 
         /**
          * If the posttype doesn't exist, then it
@@ -104,8 +105,8 @@ $app->group('/admin', function() use ($app, $user) {
          * the results in a jhtml format.
          */ else {
 
-            $app->view->display('admin/site/update', [
-                'title' => _t('Update Site', 'tritan-cms'),
+            $app->foil->render('main::admin/site/update', [
+                'title' => func\_t('Update Site', 'tritan-cms'),
                 'site' => $q,
                     ]
             );
@@ -117,15 +118,15 @@ $app->group('/admin', function() use ($app, $user) {
      * us allowed to delete posttypes.
      */
     $app->before('GET|POST', '/site/(\d+)/d/', function() {
-        if (!hasPermission('delete_sites')) {
-            _ttcms_flash()->{'error'}(_t('You do not have permission to delete sites.', 'tritan-cms'), get_base_url() . 'admin' . '/');
+        if (!func\current_user_can('delete_sites')) {
+            func\_ttcms_flash()->{'error'}(func\_t('You do not have permission to delete sites.', 'tritan-cms'), func\get_base_url() . 'admin' . '/');
             exit();
         }
     });
 
     $app->get('/site/(\d+)/d/', function($id) use($app) {
         if ((int) $id == (int) '1') {
-            _ttcms_flash()->{'error'}(_t('You are not allowed to delete the main site.', 'tritan-cms'), get_base_url() . 'admin' . '/');
+            func\_ttcms_flash()->{'error'}(func\_t('You are not allowed to delete the main site.', 'tritan-cms'), func\get_base_url() . 'admin' . '/');
             exit();
         }
         $site = $app->db->table('site');
@@ -141,12 +142,12 @@ $app->group('/admin', function() use ($app, $user) {
              * @param int $id Site ID.
              */
             $app->hook->{'do_action'}('delete_site', (int) $id);
-            ttcms_cache_delete($id, 'site');
-            _ttcms_flash()->{'success'}(_ttcms_flash()->notice(200), get_base_url() . 'admin/site/');
+            func\ttcms_cache_delete($id, 'site');
+            func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), func\get_base_url() . 'admin/site/');
         } catch (Exception $ex) {
             $site->rollback();
             Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
-            _ttcms_flash()->{'error'}($ex->getMessage(), get_base_url() . 'admin/site/');
+            func\_ttcms_flash()->{'error'}($ex->getMessage(), func\get_base_url() . 'admin/site/');
         }
     });
 
@@ -154,8 +155,8 @@ $app->group('/admin', function() use ($app, $user) {
      * Before route check.
      */
     $app->before('GET|POST', '/site/users/', function () {
-        if (!hasPermission('manage_sites')) {
-            _ttcms_flash()->{'error'}(_t("You don't have permission to manage sites.", 'tritan-cms'), get_base_url() . 'admin' . '/');
+        if (!func\current_user_can('manage_sites')) {
+            func\_ttcms_flash()->{'error'}(func\_t("You don't have permission to manage sites.", 'tritan-cms'), func\get_base_url() . 'admin' . '/');
             exit();
         }
     });
@@ -163,8 +164,8 @@ $app->group('/admin', function() use ($app, $user) {
     $app->get('/site/users/', function () use($app) {
         $users = $app->db->table('user')->all();
 
-        $app->view->display('admin/site/users', [
-            'title' => _t('Manage Site Users', 'tritan-cms'),
+        $app->foil->render('main::admin/site/users', [
+            'title' => func\_t('Manage Site Users', 'tritan-cms'),
             'users' => $users
                 ]
         );
@@ -175,8 +176,8 @@ $app->group('/admin', function() use ($app, $user) {
      * us allowed to delete posttypes.
      */
     $app->before('GET|POST', '/site/users/(\d+)/d/', function() {
-        if (!hasPermission('delete_users') && !hasPermission('manage_sites')) {
-            _ttcms_flash()->{'error'}(_t('You do not have permission to delete site users.', 'tritan-cms'), get_base_url() . 'admin/site/users/');
+        if (!func\current_user_can('delete_users') && !func\current_user_can('manage_sites')) {
+            func\_ttcms_flash()->{'error'}(func\_t('You do not have permission to delete site users.', 'tritan-cms'), func\get_base_url() . 'admin/site/users/');
             exit();
         }
     });
@@ -184,7 +185,7 @@ $app->group('/admin', function() use ($app, $user) {
     $app->get('/site/users/(\d+)/d/', function($id) use($app) {
         $tbl_prefix = Config::get('tbl_prefix');
         if ((int) $id == (int) '1') {
-            _ttcms_flash()->{'error'}(_t('You are not allowed to delete the super administrator.', 'tritan-cms'), get_base_url() . 'admin/site/users/');
+            func\_ttcms_flash()->{'error'}(func\_t('You are not allowed to delete the super administrator.', 'tritan-cms'), func\get_base_url() . 'admin/site/users/');
             exit();
         }
         $user = $app->db->table('user');
@@ -221,14 +222,14 @@ $app->group('/admin', function() use ($app, $user) {
              * @param int $id Site ID.
              */
             $app->hook->{'do_action'}('delete_user', (int) $id);
-            ttcms_cache_delete($id, 'user');
-            ttcms_cache_flush_namespace('user_meta');
-            clean_user_cache($id);
-            _ttcms_flash()->{'success'}(_ttcms_flash()->notice(200), get_base_url() . 'admin/site/users/');
+            func\ttcms_cache_delete($id, 'user');
+            func\ttcms_cache_flush_namespace('user_meta');
+            func\clean_user_cache($id);
+            func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), func\get_base_url() . 'admin/site/users/');
         } catch (Exception $ex) {
             $user->rollback();
             Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
-            _ttcms_flash()->{'error'}($ex->getMessage(), get_base_url() . 'admin/site/');
+            func\_ttcms_flash()->{'error'}($ex->getMessage(), func\get_base_url() . 'admin/site/');
         }
     });
 

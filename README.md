@@ -75,6 +75,7 @@ As mentioned previously, TriTan CMS is also a content management framework. You 
 | [Validation](//github.com/Respect/Validation)  | The most awesome validation engine ever created for PHP.  |
 | [Zebra Pagination](//github.com/stefangabos/Zebra_Pagination)  | A generic, Twitter Bootstrap compatible, pagination library that automatically generates navigation links.  |
 | [Fenom](//github.com/fenom-template/fenom)  | Lightweight and fast template engine for PHP.  |
+| [Foil](//github.com/FoilPHP/Foil)  | PHP template engine for native PHP templates.  |
 | [Form](//github.com/adamwathan/form)  | Builds form HTML with a fluent-ish, hopefully intuitive syntax.  |
 | [Mobile Detect](//github.com/serbanghita/Mobile-Detect)  | Mobile_Detect is a lightweight PHP class for detecting mobile devices (including tablets). It uses the User-Agent string combined with specific HTTP headers to detect the mobile environment.  |
 | [Graphql](//github.com/webonyx/graphql-php)  | This is a PHP implementation of the GraphQL specification based on the reference implementation in JavaScript.  |
@@ -89,22 +90,12 @@ There is currently no theme repository due to the nature of the project. However
 The Liten Framework was used in the build of TriTan CMS. So, if you are interested in adding a head to your TriTan install, you will need to learn about [routing](//www.litenframework.com/wiki/routing/) and [middlewares](//www.litenframework.com/wiki/middleware/).
 
 ## Plugins
-The following plugins are available for download and use.
-
-| Name  | Description  | 
-|---|---|
-| [Adminbar](//tritan-cms.s3.amazonaws.com/plugins/adminbar.zip)  | Adds an admin bar to a TriTan CMS site.  |
-| [Easy iFrame Loader](//tritan-cms.s3.amazonaws.com/plugins/easy-iframe-loader.zip)  | The Easy iFrame Loader plugin allows you to enter an iframe parsecode into any TriTan post. You can use the plugin to load a Moodle site, Amazon store, or vidoes.  |
-| [Inject Code](//tritan-cms.s3.amazonaws.com/plugins/inject-code.zip)  | Add any kind of javascript or tracking code to TriTan head or footer section.  |
-| [Reftagger](//tritan-cms.s3.amazonaws.com/plugins/reftagger.zip)  | Reftagger turns Bible references into links to the verse on Biblia.com / Faithlife.com and adds tooltips with the text of the verse.  |
-| [SimpleMDE - Markdown Editor](//tritan-cms.s3.amazonaws.com/plugins/simplemde.zip)  | A drop-in JavaScript textarea replacement for writing beautiful and understandable Markdown.  |
-| [Syntax Highlighter](//tritan-cms.s3.amazonaws.com/plugins/syntax-highlighter.zip)  | A lightweight and simple syntax highligher with automatic language detection.  |
-| [TTCMS SMTP](//tritan-cms.s3.amazonaws.com/plugins/ttcms-smtp.zip)  | TriTan CMS SMTP will allow you to send emails through an SMTP server and override the PHP mail() as well as the TriTan CMS ttcmsMail() sending methods.  |
+Check out [Gitspace](https://gitspace.us/projects) for available TriTan CMS plugins.
 
 ## Todo
-* Finish dashboard
-* Edit user functionality on multisite users screen
-* Multisite testing (wildcard subdomains only)
+* ~~Finish dashboard~~
+* ~~Edit user functionality on multisite users screen~~
+* ~~Multisite testing (wildcard subdomains only)~~
 * Unit testing
 * Finish documentation (action and hook filters, etc.)
 

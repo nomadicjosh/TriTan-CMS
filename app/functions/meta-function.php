@@ -1,5 +1,7 @@
 <?php
 
+namespace TriTan\Functions;
+
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 /**
@@ -17,6 +19,8 @@ use Cascade\Cascade;
 /**
  * Retrieve the name of the metadata table for the specified object type.
  *
+ * @file app/functions/meta-function.php
+ * 
  * @since 0.9
  * @param string $type Type of object to get metadata table for (e.g. post or user)
  * @return string Metadata document name.
@@ -31,6 +35,8 @@ function _get_meta_table($type)
 /**
  * Retrieve metadata for the specified array.
  *
+ * @file app/functions/meta-function.php
+ * 
  * @since 0.9
  * @param string $meta_type Type of array metadata is for (e.g. post or user)
  * @param int    $array_id ID of the array metadata is for
@@ -101,6 +107,8 @@ function get_metadata($meta_type, $array_id, $meta_key, $single = false)
  * Update metadata for the specified array. If no value already exists for the specified array
  * ID and metadata key, the metadata will be added.
  *
+ * @file app/functions/meta-function.php
+ * 
  * @since 0.9
  * @param string $meta_type  Type of array metadata is for (e.g. post or user)
  * @param int    $array_id  ID of the array metadata is for
@@ -229,6 +237,8 @@ function update_metadata($meta_type, $array_id, $meta_key, $meta_value, $prev_va
 /**
  * Add metadata for the specified array.
  *
+ * @file app/functions/meta-function.php
+ * 
  * @since 0.9
  * @param string $meta_type  Type of array metadata is for (e.g. post or user)
  * @param int    $array_id  ID of the array metadata is for
@@ -356,6 +366,8 @@ function add_metadata($meta_type, $array_id, $meta_key, $meta_value, $unique = f
 /**
  * Delete metadata for the specified array.
  *
+ * @file app/functions/meta-function.php
+ * 
  * @since 0.9
  * @param string $meta_type  Type of array metadata is for (e.g. post or user)
  * @param int    $array_id  ID of the array metadata is for
@@ -504,6 +516,8 @@ function delete_metadata($meta_type, $array_id, $meta_key, $meta_value = '', $de
 /**
  * Determine if a meta key is set for a given array
  *
+ * @file app/functions/meta-function.php
+ * 
  * @since 0.9
  * @param string $meta_type Type of array metadata is for (e.g. post or user)
  * @param int    $array_id ID of the array metadata is for
@@ -544,6 +558,8 @@ function metadata_exists($meta_type, $array_id, $meta_key)
 /**
  * Get meta data by meta ID
  *
+ * @file app/functions/meta-function.php
+ * 
  * @since 0.9
  * @param string $meta_type Type of array metadata is for (e.g. post or user).
  * @param int    $meta_id   ID for a specific meta row
@@ -584,6 +600,8 @@ function get_metadata_by_mid($meta_type, $meta_id)
 /**
  * Update meta data by meta ID
  *
+ * @file app/functions/meta-function.php
+ * 
  * @since 0.9
  * @param string $meta_type  Type of array metadata is for (e.g. post or user)
  * @param int    $meta_id    ID for a specific meta row
@@ -661,6 +679,8 @@ function update_metadata_by_mid($meta_type, $meta_id, $meta_value, $meta_key = f
 /**
  * Delete meta data by meta ID
  *
+ * @file app/functions/meta-function.php
+ * 
  * @since 0.9
  * @param string $meta_type Type of array metadata is for (e.g. post or user).
  * @param int    $meta_id   ID for a specific meta row

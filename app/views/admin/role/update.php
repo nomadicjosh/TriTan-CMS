@@ -2,38 +2,38 @@
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use TriTan\Config;
+use TriTan\Functions as func;
+
 /**
  * Update Role View
  *  
  * @license GPLv3
  * 
- * @since       1.0.0
+ * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
  */
-$app = \Liten\Liten::getInstance();
-$app->view->extend('_layouts/admin');
-$app->view->block('admin');
+$this->layout('main::_layouts/admin-layout');
+$this->section('backend');
 $eRole = new \TriTan\ACL();
 Config::set('screen_parent', 'roles');
 Config::set('screen_child', 'role');
-
 ?>
 
 <!-- form start -->
-<form method="post" action="<?= get_base_url(); ?>admin/role/edit-role/" data-toggle="validator" autocomplete="off">
+<form method="post" action="<?= func\get_base_url(); ?>admin/role/edit-role/" data-toggle="validator" autocomplete="off">
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
         <div class="box box-solid">
             <div class="box-header with-border">
                 <i class="fa fa-user"></i>
-                <h3 class="box-title"><?= _t('Update Role', 'tritan-cms'); ?></h3>
+                <h3 class="box-title"><?= func\_t('Update Role', 'tritan-cms'); ?></h3>
 
                 <div class="pull-right">
-                    <input type="hidden" name="role_id" value="<?= _escape((int) $role['role_id']); ?>" />
-                    <button type="submit" class="btn btn-success"><i class="fa fa-pencil"></i> <?= _t('Update', 'tritan-cms'); ?></button>
-                    <button type="button" class="btn btn-primary" onclick="window.location = '<?= get_base_url(); ?>admin/role/'"><i class="fa fa-ban"></i> <?= _t('Cancel', 'tritan-cms'); ?></button>
+                    <input type="hidden" name="role_id" value="<?= (int) $this->role['role_id']; ?>" />
+                    <button type="submit" class="btn btn-success"><i class="fa fa-pencil"></i> <?= func\_t('Update', 'tritan-cms'); ?></button>
+                    <button type="button" class="btn btn-primary" onclick="window.location = '<?= func\get_base_url(); ?>admin/role/'"><i class="fa fa-ban"></i> <?= func\_t('Cancel', 'tritan-cms'); ?></button>
                 </div>
             </div>
         </div> 
@@ -41,33 +41,53 @@ Config::set('screen_child', 'role');
         <!-- Main content -->
         <section class="content">
 
-            <?= _ttcms_flash()->showMessage(); ?> 
+            <?= func\_ttcms_flash()->showMessage(); ?> 
 
             <!-- SELECT2 EXAMPLE -->
             <div class="box box-default">
+
                 <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label><font color="red">*</font> <?= func\_t('Role Name'); ?></label>
+                                <input class="form-control" name="role_name" type="text" value="<?= $this->role['role_name']; ?>" required/>
+                            </div>
+                        </div>
+                        <!-- /.col -->
 
-                    <!-- Group -->
-                    <div class="form-group">
-                        <label class="col-md-3 control-label"><font color="red">*</font> <?= _t('Role Name'); ?></label>
-                        <div class="col-md-12"><input class="form-control" name="role_name" type="text" value="<?= _escape($role['role_name']); ?>" required/></div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label><font color="red">*</font> <?= func\_t('Role Key'); ?></label>
+                                <input class="form-control" name="role_key" type="text" value="<?= $this->role['role_key']; ?>" required/>
+                            </div>
+                        </div>
+                        <!-- /.col -->
                     </div>
-                    <!-- // Group END -->
+                    <!-- /.row -->
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
 
+            <!-- SELECT2 EXAMPLE -->
+            <div class="box box-default">
+
+                <div class="box-body">
                     <table class="table table-bordered table-hover">
                         <thead>
                             <tr>
-                                <th><?= _t('Permission'); ?></th>
-                                <th class="text-center"><?= _t('Allow'); ?></th>
+                                <th><?= func\_t('Permission'); ?></th>
+                                <th class="text-center"><?= func\_t('Allow'); ?></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php role_perm(_escape((int) $role['role_id'])); ?>
+                            <?php func\role_perm((int) $this->role['role_id']); ?>
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th><?= _t('Permission'); ?></th>
-                                <th class="text-center"><?= _t('Allow'); ?></th>
+                                <th><?= func\_t('Permission'); ?></th>
+                                <th class="text-center"><?= func\_t('Allow'); ?></th>
                             </tr>
                         </tfoot>
                     </table>
@@ -81,4 +101,4 @@ Config::set('screen_child', 'role');
     </div>
     <!-- /.content-wrapper -->
 </form>
-<?php $app->view->stop(); ?>
+<?php $this->stop(); ?>

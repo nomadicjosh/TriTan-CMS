@@ -5,30 +5,27 @@ namespace TriTan\Laci;
 use Closure;
 use TriTan\Exception\DirectoryNotFoundException;
 use TriTan\Exception\InvalidJsonException;
+use TriTan\Exceptions\UndefinedMethodException;
 
 class Collection
 {
 
     const KEY_ID = '_id';
     const KEY_OLD_ID = '_old';
-
-    const UPDATING  = 'updating';
-    const UPDATED   = 'updated';
+    const UPDATING = 'updating';
+    const UPDATED = 'updated';
     const INSERTING = 'inserting';
-    const INSERTED  = 'inserted';
-    const DELETING  = 'deleting';
-    const DELETED   = 'deleted';
-    const CHANGED   = 'changed';
+    const INSERTED = 'inserted';
+    const DELETING = 'deleting';
+    const DELETED = 'deleted';
+    const CHANGED = 'changed';
 
     protected $filepath = null;
-
     protected $resolver = null;
-
     protected $events = [];
-
     protected $transactionMode = false;
-
     protected $transactionData = null;
+    protected $macros = [];
 
     public function __construct($filepath, array $options = array())
     {
@@ -37,7 +34,22 @@ class Collection
             'save_format' => JSON_PRETTY_PRINT,
             'key_prefix' => '',
             'more_entropy' => false,
-        ], $options);
+                ], $options);
+    }
+
+    public function macro($name, callable $callback)
+    {
+        $this->macros[$name] = $callback;
+    }
+
+    public function hasMacro($name)
+    {
+        return array_key_exists($name, $this->macros);
+    }
+
+    public function getMacro($name)
+    {
+        return $this->hasMacro($name) ? $this->macros[$name] : null;
     }
 
     public function getKeyId()
@@ -82,24 +94,22 @@ class Collection
         if (!isset($this->events[$event])) {
             $this->events[$event] = [];
         }
-
         $this->events[$event][] = $callback;
     }
 
     protected function trigger($event, array &$args)
     {
-        $events = isset($this->events[$event])? $this->events[$event] : [];
-        foreach($events as $callback) {
+        $events = isset($this->events[$event]) ? $this->events[$event] : [];
+        foreach ($events as $callback) {
             call_user_func_array($callback, $args);
         }
     }
 
     public function loadData()
     {
-        if ($this->isModeTransaction() AND !empty($this->transactionData)) {
+        if ($this->isModeTransaction() AND ! empty($this->transactionData)) {
             return $this->transactionData;
         }
-
         if (!file_exists($this->filepath)) {
             $data = [];
         } else {
@@ -109,7 +119,6 @@ class Collection
                 throw new InvalidJsonException("Failed to load data. File '{$this->filepath}' contain invalid JSON format.");
             }
         }
-
         return $data;
     }
 
@@ -171,7 +180,7 @@ class Collection
     public function find($id)
     {
         $data = $this->loadData();
-        return isset($data[$id])? $data[$id] : null;
+        return isset($data[$id]) ? $data[$id] : null;
     }
 
     public function lists($key, $resultKey = null)
@@ -212,7 +221,7 @@ class Collection
     public function inserts(array $listData)
     {
         $this->begin();
-        foreach($listData as $data) {
+        foreach ($listData as $data) {
             $this->insert($data);
         }
         return $this->commit();
@@ -248,7 +257,6 @@ class Collection
         if ($query->getCollection() != $this) {
             throw new \InvalidArgumentException("Cannot execute query. Query is for different collection");
         }
-
         switch ($type) {
             case Query::TYPE_GET: return $this->executeGet($query);
             case Query::TYPE_SAVE: return $this->executeSave($query);
@@ -261,7 +269,7 @@ class Collection
     protected function executePipes(array $pipes)
     {
         $data = $this->loadData() ?: [];
-        foreach($pipes as $pipe) {
+        foreach ($pipes as $pipe) {
             $data = $pipe->process($data);
         }
         return $data;
@@ -270,48 +278,42 @@ class Collection
     protected function executeInsert(Query $query, array $new)
     {
         $data = $this->loadData();
-        $key = isset($new[static::KEY_ID])? $new[static::KEY_ID] : $this->generateKey();
-        
+        $key = isset($new[static::KEY_ID]) ? $new[static::KEY_ID] : $this->generateKey();
+
         $newExtra = new ArrayExtra([]);
         $newExtra->merge($new);
-
         $args = [$newExtra];
         $this->trigger(static::INSERTING, $args);
         $data[$key] = array_merge([
             static::KEY_ID => $key
-        ], $args[0]->toArray());
-
+                ], $args[0]->toArray());
         $success = $this->persists($data);
-
         $args = [$data[$key]];
         $this->trigger(static::INSERTED, $args);
-        
+
         $args = [$data];
         $this->trigger(static::CHANGED, $args);
-
-        return $success? $data[$key] : null;
+        return $success ? $data[$key] : null;
     }
 
     protected function executeUpdate(Query $query, array $new)
     {
         $data = $this->loadData();
-
         $args = [$query, $new];
         $this->trigger(static::UPDATING, $args);
-        
+
         $pipes = $query->getPipes();
         $rows = $this->executePipes($pipes);
         $count = count($rows);
         if (0 == $count) {
             return true;
         }
-        
+
         $updatedData = [];
-        foreach($rows as $key => $row) {
+        foreach ($rows as $key => $row) {
             $record = new ArrayExtra($data[$key]);
             $record->merge($new);
             $data[$key] = $record->toArray();
-
             if (isset($new[static::KEY_ID])) {
                 $data[$new[static::KEY_ID]] = $data[$key];
                 unset($data[$key]);
@@ -319,45 +321,36 @@ class Collection
             }
             $updatedData[$key] = $data[$key];
         }
-
         $success = $this->persists($data);
-
         $args = [$updatedData];
         $this->trigger(static::UPDATED, $args);
-        
+
         $args = [$data];
         $this->trigger(static::CHANGED, $args);
-        
-        return $success? $count : 0;
+
+        return $success ? $count : 0;
     }
 
     protected function executeDelete(Query $query)
     {
         $data = $this->loadData();
-
         $args = [$query];
         $this->trigger(static::DELETING, $args);
-
         $pipes = $query->getPipes();
         $rows = $this->executePipes($pipes);
         $count = count($rows);
         if (0 == $count) {
             return true;
         }
-
-        foreach($rows as $key => $row) {
+        foreach ($rows as $key => $row) {
             unset($data[$key]);
         }
-
         $success = $this->persists($data);
-
         $args = [$rows];
         $this->trigger(static::DELETED, $args);
-
         $args = [$data];
         $this->trigger(static::CHANGED, $args);
-
-        return $success? $count : 0;
+        return $success ? $count : 0;
     }
 
     protected function executeGet(Query $query)
@@ -373,8 +366,7 @@ class Collection
         $pipes = $query->getPipes();
         $processed = $this->executePipes($pipes);
         $count = count($processed);
-
-        foreach($processed as $key => $row) {
+        foreach ($processed as $key => $row) {
             // update ID if there is '_old' key
             if (isset($row[static::KEY_OLD_ID])) {
                 unset($data[$row[static::KEY_OLD_ID]]);
@@ -385,10 +377,8 @@ class Collection
             }
             $data[$key] = $row;
         }
-
         $success = $this->persists($data);
-
-        return $success? $count : 0;
+        return $success ? $count : 0;
     }
 
     public function persists(array $data)
@@ -396,7 +386,6 @@ class Collection
         if ($this->resolver) {
             $data = array_map($this->getResolver(), $data);
         }
-
         return $this->save($data);
     }
 
@@ -409,17 +398,25 @@ class Collection
             if (empty($data)) {
                 $data = new \stdClass;
             }
-
             $json = json_encode($data, $this->options['save_format']);
-
             $filepath = $this->filepath;
             $pathinfo = pathinfo($filepath);
             $dir = $pathinfo['dirname'];
             if (!is_dir($dir)) {
                 throw new DirectoryNotFoundException("Cannot save database. Directory {$dir} not found or it is not directory.");
             }
-
             return file_put_contents($filepath, $json, LOCK_EX);
         }
     }
+
+    public function __call($method, $args)
+    {
+        $macro = $this->getMacro($method);
+        if ($macro) {
+            return call_user_func_array($macro, array_merge([$this->query()], $args));
+        } else {
+            throw new UndefinedMethodException("Undefined method or macro '{$method}'.");
+        }
+    }
+
 }

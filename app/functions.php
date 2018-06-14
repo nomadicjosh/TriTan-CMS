@@ -1,9 +1,58 @@
 <?php
+
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
+use TriTan\Config;
+
+/**
+ * TriTan CMS Dependency Injection, Wrappers, and other functions.
+ *
+ * @license GPLv3
+ *         
+ * @since 0.9
+ * @package TriTan CMS
+ * @author Joshua Parker <joshmac3@icloud.com>
+ */
+
+/**
+ * Call the application global scope.
+ * 
+ * @file app/functions.php
+ * 
+ * @since 0.9
+ * @return object
+ */
+function app()
+{
+    $app = \Liten\Liten::getInstance();
+    return $app;
+}
+
+/**
+ * Autoload libraries installed via composer
+ */
+ttcms_load_file(BASE_PATH . 'vendor/autoload.php');
+
+/**
+ * Hooks global scope.
+ */
+app()->inst->singleton('hook', function () {
+    return new \TriTan\Hooks();
+});
+
+/**
+ * Form global scope.
+ */
+app()->inst->singleton('form', function () {
+    return new AdamWathan\Form\FormBuilder();
+});
 
 /**
  * Returns the url based on route.
+ * 
+ * @file app/functions.php
+ * 
+ * @since 0.9
  */
 function url($route)
 {
@@ -15,6 +64,8 @@ function url($route)
 /**
  * Renders any unwarranted special characters to HTML entities.
  * 
+ * @file app/functions.php
+ * 
  * @since 0.9
  * @param string $str
  * @return mixed
@@ -25,20 +76,23 @@ function _h($str)
 }
 
 /**
+ * 
+ * @file app/functions.php
+ * 
  * @since 0.9
  */
-function timeAgo($original)
+function time_ago($original)
 {
     // array of time period chunks
-    $chunks = array(
-        array(60 * 60 * 24 * 365, 'year'),
-        array(60 * 60 * 24 * 30, 'month'),
-        array(60 * 60 * 24 * 7, 'week'),
-        array(60 * 60 * 24, 'day'),
-        array(60 * 60, 'hour'),
-        array(60, 'min'),
-        array(1, 'sec'),
-    );
+    $chunks = [
+        [60 * 60 * 24 * 365, 'year'],
+        [60 * 60 * 24 * 30, 'month'],
+        [60 * 60 * 24 * 7, 'week'],
+        [60 * 60 * 24, 'day'],
+        [60 * 60, 'hour'],
+        [60, 'min'],
+        [1, 'sec'],
+    ];
 
     $today = time(); /* Current unix time  */
     $since = $today - $original;
@@ -71,10 +125,13 @@ function timeAgo($original)
 }
 
 /**
+ * 
+ * @file app/functions.php
+ * 
  * @since 0.9
  * @return bool
  */
-function remoteFileExists($url)
+function remote_file_exists($url)
 {
     $curl = curl_init($url);
     //don't fetch the actual page, you only want to check the connection is ok
@@ -98,9 +155,11 @@ function remoteFileExists($url)
 /**
  * Return the file extension of the given filename.
  * 
+ * @file app/functions.php
+ * 
+ * @since 0.9
  * @param  string $filename
  * @return string
- * @since   0.9
  */
 function get_file_ext($filename)
 {
@@ -110,6 +169,9 @@ function get_file_ext($filename)
 /**
  * Truncate a string to a specified length without cutting a word off
  *
+ * @file app/functions.php
+ * 
+ * @since  0.9
  * @param   string  $string  The string to truncate
  * @param   int     $length  The length to truncate the string to
  * @param   string  $append  Text to append to the string IF it gets
@@ -117,14 +179,13 @@ function get_file_ext($filename)
  * @return  string
  *
  * @access  public
- * @since   0.9
  */
 function safe_truncate($string, $length, $append = '...')
 {
     $ret = substr($string, 0, $length);
     $last_space = strrpos($ret, ' ');
 
-    if ($last_space !== FALSE && $string != $ret) {
+    if ($last_space !== false && $string != $ret) {
         $ret = substr($ret, 0, $last_space);
     }
 
@@ -138,12 +199,14 @@ function safe_truncate($string, $length, $append = '...')
 /**
  * Special function for files including
  * 
+ * @file app/functions.php
+ * 
+ * @since 0.9
  * @param string $file
  * @param bool $once
  * @param bool|Closure $show_errors If bool error will be processed, if Closure - only Closure will be called
  * 
  * @return bool
- * @since 0.9
  */
 function _require($file, $once = false, $show_errors = true)
 {
@@ -165,12 +228,14 @@ function _require($file, $once = false, $show_errors = true)
 /**
  * Special function for files including
  * 
+ * @file app/functions.php
+ * 
+ * @since 0.9
  * @param string $file
  * @param bool $once
  * @param bool|Closure $show_errors If bool error will be processed, if Closure - only Closure will be called
  * 
  * @return bool
- * @since 0.9
  */
 function _include($file, $once = false, $show_errors = true)
 {
@@ -192,11 +257,13 @@ function _include($file, $once = false, $show_errors = true)
 /**
  * Special function for files including
  * 
+ * @file app/functions.php
+ * 
+ * @since 0.9
  * @param string $file
  * @param bool|Closure $show_errors If bool error will be processed, if Closure - only Closure will be called
  * 
  * @return bool
- * @since 0.9
  */
 function _require_once($file, $show_errors = true)
 {
@@ -206,11 +273,13 @@ function _require_once($file, $show_errors = true)
 /**
  * Special function for files including
  * 
+ * @file app/functions.php
+ * 
+ * @since 0.9
  * @param string $file
  * @param bool|Closure $show_errors If bool error will be processed, if Closure - only Closure will be called
  * 
  * @return bool
- * @since 0.9
  */
 function _include_once($file, $show_errors = true)
 {
@@ -218,25 +287,33 @@ function _include_once($file, $show_errors = true)
 }
 
 /**
- * Formats date to be stored in MySQL database.
+ * Formats date.
  * 
- * @return string
+ * Example Usage:
+ * 
+ *      $datetime = 'May 15, 2018 2:15 PM';
+ *      format_date($datetime, 'Y-m-d h:i:s');
+ * 
+ * @file app/functions.php
+ * 
  * @since 0.9
+ * @param string $date      Date to be formatted.
+ * @param string $format    Format of the date.
+ * @return string
  */
-function formatDate($date)
+function format_date($date, $format)
 {
-    $date = strtotime($date);
-    $date = date("Y-m-d", $date);
-
-    return $date;
+    return (string) Jenssegers\Date\Date::parse($date)->format($format);
 }
 
 /**
  * Removes all whitespace.
  * 
+ * @file app/functions.php
+ * 
+ * @since 0.9
  * @param string $str
  * @return mixed
- * @since 0.9
  */
 function _trim($str)
 {
@@ -246,13 +323,15 @@ function _trim($str)
 /**
  * Function used to create a slug associated to an "ugly" string.
  * 
+ * @file app/functions.php
+ * 
+ * @since 0.9
  * @param string $string the string to transform.
  * @return string the resulting slug.
- * @since 0.9
  */
 function slugify($string)
 {
-    $table = array(
+    $table = [
         'Š' => 'S', 'š' => 's', 'Đ' => 'Dj', 'đ' => 'dj', 'Ž' => 'Z', 'ž' => 'z', 'Č' => 'C', 'č' => 'c', 'Ć' => 'C', 'ć' => 'c',
         'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A', 'Å' => 'A', 'Æ' => 'A', 'Ç' => 'C', 'È' => 'E', 'É' => 'E',
         'Ê' => 'E', 'Ë' => 'E', 'Ì' => 'I', 'Í' => 'I', 'Î' => 'I', 'Ï' => 'I', 'Ñ' => 'N', 'Ò' => 'O', 'Ó' => 'O', 'Ô' => 'O',
@@ -261,24 +340,27 @@ function slugify($string)
         'ê' => 'e', 'ë' => 'e', 'ì' => 'i', 'í' => 'i', 'î' => 'i', 'ï' => 'i', 'ð' => 'o', 'ñ' => 'n', 'ò' => 'o', 'ó' => 'o',
         'ô' => 'o', 'õ' => 'o', 'ö' => 'o', 'ø' => 'o', 'ù' => 'u', 'ú' => 'u', 'û' => 'u', 'ý' => 'y', 'ý' => 'y', 'þ' => 'b',
         'ÿ' => 'y', 'Ŕ' => 'R', 'ŕ' => 'r', '/' => '-', ' ' => '-'
-    );
+    ];
     // -- Remove duplicated spaces
-    $stripped = preg_replace(array('/\s{2,}/', '/[\t\n]/'), ' ', $string);
+    $stripped = preg_replace(['/\s{2,}/', '/[\t\n]/'], ' ', $string);
     // -- Returns the slug
     return strtolower(strtr($string, $table));
 }
 
 /**
+ * 
+ * @file app/functions.php
+ * 
+ * @since 0.9
  * @param string $file Filepath
  * @param int $digits Digits to display
  * @return string|bool Size (KB, MB, GB, TB) or boolean
- * @since 0.9
  */
-function getFilesize($file, $digits = 2)
+function get_file_size($file, $digits = 2)
 {
     if (is_file($file)) {
         $fileSize = filesize($file);
-        $sizes = array("TB", "GB", "MB", "KB", "B");
+        $sizes = ["TB", "GB", "MB", "KB", "B"];
         $total = count($sizes);
         while ($total-- && $fileSize > 1024) {
             $fileSize /= 1024;
@@ -291,10 +373,12 @@ function getFilesize($file, $digits = 2)
 /**
  * Redirects to another page.
  * 
+ * @file app/functions.php
+ * 
+ * @since 0.9
  * @param string $location The path to redirect to
  * @param int $status Status code to use
- * @return bool False if $location is not set
- * @since 0.9
+ * @return bool false if $location is not set
  */
 function redirect($location, $status = 302)
 {
@@ -302,6 +386,7 @@ function redirect($location, $status = 302)
         return false;
     header("Location: $location", true, $status);
 }
+
 if (!function_exists('hash_equals')) {
 
     /**
@@ -310,6 +395,9 @@ if (!function_exists('hash_equals')) {
      * Compares two strings using the same time whether they're equal or not.
      * This function should be used to mitigate timing attacks; for instance, when testing crypt() password hashes.
      * 
+     * @file app/functions.php
+     * 
+     * @since 0.9
      * @param string $known_string The string of known length to compare against
      * @param string $user_string The user-supplied string
      * @return boolean Returns TRUE when the two strings are equal, FALSE otherwise.
@@ -348,6 +436,7 @@ if (!function_exists('hash_equals')) {
         }
         return $ret === 0;
     }
+
 }
 
 /**
@@ -355,7 +444,9 @@ if (!function_exists('hash_equals')) {
  *
  * Compares the first two arguments and if identical marks as checked
  *
- *
+ * @file app/functions.php
+ * 
+ * @since 0.9
  * @param mixed $checked One of the values to compare
  * @param mixed $current (true) The other value to compare if not just true
  * @param bool $echo Whether to echo or just return the string
@@ -371,7 +462,9 @@ function checked($checked, $current = true, $echo = true)
  *
  * Compares the first two arguments and if identical marks as selected
  *
- *
+ * @file app/functions.php
+ * 
+ * @since 0.9
  * @param mixed $selected One of the values to compare
  * @param mixed $current (true) The other value to compare if not just true
  * @param bool $echo Whether to echo or just return the string
@@ -387,7 +480,9 @@ function selected($selected, $current = true, $echo = true)
  *
  * Compares the first two arguments and if identical marks as disabled
  *
- *
+ * @file app/functions.php
+ * 
+ * @since 0.9
  * @param mixed $disabled One of the values to compare
  * @param mixed $current (true) The other value to compare if not just true
  * @param bool $echo Whether to echo or just return the string
@@ -405,6 +500,9 @@ function disabled($disabled, $current = true, $echo = true)
  *
  * @access private
  *
+ * @file app/functions.php
+ * 
+ * @since 0.9
  * @param any $helper One of the values to compare
  * @param any $current (true) The other value to compare if not just true
  * @param bool $echo Whether to echo or just return the string
@@ -834,7 +932,7 @@ function hl_bal($t, $do = 1, $in = 'div')
                     continue 2;
                 }
                 $add = "</{$d}>";
-                for (;  ++$k < $kc;) {
+                for (; ++$k < $kc;) {
                     $add = "</{$q[$k]}>{$add}";
                 }
                 break;
@@ -1523,3 +1621,364 @@ function concat_ws($separator, $string1, $string2)
     }
     return $string1 . $separator . $string2;
 }
+
+/**
+ * Wrapper function for the core PHP function: trigger_error.
+ *
+ * This function makes the error a little more understandable for the
+ * end user to track down the issue.
+ *
+ * @file app/functions.php
+ * 
+ * @since 0.9
+ * @param string $message
+ *            Custom message to print.
+ * @param string $level
+ *            Predefined PHP error constant.
+ */
+function _trigger_error($message, $level = E_USER_NOTICE)
+{
+    $debug = debug_backtrace();
+    $caller = next($debug);
+    echo '<div class="alerts alerts-error center">';
+    trigger_error($message . ' used <strong>' . $caller['function'] . '()</strong> called from <strong>' . $caller['file'] . '</strong> on line <strong>' . $caller['line'] . '</strong>' . "\n<br />error handler", $level);
+    echo '</div>';
+}
+
+/**
+ * Returns false.
+ *
+ * Apply to filters to return false.
+ *
+ * @file app/functions.php
+ * 
+ * @since 0.9
+ * @return bool False
+ */
+function __return_false()
+{
+    return false;
+}
+
+/**
+ * Returns true.
+ *
+ * Apply to filters to return true.
+ *
+ * @file app/functions.php
+ * 
+ * @since 0.9
+ * @return bool True
+ */
+function __return_true()
+{
+    return true;
+}
+
+/**
+ * Returns null.
+ *
+ * Apply to filters to return null.
+ *
+ * @file app/functions.php
+ * 
+ * @since 0.9
+ * @return bool NULL
+ */
+function __return_null()
+{
+    return null;
+}
+
+/**
+ * Return posted data if set.
+ * 
+ * @file app/functions.php
+ * 
+ * @since 0.9
+ * @param mixed $post
+ * @return mixed
+ */
+function __return_post($post)
+{
+    return isset(app()->req->post[$post]) ? app()->req->post[$post] : '';
+}
+
+/**
+ * Wrapper function for Plugin::plugin_basename() method and
+ * extracts the file name of a specific plugin.
+ *
+ * @see Plugin::plugin_basename()
+ *
+ * @file app/functions.php
+ * 
+ * @since 0.9
+ * @param string $filename
+ *            Plugin's file name.
+ */
+function plugin_basename($filename)
+{
+    return \TriTan\Plugin::inst()->plugin_basename($filename);
+}
+
+/**
+ * Wrapper function for Plugin::register_activation_hook() method.
+ * When a plugin
+ * is activated, the action `activate_pluginname` hook is called. `pluginname`
+ * is replaced by the actually file name of the plugin being activated. So if the
+ * plugin is located at 'plugin/sample/sample.plugin.php', then the hook will
+ * call 'activate_sample.plugin.php'.
+ *
+ * @see Plugin::register_activation_hook()
+ *
+ * @file app/functions.php
+ * 
+ * @since 0.9
+ * @param string $filename
+ *            Plugin's filename.
+ * @param string $function
+ *            The function that should be triggered by the hook.
+ */
+function register_activation_hook($filename, $function)
+{
+    return \TriTan\Plugin::inst()->register_activation_hook($filename, $function);
+}
+
+/**
+ * Wrapper function for Plugin::register_deactivation_hook() method.
+ * When a plugin
+ * is deactivated, the action `deactivate_pluginname` hook is called. `pluginname`
+ * is replaced by the actually file name of the plugin being deactivated. So if the
+ * plugin is located at 'plugin/sample/sample.plugin.php', then the hook will
+ * call 'deactivate_sample.plugin.php'.
+ *
+ * @see Plugin::register_deactivation_hook()
+ *
+ * @file app/functions.php
+ * 
+ * @since 0.9
+ * @param string $filename
+ *            Plugin's filename.
+ * @param string $function
+ *            The function that should be triggered by the hook.
+ */
+function register_deactivation_hook($filename, $function)
+{
+    return \TriTan\Plugin::inst()->register_deactivation_hook($filename, $function);
+}
+
+/**
+ * Wrapper function for Plugin::plugin_dir_path() method.
+ * Get the filesystem directory path (with trailing slash) for the plugin __FILE__ passed in.
+ *
+ * @see Plugin::plugin_dir_path()
+ *
+ * @file app/functions.php
+ * 
+ * @since 0.9
+ * @param string $filename
+ *            The filename of the plugin (__FILE__).
+ * @return string The filesystem path of the directory that contains the plugin.
+ */
+function plugin_dir_path($filename)
+{
+    return \TriTan\Plugin::inst()->plugin_dir_path($filename);
+}
+
+/**
+ * Special function for file includes.
+ *
+ * @file app/functions.php
+ * 
+ * @since 0.9
+ * @param string $file
+ *            File which should be included/required.
+ * @param bool $once
+ *            File should be included/required once. Default true.
+ * @param bool|Closure $show_errors
+ *            If true error will be processed, if Closure - only Closure will be called. Default true.
+ * @return mixed
+ */
+function ttcms_load_file($file, $once = true, $show_errors = true)
+{
+    if (file_exists($file)) {
+        if ($once) {
+            return require_once($file);
+        } else {
+            return require($file);
+        }
+    } elseif (is_bool($show_errors) && $show_errors) {
+        _trigger_error(sprintf(_t('Invalid file name: <strong>%s</strong> does not exist. <br />', 'tritan-cms'), $file));
+    } elseif ($show_errors instanceof \Closure) {
+        return (bool) $show_errors();
+    }
+    return false;
+}
+
+/**
+ * Removes directory recursively along with any files.
+ *
+ * @file app/functions.php
+ * 
+ * @since 0.9
+ * @param string $dir
+ *            Directory that should be removed.
+ */
+function _rmdir($dir)
+{
+    if (is_dir($dir)) {
+        $objects = scandir($dir);
+        foreach ($objects as $object) {
+            if ($object != "." && $object != "..") {
+                if (is_dir($dir . DS . $object)) {
+                    _rmdir($dir . DS . $object);
+                } else {
+                    unlink($dir . DS . $object);
+                }
+            }
+        }
+        rmdir($dir);
+    }
+}
+
+/**
+ * Appends a trailing slash.
+ *
+ * Will remove trailing forward and backslashes if it exists already before adding
+ * a trailing forward slash. This prevents double slashing a string or path.
+ *
+ * The primary use of this is for paths and thus should be used for paths. It is
+ * not restricted to paths and offers no specific path support.
+ *
+ * @file app/functions.php
+ * 
+ * @since 0.9
+ * @param string $string
+ *            What to add the trailing slash to.
+ * @return string String with trailing slash added.
+ */
+function add_trailing_slash($string)
+{
+    return remove_trailing_slash($string) . '/';
+}
+
+/**
+ * Removes trailing forward slashes and backslashes if they exist.
+ *
+ * The primary use of this is for paths and thus should be used for paths. It is
+ * not restricted to paths and offers no specific path support.
+ *
+ * @file app/functions.php
+ * 
+ * @since 0.9
+ * @param string $string
+ *            What to remove the trailing slashes from.
+ * @return string String without the trailing slashes.
+ */
+function remove_trailing_slash($string)
+{
+    return rtrim($string, '/\\');
+}
+
+/**
+ * Load an array of must-use plugin files
+ * 
+ * @file app/functions.php
+ * 
+ * @since 0.9
+ * @access private
+ * @return array Files to include
+ */
+function ttcms_get_mu_plugins()
+{
+    $mu_plugins = [];
+    if (!is_dir(TTCMS_MU_PLUGIN_DIR)) {
+        return $mu_plugins;
+    }
+    if (!$handle = opendir(TTCMS_MU_PLUGIN_DIR)) {
+        return $mu_plugins;
+    }
+    while (($plugin = readdir($handle)) !== false) {
+        if (substr($plugin, -11) == '.plugin.php') {
+            $mu_plugins[] = TTCMS_MU_PLUGIN_DIR . $plugin;
+        }
+    }
+    closedir($handle);
+    sort($mu_plugins);
+    return $mu_plugins;
+}
+
+/**
+ * Load an array of dropin files per site.
+ * 
+ * @file app/functions.php
+ * 
+ * @since 0.9
+ * @access private
+ * @return array Files to include
+ */
+function ttcms_get_site_dropins()
+{
+    $dropin_dir = Config::get('site_path') . 'dropins' . DS;
+    $site_dropins = [];
+    if (!is_dir($dropin_dir)) {
+        return $site_dropins;
+    }
+    if (!$handle = opendir($dropin_dir)) {
+        return $site_dropins;
+    }
+    while (($dropins = readdir($handle)) !== false) {
+        if (substr($dropins, -11) == '.dropin.php') {
+            $site_dropins[] = $dropin_dir . $dropins;
+        }
+    }
+    closedir($handle);
+    sort($site_dropins);
+    return $site_dropins;
+}
+
+/**
+ * Load an array of theme routers per site.
+ * 
+ * @file app/functions.php
+ * 
+ * @since 0.9
+ * @access private
+ * @return array Files to include
+ */
+function ttcms_get_theme_routers()
+{
+    $theme_router_dir = Config::get('theme_path') . 'routers' . DS;
+    $theme_routers = [];
+    if (!is_dir($theme_router_dir)) {
+        return $theme_routers;
+    }
+    if (!$handle = opendir($theme_router_dir)) {
+        return $theme_routers;
+    }
+    while (($routers = readdir($handle)) !== false) {
+        if (substr($routers, -11) == '.router.php') {
+            $theme_routers[] = $theme_router_dir . $routers;
+        }
+    }
+    closedir($handle);
+    sort($theme_routers);
+    return $theme_routers;
+}
+
+require( APP_PATH . 'functions' . DS . 'hook-function.php' );
+require( APP_PATH . 'functions' . DS . 'global-function.php' );
+require( APP_PATH . 'functions' . DS . 'menu-function.php' );
+require( APP_PATH . 'functions' . DS . 'auth-function.php' );
+require( APP_PATH . 'functions' . DS . 'cache-function.php' );
+require( APP_PATH . 'functions' . DS . 'textdomain-function.php' );
+require( APP_PATH . 'functions' . DS . 'core-function.php' );
+require( APP_PATH . 'functions' . DS . 'meta-function.php' );
+require( APP_PATH . 'functions' . DS . 'site-function.php' );
+require( APP_PATH . 'functions' . DS . 'logger-function.php' );
+require( APP_PATH . 'functions' . DS . 'db-function.php' );
+require( APP_PATH . 'functions' . DS . 'post-function.php' );
+require( APP_PATH . 'functions' . DS . 'posttype-function.php' );
+require( APP_PATH . 'functions' . DS . 'user-function.php' );
+require( APP_PATH . 'functions' . DS . 'deprecated-function.php' );
+require( APP_PATH . 'application.php' );

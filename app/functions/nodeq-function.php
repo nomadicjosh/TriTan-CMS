@@ -1,4 +1,7 @@
 <?php
+
+namespace TriTan\Functions;
+
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use TriTan\Exception\Exception;
@@ -19,6 +22,8 @@ use Cascade\Cascade;
  * 
  * Function used to send login details to new
  * user.
+ * 
+ * @file app/functions/nodeq-function.php
  * 
  * @since 0.9
  */

@@ -1,17 +1,23 @@
-<?php
+<?php namespace TriTan\Functions;
+
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 /**
- * TriTan CMS Parsecode Helper
+ * TriTan CMS Deprecated Functions
  *  
  * @license GPLv3
  * 
- * @since       0.9
+ * @since       0.9.8
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
  */
 $parsecode_tags = [];
 
+/**
+ * @deprecated since release 0.9.8
+ * @param type $matches
+ * @return type
+ */
 function clean_pre($matches)
 {
     if (is_array($matches))
@@ -26,6 +32,13 @@ function clean_pre($matches)
     return $text;
 }
 
+/**
+ * @deprecated since release 0.9.8
+ * @global type $parsecode_tags
+ * @param type $tag
+ * @param type $func
+ * @return type
+ */
 function add_parsecode($tag, $func)
 {
     global $parsecode_tags;
@@ -50,9 +63,9 @@ function add_parsecode($tag, $func)
 /**
  * Removes hook for parsecode.
  *
+ * @deprecated since release 0.9.8
  * @since 0.9
  * @uses $parsecode_tags
- *
  * @param string $tag parsecode tag to remove hook for.
  */
 function remove_parsecode($tag)
@@ -75,6 +88,7 @@ function remove_parsecode($tag)
  * parsecodes global by a empty array. This is actually a very efficient method
  * for removing all parsecodes.
  *
+ * @deprecated since release 0.9.8
  * @since 0.9
  * @uses $parsecode_tags
  */
@@ -92,10 +106,10 @@ function remove_all_parsecodes()
  * without any filtering. This might cause issues when plugins are disabled but
  * the parsecode will still show up in the post or content.
  *
+ * @deprecated since release 0.9.8
  * @since 0.9
  * @uses $parsecode_tags
  * @uses get_parsecode_regex() Gets the search pattern for searching parsecodes.
- *
  * @param string $content Content to search for parsecodes
  * @return string Content with parsecodes filtered out.
  */
@@ -125,9 +139,9 @@ function do_parsecode($content)
  * 5 - The content of a parsecode when it wraps some content.
  * 6 - An extra ] to allow for escaping parsecodes with double [[]]
  *
+ * @deprecated since release 0.9.8
  * @since 0.9
  * @uses $parsecode_tags
- *
  * @return string The parsecode search regular expression
  */
 function get_parsecode_regex()
@@ -138,44 +152,44 @@ function get_parsecode_regex()
 
     // WARNING! Do not change this regex without changing do_parsecode_tag() and strip_parsecode_tag()
     return
-        '\\['                              // Opening bracket
-        . '(\\[?)'                           // 1: Optional second opening bracket for escaping parsecodes: [[tag]]
-        . "($tagregexp)"                     // 2: parsecode name
-        . '\\b'                              // Word boundary
-        . '('                                // 3: Unroll the loop: Inside the opening parsecode tag
-        . '[^\\]\\/]*'                   // Not a closing bracket or forward slash
-        . '(?:'
-        . '\\/(?!\\])'               // A forward slash not followed by a closing bracket
-        . '[^\\]\\/]*'               // Not a closing bracket or forward slash
-        . ')*?'
-        . ')'
-        . '(?:'
-        . '(\\/)'                        // 4: Self closing tag ...
-        . '\\]'                          // ... and closing bracket
-        . '|'
-        . '\\]'                          // Closing bracket
-        . '(?:'
-        . '('                        // 5: Unroll the loop: Optionally, anything between the opening and closing parsecode tags
-        . '[^\\[]*+'             // Not an opening bracket
-        . '(?:'
-        . '\\[(?!\\/\\2\\])' // An opening bracket not followed by the closing parsecode tag
-        . '[^\\[]*+'         // Not an opening bracket
-        . ')*+'
-        . ')'
-        . '\\[\\/\\2\\]'             // Closing parsecode tag
-        . ')?'
-        . ')'
-        . '(\\]?)';                          // 6: Optional second closing brocket for escaping parsecodes: [[tag]]
+            '\\['                              // Opening bracket
+            . '(\\[?)'                           // 1: Optional second opening bracket for escaping parsecodes: [[tag]]
+            . "($tagregexp)"                     // 2: parsecode name
+            . '\\b'                              // Word boundary
+            . '('                                // 3: Unroll the loop: Inside the opening parsecode tag
+            . '[^\\]\\/]*'                   // Not a closing bracket or forward slash
+            . '(?:'
+            . '\\/(?!\\])'               // A forward slash not followed by a closing bracket
+            . '[^\\]\\/]*'               // Not a closing bracket or forward slash
+            . ')*?'
+            . ')'
+            . '(?:'
+            . '(\\/)'                        // 4: Self closing tag ...
+            . '\\]'                          // ... and closing bracket
+            . '|'
+            . '\\]'                          // Closing bracket
+            . '(?:'
+            . '('                        // 5: Unroll the loop: Optionally, anything between the opening and closing parsecode tags
+            . '[^\\[]*+'             // Not an opening bracket
+            . '(?:'
+            . '\\[(?!\\/\\2\\])' // An opening bracket not followed by the closing parsecode tag
+            . '[^\\[]*+'         // Not an opening bracket
+            . ')*+'
+            . ')'
+            . '\\[\\/\\2\\]'             // Closing parsecode tag
+            . ')?'
+            . ')'
+            . '(\\]?)';                          // 6: Optional second closing brocket for escaping parsecodes: [[tag]]
 }
 
 /**
  * Regular Expression callable for do_parsecode() for calling parsecode hook.
  * @see get_parsecode_regex for details of the match array contents.
  *
+ * @deprecated since release 0.9.8
  * @since 0.9
  * @access private
  * @uses $parsecode_tags
- *
  * @param array $m Regular expression match array
  * @return mixed False on failure.
  */
@@ -207,8 +221,8 @@ function do_parsecode_tag($m)
  * attribute as the value in the key/value pair. This allows for easier
  * retrieval of the attributes, since all attributes have to be known.
  *
+ * @deprecated since release 0.9.8
  * @since 0.9
- *
  * @param string $text
  * @return array List of attributes and their value.
  */
@@ -246,8 +260,8 @@ function parsecode_parse_atts($text)
  * If the $atts list has unsupported attributes, then they will be ignored and
  * removed from the final returned list.
  *
+ * @deprecated since release 0.9.8
  * @since 0.9
- *
  * @param array $pairs Entire list of supported attributes and their defaults.
  * @param array $atts User defined attributes in parsecode tag.
  * @return array Combined and filtered attribute list.
@@ -268,9 +282,9 @@ function parsecode_atts($pairs, $atts)
 /**
  * Remove all parsecode tags from the given content.
  *
+ * @deprecated since release 0.9.8
  * @since 0.9
  * @uses $parsecode_tags
- *
  * @param string $content Content to remove parsecode tags.
  * @return string Content without parsecode tags.
  */
@@ -286,6 +300,11 @@ function strip_parsecodes($content)
     return preg_replace_callback("/$pattern/s", 'strip_parsecode_tag', $content);
 }
 
+/**
+ * @deprecated since release 0.9.8
+ * @param type $m
+ * @return type
+ */
 function strip_parsecode_tag($m)
 {
     // allow [[foo]] syntax for escaping a tag
@@ -297,7 +316,8 @@ function strip_parsecode_tag($m)
 }
 
 /**
- * since 0.9
+ * @deprecated since release 0.9.8
+ * @since 0.9
  * @param unknown $pee
  * @param number $br
  * @return string|mixed
@@ -346,11 +366,22 @@ function ttcms_autop($pee, $br = 1)
     return $pee;
 }
 
+/**
+ * @deprecated since release 0.9.8
+ * @param type $matches
+ * @return type
+ */
 function _autop_newline_preservation_helper($matches)
 {
     return str_replace("\n", "<TTPreserveNewline />", $matches[0]);
 }
 
+/**
+ * @deprecated since release 0.9.8
+ * @global type $parsecode_tags
+ * @param type $pee
+ * @return type
+ */
 function parsecode_unautop($pee)
 {
     global $parsecode_tags;
@@ -362,35 +393,50 @@ function parsecode_unautop($pee)
     $tagregexp = join('|', array_map('preg_quote', array_keys($parsecode_tags)));
 
     $pattern = '/'
-        . '<p>'                              // Opening paragraph
-        . '\\s*+'                            // Optional leading whitespace
-        . '('                                // 1: The parsecode
-        . '\\['                          // Opening bracket
-        . "($tagregexp)"                 // 2: parsecode name
-        . '\\b'                          // Word boundary
-        // Unroll the loop: Inside the opening parsecode tag
-        . '[^\\]\\/]*'                   // Not a closing bracket or forward slash
-        . '(?:'
-        . '\\/(?!\\])'               // A forward slash not followed by a closing bracket
-        . '[^\\]\\/]*'               // Not a closing bracket or forward slash
-        . ')*?'
-        . '(?:'
-        . '\\/\\]'                   // Self closing tag and closing bracket
-        . '|'
-        . '\\]'                      // Closing bracket
-        . '(?:'                      // Unroll the loop: Optionally, anything between the opening and closing parsecode tags
-        . '[^\\[]*+'             // Not an opening bracket
-        . '(?:'
-        . '\\[(?!\\/\\2\\])' // An opening bracket not followed by the closing parsecode tag
-        . '[^\\[]*+'         // Not an opening bracket
-        . ')*+'
-        . '\\[\\/\\2\\]'         // Closing parsecode tag
-        . ')?'
-        . ')'
-        . ')'
-        . '\\s*+'                            // optional trailing whitespace
-        . '<\\/p>'                           // closing paragraph
-        . '/s';
+            . '<p>'                              // Opening paragraph
+            . '\\s*+'                            // Optional leading whitespace
+            . '('                                // 1: The parsecode
+            . '\\['                          // Opening bracket
+            . "($tagregexp)"                 // 2: parsecode name
+            . '\\b'                          // Word boundary
+            // Unroll the loop: Inside the opening parsecode tag
+            . '[^\\]\\/]*'                   // Not a closing bracket or forward slash
+            . '(?:'
+            . '\\/(?!\\])'               // A forward slash not followed by a closing bracket
+            . '[^\\]\\/]*'               // Not a closing bracket or forward slash
+            . ')*?'
+            . '(?:'
+            . '\\/\\]'                   // Self closing tag and closing bracket
+            . '|'
+            . '\\]'                      // Closing bracket
+            . '(?:'                      // Unroll the loop: Optionally, anything between the opening and closing parsecode tags
+            . '[^\\[]*+'             // Not an opening bracket
+            . '(?:'
+            . '\\[(?!\\/\\2\\])' // An opening bracket not followed by the closing parsecode tag
+            . '[^\\[]*+'         // Not an opening bracket
+            . ')*+'
+            . '\\[\\/\\2\\]'         // Closing parsecode tag
+            . ')?'
+            . ')'
+            . ')'
+            . '\\s*+'                            // optional trailing whitespace
+            . '<\\/p>'                           // closing paragraph
+            . '/s';
 
     return preg_replace($pattern, '$1', $pee);
+}
+
+/**
+ * Checks the permission of the logged in user.
+ * 
+ * @deprecated since release 0.9.8
+ * @since 0.9
+ * @param string $perm Permission to check for.
+ * @return bool Return true if permission matches or false otherwise.
+ */
+function hasPermission($perm)
+{
+    _deprecated_function(__FUNCTION__, '0.9.8', 'current_user_can');
+
+    return current_user_can($perm);
 }

@@ -3,18 +3,21 @@
         "_id": "59a5ffab4c9638.50854052",
         "role_id": 1,
         "role_name": "Super Administrator",
-        "role_permission": "a:23:{i:0;s:12:\"access_admin\";i:1;s:12:\"create_posts\";i:2;s:12:\"manage_posts\";i:3;s:12:\"update_posts\";i:4;s:12:\"delete_posts\";i:5;s:13:\"publish_posts\";i:6;s:12:\"create_users\";i:7;s:12:\"manage_users\";i:8;s:12:\"update_users\";i:9;s:12:\"delete_users\";i:10;s:12:\"manage_media\";i:11;s:14:\"manage_options\";i:12;s:15:\"manage_settings\";i:13;s:15:\"install_plugins\";i:14;s:14:\"manage_plugins\";i:15;s:14:\"delete_plugins\";i:16;s:10:\"manage_ftp\";i:17;s:12:\"manage_roles\";i:18;s:11:\"switch_user\";i:19;s:12:\"create_sites\";i:20;s:12:\"manage_sites\";i:21;s:12:\"update_sites\";i:22;s:12:\"delete_sites\";}"
+        "role_permission": "a:23:{i:0;s:12:\"access_admin\";i:1;s:12:\"create_posts\";i:2;s:12:\"manage_posts\";i:3;s:12:\"update_posts\";i:4;s:12:\"delete_posts\";i:5;s:13:\"publish_posts\";i:6;s:12:\"create_users\";i:7;s:12:\"manage_users\";i:8;s:12:\"update_users\";i:9;s:12:\"delete_users\";i:10;s:12:\"manage_media\";i:11;s:14:\"manage_options\";i:12;s:15:\"manage_settings\";i:13;s:15:\"install_plugins\";i:14;s:14:\"manage_plugins\";i:15;s:14:\"delete_plugins\";i:16;s:10:\"manage_ftp\";i:17;s:12:\"manage_roles\";i:18;s:11:\"switch_user\";i:19;s:12:\"create_sites\";i:20;s:12:\"manage_sites\";i:21;s:12:\"update_sites\";i:22;s:12:\"delete_sites\";}",
+        "role_key": "super"
     },
     "59b714cbabe254.18483004": {
         "_id": "59b714cbabe254.18483004",
         "role_id": 2,
         "role_name": "Administrator",
-        "role_permission": "a:10:{i:0;s:12:\"access_admin\";i:1;s:12:\"create_posts\";i:2;s:12:\"manage_posts\";i:3;s:12:\"update_posts\";i:4;s:12:\"delete_posts\";i:5;s:13:\"publish_posts\";i:6;s:12:\"manage_media\";i:7;s:14:\"manage_options\";i:8;s:15:\"manage_settings\";i:9;s:14:\"manage_plugins\";}"
+        "role_permission": "a:10:{i:0;s:12:\"access_admin\";i:1;s:12:\"create_posts\";i:2;s:12:\"manage_posts\";i:3;s:12:\"update_posts\";i:4;s:12:\"delete_posts\";i:5;s:13:\"publish_posts\";i:6;s:12:\"manage_media\";i:7;s:14:\"manage_options\";i:8;s:15:\"manage_settings\";i:9;s:14:\"manage_plugins\";}",
+        "role_key": "admin"
     },
     "59a608cb198ab5.13204116": {
         "_id": "59a608cb198ab5.13204116",
         "role_id": 3,
         "role_name": "Editor",
-        "role_permission": "a:7:{i:0;s:12:\"access_admin\";i:1;s:12:\"create_posts\";i:2;s:12:\"manage_posts\";i:3;s:12:\"update_posts\";i:4;s:12:\"delete_posts\";i:5;s:13:\"publish_posts\";i:6;s:12:\"manage_media\";}"
+        "role_permission": "a:7:{i:0;s:12:\"access_admin\";i:1;s:12:\"create_posts\";i:2;s:12:\"manage_posts\";i:3;s:12:\"update_posts\";i:4;s:12:\"delete_posts\";i:5;s:13:\"publish_posts\";i:6;s:12:\"manage_media\";}",
+        "role_key": "editor"
     }
 }

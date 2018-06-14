@@ -1,9 +1,11 @@
-<?php namespace TriTan;
+<?php
+
+namespace TriTan;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
-
 use TriTan\Config;
+use TriTan\Functions as func;
 
 /**
  * Access Control Level Class
@@ -49,7 +51,7 @@ class ACL
         if ($userID != '') {
             $this->_userID = floatval($userID);
         } else {
-            $this->_userID = floatval(get_current_user_id());
+            $this->_userID = floatval(func\get_current_user_id());
         }
         $this->_userRoles = $this->getUserRoles('ids');
         $this->buildACL();
@@ -73,40 +75,49 @@ class ACL
     public function getPermKeyFromID($permID)
     {
         $permission = $this->app->db->table('permission')
-            ->where('permission_id', floatval($permID))
-            ->first();
+                ->where('permission_id', floatval($permID))
+                ->first();
 
-        return _escape($permission['permission_key']);
+        return func\_escape($permission['permission_key']);
     }
 
     public function getPermNameFromID($permID)
     {
         $permission = $this->app->db->table('permission')
-            ->where('permission_id', floatval($permID))
-            ->first();
+                ->where('permission_id', floatval($permID))
+                ->first();
 
-        return _escape($permission['permission_name']);
+        return func\_escape($permission['permission_name']);
     }
 
     public function getRoleNameFromID($roleID)
     {
         $role = $this->app->db->table('role')
-            ->where('role_id', floatval($roleID))
-            ->first();
+                ->where('role_id', floatval($roleID))
+                ->first();
 
-        return _escape($role['role_name']);
+        return func\_escape($role['role_name']);
+    }
+    
+    public function getRoleIDFromKey($roleKey)
+    {
+        $role = $this->app->db->table('role')
+                ->where('role_key', (string) $roleKey)
+                ->first();
+
+        return (int) func\_escape($role['role_id']);
     }
 
     public function getUserRoles()
     {
         $strSQL = $this->app->db->table('user_roles')
-            ->where('user_id', floatval($this->_userID))
-            ->sortBy('add_date', 'ASC')
-            ->get();
+                ->where('user_id', floatval($this->_userID))
+                ->sortBy('add_date', 'ASC')
+                ->get();
 
         $resp = [];
         foreach ($strSQL as $r) {
-            $resp[] = _escape($r['role_id']);
+            $resp[] = func\_escape($r['role_id']);
         }
 
         return $resp;
@@ -117,13 +128,13 @@ class ACL
         $_format = strtolower($format);
 
         $strSQL = $this->app->db->table('role')
-            ->sortBy('role_name', 'ASC')
-            ->get();
+                ->sortBy('role_name', 'ASC')
+                ->get();
 
         $resp = [];
         foreach ($strSQL as $r) {
             if ($_format == 'full') {
-                $resp[] = [ "ID" => _escape($r['role_id']), "Name" => _escape($r['role_name'])];
+                $resp[] = ["ID" => func\_escape($r['role_id']), "Name" => func\_escape($r['role_name']), "Key" => func\_escape($r['role_key'])];
             } else {
                 $resp[] = $r->id;
             }
@@ -136,15 +147,15 @@ class ACL
         $_format = strtolower($format);
 
         $strSQL = $this->app->db->table('permission')
-            ->sortBy('permission_name', 'ASC')
-            ->get();
+                ->sortBy('permission_name', 'ASC')
+                ->get();
 
         $resp = [];
         foreach ($strSQL as $r) {
             if ($_format == 'full') {
-                $resp[$r['permission_key']] = [ 'ID' => _escape($r['permission_id']), 'Name' => _escape($r['permission_name']), 'Key' => _escape($r['permission_key'])];
+                $resp[$r['permission_key']] = ['ID' => func\ _escape($r['permission_id']), 'Name' => func\_escape($r['permission_name']), 'Key' => func\_escape($r['permission_key'])];
             } else {
-                $resp[] = _escape($r->permission_id);
+                $resp[] = func\_escape($r->permission_id);
             }
         }
         return $resp;
@@ -154,14 +165,14 @@ class ACL
     {
         if (is_array($role)) {
             $roleSQL = $this->app->db->table('role_perms')
-                ->where('role_id', 'IN', implode(",", $role))
-                ->sortBy('role_perms_id', 'ASC')
-                ->get();
+                    ->where('role_id', 'IN', implode(",", $role))
+                    ->sortBy('role_perms_id', 'ASC')
+                    ->get();
         } else {
             $roleSQL = $this->app->db->table('role_perms')
-                ->where('role_id', '=', floatval($role))
-                ->sortBy('role_perms_id', 'ASC')
-                ->get();
+                    ->where('role_id', '=', floatval($role))
+                    ->sortBy('role_perms_id', 'ASC')
+                    ->get();
         }
 
         $perms = [];
@@ -175,7 +186,7 @@ class ACL
             } else {
                 $hP = false;
             }
-            $perms[$pK] = [ 'perm' => $pK, 'inheritted' => true, 'value' => $hP, 'Name' => $this->getPermNameFromID(_escape($r['permission_id'])), 'ID' => _escape($r['permission_id'])];
+            $perms[$pK] = ['perm' => $pK, 'inheritted' => true, 'value' => $hP, 'Name' => $this->getPermNameFromID(func\_escape($r['permission_id'])), 'ID' => func\_escape($r['permission_id'])];
         }
         return $perms;
     }
@@ -183,13 +194,13 @@ class ACL
     public function getUserPerms($userID)
     {
         $strSQL = $this->app->db->table('user_perms')
-            ->where('user_id', floatval($userID))
-            ->sortBy('modified', 'ASC')
-            ->get();
+                ->where('user_id', floatval($userID))
+                ->sortBy('modified', 'ASC')
+                ->get();
 
         $perms = [];
         foreach ($strSQL as $r) {
-            $pK = strtolower($this->getPermKeyFromID(_escape($r['permission_id'])));
+            $pK = strtolower($this->getPermKeyFromID(func\_escape($r['permission_id'])));
             if ($pK == '') {
                 continue;
             }
@@ -198,7 +209,7 @@ class ACL
             } else {
                 $hP = false;
             }
-            $perms[$pK] = [ 'perm' => $pK, 'inheritted' => false, 'value' => $hP, 'Name' => $this->getPermNameFromID(_escape($r['permission_id'])), 'ID' => _escape($r['permission_id'])];
+            $perms[$pK] = ['perm' => $pK, 'inheritted' => false, 'value' => $hP, 'Name' => $this->getPermNameFromID(func\_escape($r['permission_id'])), 'ID' => func\_escape($r['permission_id'])];
         }
         return $perms;
     }
@@ -216,15 +227,15 @@ class ACL
     public function hasPermission($permKey)
     {
         $user_role = $this->app->db->table('usermeta')
-            ->where('meta_key', Config::get('tbl_prefix') . 'role')
-            ->where('user_id', get_current_user_id())
-            ->first();
+                ->where('meta_key', Config::get('tbl_prefix') . 'role')
+                ->where('user_id', func\get_current_user_id())
+                ->first();
 
         $perms = $this->app->db->table('role')
-            ->where('role_id', (int) _escape($user_role['meta_value']))
-            ->first();
+                ->where('role_id', (int) func\_escape($user_role['meta_value']))
+                ->first();
 
-        $perm = app()->hook->{'maybe_unserialize'}(_escape($perms['role_permission']));
+        $perm = app()->hook->{'maybe_unserialize'}(func\_escape($perms['role_permission']));
 
         if (in_array($permKey, $perm)) {
             return true;
@@ -235,8 +246,9 @@ class ACL
     public function getUsername($id)
     {
         $strSQL = $this->app->db->table('user')
-            ->where('user_id', floatval($id))
-            ->first();
-        return _escape($strSQL['user_login']);
+                ->where('user_id', floatval($id))
+                ->first();
+        return func\_escape($strSQL['user_login']);
     }
+
 }

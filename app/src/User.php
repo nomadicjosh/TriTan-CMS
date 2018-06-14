@@ -3,6 +3,7 @@
 namespace TriTan;
 
 use TriTan\Config;
+use TriTan\Functions as func;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
@@ -26,6 +27,14 @@ class User
      * @var object
      */
     public $data;
+
+    /**
+     * ACL data container.
+     * 
+     * @since 0.9.8
+     * @var object
+     */
+    public $acl;
 
     /**
      * User user_id.
@@ -55,6 +64,8 @@ class User
      */
     public function __construct($user_id = 0, $name = '', $site_id = '')
     {
+        $this->acl = new ACL();
+
         if ($user_id instanceof User) {
             $this->init($user_id->data, $site_id);
             return;
@@ -90,7 +101,7 @@ class User
      */
     public function init($data, $site_id = '')
     {
-        $this->data = array_to_object($data);
+        $this->data = func\array_to_object($data);
         $this->user_id = (int) $data['user_id'];
 
         $this->for_site($site_id);
@@ -136,12 +147,12 @@ class User
                 $db_field = 'user_id';
                 break;
             case 'email':
-                $user_id = ttcms_cache_get($value, 'useremail');
+                $user_id = func\ttcms_cache_get($value, 'useremail');
                 $db_field = 'user_email';
                 break;
             case 'login':
-                $value = sanitize_user($value);
-                $user_id = ttcms_cache_get($value, 'userlogins');
+                $value = func\sanitize_user($value);
+                $user_id = func\ttcms_cache_get($value, 'userlogins');
                 $db_field = 'user_login';
                 break;
             default:
@@ -149,7 +160,7 @@ class User
         }
 
         if (false !== $user_id) {
-            if ($user = ttcms_cache_get($user_id, 'users')) {
+            if ($user = func\ttcms_cache_get($user_id, 'users')) {
                 return $user;
             }
         }
@@ -158,7 +169,7 @@ class User
             return false;
         }
 
-        update_user_caches($user);
+        func\update_user_caches($user);
 
         return $user;
     }
@@ -175,7 +186,7 @@ class User
         if (isset($this->data->$key)) {
             return true;
         }
-        return metadata_exists('user', $this->user_id, Config::get('tbl_prefix') . $key);
+        return func\metadata_exists('user', $this->user_id, Config::get('tbl_prefix') . $key);
     }
 
     /**
@@ -194,7 +205,7 @@ class User
         if (isset($this->data->$key)) {
             $value = $this->data->$key;
         } else {
-            $value = get_user_meta($this->user_id, Config::get('tbl_prefix') . $key, true);
+            $value = func\get_user_meta($this->user_id, Config::get('tbl_prefix') . $key, true);
         }
 
         return $value;
@@ -295,8 +306,39 @@ class User
         if (!empty($site_id)) {
             $this->site_id = absint($site_id);
         } else {
-            $this->site_id = get_current_site_id();
+            $this->site_id = func\get_current_site_id();
         }
+    }
+
+    /**
+     * Set the user's role.
+     * 
+     * @since 0.9.8
+     * @param string $role Role key.
+     */
+    public function set_role($role)
+    {
+        $old_role = func\get_user_meta($this->user_id, Config::get('tbl_prefix') . 'role', true);
+
+        if (is_numeric($role)) {
+            $message = func\_t('Invalid role. Must use role_key (super, admin, editor, etc.) and not role_id.', 'tritan-cms');
+            func\_incorrectly_called(__FUNCTION__, $message, '0.9.8');
+            return;
+        }
+
+        $new_role = $this->acl->getRoleIDFromKey($role);
+
+        func\update_user_meta($this->user_id, Config::get('tbl_prefix') . 'role', $new_role, $old_role);
+
+        /**
+         * Fires after the user's role has been added/changed.
+         *
+         * @since 0.9.8
+         * @param int   $user_id    The user id.
+         * @param int   $new_role   The new role.
+         * @param int   $old_role   The user's previous role.
+         */
+        app()->hook->{'do_action'}('set_user_role', $this->user_id, $new_role, $old_role);
     }
 
 }

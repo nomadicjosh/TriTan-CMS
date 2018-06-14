@@ -1,7 +1,10 @@
-<?php namespace TriTan\Cache;
+<?php
+
+namespace TriTan\Cache;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
+use TriTan\Functions as func;
 
 /**
  * TriTan CMS Object Cache Class
@@ -50,7 +53,7 @@ class Object_Cache
              * @param
              *            bool false Use `\Memcache`|`\Memcached`. Default is false.
              */
-            $useMemcached = $this->app->hook->apply_filter('use_memcached', false);
+            $useMemcached = $this->app->hook->{'apply_filter'}('use_memcached', false);
 
             $this->_cache = new \TriTan\Cache\Cache_Memcache($useMemcached);
 
@@ -68,7 +71,7 @@ class Object_Cache
              * @param array $pool
              *            Array of servers to add to the connection pool.
              */
-            $servers = $this->app->hook->apply_filter('memcache_server_pool', $pool);
+            $servers = $this->app->hook->{'apply_filter'}('memcache_server_pool', $pool);
 
             $this->_cache->addServer($servers);
         } elseif ($driver == 'external') {
@@ -78,7 +81,7 @@ class Object_Cache
              *
              * @since 0.9
              */
-            $this->_cache = $this->app->hook->do_action('external_cache_driver');
+            $this->_cache = $this->app->hook->{'do_action'}('external_cache_driver');
         } elseif ($driver == 'xcache') {
             $this->_cache = new \TriTan\Cache\Cache_XCache();
         } elseif ($driver == 'cookie') {
@@ -90,7 +93,7 @@ class Object_Cache
         }
 
         $error = $this->_cache;
-        if (is_ttcms_exception($error)) {
+        if (func\is_ttcms_exception($error)) {
             Cascade\Cascade::getLogger('error')->error(sprintf('IOSTATE[%s]: Forbidden: %s', $error->getCode(), $error->getMessage()));
             return false;
         }
@@ -285,4 +288,5 @@ class Object_Cache
 
         return $this->_cache->dec($key, (int) $offset, $namespace);
     }
+
 }

@@ -6,5 +6,4 @@ interface PipeInterface
 {
 
     public function process(array $data);
-
 }

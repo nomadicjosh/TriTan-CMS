@@ -1,4 +1,8 @@
-<?php namespace TriTan;
+<?php
+
+namespace TriTan;
+
+use TriTan\Functions as func;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
@@ -49,8 +53,8 @@ class Plugin
      */
     public function plugin_basename($filename)
     {
-        $plugin_dir = ttcms_normalize_path(TTCMS_PLUGIN_DIR);
-        $mu_plugin_dir = ttcms_normalize_path(TTCMS_MU_PLUGIN_DIR);
+        $plugin_dir = func\ttcms_normalize_path(TTCMS_PLUGIN_DIR);
+        $mu_plugin_dir = func\ttcms_normalize_path(TTCMS_MU_PLUGIN_DIR);
 
         $filename = preg_replace('#^' . preg_quote($plugin_dir, '#') . '/|^' . preg_quote($mu_plugin_dir, '#') . '/#', '', $filename);
         $filename = trim($filename, '/');
@@ -106,4 +110,5 @@ class Plugin
     {
         return add_trailing_slash(dirname($filename));
     }
+
 }

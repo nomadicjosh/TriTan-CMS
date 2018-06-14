@@ -1,4 +1,8 @@
-<?php namespace TriTan;
+<?php
+
+namespace TriTan;
+
+use TriTan\Functions as func;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
@@ -93,18 +97,18 @@ final class Site
             return false;
         }
 
-        $_site = ttcms_cache_get($site_id, 'sites');
+        $_site = func\ttcms_cache_get($site_id, 'sites');
 
         if (!$_site) {
             $_site = app()->db->table('site')
-                ->where('site_id', (int) $site_id)
-                ->first();
+                    ->where('site_id', (int) $site_id)
+                    ->first();
 
             if (!$_site) {
                 return false;
             }
 
-            ttcms_cache_add($site_id, $_site, 'sites');
+            func\ttcms_cache_add($site_id, $_site, 'sites');
         }
 
         return new Site($_site);
@@ -227,16 +231,16 @@ final class Site
      */
     private function get_details()
     {
-        $details = ttcms_cache_get($this->site_id, 'site-details');
-        
-        if ( false === $details ) {
-            
-			foreach ( get_object_vars( $this ) as $key => $value ) {
-				$details->$key = $value;
-			}
+        $details = func\ttcms_cache_get($this->site_id, 'site-details');
 
-			ttcms_cache_set( $this->site_id, $details, 'site-details' );
-		}
+        if (false === $details) {
+
+            foreach (get_object_vars($this) as $key => $value) {
+                $details->$key = $value;
+            }
+
+            func\ttcms_cache_set($this->site_id, $details, 'site-details');
+        }
 
         /**
          * Filters a site's extended properties.
@@ -248,4 +252,5 @@ final class Site
 
         return $details;
     }
+
 }
