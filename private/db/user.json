@@ -6,14 +6,11 @@
         "user_fname": "TriTan",
         "user_lname": "CMS",
         "user_email": "tritan@ttcms.com",
-        "user_status": "A",
-        "user_role": "1",
         "user_pass": "$2a$08$Ctiuia0xvvwQymHHdxSXgestznqK0tsCDb9.Fj1XPd6WT3DMkxgyK",
         "user_url": "",
         "user_addedby": 1,
         "user_registered": "2017-11-11 00:06:01",
         "user_modified": "2017-11-15 09:01:16",
-        "user_activation_key": null,
-        "user_bio": null
+        "user_activation_key": null
     }
 }
