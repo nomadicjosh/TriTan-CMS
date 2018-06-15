@@ -102,11 +102,11 @@ $(function(){
                                                     <h4 class="modal-title"><?= $posttype['posttype_title']; ?></h4>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <p><?=func\_t('Are you sure you want to delete this post type? By deleting this post type, you also delete all posts connected to this post type as well.');?></p>
+                                                    <p><?=func\_t('Are you sure you want to delete this post type? By deleting this post type, you also delete all posts connected to this post type as well.', 'tritan-cms');?></p>
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><?= func\_t('Close'); ?></button>
-                                                    <button type="button" class="btn btn-primary" onclick="window.location='<?=func\get_base_url();?>admin/post-type/<?= $posttype['posttype_id']; ?>/d/'"><?= func\_t('Confirm'); ?></button>
+                                                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><?= func\_t('Close', 'tritan-cms'); ?></button>
+                                                    <button type="button" class="btn btn-primary" onclick="window.location='<?=func\get_base_url();?>admin/post-type/<?= $posttype['posttype_id']; ?>/d/'"><?= func\_t('Confirm', 'tritan-cms'); ?></button>
                                                 </div>
                                             </div>
                                             <!-- /.modal-content -->

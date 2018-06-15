@@ -240,7 +240,7 @@ class Hooks
             $error = func\ttcms_php_check_syntax($file);
             if (func\is_ttcms_exception($error)) {
                 $this->deactivate_plugin(func\_escape($v['plugin_location']));
-                func\_ttcms_flash()->error(sprintf(func\_t('The plugin <strong>%s</strong> has been deactivated because your changes resulted in a <strong>fatal error</strong>. <br /><br />') . $error->getMessage(), func\_escape($v['plugin_location'])));
+                func\_ttcms_flash()->error(sprintf(func\_t('The plugin <strong>%s</strong> has been deactivated because your changes resulted in a <strong>fatal error</strong>. <br /><br />', 'tritan-cms') . $error->getMessage(), func\_escape($v['plugin_location'])));
                 return false;
             }
 
@@ -659,14 +659,14 @@ class Hooks
     public function add_parsecode($tag, $func)
     {
         if ('' == _trim($tag)) {
-            $message = func\_t('Invalid parsecode name: empty name given.');
+            $message = func\_t('Invalid parsecode name: empty name given.', 'tritan-cms');
             func\_incorrectly_called(__METHOD__, $message, '0.9');
             return;
         }
 
         if (0 !== preg_match('@[<>&/\[\]\x00-\x20]@', $tag)) {
             /* translators: %s: parsecode name */
-            $message = sprintf(func\_t('Invalid parsecode name: %s. Do not use spaces or reserved characters: & / < > [ ]'), $tag);
+            $message = sprintf(func\_t('Invalid parsecode name: %s. Do not use spaces or reserved characters: & / < > [ ]', 'tritan-cms'), $tag);
             func\_incorrectly_called(__METHOD__, $message, '0.9');
             return;
         }
@@ -690,7 +690,7 @@ class Hooks
     public function remove_parsecode($tag)
     {
         if ('' == _trim($tag)) {
-            $message = func\_t('Invalid parsecode name: empty name given.');
+            $message = func\_t('Invalid parsecode name: empty name given.', 'tritan-cms');
             func\_incorrectly_called(__METHOD__, $message, '0.9');
             return;
         }

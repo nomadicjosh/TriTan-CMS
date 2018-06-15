@@ -47,15 +47,15 @@ function ttcms_nodeq_login_details()
             $message = str_replace('#password#', _escape($r['user_pass']), $message);
             $message = str_replace('#url#', get_base_url(), $message);
             $message = str_replace('#sitename#', app()->hook->{'get_option'}('sitename'), $message);
-            $message = process_email_html($message, _t("TriTan CMS Login Details"));
-            $headers[] = sprintf("From: %s <auto-reply@%s>", _t('TriTan CMS :: ') . app()->hook->{'get_option'}('sitename'), get_domain_name());
+            $message = process_email_html($message, _t("TriTan CMS Login Details", 'tritan-cms'));
+            $headers[] = sprintf("From: %s <auto-reply@%s>", _t('TriTan CMS :: ', 'tritan-cms') . app()->hook->{'get_option'}('sitename'), get_domain_name());
             if (!function_exists('ttcms_smtp')) {
                 $headers[] = 'Content-Type: text/html; charset="UTF-8"';
                 $headers[] = sprintf("X-Mailer: TriTan CMS %s", CURRENT_RELEASE);
             }
 
             try {
-                _ttcms_email()->ttcmsMail(_escape($r['email']), _t("TriTan CMS Login Details"), $message, $headers);
+                _ttcms_email()->ttcmsMail(_escape($r['email']), _t("TriTan CMS Login Details", 'tritan-cms'), $message, $headers);
             } catch (\PHPMailer\PHPMailer\Exception $e) {
                 Cascade::getLogger('system_email')->alert(sprintf('PHPMAILER[%s]: %s', $e->getCode(), $e->getMessage()));
             } catch (Exception $e) {

@@ -67,16 +67,16 @@ TriTan\Config::set('screen_child', 'options-general');
                                     <label><strong><font color="red">*</font> <?= func\_t('Cronjobs', 'tritan-cms'); ?></strong></label>
                                     <select class="form-control select2" name="enable_cron_jobs" style="width: 100%;" required>
                                         <option value=""> ------------------------- </option>
-                                        <option value="1"<?=selected( $this->app->hook->{'get_option'}( 'enable_cron_jobs' ), '1', false ); ?>><?=func\_t( "On" );?></option>
-                                        <option value="0"<?=selected( $this->app->hook->{'get_option'}( 'enable_cron_jobs' ), '0', false ); ?>><?=func\_t( "Off" );?></option>
+                                        <option value="1"<?=selected( $this->app->hook->{'get_option'}( 'enable_cron_jobs' ), '1', false ); ?>><?=func\_t( "On" , 'tritan-cms');?></option>
+                                        <option value="0"<?=selected( $this->app->hook->{'get_option'}( 'enable_cron_jobs' ), '0', false ); ?>><?=func\_t( "Off" , 'tritan-cms');?></option>
                                     </select>
                                 </div>
                                 <div class="form-group">
                                     <label><strong><font color="red">*</font> <?= func\_t('Site Cache', 'tritan-cms'); ?></strong></label>
                                     <select class="form-control select2" name="site_cache" style="width: 100%;" required>
                                         <option value=""> ------------------------- </option>
-                                        <option value="1"<?=selected( $this->app->hook->{'get_option'}( 'site_cache' ), '1', false ); ?>><?=func\_t( "On" );?></option>
-                                        <option value="0"<?=selected( $this->app->hook->{'get_option'}( 'site_cache' ), '0', false ); ?>><?=func\_t( "Off" );?></option>
+                                        <option value="1"<?=selected( $this->app->hook->{'get_option'}( 'site_cache' ), '1', false ); ?>><?=func\_t( "On" , 'tritan-cms');?></option>
+                                        <option value="0"<?=selected( $this->app->hook->{'get_option'}( 'site_cache' ), '0', false ); ?>><?=func\_t( "Off" , 'tritan-cms');?></option>
                                     </select>
                                 </div>
                                 <div class="form-group">

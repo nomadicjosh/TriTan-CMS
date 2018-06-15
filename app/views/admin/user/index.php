@@ -44,12 +44,12 @@ Config::set('screen_child', 'all-users');
                 <table id="example1" class="table table-bordered table-hover">
                     <thead>
                         <tr>
-                            <th class="text-center"><?= func\_t('Username'); ?></th>
-                            <th class="text-center"><?= func\_t('First Name'); ?></th>
-                            <th class="text-center"><?= func\_t('Last Name'); ?></th>
-                            <th class="text-center"><?= func\_t('Status'); ?></th>
-                            <th class="text-center"><?= func\_t('Role'); ?></th>
-                            <th class="text-center"><?= func\_t('Action'); ?></th>
+                            <th class="text-center"><?= func\_t('Username', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('First Name', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('Last Name', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('Status', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('Role', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('Action', 'tritan-cms'); ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -60,7 +60,7 @@ Config::set('screen_child', 'all-users');
                                 <td class="text-center"><?= $user['user_lname']; ?></td>
                                 <td class="text-center">
                                     <span class="label <?= func\ttcms_user_status_label(func\get_user_option('status', $user['user_id'])); ?>" style="font-size:1em;font-weight: bold;">
-                                        <?= (func\get_user_option('status', $user['user_id']) == 'A' ? func\_t('Active') : func\_t('Inactive')); ?>
+                                        <?= (func\get_user_option('status', $user['user_id']) == 'A' ? func\_t('Active', 'tritan-cms') : func\_t('Inactive', 'tritan-cms')); ?>
                                     </span>
                                 </td>
                                 <td class="text-center"><?=func\get_role_by_id(func\get_user_option('role', $user['user_id']))['role']['role_name'];?></td>
@@ -84,11 +84,11 @@ Config::set('screen_child', 'all-users');
                                                     <h4 class="modal-title"><?= func\get_name((int) $user['user_id']); ?></h4>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <p><?= func\_t('Are you sure you want to remove the user from this site?'); ?></p>
+                                                    <p><?= func\_t('Are you sure you want to remove the user from this site?', 'tritan-cms'); ?></p>
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><?= func\_t('Close'); ?></button>
-                                                    <button type="button" class="btn btn-primary" onclick="window.location = '<?= func\get_base_url(); ?>admin/user/<?= (int) $user['user_id']; ?>/d/'"><?= func\_t('Confirm'); ?></button>
+                                                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><?= func\_t('Close', 'tritan-cms'); ?></button>
+                                                    <button type="button" class="btn btn-primary" onclick="window.location = '<?= func\get_base_url(); ?>admin/user/<?= (int) $user['user_id']; ?>/d/'"><?= func\_t('Confirm', 'tritan-cms'); ?></button>
                                                 </div>
                                             </div>
                                             <!-- /.modal-content -->
@@ -102,12 +102,12 @@ Config::set('screen_child', 'all-users');
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th class="text-center"><?= func\_t('Username'); ?></th>
-                            <th class="text-center"><?= func\_t('First Name'); ?></th>
-                            <th class="text-center"><?= func\_t('Last Name'); ?></th>
-                            <th class="text-center"><?= func\_t('Status'); ?></th>
-                            <th class="text-center"><?= func\_t('Role'); ?></th>
-                            <th class="text-center"><?= func\_t('Action'); ?></th>
+                            <th class="text-center"><?= func\_t('Username', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('First Name', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('Last Name', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('Status', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('Role', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('Action', 'tritan-cms'); ?></th>
                         </tr>
                     </tfoot>
                 </table>

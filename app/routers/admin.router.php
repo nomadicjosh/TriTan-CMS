@@ -154,7 +154,7 @@ $app->group('/admin', function() use ($app, $current_user) {
     });
 
     $app->get('/plugin/', function() use($app) {
-        $app->foil->render('main::admin/plugin/index', ['title' => func\_t('Plugins')]);
+        $app->foil->render('main::admin/plugin/index', ['title' => func\_t('Plugins', 'tritan-cms')]);
     });
 
     /**
@@ -186,7 +186,7 @@ $app->group('/admin', function() use ($app, $current_user) {
             $continue = strtolower($name[1]) == 'zip' ? true : false;
 
             if (!$continue) {
-                func\_ttcms_flash()->{'error'}(func\_t('The file you are trying to upload is not the accepted file type (.zip). Please try again.'));
+                func\_ttcms_flash()->{'error'}(func\_t('The file you are trying to upload is not the accepted file type (.zip). Please try again.', 'tritan-cms'));
             }
             $target_path = BASE_PATH . 'plugins' . DS . $_FILES["plugin_zip"]["name"];
             if (move_uploaded_file($_FILES["plugin_zip"]["tmp_name"], $target_path)) {
@@ -197,18 +197,18 @@ $app->group('/admin', function() use ($app, $current_user) {
                     $zip->close();
                     unlink($target_path);
                 }
-                func\_ttcms_flash()->{'success'}(func\_t('Your plugin was uploaded and installed properly.'), $app->req->server['HTTP_REFERER']);
+                func\_ttcms_flash()->{'success'}(func\_t('Your plugin was uploaded and installed properly.', 'tritan-cms'), $app->req->server['HTTP_REFERER']);
             } else {
-                func\_ttcms_flash()->{'error'}(func\_t('There was a problem uploading your plugin. Please try again or check the plugin package.'), $app->req->server['HTTP_REFERER']);
+                func\_ttcms_flash()->{'error'}(func\_t('There was a problem uploading your plugin. Please try again or check the plugin package.', 'tritan-cms'), $app->req->server['HTTP_REFERER']);
             }
         }
 
-        $app->foil->render('main::admin/plugin/install', ['title' => func\_t('Install Plugins')]);
+        $app->foil->render('main::admin/plugin/install', ['title' => func\_t('Install Plugins', 'tritan-cms')]);
     });
 
     $app->before('GET|POST', '/plugin/activate/', function () {
         if (!func\current_user_can('manage_plugins')) {
-            func\_ttcms_flash()->{'error'}(func\_t('Permission denied to activate a plugin.'), func\get_base_url() . 'admin' . '/');
+            func\_ttcms_flash()->{'error'}(func\_t('Permission denied to activate a plugin.', 'tritan-cms'), func\get_base_url() . 'admin' . '/');
             exit();
         }
     });
@@ -228,7 +228,7 @@ $app->group('/admin', function() use ($app, $current_user) {
 
         if (ob_get_length() > 0) {
             $output = ob_get_clean();
-            $error = new TriTan\Error('unexpected_output', func\_t('The plugin generated unexpected output.'), $output);
+            $error = new TriTan\Error('unexpected_output', func\_t('The plugin generated unexpected output.', 'tritan-cms'), $output);
             Cascade::getLogger('error')->{'error'}(sprintf('PLUGIN[%s]: %s', $error->get_error_code(), $error->get_error_message()));
             func\_ttcms_flash()->{'error'}($error->get_error_message());
         }
@@ -239,7 +239,7 @@ $app->group('/admin', function() use ($app, $current_user) {
 
     $app->before('GET|POST', '/deactivate/', function () {
         if (!func\current_user_can('manage_plugins')) {
-            func\_ttcms_flash()->{'error'}(func\_t('Permission denied to deactivate a plugin.'), func\get_base_url() . 'admin' . '/');
+            func\_ttcms_flash()->{'error'}(func\_t('Permission denied to deactivate a plugin.', 'tritan-cms'), func\get_base_url() . 'admin' . '/');
             exit();
         }
     });
@@ -732,7 +732,7 @@ $app->group('/admin', function() use ($app, $current_user) {
      */
     $app->before('GET|POST', '/role(.*)', function() {
         if (!func\current_user_can('manage_roles')) {
-            func\_ttcms_flash()->{'error'}(func\_t("You don't have permission to manage roles/permissions."), func\get_base_url() . 'admin' . '/');
+            func\_ttcms_flash()->{'error'}(func\_t("You don't have permission to manage roles/permissions.", 'tritan-cms'), func\get_base_url() . 'admin' . '/');
             exit();
         }
     });

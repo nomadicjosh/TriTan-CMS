@@ -29,7 +29,7 @@ Config::set('screen_child', 'perm');
             <h3 class="box-title"><?= func\_t('Permissions', 'tritan-cms'); ?></h3>
 
             <div class="pull-right">
-                <button type="button" class="btn btn-icon btn-success" onclick="window.location = '<?= func\get_base_url(); ?>admin/permission/create/'"><i class="fa fa-plus-circle"></i> <?= func\_t('Create Permission'); ?></button>
+                <button type="button" class="btn btn-icon btn-success" onclick="window.location = '<?= func\get_base_url(); ?>admin/permission/create/'"><i class="fa fa-plus-circle"></i> <?= func\_t('Create Permission', 'tritan-cms'); ?></button>
             </div>
         </div>
     </div>
@@ -45,9 +45,9 @@ Config::set('screen_child', 'perm');
                 <table id="example1" class="table table-bordered table-hover">
                     <thead>
                         <tr>
-                            <th class="text-center"><?= func\_t('Key'); ?></th>
-                            <th class="text-center"><?= func\_t('Name'); ?></th>
-                            <th class="text-center"><?= func\_t('Edit'); ?></th>
+                            <th class="text-center"><?= func\_t('Key', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('Name', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('Edit', 'tritan-cms'); ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -67,9 +67,9 @@ Config::set('screen_child', 'perm');
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th class="text-center"><?= func\_t('Key'); ?></th>
-                            <th class="text-center"><?= func\_t('Name'); ?></th>
-                            <th class="text-center"><?= func\_t('Edit'); ?></th>
+                            <th class="text-center"><?= func\_t('Key', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('Name', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= func\_t('Edit', 'tritan-cms'); ?></th>
                         </tr>
                     </tfoot>
                 </table>

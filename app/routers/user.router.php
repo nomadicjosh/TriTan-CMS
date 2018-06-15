@@ -424,9 +424,9 @@ $app->group('/admin', function() use ($app, $current_user) {
             $user = func\ttcms_update_user($data);
 
             if ($user > 0) {
-                func\_ttcms_flash()->{'success'}(sprintf(func\_t('Password successfully updated for <strong>%s</strong>.'), func\get_name($id)));
+                func\_ttcms_flash()->{'success'}(sprintf(func\_t('Password successfully updated for <strong>%s</strong>.', 'tritan-cms'), func\get_name($id)));
             } else {
-                func\_ttcms_flash()->{'error'}(func\_t('Could not update password.'));
+                func\_ttcms_flash()->{'error'}(func\_t('Could not update password.', 'tritan-cms'));
             }
         } catch (Exception $ex) {
             func\_ttcms_flash()->{'error'}($ex->getMessage());

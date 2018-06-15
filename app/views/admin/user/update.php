@@ -32,7 +32,7 @@ Config::set('screen_child', 'user');
                 <div class="pull-right">
                     <button type="button"<?=func\ae('create_users');?> class="btn btn-warning" onclick="window.location='<?=func\get_base_url();?>admin/user/create/'"><i class="fa fa-plus"></i> <?= func\_t('New User', 'tritan-cms'); ?></button>
                     <button type="submit"<?=func\ae('update_users');?> class="btn btn-success"><i class="fa fa-save"></i> <?= func\_t('Update', 'tritan-cms'); ?></button>
-                    <button type="button" class="btn btn-primary" onclick="window.location = '<?= func\get_base_url(); ?>admin/user/'"><i class="fa fa-ban"></i> <?= func\_t('Cancel'); ?></button>
+                    <button type="button" class="btn btn-primary" onclick="window.location = '<?= func\get_base_url(); ?>admin/user/'"><i class="fa fa-ban"></i> <?= func\_t('Cancel', 'tritan-cms'); ?></button>
                     <?php if((int) $this->user->user_id === (int) $this->current_user_id) : ?>
                     <input type="hidden" name="user_role" value="<?= func\get_user_option('role', (int) $this->user->user_id); ?>" />
                     <input type="hidden" name="user_status" value="<?= func\get_user_option('status', (int) $this->user->user_id); ?>" />
@@ -165,10 +165,10 @@ Config::set('screen_child', 'user');
                                 <label><strong><font color="red">*</font> <?= func\_t('Status', 'tritan-cms'); ?></strong></label>
                                 <select class="form-control select2" name="user_status" style="width: 100%;" required>
                                     <option value=""> ---------------------- </option>
-                                    <option value="A"<?= selected('A', func\get_user_option('status', (int) $this->user->user_id), false); ?>><?= func\_t('Active'); ?></option>
-                                    <option value="I"<?= selected('I', func\get_user_option('status', (int) $this->user->user_id), false); ?>><?= func\_t('Inactive'); ?></option>
-                                    <option value="S"<?= selected('S', func\get_user_option('status', (int) $this->user->user_id), false); ?>><?= func\_t('Spammer'); ?></option>
-                                    <option value="B"<?= selected('B', func\get_user_option('status', (int) $this->user->user_id), false); ?>><?= func\_t('Blocked'); ?></option>
+                                    <option value="A"<?= selected('A', func\get_user_option('status', (int) $this->user->user_id), false); ?>><?= func\_t('Active', 'tritan-cms'); ?></option>
+                                    <option value="I"<?= selected('I', func\get_user_option('status', (int) $this->user->user_id), false); ?>><?= func\_t('Inactive', 'tritan-cms'); ?></option>
+                                    <option value="S"<?= selected('S', func\get_user_option('status', (int) $this->user->user_id), false); ?>><?= func\_t('Spammer', 'tritan-cms'); ?></option>
+                                    <option value="B"<?= selected('B', func\get_user_option('status', (int) $this->user->user_id), false); ?>><?= func\_t('Blocked', 'tritan-cms'); ?></option>
                                 </select>
                                 <p class="help-block"><?= func\_t('If the account is Inactive, the user will be incapable of logging into the system.', 'tritan-cms'); ?></p>
                             </div>

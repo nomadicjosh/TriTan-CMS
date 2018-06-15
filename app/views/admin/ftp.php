@@ -27,7 +27,7 @@ TriTan\Config::set('screen_child', 'ftp');
     <div class="box box-solid">
         <div class="box-header with-border">
             <i class="fa fa-exchange"></i>
-            <h3 class="box-title"><?= func\_t('FTP'); ?></h3>
+            <h3 class="box-title"><?= func\_t('FTP', 'tritan-cms'); ?></h3>
         </div>
     </div>
 

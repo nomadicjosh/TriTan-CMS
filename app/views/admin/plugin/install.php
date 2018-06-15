@@ -37,7 +37,7 @@ TriTan\Config::set('screen_child', 'plugin-new');
                     <div class="box box-default">
                         <div class="box-body">
                             <div class="form-group">
-                                <label for="exampleInputFile"><?= func\_t('File input'); ?></label>
+                                <label for="exampleInputFile"><?= func\_t('File input', 'tritan-cms'); ?></label>
                                 <input type="file" name="plugin_zip" />
                             </div>
                         </div>

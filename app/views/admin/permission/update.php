@@ -50,7 +50,7 @@ Config::set('screen_child', 'perm');
                         <div class="col-md-6">
 
                             <div class="form-group">
-                                <label><font color="red">*</font> <?= func\_t('Name'); ?></label>
+                                <label><font color="red">*</font> <?= func\_t('Name', 'tritan-cms'); ?></label>
                                 <input type="text" class="form-control" name="permission_name" value="<?= $ePerm->getPermNameFromID(func\_escape((int) $this->perm['permission_id'])); ?>" required>
                             </div>
 
@@ -60,7 +60,7 @@ Config::set('screen_child', 'perm');
                         <div class="col-md-6">
 
                             <div class="form-group">
-                                <label><font color="red">*</font> <?= func\_t('Key'); ?></label>
+                                <label><font color="red">*</font> <?= func\_t('Key', 'tritan-cms'); ?></label>
                                 <input type="text" class="form-control" name="permission_key" value="<?= $ePerm->getPermKeyFromID(func\_escape((int) $this->perm['permission_id'])); ?>" required>
                             </div>
 

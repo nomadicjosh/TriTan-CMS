@@ -47,7 +47,7 @@ Config::set('screen_child', 'cperm');
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label><font color="red">*</font> <?= func\_t('Name'); ?></label>
+                                <label><font color="red">*</font> <?= func\_t('Name', 'tritan-cms'); ?></label>
                                 <input type="text" class="form-control" name="permission_name" required>
                             </div>
                         </div>
@@ -55,7 +55,7 @@ Config::set('screen_child', 'cperm');
 
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label><font color="red">*</font> <?= func\_t('Key'); ?></label>
+                                <label><font color="red">*</font> <?= func\_t('Key', 'tritan-cms'); ?></label>
                                 <input type="text" class="form-control" name="permission_key" required>
                             </div>
                         </div>

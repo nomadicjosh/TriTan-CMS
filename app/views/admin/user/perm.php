@@ -24,11 +24,11 @@ Config::set('screen_child', 'user');
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
-        <h1><?= func\_t('Manage Permissions for '); ?> <?=func\get_name(func\_escape((int)$user['user_id']));?></h1>
+        <h1><?= func\_t('Manage Permissions for ', 'tritan-cms'); ?> <?=func\get_name(func\_escape((int)$user['user_id']));?></h1>
         <ol class="breadcrumb">
-            <li><a href="<?= func\get_base_url(); ?>admin/"><i class="fa fa-dashboard"></i> <?= func\_t('Dashboard'); ?></a></li>
-            <li><a href="<?= func\get_base_url(); ?>user/"><i class="fa fa-group"></i> <?= func\_t('Users'); ?></a></li>
-            <li class="active"><?= func\_t('Manage User Permissions'); ?></li>
+            <li><a href="<?= func\get_base_url(); ?>admin/"><i class="fa fa-dashboard"></i> <?= func\_t('Dashboard', 'tritan-cms'); ?></a></li>
+            <li><a href="<?= func\get_base_url(); ?>user/"><i class="fa fa-group"></i> <?= func\_t('Users', 'tritan-cms'); ?></a></li>
+            <li class="active"><?= func\_t('Manage User Permissions', 'tritan-cms'); ?></li>
         </ol>
     </section>
 
@@ -45,8 +45,8 @@ Config::set('screen_child', 'user');
                     <table id="example2" class="table table-bordered table-hover">
                         <thead>
                             <tr>
-                                <th><?=func\_t( 'Permission' );?></th>
-                                <th class="text-center"><?=func\_t( 'Allow' );?></th>
+                                <th><?=func\_t( 'Permission', 'tritan-cms');?></th>
+                                <th class="text-center"><?=func\_t( 'Allow', 'tritan-cms');?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -54,16 +54,16 @@ Config::set('screen_child', 'user');
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th><?=func\_t( 'Permission' );?></th>
-                                <th class="text-center"><?=func\_t( 'Allow' );?></th>
+                                <th><?=func\_t( 'Permission', 'tritan-cms');?></th>
+                                <th class="text-center"><?=func\_t( 'Allow', 'tritan-cms');?></th>
                             </tr>
                         </tfoot>
                     </table>
                 </div>
                 <!-- /.box-body -->
                 <div class="box-footer">
-                    <button<?=func\ie('user_inquiry_only');?> type="submit" class="btn btn-primary"><?=func\_t('Save');?></button>
-                    <button type="button" class="btn btn-primary" onclick="window.location='<?=func\get_base_url();?>user/'"><?=func\_t( 'Cancel' );?></button>
+                    <button<?=func\ie('user_inquiry_only');?> type="submit" class="btn btn-primary"><?=func\_t('Save', 'tritan-cms');?></button>
+                    <button type="button" class="btn btn-primary" onclick="window.location='<?=func\get_base_url();?>user/'"><?=func\_t( 'Cancel', 'tritan-cms');?></button>
                 </div>
             </form>
         </div>

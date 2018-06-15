@@ -64,7 +64,7 @@ $(document).ready(function(){
 
                 <div class="pull-right">
                     <button type="submit" class="btn btn-success"><i class="fa fa-save"></i> <?= func\_t('Save', 'tritan-cms'); ?></button>
-                    <button type="button" class="btn btn-primary" onclick="window.location = '<?= func\get_base_url(); ?>admin/user/'"><i class="fa fa-ban"></i> <?= func\_t('Cancel'); ?></button>
+                    <button type="button" class="btn btn-primary" onclick="window.location = '<?= func\get_base_url(); ?>admin/user/'"><i class="fa fa-ban"></i> <?= func\_t('Cancel', 'tritan-cms'); ?></button>
                 </div>
             </div>
         </div>
@@ -87,7 +87,7 @@ $(document).ready(function(){
                             <div class="form-group">
                                 <label><strong><font color="red">*</font> <?= func\_t('Username', 'tritan-cms'); ?></strong></label>
                                 <div class="clearfix">
-                                    <input type="checkbox" name="check" checked="checked"/> <?=func\_t('New User?');?>
+                                    <input type="checkbox" name="check" checked="checked"/> <?=func\_t('New User?', 'tritan-cms');?>
                                 </div>
                                 
                                 <div class="clearfix">&nbsp;</div>
@@ -166,12 +166,12 @@ $(document).ready(function(){
                                 <label><strong><font color="red">*</font> <?= func\_t('Status', 'tritan-cms'); ?></strong></label>
                                 <select class="form-control select2" name="user_status" style="width: 100%;" required>
                                     <option value=""> ---------------------- </option>
-                                    <option value="A"<?= selected('A', __return_post('user_status'), false); ?>><?= func\_t('Active'); ?></option>
-                                    <option value="I"<?= selected('I', __return_post('user_status'), false); ?>><?= func\_t('Inactive'); ?></option>
-                                    <option value="S"<?= selected('S', __return_post('user_status'), false); ?>><?= func\_t('Spammer'); ?></option>
-                                    <option value="B"<?= selected('B', __return_post('user_status'), false); ?>><?= func\_t('Blocked'); ?></option>
+                                    <option value="A"<?= selected('A', __return_post('user_status'), false); ?>><?= func\_t('Active', 'tritan-cms'); ?></option>
+                                    <option value="I"<?= selected('I', __return_post('user_status'), false); ?>><?= func\_t('Inactive', 'tritan-cms'); ?></option>
+                                    <option value="S"<?= selected('S', __return_post('user_status'), false); ?>><?= func\_t('Spammer', 'tritan-cms'); ?></option>
+                                    <option value="B"<?= selected('B', __return_post('user_status'), false); ?>><?= func\_t('Blocked', 'tritan-cms'); ?></option>
                                 </select>
-                                <p class="help-block"><?= func\_t('If the account is Inactive, the user will be incapable of logging in.'); ?></p>
+                                <p class="help-block"><?= func\_t('If the account is Inactive, the user will be incapable of logging in.', 'tritan-cms'); ?></p>
                             </div>
                             
                             <?php
@@ -197,7 +197,7 @@ $(document).ready(function(){
                                 <div class="ios-switch switch-md">
                                     <input type="checkbox" class="js-switch" name="sendemail" value="1" />
                                 <div>
-                                <p class="help-block"><?=func\_t( 'Send username & password to the user.' );?></p>
+                                <p class="help-block"><?=func\_t( 'Send username & password to the user.', 'tritan-cms');?></p>
                             </div>
                             
                             <?php

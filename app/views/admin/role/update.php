@@ -50,7 +50,7 @@ Config::set('screen_child', 'role');
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label><font color="red">*</font> <?= func\_t('Role Name'); ?></label>
+                                <label><font color="red">*</font> <?= func\_t('Role Name', 'tritan-cms'); ?></label>
                                 <input class="form-control" name="role_name" type="text" value="<?= $this->role['role_name']; ?>" required/>
                             </div>
                         </div>
@@ -58,7 +58,7 @@ Config::set('screen_child', 'role');
 
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label><font color="red">*</font> <?= func\_t('Role Key'); ?></label>
+                                <label><font color="red">*</font> <?= func\_t('Role Key', 'tritan-cms'); ?></label>
                                 <input class="form-control" name="role_key" type="text" value="<?= $this->role['role_key']; ?>" required/>
                             </div>
                         </div>
@@ -77,8 +77,8 @@ Config::set('screen_child', 'role');
                     <table class="table table-bordered table-hover">
                         <thead>
                             <tr>
-                                <th><?= func\_t('Permission'); ?></th>
-                                <th class="text-center"><?= func\_t('Allow'); ?></th>
+                                <th><?= func\_t('Permission', 'tritan-cms'); ?></th>
+                                <th class="text-center"><?= func\_t('Allow', 'tritan-cms'); ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -86,8 +86,8 @@ Config::set('screen_child', 'role');
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th><?= func\_t('Permission'); ?></th>
-                                <th class="text-center"><?= func\_t('Allow'); ?></th>
+                                <th><?= func\_t('Permission', 'tritan-cms'); ?></th>
+                                <th class="text-center"><?= func\_t('Allow', 'tritan-cms'); ?></th>
                             </tr>
                         </tfoot>
                     </table>

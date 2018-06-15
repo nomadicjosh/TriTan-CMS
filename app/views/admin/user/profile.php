@@ -32,7 +32,7 @@ $user = func\get_userdata($this->current_user_id);
                 <div class="pull-right">
                     <input type="hidden" name="user_id" value="<?=$this->current_user_id;?>" />
                     <button type="submit" class="btn btn-success"><i class="fa fa-pencil"></i> <?= func\_t('Update', 'tritan-cms'); ?></button>
-                    <button type="button"<?=func\ae('manage_users');?> class="btn btn-primary" onclick="window.location = '<?= func\get_base_url(); ?>admin/user/'"><i class="fa fa-ban"></i> <?= func\_t('Cancel'); ?></button>
+                    <button type="button"<?=func\ae('manage_users');?> class="btn btn-primary" onclick="window.location = '<?= func\get_base_url(); ?>admin/user/'"><i class="fa fa-ban"></i> <?= func\_t('Cancel', 'tritan-cms'); ?></button>
                 </div>
             </div>
         </div>
@@ -243,7 +243,7 @@ $user = func\get_userdata($this->current_user_id);
                             <div class="form-group">
                                 <label><strong><?= func\_t('New Password', 'tritan-cms'); ?></strong></label>
                                 <input type="text" class="form-control" name="user_pass" />
-                                <p class="help-block"><?= func\_t('Leave blank if not updating password.'); ?></p>
+                                <p class="help-block"><?= func\_t('Leave blank if not updating password.', 'tritan-cms'); ?></p>
                             </div>
                             
                             <?php
@@ -274,7 +274,7 @@ $user = func\get_userdata($this->current_user_id);
                             <div class="form-group">
                                 <label><strong><?= func\_t('Profile Picture', 'tritan-cms'); ?></strong></label>
                                 <div><?=func\get_user_avatar(func\get_user_option('email', (int) func\_escape($user->user_id)), 100);?></div>
-                                <p class="help-block"><?= sprintf(func\_t('You can change your profile picture on <a href="%s">Gravatar</a>.'), '//en.gravatar.com/'); ?></p>
+                                <p class="help-block"><?= sprintf(func\_t('You can change your profile picture on <a href="%s">Gravatar</a>.', 'tritan-cms'), '//en.gravatar.com/'); ?></p>
                             </div>
                             
                             <?php

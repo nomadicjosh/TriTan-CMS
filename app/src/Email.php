@@ -407,7 +407,7 @@ class Email
             $headers[] = sprintf("X-Mailer: TriTan CMS %s", CURRENT_RELEASE);
         }
         try {
-            $this->ttcmsMail(func\_escape($user->user_email), func\_t('New Account'), $message, $headers);
+            $this->ttcmsMail(func\_escape($user->user_email), func\_t('New Account', 'tritan-cms'), $message, $headers);
         } catch (\PHPMailer\PHPMailer\Exception $e) {
             _ttcms_flash()->error($e->getMessage());
         }

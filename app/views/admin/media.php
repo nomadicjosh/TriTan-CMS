@@ -25,7 +25,7 @@ TriTan\Config::set('screen_parent', 'media');
     <div class="box box-solid">
         <div class="box-header with-border">
             <i class="fa fa-camera"></i>
-            <h3 class="box-title"><?= func\_t('Media Library'); ?></h3>
+            <h3 class="box-title"><?= func\_t('Media Library', 'tritan-cms'); ?></h3>
         </div>
     </div>
 

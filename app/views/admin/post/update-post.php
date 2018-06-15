@@ -226,7 +226,7 @@ $this->app->hook->{'do_action'}('enqueue_ttcms_editor');
                 <h4 class="modal-title"><?= $this->posttype_title; ?> <?= func\_t('Slug', 'tritan-cms'); ?></h4>
             </div>
             <div class="modal-body">
-                <p><?= func\_t(sprintf("If left blank, the system will auto generate the %s slug.", $this->posttype_title), 'tritan-cms'); ?></p>
+                <p><?= sprintf(func\_t("If left blank, the system will auto generate the %s slug.", 'tritan-cms'), $this->posttype_title); ?></p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><?= func\_t('Close', 'tritan-cms'); ?></button>
@@ -248,11 +248,11 @@ $this->app->hook->{'do_action'}('enqueue_ttcms_editor');
                 <h4 class="modal-title"><?= $this->post['post_title']; ?></h4>
             </div>
             <div class="modal-body">
-                <p><?=func\_t('Are you sure you want to delete this post?');?></p>
+                <p><?=func\_t('Are you sure you want to delete this post?', 'tritan-cms');?></p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><?= func\_t('Close'); ?></button>
-                <button type="button" class="btn btn-primary" onclick="window.location='<?=func\get_base_url();?>admin/<?=$this->posttype;?>/<?= $this->post['post_id']; ?>/d/'"><?= func\_t('Confirm'); ?></button>
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><?= func\_t('Close', 'tritan-cms'); ?></button>
+                <button type="button" class="btn btn-primary" onclick="window.location='<?=func\get_base_url();?>admin/<?=$this->posttype;?>/<?= $this->post['post_id']; ?>/d/'"><?= func\_t('Confirm', 'tritan-cms'); ?></button>
             </div>
         </div>
         <!-- /.modal-content -->

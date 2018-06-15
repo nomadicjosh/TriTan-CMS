@@ -219,7 +219,7 @@ $this->app->hook->{'do_action'}('enqueue_ttcms_editor');
                 <h4 class="modal-title"><?=$this->posttype_title;?> <?= func\_t('Slug', 'tritan-cms'); ?></h4>
             </div>
             <div class="modal-body">
-                <p><?= func\_t(sprintf("If left blank, the system will auto generate the %s slug.", $this->posttype_title), 'tritan-cms'); ?></p>
+                <p><?= sprintf(func\_t("If left blank, the system will auto generate the %s slug."), $this->posttype_title); ?></p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><?= func\_t('Close', 'tritan-cms'); ?></button>

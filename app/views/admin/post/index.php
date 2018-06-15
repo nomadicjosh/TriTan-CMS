@@ -30,11 +30,11 @@ TriTan\Config::set('screen_parent', $this->posttype);
                 <table id="example1" class="table table-bordered table-hover">
                     <thead>
                         <tr>
-                            <th><?= func\_t('Title'); ?></th>
-                            <th><?= func\_t('Author'); ?></th>
-                            <th><?= func\_t('Date'); ?></th>
+                            <th><?= func\_t('Title', 'tritan-cms'); ?></th>
+                            <th><?= func\_t('Author', 'tritan-cms'); ?></th>
+                            <th><?= func\_t('Date', 'tritan-cms'); ?></th>
                             <?php $this->app->hook->{'do_action'}('manage_post_header_column', 'default', $this->posttype);?>
-                            <th><?= func\_t('Last Modified'); ?></th>
+                            <th><?= func\_t('Last Modified', 'tritan-cms'); ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -48,8 +48,8 @@ TriTan\Config::set('screen_parent', $this->posttype);
                                         </span>
                                     </div>
                                     <div class="row-actions">
-                                        <span class="edit"><a href="<?= func\get_base_url(); ?>admin/<?=$this->posttype;?>/<?= $post['post_id']; ?>/"><?=func\_t('Edit');?></a></span> | 
-                                        <span class="delete"><a<?=func\ae('delete_posts');?> href="#" data-toggle="modal" data-target="#delete-<?= $post['post_id']; ?>"><?=func\_t('Delete');?></a></span>
+                                        <span class="edit"><a href="<?= func\get_base_url(); ?>admin/<?=$this->posttype;?>/<?= $post['post_id']; ?>/"><?=func\_t('Edit', 'tritan-cms');?></a></span> | 
+                                        <span class="delete"><a<?=func\ae('delete_posts');?> href="#" data-toggle="modal" data-target="#delete-<?= $post['post_id']; ?>"><?=func\_t('Delete', 'tritan-cms');?></a></span>
                                     </div>
                                     <div class="modal" id="delete-<?= $post['post_id']; ?>">
                                         <div class="modal-dialog">
@@ -60,11 +60,11 @@ TriTan\Config::set('screen_parent', $this->posttype);
                                                     <h4 class="modal-title"><?= $post['post_title']; ?></h4>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <p><?=func\_t('Are you sure you want to delete this post?');?></p>
+                                                    <p><?=func\_t('Are you sure you want to delete this post?', 'tritan-cms');?></p>
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><?= func\_t('Close'); ?></button>
-                                                    <button type="button" class="btn btn-primary" onclick="window.location='<?=func\get_base_url();?>admin/<?=$this->posttype;?>/<?= $post['post_id']; ?>/d/'"><?= func\_t('Confirm'); ?></button>
+                                                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><?= func\_t('Close', 'tritan-cms'); ?></button>
+                                                    <button type="button" class="btn btn-primary" onclick="window.location='<?=func\get_base_url();?>admin/<?=$this->posttype;?>/<?= $post['post_id']; ?>/d/'"><?= func\_t('Confirm', 'tritan-cms'); ?></button>
                                                 </div>
                                             </div>
                                             <!-- /.modal-content -->
@@ -82,11 +82,11 @@ TriTan\Config::set('screen_parent', $this->posttype);
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th><?= func\_t('Title'); ?></th>
-                            <th><?= func\_t('Author'); ?></th>
-                            <th><?= func\_t('Date'); ?></th>
+                            <th><?= func\_t('Title', 'tritan-cms'); ?></th>
+                            <th><?= func\_t('Author', 'tritan-cms'); ?></th>
+                            <th><?= func\_t('Date', 'tritan-cms'); ?></th>
                             <?php $this->app->hook->{'do_action'}('manage_post_header_column', 'default', $this->posttype);?>
-                            <th><?= func\_t('Last Modified'); ?></th>
+                            <th><?= func\_t('Last Modified', 'tritan-cms'); ?></th>
                         </tr>
                     </tfoot>
                 </table>

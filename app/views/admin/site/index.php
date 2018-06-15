@@ -109,11 +109,11 @@ TriTan\Config::set('screen_child', 'sites');
                                                                 <h4 class="modal-title"><?= $site['site_domain']; ?></h4>
                                                             </div>
                                                             <div class="modal-body">
-                                                                <p><?= func\_t("Are you sure you want to delete this site and all it's content"); ?></p>
+                                                                <p><?= func\_t("Are you sure you want to delete this site and all it's content", 'tritan-cms'); ?></p>
                                                             </div>
                                                             <div class="modal-footer">
-                                                                <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><?= func\_t('Close'); ?></button>
-                                                                <button type="button" class="btn btn-primary" onclick="window.location = '<?= func\get_base_url(); ?>admin/site/<?= (int) $site['site_id']; ?>/d/'"><?= func\_t('Confirm'); ?></button>
+                                                                <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><?= func\_t('Close', 'tritan-cms'); ?></button>
+                                                                <button type="button" class="btn btn-primary" onclick="window.location = '<?= func\get_base_url(); ?>admin/site/<?= (int) $site['site_id']; ?>/d/'"><?= func\_t('Confirm', 'tritan-cms'); ?></button>
                                                             </div>
                                                         </div>
                                                         <!-- /.modal-content -->
