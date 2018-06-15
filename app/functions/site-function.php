@@ -73,19 +73,15 @@ function get_site($site, $object = false)
  */
 function site_domain_exists($sitedomain)
 {
-    $site = app()->db->table('site')->where('site_domain', $sitedomain)->get();
+    $site = app()->db->table('site')->where('site_domain', $sitedomain)->count();
 
-    if (count($site) > 0) {
-        $exists = true;
-    } else {
-        $exists = false;
-    }
+    $exists = $site > 0 ? true : false;
 
     /**
      * Filters whether the given site domain exists or not.
      *
      * @since 0.9
-     * @param bool $exists           Whether the site's domain is taken or not.
+     * @param bool $exists          Whether the site's domain is taken or not.
      * @param string $sitedomain    Site domain to check.
      */
     return app()->hook->{'apply_filter'}('site_domain_exists', $exists, $sitedomain);
@@ -108,11 +104,7 @@ function site_exists($site_domain, $site_path)
             ->where('site_path', $site_path)
             ->count();
 
-    if ($site > 0) {
-        $exists = true;
-    } else {
-        $exists = false;
-    }
+    $exists = $site > 0 ? true : false;
 
     /**
      * Filters whether the given sitedata exists or not.
@@ -136,19 +128,18 @@ function site_exists($site_domain, $site_path)
  */
 function update_site_user_meta($_site_id, $user_id)
 {
-    $user = get_userdata((int) $user_id);
+    $userdata = get_userdata((int) $user_id);
     $data = [
-        'user_login' => _escape($user->user_login),
-        'user_fname' => _escape($user->user_fname),
-        'user_lname' => _escape($user->user_lname),
-        'user_email' => _escape($user->user_email),
-        'user_url' => null,
-        'user_bio' => null,
-        'user_role' => (int) 2,
-        'user_status' => _escape($user->user_status),
-        'user_admin_layout' => (int) '0',
-        'user_admin_sidebar' => (int) '0',
-        'user_admin_skin' => 'skin-red-light'
+        'username' => if_null(_escape($userdata->user_login)),
+        'fname' => if_null(_escape($userdata->user_fname)),
+        'lname' => if_null(_escape($userdata->user_lname)),
+        'email' => if_null(_escape($userdata->user_email)),
+        'bio' => if_null(_escape($userdata->bio)),
+        'role' => (int) 2,
+        'status' => if_null(_escape($userdata->status)),
+        'admin_layout' => _escape($userdata->admin_layout) <= 0 ? (int) 0 : (int) _escape($userdata->admin_layout),
+        'admin_sidebar' => _escape($userdata->admin_sidebar) <= 0 ? (int) 0 : (int) _escape($userdata->admin_sidebar),
+        'admin_skin' => _escape($userdata->admin_skin) == null ? (string) 'skin-red-light' : (string) _escape($userdata->admin_skin)
     ];
     foreach ($data as $meta_key => $meta_value) {
         $prefix = "ttcms_{$_site_id}_";
@@ -286,9 +277,9 @@ function get_multisite_users()
 function add_user_to_site($user, $site, $role)
 {
     if ($user instanceof \TriTan\User) {
-        $_user = $user;
+        $userdata = $user;
     } else {
-        $_user = get_userdata($user);
+        $userdata = get_userdata($user);
     }
 
     if ($site instanceof \TriTan\Site) {
@@ -297,7 +288,7 @@ function add_user_to_site($user, $site, $role)
         $_site = get_site($site);
     }
 
-    if (!username_exists(_escape($_user->user_login))) {
+    if (!username_exists(_escape($userdata->user_login))) {
         return false;
     }
 
@@ -308,21 +299,19 @@ function add_user_to_site($user, $site, $role)
     // Store values to save in user meta.
     $meta = [];
 
-    $meta['username'] = if_null($_user->user_login);
+    $meta['username'] = if_null($userdata->user_login);
 
-    $meta['fname'] = if_null($_user->user_fname);
+    $meta['fname'] = if_null($userdata->user_fname);
 
-    $meta['lname'] = if_null($_user->user_lname);
+    $meta['lname'] = if_null($userdata->user_lname);
 
-    $meta['email'] = if_null($_user->user_email);
+    $meta['email'] = if_null($userdata->user_email);
 
-    $meta['url'] = app()->hook->{'apply_filter'}('site_user_url', null);
-
-    $meta['bio'] = if_null($_user->user_bio);
+    $meta['bio'] = null;
 
     $meta['role'] = if_null($role);
 
-    $meta['status'] = if_null($_user->user_status);
+    $meta['status'] = (string) 'A';
 
     $meta['admin_layout'] = (int) 0;
 
@@ -338,27 +327,31 @@ function add_user_to_site($user, $site, $role)
      * @param array $meta {
      *     Default meta values and keys for the user.
      *
-     *     @type string $login           The user's username
-     *     @type string $fname           The user's first name.
-     *     @type string $lname           The user's last name.
-     *     @type string $email           The user's email.
-     *     @type string $bio             The user's bio.
-     *     @type string $role            The user's role.
-     *     @type string $status          The user's status.
-     *     @type int    $admin_layout    The user's layout option.
-     *     @type int    $admin_sidebar   The user's sidebar option.
-     *     @type int    $admin_skin      The user's skin option.
+     *     @type string $username       The user's username
+     *     @type string $fname          The user's first name.
+     *     @type string $lname          The user's last name.
+     *     @type string $email          The user's email.
+     *     @type string $bio            The user's bio.
+     *     @type string $role           The user's role.
+     *     @type string $status         The user's status.
+     *     @type int    $admin_layout   The user's layout option.
+     *     @type int    $admin_sidebar  The user's sidebar option.
+     *     @type int    $admin_skin     The user's skin option.
      * }
-     * @param User $user   User object.
+     * @param $userdata User object.
      */
-    $meta = app()->hook->{'apply_filter'}('add_user_user_meta', $meta, $_user);
+    $meta = app()->hook->{'apply_filter'}('add_user_user_meta', $meta, $userdata);
 
-    // Update user meta.
-    foreach ($meta as $key => $value) {
-        update_user_option(_escape($_user->user_id), $key, if_null($value));
+    // Make sure meta data doesn't already exist for this user.
+    $prefix = "ttcms_{$_site['site_id']}_";
+    if (!get_user_meta(_escape($userdata->user_id), $prefix . $meta['role'], true)) {
+        // Update user meta.
+        foreach ($meta as $key => $value) {
+            update_user_meta(_escape($userdata->user_id), $prefix . $key, if_null($value));
+        }
     }
 
-    return (int) _escape($_user->user_id);
+    return (int) _escape($userdata->user_id);
 }
 
 /**
@@ -408,12 +401,10 @@ function ttcms_insert_site($sitedata)
 
     $raw_site_domain = isset($sitedata['subdomain']) ? if_null($sitedata['subdomain'] . '.' . app()->req->server['HTTP_HOST']) : if_null($sitedata['site_domain']);
     /**
-     * Filters a username after it has been sanitized.
-     *
-     * This filter is called before the user is created or updated.
+     * Filters a site's domain before the site is created or updated.
      *
      * @since 0.9
-     * @param string $sanitized_user_login Username after it has been sanitized.
+     * @param string $pre_site_domain The sites domain.
      */
     $pre_site_domain = app()->hook->{'apply_filter'}('pre_site_domain', $raw_site_domain);
 
@@ -458,7 +449,7 @@ function ttcms_insert_site($sitedata)
 
     $site_owner = $sitedata['site_owner'] == '' ? if_null(get_current_user_id()) : if_null($sitedata['site_owner']);
 
-    $raw_site_status = (string) 'public';
+    $raw_site_status = $sitedata['site_status'] == '' ? (string) 'public' : if_null($sitedata['site_status']);
     /**
      * Filters a site's status before the site is created or updated.
      *
@@ -483,6 +474,7 @@ function ttcms_insert_site($sitedata)
      *
      *     @type string $site_domain    The site's domain
      *     @type string $site_name      The site's name/title.
+     *     @type string $site_path      The site's path.
      *     @type int    $site_owner     The site's owner.
      *     @type string $site_status    The site's status.
      * }
@@ -535,7 +527,7 @@ function ttcms_insert_site($sitedata)
          * Fires immediately after an existing site is updated.
          *
          * @since 0.9
-         * @param int     $site_id      Site ID.
+         * @param int $site_id          Site ID.
          * @param User $old_site_data   Array containing site's data prior to update.
          */
         app()->hook->{'do_action'}('site_update', $site_id, $old_site_data);
@@ -601,7 +593,7 @@ function new_site_data($site_id, $site_owner)
     $userdata = get_userdata((int) $site_owner);
     $api_key = _ttcms_random_lib()->generateString(20, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
 
-    $prefix = 'ttcms_' . _escape($sitedata['site_id']) . '_';
+    $prefix = "ttcms_{$sitedata['site_id']}_";
 
     $option = app()->db->table($prefix . 'option');
     $option->insert([
@@ -689,11 +681,13 @@ function new_site_data($site_id, $site_owner)
 
     $meta['lname'] = if_null($userdata->user_lname);
 
-    $meta['bio'] = if_null($userdata->user_bio);
+    $meta['email'] = if_null($userdata->user_email);
+
+    $meta['bio'] = null;
 
     $meta['role'] = (int) 2;
 
-    $meta['status'] = if_null($userdata->user_status);
+    $meta['status'] = (string) 'A';
 
     $meta['admin_layout'] = (int) 0;
 
@@ -709,15 +703,16 @@ function new_site_data($site_id, $site_owner)
      * @param array $meta {
      *     Default meta values and keys for the user.
      *
-     *     @type string $user_login           The user's username
-     *     @type string $user_fname           The user's first name.
-     *     @type string $user_lname           The user's last name.
-     *     @type string $user_bio             The user's bio.
-     *     @type string $user_role            The user's role.
-     *     @type string $user_status          The user's status.
-     *     @type int    $user_admin_layout    The user's layout option.
-     *     @type int    $user_admin_sidebar   The user's sidebar option.
-     *     @type int    $user_admin_skin      The user's skin option.
+     *     @type string $username       The user's username
+     *     @type string $fname          The user's first name.
+     *     @type string $lname          The user's last name.
+     *     @type string $email          The user's email.
+     *     @type string $bio            The user's bio.
+     *     @type string $role           The user's role.
+     *     @type string $status         The user's status.
+     *     @type int    $admin_layout   The user's layout option.
+     *     @type int    $admin_sidebar  The user's sidebar option.
+     *     @type int    $admin_skin     The user's skin option.
      * }
      * @param object $userdata   User object.
      */
@@ -754,4 +749,139 @@ function ttcms_site_status_label($status)
      * @param
      */
     return app()->hook->{'apply_filter'}('site_status_label', $label[$status], $status);
+}
+
+/**
+ * A function which retrieves TriTan CMS site name.
+ * 
+ * Purpose of this function is for the `site_name`
+ * filter.
+ * 
+ * @file app/functions/site-function.php
+ *
+ * @since 0.9.9
+ * @param int $site_id The unique id of a site.
+ * @return string
+ */
+function get_site_name($site_id = 0)
+{
+    $site = get_site($site_id);
+    $name = _escape($site['site_name']);
+    /**
+     * Filters the site name.
+     *
+     * @since 0.9.9
+     *
+     * @param string    $name The site's name.
+     * @param int       $site_id The site ID.
+     */
+    return app()->hook->{'apply_filter'}('site_name', $name, $site_id);
+}
+
+/**
+ * A function which retrieves TriTan CMS site domain.
+ * 
+ * Purpose of this function is for the `site_domain`
+ * filter.
+ * 
+ * @file app/functions/site-function.php
+ *
+ * @since 0.9.9
+ * @param int $site_id The unique id of a site.
+ * @return string
+ */
+function get_site_domain($site_id = 0)
+{
+    $site = get_site($site_id);
+    $domain = _escape($site['site_domain']);
+    /**
+     * Filters the site domain.
+     *
+     * @since 0.9.9
+     *
+     * @param string    $domain The site's domain.
+     * @param int       $site_id The site ID.
+     */
+    return app()->hook->{'apply_filter'}('site_domain', $domain, $site_id);
+}
+
+/**
+ * A function which retrieves TriTan CMS site path.
+ * 
+ * Purpose of this function is for the `site_path`
+ * filter.
+ * 
+ * @file app/functions/site-function.php
+ *
+ * @since 0.9.9
+ * @param int $site_id The unique id of a site.
+ * @return string
+ */
+function get_site_path($site_id = 0)
+{
+    $site = get_site($site_id);
+    $path = _escape($site['site_path']);
+    /**
+     * Filters the site path.
+     *
+     * @since 0.9.9
+     *
+     * @param string    $path The site's path.
+     * @param int       $site_id The site ID.
+     */
+    return app()->hook->{'apply_filter'}('site_path', $path, $site_id);
+}
+
+/**
+ * A function which retrieves TriTan CMS site owner.
+ * 
+ * Purpose of this function is for the `site_owner`
+ * filter.
+ * 
+ * @file app/functions/site-function.php
+ *
+ * @since 0.9.9
+ * @param int $site_id The unique id of a site.
+ * @return string
+ */
+function get_site_owner($site_id = 0)
+{
+    $site = get_site($site_id);
+    $owner = _escape($site['site_owner']);
+    /**
+     * Filters the site owner.
+     *
+     * @since 0.9.9
+     *
+     * @param string    $owner The site's owner.
+     * @param int       $site_id The site ID.
+     */
+    return app()->hook->{'apply_filter'}('site_owner', $owner, $site_id);
+}
+
+/**
+ * A function which retrieves TriTan CMS site status.
+ * 
+ * Purpose of this function is for the `site_status`
+ * filter.
+ * 
+ * @file app/functions/site-function.php
+ *
+ * @since 0.9.9
+ * @param int $site_id The unique id of a site.
+ * @return string
+ */
+function get_site_status($site_id = 0)
+{
+    $site = get_site($site_id);
+    $status = _escape($site['site_status']);
+    /**
+     * Filters the site status.
+     *
+     * @since 0.9.9
+     *
+     * @param string    $status The site's status.
+     * @param int       $site_id The site ID.
+     */
+    return app()->hook->{'apply_filter'}('site_status', $status, $site_id);
 }
