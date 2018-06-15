@@ -743,3 +743,85 @@ function the_permalink($post = 0)
      */
     echo app()->hook->{'apply_filter'}('the_permalink', get_permalink($post), $post);
 }
+
+/**
+ * A function which retrieves a TriTan CMS post author id.
+ * 
+ * Purpose of this function is for the `post_author_id`
+ * filter.
+ * 
+ * @file app/functions/post-function.php
+ *
+ * @since 0.9.9
+ * @param int $post_id The unique id of a post.
+ * @return string
+ */
+function get_post_author_id($post_id = 0)
+{
+    $post = get_post($post_id);
+    $author_id = _escape($post['post_author']);
+    /**
+     * Filters the post author id.
+     *
+     * @since 0.9.9
+     *
+     * @param string    $author_id The post's author id.
+     * @param string    $post_id The post ID.
+     */
+    return app()->hook->{'apply_filter'}('post_author_id', $author_id, $post_id);
+}
+
+/**
+ * A function which retrieves a TriTan CMS post author.
+ * 
+ * Purpose of this function is for the `post_author`
+ * filter.
+ * 
+ * @file app/functions/post-function.php
+ *
+ * @since 0.9.9
+ * @param int   $post_id The unique id of a post.
+ * @param bool  $reverse If first name should appear first or not. Default is false.
+ * @return string
+ */
+function get_post_author($post_id = 0, $reverse = false)
+{
+    $post = get_post($post_id);
+    $author = get_name(_escape($post['post_author']), $reverse);
+    /**
+     * Filters the post author.
+     *
+     * @since 0.9.9
+     *
+     * @param string    $author The post's author.
+     * @param string    $post_id The post ID.
+     */
+    return app()->hook->{'apply_filter'}('post_author', $author, $post_id);
+}
+
+/**
+ * A function which retrieves a TriTan CMS post status.
+ * 
+ * Purpose of this function is for the `post_status`
+ * filter.
+ * 
+ * @file app/functions/post-function.php
+ *
+ * @since 0.9.9
+ * @param int   $post_id The unique id of a post.
+ * @return string
+ */
+function get_post_status($post_id = 0)
+{
+    $post = get_post($post_id);
+    $status = _escape($post['post_status']);
+    /**
+     * Filters the post status.
+     *
+     * @since 0.9.9
+     *
+     * @param string    $status The post's status.
+     * @param string    $post_id The post ID.
+     */
+    return app()->hook->{'apply_filter'}('post_status', $status, $post_id);
+}
