@@ -7,7 +7,7 @@ use TriTan\Exception\Exception;
 use Cascade\Cascade;
 use TriTan\Functions as func;
 
-$user = func\get_userdata(func\get_current_user_id());
+$current_user = func\get_userdata(func\get_current_user_id());
 
 /**
  * Before router checks to make sure the logged in user
@@ -24,7 +24,7 @@ $app->before('GET|POST', '/admin(.*)', function() {
     }
 });
 
-$app->group('/admin', function() use ($app, $user) {
+$app->group('/admin', function() use ($app, $current_user) {
 
     /**
      * Before route checks to make sure the logged in user
@@ -37,11 +37,15 @@ $app->group('/admin', function() use ($app, $user) {
         }
     });
 
-    $app->match('GET|POST', '/site/', function () use($app) {
+    $app->match('GET|POST', '/site/', function () use($app, $current_user) {
 
         if ($app->req->isPost()) {
             try {
-                func\ttcms_insert_site($app->req->post);
+
+                $site = func\ttcms_insert_site($app->req->post);
+                $new_site = func\get_site($site);
+
+                func\ttcms_logger_activity_log_write(func\_t('Create Record', 'tritan-cms'), func\_t('Site', 'tritan-cms'), $new_site['site_domain'], func\_escape($current_user->user_login));
                 func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
             } catch (Exception $ex) {
                 Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
@@ -69,11 +73,12 @@ $app->group('/admin', function() use ($app, $user) {
         }
     });
 
-    $app->match('GET|POST', '/site/(\d+)/', function ($id) use($app) {
+    $app->match('GET|POST', '/site/(\d+)/', function ($id) use($app, $current_user) {
         if ($app->req->isPost()) {
             try {
                 $site = array_merge(['site_id' => $id], $app->req->post);
                 func\ttcms_update_site($site);
+                func\ttcms_logger_activity_log_write(func\_t('Update Record', 'tritan-cms'), func\_t('Site', 'tritan-cms'), $site['site_domain'], func\_escape($current_user->user_login));
                 func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
             } catch (Exception $ex) {
                 Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
@@ -124,11 +129,14 @@ $app->group('/admin', function() use ($app, $user) {
         }
     });
 
-    $app->get('/site/(\d+)/d/', function($id) use($app) {
+    $app->get('/site/(\d+)/d/', function($id) use($app, $current_user) {
         if ((int) $id == (int) '1') {
             func\_ttcms_flash()->{'error'}(func\_t('You are not allowed to delete the main site.', 'tritan-cms'), func\get_base_url() . 'admin' . '/');
             exit();
         }
+
+        $old_site = func\get_site($id);
+
         $site = $app->db->table('site');
         $site->begin();
         try {
@@ -143,6 +151,7 @@ $app->group('/admin', function() use ($app, $user) {
              */
             $app->hook->{'do_action'}('delete_site', (int) $id);
             func\ttcms_cache_delete($id, 'site');
+            func\ttcms_logger_activity_log_write(func\_t('Delete Record', 'tritan-cms'), func\_t('Site', 'tritan-cms'), $old_site['site_domain'], func\_escape($current_user->user_login));
             func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), func\get_base_url() . 'admin/site/');
         } catch (Exception $ex) {
             $site->rollback();
@@ -182,12 +191,13 @@ $app->group('/admin', function() use ($app, $user) {
         }
     });
 
-    $app->get('/site/users/(\d+)/d/', function($id) use($app) {
+    $app->get('/site/users/(\d+)/d/', function($id) use($app, $current_user) {
         $tbl_prefix = Config::get('tbl_prefix');
         if ((int) $id == (int) '1') {
             func\_ttcms_flash()->{'error'}(func\_t('You are not allowed to delete the super administrator.', 'tritan-cms'), func\get_base_url() . 'admin/site/users/');
             exit();
         }
+
         $user = $app->db->table('user');
         $user->begin();
         try {
@@ -222,9 +232,13 @@ $app->group('/admin', function() use ($app, $user) {
              * @param int $id Site ID.
              */
             $app->hook->{'do_action'}('delete_user', (int) $id);
+
+            func\ttcms_logger_activity_log_write(func\_t('Delete Record', 'tritan-cms'), func\_t('Site User', 'tritan-cms'), func\get_name($id), func\_escape($current_user->user_login));
+
             func\ttcms_cache_delete($id, 'user');
             func\ttcms_cache_flush_namespace('user_meta');
             func\clean_user_cache($id);
+
             func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), func\get_base_url() . 'admin/site/users/');
         } catch (Exception $ex) {
             $user->rollback();

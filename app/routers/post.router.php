@@ -7,7 +7,7 @@ use TriTan\Exception\Exception;
 use Cascade\Cascade;
 use TriTan\Functions as func;
 
-$user = func\get_userdata(func\get_current_user_id());
+$current_user = func\get_userdata(func\get_current_user_id());
 
 /**
  * Before router checks to make sure the logged in user
@@ -24,7 +24,7 @@ $app->before('GET|POST', '/admin(.*)', function() {
     }
 });
 
-$app->group('/admin', function() use ($app, $user) {
+$app->group('/admin', function() use ($app, $current_user) {
 
     foreach (func\get_all_post_types() as $post_type) :
         /**
@@ -67,7 +67,7 @@ $app->group('/admin', function() use ($app, $user) {
         /**
          * Shows the add new post form.
          */
-        $app->match('GET|POST', '/' . func\_escape($post_type['posttype_slug']) . '/create/', function () use($app, $post_type) {
+        $app->match('GET|POST', '/' . func\_escape($post_type['posttype_slug']) . '/create/', function () use($app, $post_type, $current_user) {
 
             if ($app->req->isPost()) {
                 $post = $app->db->table(Config::get('tbl_prefix') . 'post');
@@ -120,6 +120,7 @@ $app->group('/admin', function() use ($app, $user) {
                      * @param int $lastId Post ID.
                      */
                     $app->hook->{'do_action'}("{$post_type['posttype_slug']}_{$post_status}_create", $lastId);
+                    func\ttcms_logger_activity_log_write(func\_t('Create Record', 'tritan-cms'), func\_t('Post', 'tritan-cms'), $app->req->post['post_title'], func\_escape($current_user->user_login));
                     func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), func\get_base_url() . 'admin/' . $app->req->post['post_posttype'] . '/' . $lastId . '/');
                 } catch (Exception $ex) {
                     $post->rollback();
@@ -153,7 +154,7 @@ $app->group('/admin', function() use ($app, $user) {
         /**
          * Shows the edit form with the requested id.
          */
-        $app->match('GET|POST', '/' . func\_escape($post_type['posttype_slug']) . '/(\d+)/', function ($id) use($app, $post_type) {
+        $app->match('GET|POST', '/' . func\_escape($post_type['posttype_slug']) . '/(\d+)/', function ($id) use($app, $post_type, $current_user) {
 
             if ($app->req->isPost()) {
                 $post = $app->db->table(Config::get('tbl_prefix') . 'post');
@@ -217,6 +218,7 @@ $app->group('/admin', function() use ($app, $user) {
                      * @param int $id Post ID.
                      */
                     $app->hook->{'do_action'}("{$post_type['posttype_slug']}_{$post_status}_update", (int) $id);
+                    func\ttcms_logger_activity_log_write(func\_t('Update Record', 'tritan-cms'), func\_t('Post', 'tritan-cms'), $app->req->post['post_title'], func\_escape($current_user->user_login));
                     func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), func\get_base_url() . 'admin/' . (string) $app->req->post['post_posttype'] . '/' . (int) $id . '/');
                 } catch (Exception $ex) {
                     $post->rollback();
@@ -311,13 +313,16 @@ $app->group('/admin', function() use ($app, $user) {
             }
         });
 
-        $app->get('/' . func\_escape($post_type['posttype_slug']) . '/(\d+)/d/', function($id) use($app, $post_type) {
+        $app->get('/' . func\_escape($post_type['posttype_slug']) . '/(\d+)/d/', function($id) use($app, $post_type, $current_user) {
+            $title = func\get_post_title($id);
+
             $post = $app->db->table(Config::get('tbl_prefix') . 'post');
             $post->begin();
             try {
                 $post->where('post_id', (int) $id)
                         ->delete();
                 $post->commit();
+                func\ttcms_logger_activity_log_write(func\_t('Delete Record', 'tritan-cms'), func\_t('Post', 'tritan-cms'), $title, func\_escape($current_user->user_login));
                 func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), func\get_base_url() . 'admin/' . (string) func\_escape($post_type['posttype_slug']) . '/');
             } catch (Exception $ex) {
                 $post->rollback();
@@ -338,7 +343,7 @@ $app->group('/admin', function() use ($app, $user) {
         }
     });
 
-    $app->match('GET|POST', '/post-type/', function () use($app) {
+    $app->match('GET|POST', '/post-type/', function () use($app, $current_user) {
 
         if ($app->req->isPost()) {
             $posttype = $app->db->table(Config::get('tbl_prefix') . 'posttype');
@@ -362,6 +367,8 @@ $app->group('/admin', function() use ($app, $user) {
                  * @param int $lastId posttype ID.
                  */
                 $app->hook->{'do_action'}('create_posttype', (int) $lastId);
+
+                func\ttcms_logger_activity_log_write(func\_t('Create Record', 'tritan-cms'), func\_t('Post Type', 'tritan-cms'), $app->req->post['posttype_title'], func\_escape($current_user->user_login));
                 func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
             } catch (Exception $ex) {
                 $posttype->rollback();
@@ -390,7 +397,7 @@ $app->group('/admin', function() use ($app, $user) {
         }
     });
 
-    $app->match('GET|POST', '/post-type/(\d+)/', function ($id) use($app) {
+    $app->match('GET|POST', '/post-type/(\d+)/', function ($id) use($app, $current_user) {
         $current_pt = $app->db->table(Config::get('tbl_prefix') . 'posttype')
                 ->where('posttype_id', (int) $id)
                 ->first();
@@ -424,6 +431,8 @@ $app->group('/admin', function() use ($app, $user) {
                  * @param int $id Post Type ID.
                  */
                 $app->hook->{'do_action'}('update_posttype', (int) $id);
+
+                func\ttcms_logger_activity_log_write(func\_t('Update Record', 'tritan-cms'), func\_t('Post Type', 'tritan-cms'), $app->req->post['posttype_title'], func\_escape($current_user->user_login));
                 func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
             } catch (Exception $ex) {
                 $posttype->rollback();
@@ -477,7 +486,9 @@ $app->group('/admin', function() use ($app, $user) {
         }
     });
 
-    $app->get('/post-type/(\d+)/d/', function($id) use($app) {
+    $app->get('/post-type/(\d+)/d/', function($id) use($app, $current_user) {
+        $title = func\get_posttype_title($id);
+
         $posttype = $app->db->table(Config::get('tbl_prefix') . 'posttype');
         $posttype->begin();
         try {
@@ -498,6 +509,7 @@ $app->group('/admin', function() use ($app, $user) {
                 Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
             }
 
+            func\ttcms_logger_activity_log_write(func\_t('Delete Record', 'tritan-cms'), func\_t('Post Type', 'tritan-cms'), $title, func\_escape($current_user->user_login));
             func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), func\get_base_url() . 'admin/post-type/');
         } catch (Exception $ex) {
             $posttype->rollback();

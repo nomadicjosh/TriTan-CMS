@@ -37,14 +37,15 @@ $app->group('/admin', function() use ($app, $current_user) {
         }
     });
 
-    $app->match('GET|POST', '/user/profile/', function() use($app) {
+    $app->match('GET|POST', '/user/profile/', function() use($app, $current_user) {
         if ($app->req->isPost()) {
             try {
-                
+
                 func\ttcms_update_user($app->req->post);
                 func\clean_user_cache($app->req->post['user_id']);
+
+                func\ttcms_logger_activity_log_write(func\_t('Update Record', 'tritan-cms'), func\_t('Profile', 'tritan-cms'), func\get_name(func\_escape($current_user->user_id)), (string) func\_escape($current_user->user_login));
                 func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), func\get_base_url() . 'admin/user/profile/');
-                
             } catch (Exception $ex) {
                 func\_ttcms_flash()->{'error'}($ex->getMessage());
             }
@@ -128,7 +129,7 @@ $app->group('/admin', function() use ($app, $current_user) {
                 if ($app->req->post['sendemail'] == '1') {
                     func\_ttcms_email()->sendNewUserEmail((int) $user_id, $password);
                 }
-                func\ttcms_logger_activity_log_write('New Record', 'User', func\get_name((int) $user_id), (string) func\_escape($current_user->user_login));
+                func\ttcms_logger_activity_log_write('Create Record', 'User', func\get_name((int) $user_id), (string) func\_escape($current_user->user_login));
                 func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), func\get_base_url() . 'admin/user' . '/' . (int) $user_id . '/');
             } catch (Exception $ex) {
                 func\_ttcms_flash()->{'error'}($ex->getMessage());
@@ -229,7 +230,7 @@ $app->group('/admin', function() use ($app, $current_user) {
         if (isset($app->req->cookie['TTCMS_COOKIENAME'])) {
             $switch_cookie = [
                 'key' => 'SWITCH_USERBACK',
-                'user_id' => (int) func\get_current_user_id(),
+                'user_id' => (int) func\_escape($current_user->user_id),
                 'user_login' => func\_escape($current_user->user_login),
                 'remember' => $app->hook->{'get_option'}('cookieexpire') - time() > 86400 ? func\_t('yes', 'tritan-cms') : func\_t('no', 'tritan-cms'),
                 'exp' => (int) $app->hook->{'get_option'}('cookieexpire') + time()
@@ -346,7 +347,7 @@ $app->group('/admin', function() use ($app, $current_user) {
         }
     });
 
-    $app->get('/user/(\d+)/d/', function ($id) use($app) {
+    $app->get('/user/(\d+)/d/', function ($id) use($app, $current_user) {
         if ((int) $id == (int) '1') {
             func\_ttcms_flash()->{'error'}(func\_t('You are not allowed to delete the super administrator account.', 'tritan-cms'), func\get_base_url() . 'user/');
             exit();
@@ -369,6 +370,8 @@ $app->group('/admin', function() use ($app, $current_user) {
                         ->delete();
 
                 $user->commit();
+
+                func\ttcms_logger_activity_log_write(func\_t('Delete Record', 'tritan-cms'), func\_t('User', 'tritan-cms'), func\get_name($id), (string) func\_escape($current_user->user_login));
                 func\clean_user_cache($id);
                 func\ttcms_cache_flush_namespace('user_meta');
                 func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);

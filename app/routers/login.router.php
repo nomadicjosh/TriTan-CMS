@@ -45,6 +45,7 @@ $app->group('/login', function() use ($app) {
              */
             func\ttcms_authenticate_user($app->req->post['user_login'], $app->req->post['user_pass'], $app->req->post['rememberme']);
 
+            func\ttcms_logger_activity_log_write(func\_t('Authentication', 'tritan-cms'), func\_t('Login', 'tritan-cms'), $app->req->post['user_login'], $app->req->post['user_login']);
             func\ttcms_redirect($login_link);
         }
 

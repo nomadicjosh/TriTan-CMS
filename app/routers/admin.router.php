@@ -7,7 +7,7 @@ use TriTan\Exception\Exception;
 use Cascade\Cascade;
 use TriTan\Functions as func;
 
-$user = func\get_userdata(func\get_current_user_id());
+$current_user = func\get_userdata(func\get_current_user_id());
 
 /**
  * Before router checks to make sure the logged in user
@@ -24,7 +24,7 @@ $app->before('GET|POST', '/admin(.*)', function() {
     }
 });
 
-$app->group('/admin', function() use ($app, $user) {
+$app->group('/admin', function() use ($app, $current_user) {
 
     $app->get('/', function () use($app) {
 
@@ -75,7 +75,7 @@ $app->group('/admin', function() use ($app, $user) {
         }
     });
 
-    $app->match('GET|POST', '/options-general/', function() use($app) {
+    $app->match('GET|POST', '/options-general/', function() use($app, $current_user) {
         if ($app->req->isPost()) {
             $options = [
                 'sitename', 'site_description', 'admin_email', 'ttcms_core_locale',
@@ -102,6 +102,7 @@ $app->group('/admin', function() use ($app, $user) {
                 $site->rollback();
                 Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
             }
+            func\ttcms_logger_activity_log_write(func\_t('Update Record', 'tritan-cms'), func\_t('Options', 'tritan-cms'), func\_t('General Options', 'tritan-cms'), func\_escape($current_user->user_login));
             func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
         }
 
@@ -122,7 +123,7 @@ $app->group('/admin', function() use ($app, $user) {
         }
     });
 
-    $app->match('GET|POST', '/options-reading/', function() use($app) {
+    $app->match('GET|POST', '/options-reading/', function() use($app, $current_user) {
         if ($app->req->isPost()) {
             $options = [
                 'current_site_theme', 'posts_per_page', 'date_format', 'time_format'
@@ -133,6 +134,7 @@ $app->group('/admin', function() use ($app, $user) {
                 $value = $app->req->post[$option_name];
                 $app->hook->{'update_option'}($option_name, $value);
             }
+            func\ttcms_logger_activity_log_write(func\_t('Update Record', 'tritan-cms'), func\_t('Options', 'tritan-cms'), func\_t('Reading Options', 'tritan-cms'), func\_escape($current_user->user_login));
             func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
         }
 
@@ -635,7 +637,7 @@ $app->group('/admin', function() use ($app, $user) {
         );
     });
 
-    $app->match('GET|POST', '/permission/(\d+)/', function ($id) use($app, $user) {
+    $app->match('GET|POST', '/permission/(\d+)/', function ($id) use($app, $current_user) {
         if ($app->req->isPost()) {
             $perm = $app->db->table('permission');
             $perm->begin();
@@ -646,7 +648,7 @@ $app->group('/admin', function() use ($app, $user) {
                             'permission_name' => func\if_null($app->req->post['permission_name']),
                 ]);
                 $perm->commit();
-                func\ttcms_logger_activity_log_write('Update Record', 'Permission', $app->req->post['permission_name'], func\_escape($user->user_login));
+                func\ttcms_logger_activity_log_write(func\_t('Update Record', 'tritan-cms'), func\_t('Permission', 'tritan-cms'), $app->req->post['permission_name'], func\_escape($current_user->user_login));
                 func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
             } catch (Exception $ex) {
                 $perm->rollback();
@@ -697,7 +699,7 @@ $app->group('/admin', function() use ($app, $user) {
         }
     });
 
-    $app->match('GET|POST', '/permission/create/', function () use($app, $user) {
+    $app->match('GET|POST', '/permission/create/', function () use($app, $current_user) {
 
         if ($app->req->isPost()) {
             $perm = $app->db->table('permission');
@@ -710,7 +712,7 @@ $app->group('/admin', function() use ($app, $user) {
                     'permission_name' => func\if_null($app->req->post['permission_name']),
                 ]);
                 $perm->commit();
-                func\ttcms_logger_activity_log_write('Create Record', 'Permission', $app->req->post['permission_name'], func\_escape($user->user_login));
+                func\ttcms_logger_activity_log_write(func\_t('Create Record', 'tritan-cms'), func\_t('Permission', 'tritan-cms'), $app->req->post['permission_name'], func\_escape($current_user->user_login));
                 func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), func\get_base_url() . 'admin/permission' . '/');
             } catch (Exception $ex) {
                 $perm->rollback();
@@ -788,7 +790,7 @@ $app->group('/admin', function() use ($app, $user) {
         }
     });
 
-    $app->match('GET|POST', '/role/create/', function () use($app) {
+    $app->match('GET|POST', '/role/create/', function () use($app, $current_user) {
 
         if ($app->req->isPost()) {
             $role = $app->db->table('role');
@@ -802,6 +804,7 @@ $app->group('/admin', function() use ($app, $user) {
                     'role_permission' => $app->hook->{'maybe_serialize'}($app->req->post['role_permission'])
                 ]);
                 $role->commit();
+                func\ttcms_logger_activity_log_write(func\_t('Create Record', 'tritan-cms'), func\_t('Role', 'tritan-cms'), $app->req->post['role_name'], func\_escape($current_user->user_login));
                 func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), func\get_base_url() . 'admin/role' . '/' . (int) $role_id . '/');
             } catch (Exception $e) {
                 $role->rollback();
@@ -815,7 +818,7 @@ $app->group('/admin', function() use ($app, $user) {
         );
     });
 
-    $app->post('/role/edit-role/', function () use($app) {
+    $app->post('/role/edit-role/', function () use($app, $current_user) {
         $role = $app->db->table('role');
         $role->begin();
         try {
@@ -826,6 +829,7 @@ $app->group('/admin', function() use ($app, $user) {
                         'role_permission' => $app->hook->{'maybe_serialize'}($app->req->post['role_permission'])
             ]);
             $role->commit();
+            func\ttcms_logger_activity_log_write(func\_t('Update Record', 'tritan-cms'), func\_t('Role', 'tritan-cms'), $app->req->post['role_name'], func\_escape($current_user->user_login));
             func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200));
         } catch (Exception $e) {
             $role->rollback();
