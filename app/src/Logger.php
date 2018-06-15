@@ -76,9 +76,9 @@ class Logger
     {
         $log_count = $this->app->db->table(Config::get('tbl_prefix') . 'activity')
                 ->where('expires_at', '<=', date('Y-m-d H:i:s', time()))
-                ->get();
+                ->count();
 
-        if (count($log_count) > 0) {
+        if ($log_count > 0) {
             $delete = $this->app->db->table(Config::get('tbl_prefix') . 'activity');
             $delete->begin();
             try {
@@ -103,7 +103,7 @@ class Logger
         $logs = glob(Config::get('site_path') . 'files' . DS . 'logs' . DS . '*.txt');
         if (is_array($logs)) {
             foreach ($logs as $log) {
-                $filelastmodified = func\file_mod_time($log);
+                $filelastmodified = filemtime($log);
                 if ((time() - $filelastmodified) >= 30 * 24 * 3600 && is_file($log)) {
                     unlink($log);
                 }
