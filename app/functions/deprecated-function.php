@@ -1,4 +1,6 @@
-<?php namespace TriTan\Functions;
+<?php
+
+namespace TriTan\Functions;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
@@ -20,16 +22,9 @@ $parsecode_tags = [];
  */
 function clean_pre($matches)
 {
-    if (is_array($matches))
-        $text = $matches[1] . $matches[2] . "</pre>";
-    else
-        $text = $matches;
+    _deprecated_function(__FUNCTION__, '0.9.8', [new \TriTan\Hooks(), 'clean_pre']);
 
-    $text = str_replace('<br />', '', $text);
-    $text = str_replace('<p>', "\n", $text);
-    $text = str_replace('</p>', '', $text);
-
-    return $text;
+    return app()->hook->{'clean_pre'}($matches);
 }
 
 /**
@@ -41,23 +36,9 @@ function clean_pre($matches)
  */
 function add_parsecode($tag, $func)
 {
-    global $parsecode_tags;
+    _deprecated_function(__FUNCTION__, '0.9.8', [new \TriTan\Hooks(), 'add_parsecode']);
 
-    if ('' == _trim($tag)) {
-        $message = _t('Invalid parsecode name: empty name given.');
-        _incorrectly_called(__FUNCTION__, $message, '0.9');
-        return;
-    }
-
-    if (0 !== preg_match('@[<>&/\[\]\x00-\x20]@', $tag)) {
-        /* translators: %s: parsecode name */
-        $message = sprintf(_t('Invalid parsecode name: %s. Do not use spaces or reserved characters: & / < > [ ]'), $tag);
-        _incorrectly_called(__FUNCTION__, $message, '0.9');
-        return;
-    }
-
-    if (is_callable($func))
-        $parsecode_tags[$tag] = $func;
+    return app()->hook->{'add_parsecode'}($tag, $func);
 }
 
 /**
@@ -70,15 +51,9 @@ function add_parsecode($tag, $func)
  */
 function remove_parsecode($tag)
 {
-    global $parsecode_tags;
+    _deprecated_function(__FUNCTION__, '0.9.8', [new \TriTan\Hooks(), 'remove_parsecode']);
 
-    if ('' == _trim($tag)) {
-        $message = _t('Invalid parsecode name: empty name given.');
-        _incorrectly_called(__FUNCTION__, $message, '0.9');
-        return;
-    }
-
-    unset($parsecode_tags[$tag]);
+    return app()->hook->{'remove_parsecode'}($tag);
 }
 
 /**
@@ -94,9 +69,9 @@ function remove_parsecode($tag)
  */
 function remove_all_parsecodes()
 {
-    global $parsecode_tags;
+    _deprecated_function(__FUNCTION__, '0.9.8', [new \TriTan\Hooks(), 'remove_all_parsecodes']);
 
-    $parsecode_tags = [];
+    return app()->hook->{'remove_all_parsecodes'}();
 }
 
 /**
@@ -115,13 +90,9 @@ function remove_all_parsecodes()
  */
 function do_parsecode($content)
 {
-    global $parsecode_tags;
+    _deprecated_function(__FUNCTION__, '0.9.8', [new \TriTan\Hooks(), 'do_parsecode']);
 
-    if (empty($parsecode_tags) || !is_array($parsecode_tags))
-        return $content;
-
-    $pattern = get_parsecode_regex();
-    return preg_replace_callback("/$pattern/s", 'do_parsecode_tag', $content);
+    return app()->hook->{'do_parsecode'}($content);
 }
 
 /**
@@ -146,40 +117,9 @@ function do_parsecode($content)
  */
 function get_parsecode_regex()
 {
-    global $parsecode_tags;
-    $tagnames = array_keys($parsecode_tags);
-    $tagregexp = join('|', array_map('preg_quote', $tagnames));
+    _deprecated_function(__FUNCTION__, '0.9.8', [new \TriTan\Hooks(), 'get_parsecode_regex']);
 
-    // WARNING! Do not change this regex without changing do_parsecode_tag() and strip_parsecode_tag()
-    return
-            '\\['                              // Opening bracket
-            . '(\\[?)'                           // 1: Optional second opening bracket for escaping parsecodes: [[tag]]
-            . "($tagregexp)"                     // 2: parsecode name
-            . '\\b'                              // Word boundary
-            . '('                                // 3: Unroll the loop: Inside the opening parsecode tag
-            . '[^\\]\\/]*'                   // Not a closing bracket or forward slash
-            . '(?:'
-            . '\\/(?!\\])'               // A forward slash not followed by a closing bracket
-            . '[^\\]\\/]*'               // Not a closing bracket or forward slash
-            . ')*?'
-            . ')'
-            . '(?:'
-            . '(\\/)'                        // 4: Self closing tag ...
-            . '\\]'                          // ... and closing bracket
-            . '|'
-            . '\\]'                          // Closing bracket
-            . '(?:'
-            . '('                        // 5: Unroll the loop: Optionally, anything between the opening and closing parsecode tags
-            . '[^\\[]*+'             // Not an opening bracket
-            . '(?:'
-            . '\\[(?!\\/\\2\\])' // An opening bracket not followed by the closing parsecode tag
-            . '[^\\[]*+'         // Not an opening bracket
-            . ')*+'
-            . ')'
-            . '\\[\\/\\2\\]'             // Closing parsecode tag
-            . ')?'
-            . ')'
-            . '(\\]?)';                          // 6: Optional second closing brocket for escaping parsecodes: [[tag]]
+    return app()->hook->{'get_parsecode_regex'}();
 }
 
 /**
@@ -195,23 +135,9 @@ function get_parsecode_regex()
  */
 function do_parsecode_tag($m)
 {
-    global $parsecode_tags;
+    _deprecated_function(__FUNCTION__, '0.9.8', [new \TriTan\Hooks(), 'do_parsecode_tag']);
 
-    // allow [[foo]] syntax for escaping a tag
-    if ($m[1] == '[' && $m[6] == ']') {
-        return substr($m[0], 1, -1);
-    }
-
-    $tag = $m[2];
-    $attr = parsecode_parse_atts($m[3]);
-
-    if (isset($m[5])) {
-        // enclosing tag - extra parameter
-        return $m[1] . call_user_func($parsecode_tags[$tag], $attr, $m[5], $tag) . $m[6];
-    } else {
-        // self-closing tag
-        return $m[1] . call_user_func($parsecode_tags[$tag], $attr, NULL, $tag) . $m[6];
-    }
+    return app()->hook->{'do_parsecode_tag'}($m);
 }
 
 /**
@@ -228,26 +154,9 @@ function do_parsecode_tag($m)
  */
 function parsecode_parse_atts($text)
 {
-    $atts = [];
-    $pattern = '/(\w+)\s*=\s*"([^"]*)"(?:\s|$)|(\w+)\s*=\s*\'([^\']*)\'(?:\s|$)|(\w+)\s*=\s*([^\s\'"]+)(?:\s|$)|"([^"]*)"(?:\s|$)|(\S+)(?:\s|$)/';
-    $text = preg_replace("/[\x{00a0}\x{200b}]+/u", " ", $text);
-    if (preg_match_all($pattern, $text, $match, PREG_SET_ORDER)) {
-        foreach ($match as $m) {
-            if (!empty($m[1]))
-                $atts[strtolower($m[1])] = stripcslashes($m[2]);
-            elseif (!empty($m[3]))
-                $atts[strtolower($m[3])] = stripcslashes($m[4]);
-            elseif (!empty($m[5]))
-                $atts[strtolower($m[5])] = stripcslashes($m[6]);
-            elseif (isset($m[7]) and strlen($m[7]))
-                $atts[] = stripcslashes($m[7]);
-            elseif (isset($m[8]))
-                $atts[] = stripcslashes($m[8]);
-        }
-    } else {
-        $atts = ltrim($text);
-    }
-    return $atts;
+    _deprecated_function(__FUNCTION__, '0.9.8', [new \TriTan\Hooks(), 'parsecode_parse_atts']);
+
+    return app()->hook->{'parsecode_parse_atts'}($text);
 }
 
 /**
@@ -268,15 +177,9 @@ function parsecode_parse_atts($text)
  */
 function parsecode_atts($pairs, $atts)
 {
-    $atts = (array) $atts;
-    $out = [];
-    foreach ($pairs as $name => $default) {
-        if (array_key_exists($name, $atts))
-            $out[$name] = $atts[$name];
-        else
-            $out[$name] = $default;
-    }
-    return $out;
+    _deprecated_function(__FUNCTION__, '0.9.8', [new \TriTan\Hooks(), 'parsecode_atts']);
+
+    return app()->hook->{'parsecode_atts'}($pairs, $atts);
 }
 
 /**
@@ -290,14 +193,9 @@ function parsecode_atts($pairs, $atts)
  */
 function strip_parsecodes($content)
 {
-    global $parsecode_tags;
+    _deprecated_function(__FUNCTION__, '0.9.8', [new \TriTan\Hooks(), 'strip_parsecodes']);
 
-    if (empty($parsecode_tags) || !is_array($parsecode_tags))
-        return $content;
-
-    $pattern = get_parsecode_regex();
-
-    return preg_replace_callback("/$pattern/s", 'strip_parsecode_tag', $content);
+    return app()->hook->{'strip_parsecodes'}($content);
 }
 
 /**
@@ -307,12 +205,9 @@ function strip_parsecodes($content)
  */
 function strip_parsecode_tag($m)
 {
-    // allow [[foo]] syntax for escaping a tag
-    if ($m[1] == '[' && $m[6] == ']') {
-        return substr($m[0], 1, -1);
-    }
+    _deprecated_function(__FUNCTION__, '0.9.8', [new \TriTan\Hooks(), 'strip_parsecode_tag']);
 
-    return $m[1] . $m[6];
+    return app()->hook->{'strip_parsecode_tag'}($m);
 }
 
 /**
@@ -324,46 +219,9 @@ function strip_parsecode_tag($m)
  */
 function ttcms_autop($pee, $br = 1)
 {
+    _deprecated_function(__FUNCTION__, '0.9.8', [new \TriTan\Hooks(), 'ttcms_autop']);
 
-    if (trim($pee) === '')
-        return '';
-    $pee = $pee . "\n"; // just to make things a little easier, pad the end
-    $pee = preg_replace('|<br />\s*<br />|', "\n\n", $pee);
-    // Space things out a little
-    $allblocks = '(?:table|thead|tfoot|caption|col|colgroup|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|select|option|form|map|area|blockquote|address|math|style|input|p|h[1-6]|hr|fieldset|legend|section|article|aside|hgroup|header|footer|nav|figure|figcaption|details|menu|summary)';
-    $pee = preg_replace('!(<' . $allblocks . '[^>]*>)!', "\n$1", $pee);
-    $pee = preg_replace('!(</' . $allblocks . '>)!', "$1\n\n", $pee);
-    $pee = str_replace(["\r\n", "\r"], "\n", $pee); // cross-platform newlines
-    if (strpos($pee, '<object') !== false) {
-        $pee = preg_replace('|\s*<param([^>]*)>\s*|', "<param$1>", $pee); // no pee inside object/embed
-        $pee = preg_replace('|\s*</embed>\s*|', '</embed>', $pee);
-    }
-    $pee = preg_replace("/\n\n+/", "\n\n", $pee); // take care of duplicates
-    // make paragraphs, including one at the end
-    $pees = preg_split('/\n\s*\n/', $pee, -1, PREG_SPLIT_NO_EMPTY);
-    $pee = '';
-    foreach ($pees as $tinkle)
-        $pee .= '<p>' . trim($tinkle, "\n") . "</p>\n";
-    $pee = preg_replace('|<p>\s*</p>|', '', $pee); // under certain strange conditions it could create a P of entirely whitespace
-    $pee = preg_replace('!<p>([^<]+)</(div|address|form)>!', "<p>$1</p></$2>", $pee);
-    $pee = preg_replace('!<p>\s*(</?' . $allblocks . '[^>]*>)\s*</p>!', "$1", $pee); // don't pee all over a tag
-    $pee = preg_replace("|<p>(<li.+?)</p>|", "$1", $pee); // problem with nested lists
-    $pee = preg_replace('|<p><blockquote([^>]*)>|i', "<blockquote$1><p>", $pee);
-    $pee = str_replace('</blockquote></p>', '</p></blockquote>', $pee);
-    $pee = preg_replace('!<p>\s*(</?' . $allblocks . '[^>]*>)!', "$1", $pee);
-    $pee = preg_replace('!(</?' . $allblocks . '[^>]*>)\s*</p>!', "$1", $pee);
-    if ($br) {
-        $pee = preg_replace_callback('/<(script|style).*?<\/\\1>/s', '_autop_newline_preservation_helper', $pee);
-        $pee = preg_replace('|(?<!<br />)\s*\n|', "<br />\n", $pee); // optionally make line breaks
-        $pee = str_replace('<TTPreserveNewline />', "\n", $pee);
-    }
-    $pee = preg_replace('!(</?' . $allblocks . '[^>]*>)\s*<br />!', "$1", $pee);
-    $pee = preg_replace('!<br />(\s*</?(?:p|li|div|dl|dd|dt|th|pre|td|ul|ol)[^>]*>)!', '$1', $pee);
-    if (strpos($pee, '<pre') !== false)
-        $pee = preg_replace_callback('!(<pre[^>]*>)(.*?)</pre>!is', 'clean_pre', $pee);
-    $pee = preg_replace("|\n</p>$|", '</p>', $pee);
-
-    return $pee;
+    return app()->hook->{'ttcms_autop'}($pee, $br);
 }
 
 /**
@@ -373,7 +231,9 @@ function ttcms_autop($pee, $br = 1)
  */
 function _autop_newline_preservation_helper($matches)
 {
-    return str_replace("\n", "<TTPreserveNewline />", $matches[0]);
+    _deprecated_function(__FUNCTION__, '0.9.8', [new \TriTan\Hooks(), '_autop_newline_preservation_helper']);
+
+    return app()->hook->{'_autop_newline_preservation_helper'}($matches);
 }
 
 /**
@@ -384,46 +244,9 @@ function _autop_newline_preservation_helper($matches)
  */
 function parsecode_unautop($pee)
 {
-    global $parsecode_tags;
+    _deprecated_function(__FUNCTION__, '0.9.8', [new \TriTan\Hooks(), 'parsecode_unautop']);
 
-    if (empty($parsecode_tags) || !is_array($parsecode_tags)) {
-        return $pee;
-    }
-
-    $tagregexp = join('|', array_map('preg_quote', array_keys($parsecode_tags)));
-
-    $pattern = '/'
-            . '<p>'                              // Opening paragraph
-            . '\\s*+'                            // Optional leading whitespace
-            . '('                                // 1: The parsecode
-            . '\\['                          // Opening bracket
-            . "($tagregexp)"                 // 2: parsecode name
-            . '\\b'                          // Word boundary
-            // Unroll the loop: Inside the opening parsecode tag
-            . '[^\\]\\/]*'                   // Not a closing bracket or forward slash
-            . '(?:'
-            . '\\/(?!\\])'               // A forward slash not followed by a closing bracket
-            . '[^\\]\\/]*'               // Not a closing bracket or forward slash
-            . ')*?'
-            . '(?:'
-            . '\\/\\]'                   // Self closing tag and closing bracket
-            . '|'
-            . '\\]'                      // Closing bracket
-            . '(?:'                      // Unroll the loop: Optionally, anything between the opening and closing parsecode tags
-            . '[^\\[]*+'             // Not an opening bracket
-            . '(?:'
-            . '\\[(?!\\/\\2\\])' // An opening bracket not followed by the closing parsecode tag
-            . '[^\\[]*+'         // Not an opening bracket
-            . ')*+'
-            . '\\[\\/\\2\\]'         // Closing parsecode tag
-            . ')?'
-            . ')'
-            . ')'
-            . '\\s*+'                            // optional trailing whitespace
-            . '<\\/p>'                           // closing paragraph
-            . '/s';
-
-    return preg_replace($pattern, '$1', $pee);
+    return app()->hook->{'parsecode_unautop'}($pee);
 }
 
 /**
