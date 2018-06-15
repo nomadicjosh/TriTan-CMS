@@ -451,7 +451,7 @@ function generate_php_encryption()
         $encrypt->insert([
             'encryption_id' => (int) 1,
             'key' => $key->saveToAsciiSafeString(),
-            'created_at' => (string) Jenssegers\Date\Date::now()
+            'created_at' => (string) \Jenssegers\Date\Date::now()
         ]);
         $encrypt->commit();
     } catch (Exception $ex) {

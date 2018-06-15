@@ -23,15 +23,14 @@ use TriTan\Config;
  * @file app/functions/post-function.php
  * 
  * @since 0.9
- * @access private
- * @return int
+ * @return int|null
  */
 function has_posts()
 {
     $posts = app()->db->table(Config::get('tbl_prefix') . 'post')
             ->where('post_type.post_posttype', 'post')
-            ->get();
-    return count($posts) > 0;
+            ->count();
+    return $posts > 0;
 }
 
 /**
@@ -39,7 +38,6 @@ function has_posts()
  * @file app/functions/post-function.php
  * 
  * @since 0.9
- * @access private
  * @return object
  */
 function the_post()

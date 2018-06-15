@@ -35,7 +35,6 @@ if (!defined('BASE_PATH'))
  */
 function ttcms_cache_add($key, $data, $namespace = '', $expire = 3600)
 {
-    $app = \Liten\Liten::getInstance();
     /**
      * Filter the expire time for cache item.
      *
@@ -43,7 +42,7 @@ function ttcms_cache_add($key, $data, $namespace = '', $expire = 3600)
      * @param int $expire
      *            When the cache data should expire, in seconds.
      */
-    $ttl = $app->hook->apply_filter('ttcms_cache_increase_ttl', $expire);
+    $ttl = app()->hook->{'apply_filter'}('ttcms_cache_increase_ttl', $expire);
     $cache = _ttcms_cache_init();
     return $cache->create($key, $data, $namespace, (int) $ttl);
 }
@@ -88,7 +87,6 @@ function ttcms_cache_get($key, $namespace = '')
  */
 function ttcms_cache_replace($key, $data, $namespace = '', $expire = 3600)
 {
-    $app = \Liten\Liten::getInstance();
     /**
      * Filter the expire time for cache item.
      *
@@ -96,7 +94,7 @@ function ttcms_cache_replace($key, $data, $namespace = '', $expire = 3600)
      * @param int $expire
      *            When the cache data should expire, in seconds.
      */
-    $ttl = $app->hook->apply_filter('ttcms_cache_replace_ttl', $expire);
+    $ttl = app()->hook->{'apply_filter'}('ttcms_cache_replace_ttl', $expire);
     $cache = _ttcms_cache_init();
     return $cache->update($key, $data, $namespace, (int) $ttl);
 }
@@ -171,7 +169,6 @@ function ttcms_cache_flush_namespace($value)
  */
 function ttcms_cache_set($key, $data, $namespace = '', $expire = 3600)
 {
-    $app = \Liten\Liten::getInstance();
     /**
      * Filter the expire time for cache item.
      *
@@ -179,7 +176,7 @@ function ttcms_cache_set($key, $data, $namespace = '', $expire = 3600)
      * @param int $expire
      *            When the cache data should expire, in seconds.
      */
-    $ttl = $app->hook->apply_filter('ttcms_cache_increase_ttl', $expire);
+    $ttl = app()->hook->{'apply_filter'}('ttcms_cache_increase_ttl', $expire);
     $cache = _ttcms_cache_init();
     return $cache->set($key, $data, $namespace, (int) $ttl);
 }

@@ -18,9 +18,13 @@ use Cascade\Cascade;
 
 /**
  * Retrieve the name of the metadata table for the specified object type.
+ * 
+ * This function is not to be used by developers. It's use is only for _metadata
+ * functions.
  *
  * @file app/functions/meta-function.php
  * 
+ * @access private
  * @since 0.9
  * @param string $type Type of object to get metadata table for (e.g. post or user)
  * @return string Metadata document name.
@@ -323,8 +327,8 @@ function add_metadata($meta_type, $array_id, $meta_key, $meta_value, $unique = f
     try {
         $result->insert([
             'meta_id' => auto_increment($table, 'meta_id'),
-            $column => $array_id,
-            'meta_key' => $meta_key,
+            $column => if_null($array_id),
+            'meta_key' => if_null($meta_key),
             'meta_value' => if_null($meta_value)
         ]);
         $result->commit();
@@ -651,8 +655,8 @@ function update_metadata_by_mid($meta_type, $meta_id, $meta_value, $meta_key = f
         try {
             $result->where('meta_id', $meta_id)
                     ->update([
-                        'meta_key' => $meta_key,
-                        'meta_value' => $meta_value
+                        'meta_key' => if_null($meta_key),
+                        'meta_value' => if_null($meta_value)
             ]);
             $result->commit();
         } catch (Exception $ex) {

@@ -38,7 +38,7 @@ function ttcms_nodeq_login_details()
 
     if ($sql->count() > 0) {
         foreach ($sql as $r) {
-            $message = _escape(get_option('person_login_details'));
+            $message = _escape(app()->hook->{'get_option'}('person_login_details'));
             $message = str_replace('#login#', _escape($r['user_login']), $message);
             $message = str_replace('#fname#', _escape($r['user_fname']), $message);
             $message = str_replace('#lname#', _escape($r['user_lname']), $message);
@@ -56,7 +56,7 @@ function ttcms_nodeq_login_details()
 
             try {
                 _ttcms_email()->ttcmsMail(_escape($r['email']), _t("TriTan CMS Login Details"), $message, $headers);
-            } catch (PHPMailer\PHPMailer\Exception $e) {
+            } catch (\PHPMailer\PHPMailer\Exception $e) {
                 Cascade::getLogger('system_email')->alert(sprintf('PHPMAILER[%s]: %s', $e->getCode(), $e->getMessage()));
             } catch (Exception $e) {
                 Cascade::getLogger('system_email')->alert(sprintf('PHPMAILER[%s]: %s', $e->getCode(), $e->getMessage()));

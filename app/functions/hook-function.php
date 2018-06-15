@@ -19,7 +19,7 @@ use TriTan\Config;
  * Wrapper function for Hooks::register_admin_page() and
  * register's a plugin administration page.
  *
- * @see Hooks::register_admin_page()
+ * @see \TriTan\Hooks::register_admin_page()
  *
  * @file app/functions/hook-function.php
  * 
@@ -40,7 +40,7 @@ function register_admin_page($slug, $title, $function)
  * Wrapper function for Hooks::activate_plugin() and
  * activates plugin based on $_GET['id'].
  *
- * @see Hooks::activate_plugin()
+ * @see \TriTan\Hooks::activate_plugin()
  *
  * @file app/functions/hook-function.php
  * 
@@ -58,7 +58,7 @@ function activate_plugin($id)
  * Wrapper function for Hooks::deactivate_plugin() and
  * deactivates plugin based on $_GET['id'].
  *
- * @see Hooks::deactivate_plugin()
+ * @see \TriTan\Hooks::deactivate_plugin()
  *
  * @file app/functions/hook-function.php
  * 
@@ -76,7 +76,7 @@ function deactivate_plugin($id)
  * Wrapper function for Hooks::load_activated_plugins() and
  * loads all activated plugins for inclusion.
  *
- * @see Hooks::load_activated_plugins()
+ * @see \TriTan\Hooks::load_activated_plugins()
  *
  * @file app/functions/hook-function.php
  * 
@@ -97,7 +97,7 @@ function load_activated_plugins($plugins_dir = '')
  * Wrapper function for Hooks::is_plugin_activated() and
  * checks if a particular plugin is activated
  *
- * @see Hooks::is_plugin_activated()
+ * @see \TriTan\Hooks::is_plugin_activated()
  *
  * @file app/functions/hook-function.php
  * 
@@ -1316,7 +1316,7 @@ function eae_encode_emails($string)
     }
 
     // override encoding function with the 'eae_method' filter
-    $method = app()->hook->{'apply_filter'}('eae_method', 'eae_encode_str');
+    $method = app()->hook->{'apply_filter'}('eae_method', 'TriTan\\Functions\\eae_encode_str');
 
     // override regex pattern with the 'eae_regexp' filter
     $regexp = app()->hook->{'apply_filter'}('eae_regexp', '{

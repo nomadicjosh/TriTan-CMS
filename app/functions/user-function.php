@@ -1,4 +1,6 @@
-<?php namespace TriTan\Functions;
+<?php
+
+namespace TriTan\Functions;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
@@ -142,8 +144,8 @@ function get_users_dropdown($active = null)
  * @file app/functions/user-function.php
  *
  * @since 0.9
- * @param string $username The username to be sanitized.
- * @param bool   $strict   If set limits $username to specific characters. Default false.
+ * @param string    $username The username to be sanitized.
+ * @param bool      $strict If set, limits $username to specific characters. Default false.
  * @return string The sanitized username, after passing through filters.
  */
 function sanitize_user($username, $strict = false)
@@ -993,7 +995,6 @@ function ttcms_insert_user($userdata)
      *     @type string $lname          The user's last name.
      *     @type string $email          The user's email.
      *     @type string $bio            The user's bio.
-     *     @type string $role           The user's role.
      *     @type string $status         The user's status.
      *     @type int    $admin_layout   The user's layout option.
      *     @type int    $admin_sidebar  The user's sidebar option.
@@ -1040,7 +1041,7 @@ function ttcms_insert_user($userdata)
  * It is possible to update a user's password by specifying the 'user_pass'
  * value in the $userdata parameter array.
  * 
- * @see ttcms_insert_user() For what fields can be set in $userdata.
+ * See {@see ttcms_insert_user()} For what fields can be set in $userdata.
  * 
  * @file app/functions/user-function.php
  *
@@ -1157,7 +1158,7 @@ function send_reset_password_email($user, $password)
     }
     try {
         _ttcms_email()->ttcmsMail(_escape($user['user_email']), sprintf(_t('[%s] Notice of Password Reset', 'tritan-cms'), $site_name), $message, $headers);
-    } catch (PHPMailer\PHPMailer\Exception $ex) {
+    } catch (\PHPMailer\PHPMailer\Exception $ex) {
         _ttcms_flash()->error($ex->getMessage());
     } catch (Exception $ex) {
         _ttcms_flash()->error($ex->getMessage());
@@ -1193,7 +1194,7 @@ function send_password_change_email($user, $password, $userdata)
     }
     try {
         _ttcms_email()->ttcmsMail(_escape($user['user_email']), sprintf(_t('[%s] Notice of Password Change', 'tritan-cms'), $site_name), $message, $headers);
-    } catch (PHPMailer\PHPMailer\Exception $ex) {
+    } catch (\PHPMailer\PHPMailer\Exception $ex) {
         _ttcms_flash()->error($ex->getMessage());
     } catch (Exception $ex) {
         _ttcms_flash()->error($ex->getMessage());
@@ -1226,7 +1227,7 @@ function send_email_change_email($user, $userdata)
     }
     try {
         _ttcms_email()->ttcmsMail(_escape($userdata['user_email']), sprintf(_t('[%s] Notice of Email Change', 'tritan-cms'), $site_name), $message, $headers);
-    } catch (PHPMailer\PHPMailer\Exception $ex) {
+    } catch (\PHPMailer\PHPMailer\Exception $ex) {
         _ttcms_flash()->error($ex->getMessage());
     } catch (Exception $ex) {
         _ttcms_flash()->error($ex->getMessage());
