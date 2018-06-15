@@ -59,3 +59,83 @@ function get_posttype($posttype, $array = true)
 
     return $_posttype;
 }
+
+/**
+ * A function which retrieves a TriTan CMS post type title.
+ * 
+ * Purpose of this function is for the `posttype_title`
+ * filter.
+ * 
+ * @file app/functions/posttype-function.php
+ *
+ * @since 0.9.9
+ * @param int $posttype_id The unique id of a posttype.
+ * @return string
+ */
+function get_posttype_title($posttype_id = 0)
+{
+    $posttype = get_posttype($posttype_id);
+    $title = _escape($posttype['posttype_title']);
+    /**
+     * Filters the posttype title.
+     *
+     * @since 0.9.9
+     *
+     * @param string    $title The posttype's title.
+     * @param string    $posttype_id The posttype ID.
+     */
+    return app()->hook->{'apply_filter'}('posttype_title', $title, $posttype_id);
+}
+
+/**
+ * A function which retrieves a TriTan CMS posttype slug.
+ * 
+ * Purpose of this function is for the `posttype_slug`
+ * filter.
+ * 
+ * @file app/functions/posttype-function.php
+ *
+ * @since 0.9.9
+ * @param int $posttype_id The unique id of a posttype.
+ * @return string
+ */
+function get_posttype_slug($posttype_id = 0)
+{
+    $posttype = get_posttype($posttype_id);
+    $slug = _escape($posttype['posttype_slug']);
+    /**
+     * Filters the posttype's slug.
+     *
+     * @since 0.9.9
+     *
+     * @param string    $slug The posttype's slug.
+     * @param int       $posttype_id The posttype ID.
+     */
+    return app()->hook->{'apply_filter'}('posttype_slug', $slug, $posttype_id);
+}
+
+/**
+ * A function which retrieves a TriTan CMS posttype's permalink.
+ * 
+ * Purpose of this function is for the `posttype_permalink`
+ * filter.
+ * 
+ * @file app/functions/posttype-function.php
+ *
+ * @since 0.9.9
+ * @param int $posttype_id Posttype id.
+ * @return string
+ */
+function get_posttype_permalink($posttype_id = 0)
+{
+    $link = get_base_url() . get_posttype_slug($posttype_id) . '/';
+    /**
+     * Filters the posttype's link.
+     *
+     * @since 0.9.9
+     *
+     * @param string    $link The posttype's permalink.
+     * @param int       $posttype_id The posttype id.
+     */
+    return app()->hook->{'apply_filter'}('posttype_permalink', $link, $posttype_id);
+}
