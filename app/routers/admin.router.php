@@ -939,7 +939,8 @@ $app->group('/admin', function() use ($app, $current_user) {
          * @since 0.9.5
          */
         $app->hook->{'do_action'}('protect_cache_dir');
-        func\ttcms_redirect($app->req->server['HTTP_REFERER']);
+
+        func\_ttcms_flash()->{'success'}(func\_t('Cache flushed successfully.', 'tritan-cms'), $app->req->server['HTTP_REFERER']);
     });
 
     /**
