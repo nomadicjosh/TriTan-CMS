@@ -70,7 +70,7 @@
             "App\\": "app/src/",
             "TriTan\\Functions\\": "app/functions/",
             "TriTan\\": "app/src/",
-            "Plugin\\": "plugins"
+            "Plugin\\": "plugins/"
         }
     },
     "require-dev": {
