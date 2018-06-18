@@ -267,7 +267,7 @@ $app->hook->{'do_action'}('admin_init');
 
             <footer class="main-footer">
                 <div class="pull-right hidden-xs">
-                    <b><?= func\_t('Release', 'tritan-cms'); ?></b> <?= func\ttcms_release(); ?>
+                    <?php func\ttcms_release(); ?>
                 </div>
                 <?= func\ttcms_admin_copyright_footer(); ?>
             </footer>
