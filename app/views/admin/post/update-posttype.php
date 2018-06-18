@@ -2,7 +2,7 @@
 use TriTan\Functions as func;
 $this->layout('main::_layouts/admin-layout');
 $this->section('backend');
-TriTan\Config::set('screen_parent', 'post_type');
+TriTan\Config::set('screen_parent', 'post_types');
 ?>
 
 <script src="static/assets/js/url_slug.js" type="text/javascript"></script>

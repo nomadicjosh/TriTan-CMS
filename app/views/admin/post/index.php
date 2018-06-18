@@ -3,6 +3,7 @@ use TriTan\Functions as func;
 $this->layout('main::_layouts/admin-layout');
 $this->section('backend');
 TriTan\Config::set('screen_parent', $this->posttype);
+TriTan\Config::set('screen_child', $this->posttype);
 ?>
 
 <!-- Content Wrapper. Contains page content -->

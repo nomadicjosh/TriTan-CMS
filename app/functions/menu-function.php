@@ -37,8 +37,18 @@ function add_admin_submenu($location, $menu_title, $menu_route, $screen, $permis
             return false;
         }
     }
-    $menu = '<li' . (Config::get('screen_child') === $screen ? ' class="active"' : '') . '><a href="' . get_base_url() . 'admin/' . $menu_route . '/"><i class="fa fa-circle-o"></i> ' . $menu_title . '</a></li>';
-    echo app()->hook->{'apply_filter'}("admin_submenu_{$location}", $menu);
+    $_menu_route = add_trailing_slash($menu_route);
+    $menu = '<li' . (Config::get('screen_child') === $screen ? ' class="active"' : '') . '><a href="' . get_base_url() . 'admin' . $_menu_route . '"><i class="fa fa-circle-o"></i> ' . $menu_title . '</a></li>'."\n";
+    /**
+     * Filter's the admin menu.
+     * 
+     * The dynamic parts of this filter are `location` (where menu will appear), and
+     * $_menu_route with the removed slash if present. 
+     * 
+     * @since 0.9
+     * @param string $menu The menu to return.
+     */
+    echo app()->hook->{'apply_filter'}("admin_submenu_{$location}_{$_menu_route}", $menu);
 }
 
 /**

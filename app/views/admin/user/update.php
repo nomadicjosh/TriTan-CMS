@@ -15,7 +15,7 @@ use TriTan\Functions as func;
 $this->layout('main::_layouts/admin-layout');
 $this->section('backend');
 Config::set('screen_parent', 'users');
-Config::set('screen_child', 'user');
+Config::set('screen_child', 'all-users');
 
 ?>
 
