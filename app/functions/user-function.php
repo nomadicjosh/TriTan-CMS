@@ -1278,7 +1278,7 @@ function clean_user_cache($user)
         return;
     }
 
-    ttcms_cache_delete(_escape($user->user_id), 'users');
+    ttcms_cache_delete((int) _escape($user->user_id), 'users');
     ttcms_cache_delete(_escape($user->user_login), 'userlogins');
     ttcms_cache_delete(_escape($user->user_email), 'useremail');
 
@@ -1289,7 +1289,7 @@ function clean_user_cache($user)
      * @param int   $user_id User user_id.
      * @param User  $user    User object.
      */
-    app()->hook->{'do_action'}('clean_user_cache', _escape($user->user_id), $user);
+    app()->hook->{'do_action'}('clean_user_cache', (int) _escape($user->user_id), $user);
 }
 
 /**
