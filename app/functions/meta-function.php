@@ -48,7 +48,7 @@ function _get_meta_table($type)
  * 		                    the specified array.
  * @return mixed Array of values
  */
-function get_metadata($meta_type, $array_id, $meta_key, $single = false)
+function get_metadata($meta_type, $array_id, $meta_key = '', $single = false)
 {
     if (!$meta_type || !is_numeric($array_id)) {
         return false;
@@ -69,7 +69,7 @@ function get_metadata($meta_type, $array_id, $meta_key, $single = false)
      * @since 0.9
      * @param null|string   $value      The value get_metadata() should return - a single metadata value.
      * @param int           $array_id   Array ID.
-     * @param string        $meta_key   Meta key.
+     * @param string        $meta_key   Optional. Meta key.
      * @param bool          $single     Whether to return only the first value of the specified $meta_key.
      */
     $check = app()->hook->{'apply_filter'}("get_{$meta_type}_metadata", null, $array_id, $meta_key, $single);
