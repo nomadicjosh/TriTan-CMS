@@ -5,7 +5,7 @@ namespace TriTan\Laci;
 use Closure;
 use TriTan\Exception\DirectoryNotFoundException;
 use TriTan\Exception\InvalidJsonException;
-use TriTan\Exceptions\UndefinedMethodException;
+use TriTan\Exception\UndefinedMethodException;
 
 class Collection
 {
