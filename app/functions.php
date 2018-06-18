@@ -297,13 +297,13 @@ function _include_once($file, $show_errors = true)
  * @file app/functions.php
  * 
  * @since 0.9
- * @param string $date      Date to be formatted.
- * @param string $format    Format of the date.
+ * @param string $date      Date to be formatted. Default is `now`.
+ * @param string $format    Format of the date. Default is `Y-m-d H:i:s`.
  * @return string
  */
-function format_date($date, $format)
+function format_date($date = 'now', $format = 'Y-m-d H:i:s')
 {
-    return (string) Jenssegers\Date\Date::parse($date)->format($format);
+    return $date === 'now' ? (string) Jenssegers\Date\Date::now()->format($format) : (string) Jenssegers\Date\Date::parse($date)->format($format);
 }
 
 /**
