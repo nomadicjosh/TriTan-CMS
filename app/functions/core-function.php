@@ -1,4 +1,6 @@
-<?php namespace TriTan\Functions;
+<?php
+
+namespace TriTan\Functions;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
@@ -354,14 +356,27 @@ function ttcms_parse_args($args, $defaults = '')
     return $r;
 }
 
+/**
+ * Prints generator meta tag in admin head.
+ * 
+ * @since 0.9
+ * @return string
+ */
 function head_release_meta()
 {
     echo "<meta name='generator' content='TriTan CMS " . CURRENT_RELEASE . "'>\n";
 }
 
+/**
+ * Prints installed TriTan release in admin footer.
+ * 
+ * @since 0.9
+ * @return string
+ */
 function foot_release()
 {
-    echo CURRENT_RELEASE;
+    $release = '<strong>' . _t('Release', 'tritan-cms') . '</strong> ' . CURRENT_RELEASE;
+    echo app()->hook->{'apply_filter'}('admin_release_footer', $release);
 }
 
 /**
