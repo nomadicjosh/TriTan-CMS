@@ -15,7 +15,7 @@ defined('BASE_PATH') or define('BASE_PATH', __DIR__ . DS);
  * The bootstrap includes defines as well as autoloader
  * in order to have a working install of Liten.
  */
-require( BASE_PATH . 'Liten' . DS . 'Bootstrap.php');
+require( BASE_PATH . 'vendor' . DS . 'autoload.php');
 
 /**
  * Step 3: Include database config file

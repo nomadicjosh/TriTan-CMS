@@ -29,11 +29,6 @@ function app()
 }
 
 /**
- * Autoload libraries installed via composer
- */
-ttcms_load_file(BASE_PATH . 'vendor/autoload.php');
-
-/**
  * Hooks global scope.
  */
 app()->inst->singleton('hook', function () {
