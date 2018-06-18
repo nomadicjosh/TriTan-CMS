@@ -157,10 +157,9 @@ function ttcms_slugify($title, $table = null)
      * Query post/page table.
      */
     $results = app()->db->table(Config::get('tbl_prefix') . $table)
-            ->where("$field", 'match', "/$slug(-[0-9]+)?$/")
-            ->get();
-    if (count($results) > 0) {
-        foreach ($results as $item) {
+            ->where("$field", 'match', "/$slug(-[0-9]+)?$/");
+    if ($results->count() > 0) {
+        foreach ($results->get() as $item) {
             $titles[] = $item["$field"];
         }
     }
@@ -306,12 +305,16 @@ function number_posts_per_type($slug)
  * @param null|int $offset  The offset of the first row to be returned.
  * @return array
  */
-function get_all_posts($post_type = null, $limit = 0, $offset = null)
+function get_all_posts($post_type = null, $limit = 0, $offset = null, $status = 'all')
 {
     if ($post_type != null) {
         $posts = app()->db->table(Config::get('tbl_prefix') . 'post')
-                ->where('post_type.post_posttype', $post_type)
-                ->where('post_status', 'published');
+                ->where('post_type.post_posttype', $post_type);
+
+        if ($status !== 'all') {
+            $posts->where('post_status', $status);
+        }
+
         if ($limit > 0 && $offset != null) {
             $posts->take($limit, $offset);
         } elseif ($limit > 0 && $offset == null) {
@@ -321,8 +324,12 @@ function get_all_posts($post_type = null, $limit = 0, $offset = null)
         }
         return $posts->get();
     } else {
-        $posts = app()->db->table(Config::get('tbl_prefix') . 'post')
-                ->where('post_status', 'published');
+        $posts = app()->db->table(Config::get('tbl_prefix') . 'post');
+
+        if ($status !== 'all') {
+            $posts->where('post_status', $status);
+        }
+
         if ($limit > 0 && $offset != null) {
             $posts->take($limit, $offset);
         } elseif ($limit > 0 && $offset == null) {
@@ -330,7 +337,15 @@ function get_all_posts($post_type = null, $limit = 0, $offset = null)
         } elseif ($limit <= 0 && $offset != null) {
             $posts->skip($offset);
         }
-        return $posts->get();
+
+        if ($post_type === null && $limit <= 0 && $offset === null && (empty($status) || $status === 'all')) {
+            return $posts->all();
+        } elseif($limit > 0) {
+            return $posts->all();
+        } else {
+            return $posts->get();
+        }
+        return false;
     }
 }
 
@@ -515,4 +530,146 @@ function update_post_relative_url_posttype($id, $old_slug, $new_slug)
         return $data;
     });
     $query->save();
+}
+
+/**
+ * Updates the post.
+ * 
+ * To be only used by `ttcms_insert_post`.
+ * 
+ * @access private
+ * @since 0.9.9
+ * @param array $data   Array of post data.
+ */
+function ttcms_post_insert_document($data)
+{
+    $posttype = get_posttype_by('posttype_slug', $data['post_posttype']);
+    $post = app()->db->table(Config::get('tbl_prefix') . 'post');
+    $post->begin();
+    try {
+        $post->insert([
+            'post_id' => (int) $data['post_id'],
+            'post_title' => if_null($data['post_title']),
+            'post_slug' => if_null($data['post_slug']),
+            'post_content' => if_null($data['post_content']),
+            'post_author' => if_null($data['post_author']),
+            'post_type' => [
+                'posttype_id' => if_null(_escape($posttype['posttype_id'])),
+                'post_posttype' => if_null($data['post_posttype'])
+            ],
+            'post_attributes' => [
+                'parent' => [
+                    'parent_id' => if_null(get_post_id($data['post_parent'])),
+                    'post_parent' => if_null($data['post_parent'])
+                ],
+                'post_sidebar' => if_null($data['post_sidebar']),
+                'post_show_in_menu' => if_null($data['post_show_in_menu']),
+                'post_show_in_search' => if_null($data['post_show_in_search'])
+            ],
+            'post_relative_url' => if_null($data['post_relative_url']),
+            'post_featured_image' => if_null($data['post_featured_image']),
+            'post_status' => if_null($data['post_status']),
+            'post_created' => (string) \Jenssegers\Date\Date::now(),
+            'post_published' => if_null($data['post_published'])
+        ]);
+        $post->commit();
+    } catch (Exception $ex) {
+        $post->rollback();
+        Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
+        return false;
+    }
+}
+
+/**
+ * Updates the post.
+ * 
+ * To be only used by `ttcms_insert_post`.
+ * 
+ * @access private
+ * @since 0.9.9
+ * @param array $data   Array of post data.
+ */
+function ttcms_post_update_document($data)
+{
+    $posttype = get_posttype_by('posttype_slug', $data['post_posttype']);
+    $post = app()->db->table(Config::get('tbl_prefix') . 'post');
+    $post->begin();
+    try {
+        $post->where('post_id', (int) $data['post_id'])->update([
+            'post_title' => if_null($data['post_title']),
+            'post_slug' => if_null($data['post_slug']),
+            'post_content' => if_null($data['post_content']),
+            'post_author' => if_null($data['post_author']),
+            'post_type' => [
+                'posttype_id' => if_null(_escape($posttype['posttype_id'])),
+                'post_posttype' => if_null($data['post_posttype'])
+            ],
+            'post_attributes' => [
+                'parent' => [
+                    'parent_id' => if_null(get_post_id($data['post_parent'])),
+                    'post_parent' => if_null($data['post_parent'])
+                ],
+                'post_sidebar' => if_null($data['post_sidebar']),
+                'post_show_in_menu' => if_null($data['post_show_in_menu']),
+                'post_show_in_search' => if_null($data['post_show_in_search'])
+            ],
+            'post_relative_url' => if_null($data['post_relative_url']),
+            'post_featured_image' => if_null($data['post_featured_image']),
+            'post_status' => if_null($data['post_status']),
+            'post_published' => if_null($data['post_published']),
+            'post_modified' => (string) format_date()
+        ]);
+        $post->commit();
+
+        $parent = app()->db->table(Config::get('tbl_prefix') . 'post');
+        $parent->where('post_attributes.parent.parent_id', (int) $data['post_id'])
+                ->update([
+                    'post_attributes.parent.post_parent' => $data['post_slug']
+        ]);
+    } catch (Exception $ex) {
+        $post->rollback();
+        Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
+        return false;
+    }
+}
+
+/**
+ * Checks if a slug exist among records from a document.
+ * 
+ * Currently supports the post and posttype document.
+ * 
+ * @since 0.9.9
+ * @param int       $post_id    Post id to check against.
+ * @param string    $slug       Slug to search for.
+ * @param string    $post_type  The post type to filter.
+ * @return boolean
+ */
+function ttcms_post_slug_exist($post_id, $slug, $post_type)
+{
+    $exist = app()->db->table(Config::get('tbl_prefix') . 'post')
+            ->where('post_slug', $slug)
+            ->where('post_id', 'not in', $post_id)
+            ->where('post_type.post_posttype', $post_type)
+            ->count();
+    if ($exist > 0) {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Checks if a post has any children.
+ * 
+ * @since 0.9.9
+ * @param int $post_id Post id to check.
+ * @return bool|array False if not, array of children if true.
+ */
+function is_post_parent($post_id)
+{
+    $children = app()->db->table(Config::get('tbl_prefix') . 'post')
+            ->where('post_attributes.parent.parent_id', $post_id);
+    if ($children->count() <= 0) {
+        return false;
+    }
+    return $children->get();
 }

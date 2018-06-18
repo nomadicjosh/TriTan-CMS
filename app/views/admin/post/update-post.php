@@ -34,6 +34,7 @@ TriTan\Config::set('post_id', $this->post['post_id']);
                     <button type="submit"<?=func\ae('update_posts');?> class="btn btn-success"><i class="fa fa-pencil"></i> <?= func\_t('Update', 'tritan-cms'); ?></button>
                     <button type="button"<?=func\ae('delete_posts');?> class="btn btn-danger" data-toggle="modal" data-target="#delete-<?= (int) $this->post['post_id']; ?>"><i class="fa fa-trash"></i> <?= func\_t('Delete', 'tritan-cms'); ?></button>
                     <button type="button" class="btn btn-primary" onclick="window.location = '<?= func\get_base_url(); ?>admin/<?= $this->posttype; ?>/'"><i class="fa fa-ban"></i> <?= func\_t('Cancel', 'tritan-cms'); ?></button>
+                    <input type="hidden" name="post_id" value="<?= $this->post['post_id']; ?>" />
                 </div>
             </div>
         </div>
@@ -106,7 +107,7 @@ TriTan\Config::set('post_id', $this->post['post_id']);
                             <div class="form-group">
                                 <label><strong><font color="red">*</font> <?= func\_t('Publication Date', 'tritan-cms'); ?></strong></label>
                                 <div class='input-group date' id='datetimepicker1'>
-                                    <input type="text" class="form-control" name="post_created" value="<?= $this->post['post_created']; ?>" required/>
+                                    <input type="text" class="form-control" name="post_published" value="<?= $this->post['post_published']; ?>" required/>
                                     <span class="input-group-addon">
                                         <span class="glyphicon glyphicon-calendar"></span>
                                     </span>

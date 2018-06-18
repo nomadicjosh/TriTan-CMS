@@ -104,7 +104,7 @@ $(function(){
                                 <div class="form-group">
                                     <label><strong><font color="red">*</font> <?= func\_t('Publication Date', 'tritan-cms'); ?></strong></label>
                                     <div class='input-group date' id='datetimepicker1'>
-                                        <input type="text" class="form-control" name="post_created" value="<?= __return_post('post_created'); ?>" required/>
+                                        <input type="text" class="form-control" name="post_published" value="<?= __return_post('post_published'); ?>" required/>
                                         <span class="input-group-addon">
                                             <span class="glyphicon glyphicon-calendar"></span>
                                         </span>

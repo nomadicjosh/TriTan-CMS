@@ -41,14 +41,12 @@ $app->group('/admin', function() use ($app, $current_user) {
          * Show a list of all of our posts in the backend.
          */
         $app->get('/' . func\_escape($post_type['posttype_slug']) . '/', function () use($app, $post_type) {
-            $posts = $app->db->table(Config::get('tbl_prefix') . 'post')
-                    ->where('post_type.post_posttype', func\_escape($post_type['posttype_slug']))
-                    ->sortBy('post_created', 'desc')
-                    ->get();
+            $posts = func\get_all_posts(func\_escape($post_type['posttype_slug']));
+            $_posts = func\ttcms_list_sort($posts, 'post_created', 'DESC', true);
 
             $app->foil->render('main::admin/post/index', [
                 'title' => func\_escape($post_type['posttype_title']),
-                'posts' => $posts,
+                'posts' => $_posts,
                 'posttype' => func\_escape($post_type['posttype_slug'])
                     ]
             );
@@ -70,62 +68,12 @@ $app->group('/admin', function() use ($app, $current_user) {
         $app->match('GET|POST', '/' . func\_escape($post_type['posttype_slug']) . '/create/', function () use($app, $post_type, $current_user) {
 
             if ($app->req->isPost()) {
-                $post = $app->db->table(Config::get('tbl_prefix') . 'post');
-                $post->begin();
                 try {
-                    $post_id = func\auto_increment(Config::get('tbl_prefix') . 'post', 'post_id');
-                    $posttype = func\get_posttype_by('posttype_slug', $app->req->post['post_posttype']);
-                    $post_status = $app->req->post['post_status'];
-                    $post_slug = $app->req->post['post_slug'] != '' ? $app->req->post['post_slug'] : func\ttcms_slugify($app->req->post['post_title']);
-                    $relative_url = func\_escape($post_type['posttype_slug']) . '/' . $post_slug . '/';
-                    $featured_image = func\ttcms_optimized_image_upload($app->req->post['post_featured_image']);
-                    $post->insert([
-                        'post_id' => (int) $post_id,
-                        'post_title' => (string) $app->req->post['post_title'],
-                        'post_slug' => (string) $post_slug,
-                        'post_content' => func\if_null($app->req->post['post_content']),
-                        'post_author' => (int) $app->req->post['post_author'],
-                        'post_type' => [
-                            'posttype_id' => (int) func\_escape($posttype['posttype_id']),
-                            'post_posttype' => (string) $app->req->post['post_posttype']
-                        ],
-                        'post_attributes' => [
-                            'parent' => [
-                                'parent_id' => func\if_null(func\get_post_id($app->req->post['post_parent'])),
-                                'post_parent' => func\if_null($app->req->post['post_parent'])
-                            ],
-                            'post_sidebar' => func\if_null($app->req->post['post_sidebar']),
-                            'post_show_in_menu' => func\if_null($app->req->post['post_show_in_menu']),
-                            'post_show_in_search' => func\if_null($app->req->post['post_show_in_search'])
-                        ],
-                        'post_relative_url' => (string) $relative_url,
-                        'post_featured_image' => func\if_null($featured_image),
-                        'post_status' => (string) $post_status,
-                        'post_created' => (string) $app->req->post['post_created']
-                    ]);
-                    $post->commit();
-                    $lastId = $post_id;
-                    /**
-                     * Action hook triggered after the post is created.
-                     * 
-                     * @since 0.9
-                     * @param int $lastId Post ID.
-                     */
-                    $app->hook->{'do_action'}('create_post', $lastId);
-                    /**
-                     * Action hook triggered depending on page status.
-                     * 
-                     * @since 0.9
-                     * @param string $page_status Posted status of page.
-                     * @param int $lastId Post ID.
-                     */
-                    $app->hook->{'do_action'}("{$post_type['posttype_slug']}_{$post_status}_create", $lastId);
-                    func\ttcms_logger_activity_log_write(func\_t('Create Record', 'tritan-cms'), func\_t('Post', 'tritan-cms'), $app->req->post['post_title'], func\_escape($current_user->user_login));
-                    func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), func\get_base_url() . 'admin/' . $app->req->post['post_posttype'] . '/' . $lastId . '/');
+                    $post_id = func\ttcms_insert_post($app->req->post, true);
+                    func\ttcms_logger_activity_log_write(func\_t('Update Record', 'tritan-cms'), func\_t('Post', 'tritan-cms'), $app->req->post['post_title'], func\_escape($current_user->user_login));
+                    func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), func\get_base_url() . 'admin/' . (string) $app->req->post['post_posttype'] . '/' . (int) $post_id . '/');
                 } catch (Exception $ex) {
-                    $post->rollback();
-                    Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
-                    func\_ttcms_flash()->{'error'}(func\_ttcms_flash()->notice(409));
+                    func\_ttcms_flash()->{'error'}(sprintf('Update error[%s]: %s', $ex->getCode(), $ex->getMessage()), $app->req->server['HTTP_REFERER']);
                 }
             }
 
@@ -157,73 +105,12 @@ $app->group('/admin', function() use ($app, $current_user) {
         $app->match('GET|POST', '/' . func\_escape($post_type['posttype_slug']) . '/(\d+)/', function ($id) use($app, $post_type, $current_user) {
 
             if ($app->req->isPost()) {
-                $post = $app->db->table(Config::get('tbl_prefix') . 'post');
-                $post->begin();
                 try {
-                    $posttype = func\get_posttype_by('posttype_slug', $app->req->post['post_posttype']);
-                    $post_status = $app->req->post['post_status'];
-                    $post_slug = $app->req->post['post_slug'] != '' ? $app->req->post['post_slug'] : func\ttcms_slugify($app->req->post['post_title']);
-                    /**
-                     * Can be used to filter the relative url.
-                     * 
-                     * @since 0.9
-                     */
-                    $url_filter = $app->hook->{'apply_filter'}('relative_url', func\_escape($post_type['posttype_slug']) . '/', $post_type);
-                    $relative_url = $url_filter . $post_slug . '/';
-                    $featured_image = func\ttcms_optimized_image_upload($app->req->post['post_featured_image']);
-                    $post->where('post_id', (int) $id)->update([
-                        'post_title' => (string) $app->req->post['post_title'],
-                        'post_slug' => (string) $post_slug,
-                        'post_content' => func\if_null($app->req->post['post_content']),
-                        'post_author' => (int) $app->req->post['post_author'],
-                        'post_type' => [
-                            'posttype_id' => (int) func\_escape($posttype['posttype_id']),
-                            'post_posttype' => (string) $app->req->post['post_posttype']
-                        ],
-                        'post_attributes' => [
-                            'parent' => [
-                                'parent_id' => func\if_null(func\get_post_id($app->req->post['post_parent'])),
-                                'post_parent' => func\if_null($app->req->post['post_parent'])
-                            ],
-                            'post_sidebar' => func\if_null($app->req->post['post_sidebar']),
-                            'post_show_in_menu' => func\if_null($app->req->post['post_show_in_menu']),
-                            'post_show_in_search' => func\if_null($app->req->post['post_show_in_search'])
-                        ],
-                        'post_relative_url' => (string) $relative_url,
-                        'post_featured_image' => func\if_null($featured_image),
-                        'post_status' => (string) $post_status,
-                        'post_created' => (string) $app->req->post['post_created'],
-                        'post_modified' => (string) Jenssegers\Date\Date::now()
-                    ]);
-                    $post->commit();
-
-                    $parent = $app->db->table(Config::get('tbl_prefix') . 'post');
-                    $parent->where('post_attributes.parent.parent_id', (int) $id)
-                            ->update([
-                                'post_attributes.parent.post_parent' => (string) $post_slug
-                    ]);
-                    func\ttcms_cache_delete((int) $id, 'post');
-                    /**
-                     * Action hook triggered after the post is updated.
-                     * 
-                     * @since 0.9
-                     * @param int $id Post ID.
-                     */
-                    $app->hook->{'do_action'}('update_post', (int) $id);
-                    /**
-                     * Action hook triggered depending on post status.
-                     * 
-                     * @since 0.9
-                     * @param string $post_status Posted status of post.
-                     * @param int $id Post ID.
-                     */
-                    $app->hook->{'do_action'}("{$post_type['posttype_slug']}_{$post_status}_update", (int) $id);
+                    func\ttcms_update_post($app->req->post, true);
                     func\ttcms_logger_activity_log_write(func\_t('Update Record', 'tritan-cms'), func\_t('Post', 'tritan-cms'), $app->req->post['post_title'], func\_escape($current_user->user_login));
                     func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), func\get_base_url() . 'admin/' . (string) $app->req->post['post_posttype'] . '/' . (int) $id . '/');
                 } catch (Exception $ex) {
-                    $post->rollback();
-                    Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
-                    func\_ttcms_flash()->{'error'}(func\_ttcms_flash()->notice(409));
+                    func\_ttcms_flash()->{'error'}(sprintf('Update error[%s]: %s', $ex->getCode(), $ex->getMessage()), $app->req->server['HTTP_REFERER']);
                 }
             }
 
@@ -313,21 +200,15 @@ $app->group('/admin', function() use ($app, $current_user) {
             }
         });
 
-        $app->get('/' . func\_escape($post_type['posttype_slug']) . '/(\d+)/d/', function($id) use($app, $post_type, $current_user) {
+        $app->get('/' . func\_escape($post_type['posttype_slug']) . '/(\d+)/d/', function($id) use($post_type, $current_user) {
             $title = func\get_post_title($id);
 
-            $post = $app->db->table(Config::get('tbl_prefix') . 'post');
-            $post->begin();
-            try {
-                $post->where('post_id', (int) $id)
-                        ->delete();
-                $post->commit();
+            $post = func\ttcms_delete_post($id);
+            if (func\is_ttcms_exception($post)) {
+                func\_ttcms_flash()->{'error'}($post->getMessage(), func\get_base_url() . 'admin/' . (string) func\_escape($post_type['posttype_slug']) . '/');
+            } else {
                 func\ttcms_logger_activity_log_write(func\_t('Delete Record', 'tritan-cms'), func\_t('Post', 'tritan-cms'), $title, func\_escape($current_user->user_login));
                 func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), func\get_base_url() . 'admin/' . (string) func\_escape($post_type['posttype_slug']) . '/');
-            } catch (Exception $ex) {
-                $post->rollback();
-                Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
-                func\_ttcms_flash()->{'error'}($ex->getMessage(), func\get_base_url() . 'admin/' . (string) func\_escape($post_type['posttype_slug']) . '/');
             }
         });
     endforeach;
