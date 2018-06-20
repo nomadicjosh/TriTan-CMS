@@ -1274,8 +1274,9 @@ function ttcms_seconds_to_time($seconds)
  * @file app/functions/core-function.php
  * 
  * @since 0.9
- * @param string $filename Path to the file or directory.
- * @param bool $throw Determines whether to do a simple check or throw an exception.
+ * @param string $filename  Path to the file or directory.
+ * @param bool $throw       Determines whether to do a simple check or throw an exception.
+ *                          Default: true.
  * @return boolean <b>true</b> if the file or directory specified by
  * <i>$filename</i> exists; <b>false</b> otherwise.
  * @throws NotFoundException If file does not exist.
