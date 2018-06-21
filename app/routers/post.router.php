@@ -227,34 +227,13 @@ $app->group('/admin', function() use ($app, $current_user) {
     $app->match('GET|POST', '/post-type/', function () use($app, $current_user) {
 
         if ($app->req->isPost()) {
-            $posttype = $app->db->table(Config::get('tbl_prefix') . 'posttype');
-            $posttype->begin();
-            try {
-                $posttype_id = func\auto_increment(Config::get('tbl_prefix') . 'posttype', 'posttype_id');
-                $posttype_slug = $app->req->post['posttype_slug'] != '' ? $app->req->post['posttype_slug'] : func\ttcms_slugify((string) $app->req->post['posttype_title'], 'posttype');
-                $posttype->insert([
-                    'posttype_id' => (int) $posttype_id,
-                    'posttype_title' => func\if_null($app->req->post['posttype_title']),
-                    'posttype_slug' => (string) $posttype_slug,
-                    'posttype_description' => func\if_null($app->req->post['posttype_description'])
-                ]);
-                $posttype->commit();
-                $lastId = $posttype_id;
-                func\ttcms_cache_delete('posttype', 'posttype');
-                /**
-                 * Action hook triggered after the posttype is created.
-                 * 
-                 * @since 0.9
-                 * @param int $lastId posttype ID.
-                 */
-                $app->hook->{'do_action'}('create_posttype', (int) $lastId);
 
+            try {
+                func\ttcms_insert_posttype($app->req->post);
                 func\ttcms_logger_activity_log_write(func\_t('Create Record', 'tritan-cms'), func\_t('Post Type', 'tritan-cms'), $app->req->post['posttype_title'], func\_escape($current_user->user_login));
                 func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
             } catch (Exception $ex) {
-                $posttype->rollback();
-                Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
-                func\_ttcms_flash()->{'error'}(func\_ttcms_flash()->notice(409));
+                func\_ttcms_flash()->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()), $app->req->server['HTTP_REFERER']);
             }
         }
 
@@ -279,44 +258,14 @@ $app->group('/admin', function() use ($app, $current_user) {
     });
 
     $app->match('GET|POST', '/post-type/(\d+)/', function ($id) use($app, $current_user) {
-        $current_pt = $app->db->table(Config::get('tbl_prefix') . 'posttype')
-                ->where('posttype_id', (int) $id)
-                ->first();
 
         if ($app->req->isPost()) {
-            $posttype = $app->db->table(Config::get('tbl_prefix') . 'posttype');
-            $posttype->begin();
             try {
-                $posttype_slug = $app->req->post['posttype_slug'] != '' ? $app->req->post['posttype_slug'] : func\ttcms_slugify((string) $app->req->post['posttype_title'], 'posttype');
-                $posttype->where('posttype_id', (int) $id)->update([
-                    'posttype_title' => (string) $app->req->post['posttype_title'],
-                    'posttype_slug' => (string) $posttype_slug,
-                    'posttype_description' => func\if_null($app->req->post['posttype_description'])
-                ]);
-                $posttype->commit();
-
-                /**
-                 * Update all post's relative url if the the posted data
-                 * for posttype does not equal to the current posttype.
-                 * 
-                 * @since 0.9.6
-                 */
-                if ($current_pt['posttype_slug'] != (string) $posttype_slug) {
-                    func\update_post_relative_url_posttype($id, $current_pt['posttype_slug'], (string) $posttype_slug);
-                }
-                func\ttcms_cache_delete((int) $id, 'posttype');
-                /**
-                 * Action hook triggered after the posttype is updated.
-                 * 
-                 * @since 0.9
-                 * @param int $id Post Type ID.
-                 */
-                $app->hook->{'do_action'}('update_posttype', (int) $id);
-
+                $data = array_merge(['posttype_id' => (int) $id], $app->req->post);
+                func\ttcms_update_posttype($data);
                 func\ttcms_logger_activity_log_write(func\_t('Update Record', 'tritan-cms'), func\_t('Post Type', 'tritan-cms'), $app->req->post['posttype_title'], func\_escape($current_user->user_login));
                 func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
             } catch (Exception $ex) {
-                $posttype->rollback();
                 Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
                 func\_ttcms_flash()->{'error'}(func\_ttcms_flash()->notice(409));
             }
@@ -367,35 +316,16 @@ $app->group('/admin', function() use ($app, $current_user) {
         }
     });
 
-    $app->get('/post-type/(\d+)/d/', function($id) use($app, $current_user) {
+    $app->get('/post-type/(\d+)/d/', function($id) use($current_user) {
         $title = func\get_posttype_title($id);
 
-        $posttype = $app->db->table(Config::get('tbl_prefix') . 'posttype');
-        $posttype->begin();
-        try {
-            $posttype->where('posttype_id', (int) $id)
-                    ->delete();
-            $posttype->commit();
+        $posttype = func\ttcms_delete_posttype($id);
 
-            $post = $app->db->table(Config::get('tbl_prefix') . 'post');
-            $post->begin();
-            try {
-                $post->where('post_type.posttype_id', (int) $id)
-                        ->delete();
-                $post->commit();
-                func\ttcms_cache_delete('posttype', 'posttype');
-                func\ttcms_cache_delete('post', 'post');
-            } catch (Exception $ex) {
-                $posttype->rollback();
-                Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
-            }
-
+        if ($posttype) {
             func\ttcms_logger_activity_log_write(func\_t('Delete Record', 'tritan-cms'), func\_t('Post Type', 'tritan-cms'), $title, func\_escape($current_user->user_login));
             func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), func\get_base_url() . 'admin/post-type/');
-        } catch (Exception $ex) {
-            $posttype->rollback();
-            Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
-            func\_ttcms_flash()->{'error'}($ex->getMessage(), func\get_base_url() . 'admin/post-type/');
+        } else {
+            func\_ttcms_flash()->{'error'}(func\_ttcms_flash()->notice(409), func\get_base_url() . 'admin/post-type/');
         }
     });
 
