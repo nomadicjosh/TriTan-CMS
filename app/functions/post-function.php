@@ -58,7 +58,8 @@ function the_post()
  * @param int|Post|null $post
  *            Post ID or post array.
  * @param bool $object
- *            If set to true, data will return as an object, else as an array.
+ *              If set to true, data will return as an object, else as an array.
+ *              Default: false.
  * @return array|object
  */
 function get_post($post, $object = false)
@@ -151,6 +152,9 @@ function get_post_modified($post_id = 0)
 /**
  * A function which retrieves a TriTan CMS post content.
  * 
+ * Purpose of this function is for the `post_content`
+ * filter.
+ * 
  * @file app/functions/post-function.php
  *
  * @since 0.9
@@ -160,7 +164,16 @@ function get_post_modified($post_id = 0)
 function get_post_content($post_id = 0)
 {
     $post = get_post($post_id);
-    return _escape($post['post_content']);
+    $content = _escape($post['post_content']);
+    /**
+     * Filters the post date.
+     *
+     * @since 0.9.9
+     *
+     * @param string $content The post's content.
+     * @param int  $post_id The post ID.
+     */
+    return app()->hook->{'apply_filter'}('post_content', $content, (int) $post_id);
 }
 
 /**
@@ -189,34 +202,6 @@ function get_post_type_name($post_id = 0)
      * @param string  $post_id The post ID.
      */
     return app()->hook->{'apply_filter'}('post_posttype_name', $posttype_name, $post_id);
-}
-
-/**
- * A function which retrieves a TriTan CMS post posttype slug.
- * 
- * Purpose of this function is for the `post_posttype_slug`
- * filter.
- * 
- * @file app/functions/post-function.php
- *
- * @since 0.9
- * @param int $post_id The unique id of a post.
- * @return string
- */
-function get_post_posttype_slug($post_id = 0)
-{
-    $post = get_post($post_id);
-    $posttype = get_posttype(_escape($post['post_type']['posttype_id']));
-    $posttype_slug = _escape($posttype['posttype_slug']);
-    /**
-     * Filters the post posttype slug.
-     *
-     * @since 0.9
-     *
-     * @param string $posttype_slug The post's posttype slug.
-     * @param string  $post_id The post ID.
-     */
-    return app()->hook->{'apply_filter'}('post_posttype_slug', $posttype_slug, $post_id);
 }
 
 /**
@@ -973,7 +958,198 @@ function get_post_modified_time($post_id = 0)
 }
 
 /**
+ * A function which retrieves TriTan CMS post posttype id.
+ * 
+ * Purpose of this function is for the `post_posttype_id`
+ * filter.
+ * 
+ * @file app/functions/post-function.php
+ *
+ * @since 0.9.9
+ * @param int $post_id The unique id of a post.
+ * @return string
+ */
+function get_post_posttype_id($post_id = 0)
+{
+    $post = get_post_by('post_id', $post_id);
+    $posttype_id = _escape($post['post_type']['posttype_id']);
+    /**
+     * Filters the post posttype id.
+     *
+     * @since 0.9.9
+     *
+     * @param int   $posttype_id    The post's posttype id.
+     * @param int   $post_id        The post ID.
+     */
+    return app()->hook->{'apply_filter'}('post_posttype_id', (int) $posttype_id, (int) $post_id);
+}
+
+/**
+ * A function which retrieves TriTan CMS post posttype.
+ * 
+ * Purpose of this function is for the `post_posttype`
+ * filter.
+ * 
+ * @file app/functions/post-function.php
+ *
+ * @since 0.9.9
+ * @param int $post_id The unique id of a post.
+ * @return string
+ */
+function get_post_posttype($post_id = 0)
+{
+    $post = get_post_by('post_id', $post_id);
+    $posttype = _escape($post['post_type']['post_posttype']);
+    /**
+     * Filters the post posttype.
+     *
+     * @since 0.9.9
+     *
+     * @param string    $posttype   The post's posttype.
+     * @param int       $post_id    The post ID.
+     */
+    return app()->hook->{'apply_filter'}('post_posttype', $posttype, (int) $post_id);
+}
+
+/**
+ * A function which retrieves TriTan CMS post parent id.
+ * 
+ * Purpose of this function is for the `post_parent_id`
+ * filter.
+ * 
+ * @file app/functions/post-function.php
+ *
+ * @since 0.9.9
+ * @param int $post_id The unique id of a post.
+ * @return string
+ */
+function get_post_parent_id($post_id = 0)
+{
+    $post = get_post_by('post_id', $post_id);
+    $parent_id = _escape($post['post_attributes']['parent']['parent_id']);
+    /**
+     * Filters the post parent id.
+     *
+     * @since 0.9.9
+     *
+     * @param int   $parent_id  The post's parent id.
+     * @param int   $post_id    The post ID.
+     */
+    return app()->hook->{'apply_filter'}('post_parent_id', (int) $parent_id, (int) $post_id);
+}
+
+/**
+ * A function which retrieves TriTan CMS post parent.
+ * 
+ * Purpose of this function is for the `post_parent`
+ * filter.
+ * 
+ * @file app/functions/post-function.php
+ *
+ * @since 0.9.9
+ * @param int $post_id The unique id of a post.
+ * @return string
+ */
+function get_post_parent($post_id = 0)
+{
+    $post = get_post_by('post_id', $post_id);
+    $parent = _escape($post['post_attributes']['parent']['post_parent']);
+    /**
+     * Filters the post parent.
+     *
+     * @since 0.9.9
+     *
+     * @param string    $parent     The post's parent.
+     * @param int       $post_id    The post ID.
+     */
+    return app()->hook->{'apply_filter'}('post_parent', $parent, (int) $post_id);
+}
+
+/**
+ * A function which retrieves TriTan CMS post sidebar.
+ * 
+ * Purpose of this function is for the `post_sidebar`
+ * filter.
+ * 
+ * @file app/functions/post-function.php
+ *
+ * @since 0.9.9
+ * @param int $post_id The unique id of a post.
+ * @return string
+ */
+function get_post_sidebar($post_id = 0)
+{
+    $post = get_post_by('post_id', $post_id);
+    $sidebar = _escape($post['post_attributes']['post_sidebar']);
+    /**
+     * Filters the post sidebar.
+     *
+     * @since 0.9.9
+     *
+     * @param int   $sidebar    The post's sidebar option.
+     * @param int   $post_id    The post ID.
+     */
+    return app()->hook->{'apply_filter'}('post_sidebar', (int) $sidebar, (int) $post_id);
+}
+
+/**
+ * A function which retrieves TriTan CMS post show in menu.
+ * 
+ * Purpose of this function is for the `post_show_in_menu`
+ * filter.
+ * 
+ * @file app/functions/post-function.php
+ *
+ * @since 0.9.9
+ * @param int $post_id The unique id of a post.
+ * @return string
+ */
+function get_post_show_in_menu($post_id = 0)
+{
+    $post = get_post_by('post_id', $post_id);
+    $menu = _escape($post['post_attributes']['post_show_in_menu']);
+    /**
+     * Filters the post show in menu.
+     *
+     * @since 0.9.9
+     *
+     * @param int   $menu       The post's show in menu option.
+     * @param int   $post_id    The post ID.
+     */
+    return app()->hook->{'apply_filter'}('post_show_in_menu', (int) $menu, (int) $post_id);
+}
+
+/**
+ * A function which retrieves TriTan CMS post show in search.
+ * 
+ * Purpose of this function is for the `post_show_in_search`
+ * filter.
+ * 
+ * @file app/functions/post-function.php
+ *
+ * @since 0.9.9
+ * @param int $post_id The unique id of a post.
+ * @return string
+ */
+function get_post_show_in_search($post_id = 0)
+{
+    $post = get_post_by('post_id', $post_id);
+    $search = _escape($post['post_attributes']['post_show_in_search']);
+    /**
+     * Filters the post show in search.
+     *
+     * @since 0.9.9
+     *
+     * @param int   $search     The post's show in search option.
+     * @param int   $post_id    The post ID.
+     */
+    return app()->hook->{'apply_filter'}('post_show_in_search', (int) $search, (int) $post_id);
+}
+
+/**
  * Creates a unique post slug.
+ * 
+ * @file app/functions/post-function.php
  * 
  * @since 0.9.8
  * @param string $original_slug     Original slug of post.
@@ -999,7 +1175,7 @@ function ttcms_unique_post_slug($original_slug, $original_title, $post_id, $post
      * @param int       $post_id        The post's unique id.
      * @param string    $post_type      The post's post type.
      */
-    return app()->hook->apply_filter('ttcms_unique_post_slug', $post_slug, $original_slug, $original_title, $post_id, $post_type);
+    return app()->hook->{'apply_filter'}('ttcms_unique_post_slug', $post_slug, $original_slug, $original_title, $post_id, $post_type);
 }
 
 /**
@@ -1012,7 +1188,7 @@ function ttcms_unique_post_slug($original_slug, $original_title, $post_id, $post
  * @file app/functions/post-function.php
  *
  * @since 0.9.9
- * @param array|object|Post $postdata An array, object or Post object of post data arguments.
+ * @param array $postdata An array of data that is used for insert or update.
  *
  *      @type string $post_title            The post's title.
  *      @type string $post_slug             The post's slug.
@@ -1030,7 +1206,7 @@ function ttcms_unique_post_slug($original_slug, $original_title, $post_id, $post
  * 
  * @param bool $exception Whether or not to throw an exception.
  * @return int|Exception|null   The newly created post's post_id or throws an exception or returns null
- *                              if the post could not be created.
+ *                              if the post could not be created or updated.
  */
 function ttcms_insert_post($postdata, $exception = false)
 {
@@ -1061,6 +1237,8 @@ function ttcms_insert_post($postdata, $exception = false)
         if (is_null($post_before)) {
             if ($exception) {
                 throw new Exception(_t('Invalid post id.', 'tritan-cms'), 'invalid_post_id');
+            } else {
+                return null;
             }
         }
 
@@ -1069,7 +1247,7 @@ function ttcms_insert_post($postdata, $exception = false)
          * Fires immediately before a post is inserted into the post document.
          *
          * @since 0.9.9
-         * @param string    $previous_status    Status of the post before it is created
+         * @param string    $previous_status    Status of the post before it is created.
          *                                      or updated.
          * @param int       $post_id            The post's post_id.
          * @param bool      $update             Whether this is an existing post or a new post.
@@ -1078,12 +1256,13 @@ function ttcms_insert_post($postdata, $exception = false)
     } else {
         $update = false;
         $post_id = auto_increment(Config::get('tbl_prefix') . 'post', 'post_id');
+
         $previous_status = 'new';
         /**
          * Fires immediately before a post is inserted into the post document.
          *
          * @since 0.9.9
-         * @param string    $previous_status    Status of the post before it is created
+         * @param string    $previous_status    Status of the post before it is created.
          *                                      or updated.
          * @param int       $post_id            The post's post_id.
          * @param bool      $update             Whether this is an existing post or a new post.
@@ -1164,7 +1343,7 @@ function ttcms_insert_post($postdata, $exception = false)
         if ($exception) {
             throw new Exception(_t('Post author cannot be zero or null.', 'tritan-cms'), 'empty_post_author');
         } else {
-            return (int) 0;
+            return null;
         }
     }
 
@@ -1326,13 +1505,13 @@ function ttcms_insert_post($postdata, $exception = false)
     }
 
     if (!empty($_postdata['meta_field'])) {
-        foreach ($_postdata['meta_field'] as $field => $value) {
-            update_post_meta((int) $post_id, Config::get('tbl_prefix') . $field, $value);
+        foreach ($_postdata['meta_field'] as $key => $value) {
+            update_post_meta((int) $post_id, $key, $value);
         }
     }
 
     clean_post_cache((int) $post_id);
-    $post = get_post((int) $post_id);
+    $post = get_post((int) $post_id, true);
 
     if ($update) {
         /**
@@ -1340,10 +1519,10 @@ function ttcms_insert_post($postdata, $exception = false)
          *
          * @since 0.9.9
          * @param int   $post_id    Post id.
-         * @param array $post       Post array.
+         * @param array $post       Post object.
          */
         app()->hook->{'do_action'}('update_post', (int) $post_id, $post);
-        $post_after = get_post((int) $post_id);
+        $post_after = get_post((int) $post_id, true);
         /**
          * Action hook triggered after existing post has been updated.
          *
@@ -1363,7 +1542,7 @@ function ttcms_insert_post($postdata, $exception = false)
      * 
      * @since 0.9.9
      * @param int   $post_id    The post's id.
-     * @param array $post       Post array.
+     * @param array $post       Post object.
      * @param bool  $update     Whether this is an existing post or a new post.
      */
     app()->hook->{'do_action'}("save_post_{$post_posttype}", (int) $post_id, $post, $update);
@@ -1376,7 +1555,7 @@ function ttcms_insert_post($postdata, $exception = false)
      * 
      * @since 0.9.9
      * @param int   $post_id    The post's id.
-     * @param array $post       Post array.
+     * @param array $post       Post object.
      * @param bool  $update     Whether this is an existing post or a new post.
      */
     app()->hook->{'do_action'}("save_post_{$post_posttype}_{$post_status}", (int) $post_id, $post, $update);
@@ -1386,7 +1565,7 @@ function ttcms_insert_post($postdata, $exception = false)
      *
      * @since 0.9.9
      * @param int   $post_id    The post's id.
-     * @param array $post       Post array.
+     * @param array $post       Post object.
      * @param bool  $update     Whether this is an existing post or a new post.
      */
     app()->hook->{'do_action'}('ttcms_after_insert_post_data', (int) $post_id, $post, $update);
@@ -1429,6 +1608,8 @@ function ttcms_update_post($postdata = [], $exception = false)
 
 /**
  * Deletes a post from the post document.
+ * 
+ * @file app/functions/post-function.php
  * 
  * @since 0.9.9
  * @param int $post_id The id of the post to delete.
@@ -1485,7 +1666,7 @@ function ttcms_delete_post($post_id = 0)
      * @param int $post_id Post ID.
      */
     app()->hook->{'do_action'}('delete_post', (int) $post_id);
-    
+
     $delete = app()->db->table(Config::get('tbl_prefix') . 'post');
     $delete->begin();
     try {
@@ -1498,7 +1679,7 @@ function ttcms_delete_post($post_id = 0)
     }
 
     /**
-     * Action hook fires immediately after a post is deleted from the document.
+     * Action hook fires immediately after a post is deleted from the post document.
      *
      * @since 0.9.9
      * @param int $post_id Post id.
@@ -1548,8 +1729,8 @@ function clean_post_cache($post)
      * Fires immediately after the given post's cache is cleaned.
      *
      * @since 0.9.9
-     * @param int   $post_id Post id.
-     * @param array $post    Post array.
+     * @param int   $_post['post_id']   Post id.
+     * @param array $_post              Post array.
      */
-    app()->hook->{'do_action'}('clean_user_cache', (int) _escape($_post['post_id']), $_post);
+    app()->hook->{'do_action'}('clean_post_cache', (int) _escape($_post['post_id']), $_post);
 }

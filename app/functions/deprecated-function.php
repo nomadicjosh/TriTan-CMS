@@ -15,6 +15,9 @@ if (!defined('BASE_PATH'))
  */
 
 /**
+ * 
+ * @file app/functions/deprecated-function.php
+ * 
  * @deprecated since release 0.9.8
  * @param type $matches
  * @return type
@@ -27,6 +30,9 @@ function clean_pre($matches)
 }
 
 /**
+ * 
+ * @file app/functions/deprecated-function.php
+ * 
  * @deprecated since release 0.9.8
  * @global type $parsecode_tags
  * @param type $tag
@@ -42,6 +48,8 @@ function add_parsecode($tag, $func)
 
 /**
  * Removes hook for parsecode.
+ * 
+ * @file app/functions/deprecated-function.php
  *
  * @deprecated since release 0.9.8
  * @since 0.9
@@ -61,6 +69,8 @@ function remove_parsecode($tag)
  * This function is simple, it clears all of the parsecode tags by replacing the
  * parsecodes global by a empty array. This is actually a very efficient method
  * for removing all parsecodes.
+ * 
+ * @file app/functions/deprecated-function.php
  *
  * @deprecated since release 0.9.8
  * @since 0.9
@@ -79,6 +89,8 @@ function remove_all_parsecodes()
  * If there are no parsecode tags defined, then the content will be returned
  * without any filtering. This might cause issues when plugins are disabled but
  * the parsecode will still show up in the post or content.
+ * 
+ * @file app/functions/deprecated-function.php
  *
  * @deprecated since release 0.9.8
  * @since 0.9
@@ -108,6 +120,8 @@ function do_parsecode($content)
  * 4 - The self closing /
  * 5 - The content of a parsecode when it wraps some content.
  * 6 - An extra ] to allow for escaping parsecodes with double [[]]
+ * 
+ * @file app/functions/deprecated-function.php
  *
  * @deprecated since release 0.9.8
  * @since 0.9
@@ -124,6 +138,8 @@ function get_parsecode_regex()
 /**
  * Regular Expression callable for do_parsecode() for calling parsecode hook.
  * @see get_parsecode_regex for details of the match array contents.
+ * 
+ * @file app/functions/deprecated-function.php
  *
  * @deprecated since release 0.9.8
  * @since 0.9
@@ -145,6 +161,8 @@ function do_parsecode_tag($m)
  * The attributes list has the attribute name as the key and the value of the
  * attribute as the value in the key/value pair. This allows for easier
  * retrieval of the attributes, since all attributes have to be known.
+ * 
+ * @file app/functions/deprecated-function.php
  *
  * @deprecated since release 0.9.8
  * @since 0.9
@@ -167,6 +185,8 @@ function parsecode_parse_atts($text)
  *
  * If the $atts list has unsupported attributes, then they will be ignored and
  * removed from the final returned list.
+ * 
+ * @file app/functions/deprecated-function.php
  *
  * @deprecated since release 0.9.8
  * @since 0.9
@@ -183,6 +203,8 @@ function parsecode_atts($pairs, $atts)
 
 /**
  * Remove all parsecode tags from the given content.
+ * 
+ * @file app/functions/deprecated-function.php
  *
  * @deprecated since release 0.9.8
  * @since 0.9
@@ -198,6 +220,9 @@ function strip_parsecodes($content)
 }
 
 /**
+ * 
+ * @file app/functions/deprecated-function.php
+ * 
  * @deprecated since release 0.9.8
  * @param type $m
  * @return type
@@ -210,6 +235,9 @@ function strip_parsecode_tag($m)
 }
 
 /**
+ * 
+ * @file app/functions/deprecated-function.php
+ * 
  * @deprecated since release 0.9.8
  * @since 0.9
  * @param unknown $pee
@@ -224,6 +252,9 @@ function ttcms_autop($pee, $br = 1)
 }
 
 /**
+ * 
+ * @file app/functions/deprecated-function.php
+ * 
  * @deprecated since release 0.9.8
  * @param type $matches
  * @return type
@@ -236,6 +267,9 @@ function _autop_newline_preservation_helper($matches)
 }
 
 /**
+ * 
+ * @file app/functions/deprecated-function.php
+ * 
  * @deprecated since release 0.9.8
  * @global type $parsecode_tags
  * @param type $pee
@@ -251,6 +285,8 @@ function parsecode_unautop($pee)
 /**
  * Checks the permission of the logged in user.
  * 
+ * @file app/functions/deprecated-function.php
+ * 
  * @deprecated since release 0.9.8
  * @since 0.9
  * @param string $perm Permission to check for.
@@ -258,7 +294,27 @@ function parsecode_unautop($pee)
  */
 function hasPermission($perm)
 {
-    _deprecated_function(__FUNCTION__, '0.9.8', 'current_user_can');
+    _deprecated_function(__FUNCTION__, '0.9.8', 'Tritan\Functions\Auth\current_user_can');
 
     return current_user_can($perm);
+}
+
+/**
+ * A function which retrieves a TriTan CMS post posttype slug.
+ * 
+ * Purpose of this function is for the `post_posttype_slug`
+ * filter.
+ * 
+ * @file app/functions/deprecated-function.php
+ *
+ * @deprecated since release 0.9.9
+ * @since 0.9
+ * @param int $post_id The unique id of a post.
+ * @return string
+ */
+function get_post_posttype_slug($post_id = 0)
+{
+    _deprecated_function(__FUNCTION__, '0.9.9', 'TriTan\Functions\Post\get_post_posttype');
+
+    return get_post_posttype($post_id);
 }

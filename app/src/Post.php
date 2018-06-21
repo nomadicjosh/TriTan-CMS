@@ -10,11 +10,11 @@ use TriTan\Functions as func;
 /**
  * Post API: Post Class
  *
+ * @package TriTan_CMS
+ * @author  Joshua Parker <joshmac3@icloud.com>
  * @license GPLv3
  *         
  * @since 0.9
- * @package TriTan CMS
- * @author Joshua Parker <joshmac3@icloud.com>
  */
 final class Post
 {
@@ -23,7 +23,7 @@ final class Post
      * Post ID.
      *
      * @since 0.9
-     * @var int
+     * @var   int
      */
     public $post_id;
 
@@ -31,7 +31,7 @@ final class Post
      * Post title.
      *
      * @since 0.9.9
-     * @var string
+     * @var   string
      */
     public $post_title = '';
 
@@ -39,7 +39,7 @@ final class Post
      * Post slug.
      *
      * @since 0.9.9
-     * @var string
+     * @var   string
      */
     public $post_slug = '';
 
@@ -47,7 +47,7 @@ final class Post
      * Post content/body.
      *
      * @since 0.9.9
-     * @var string
+     * @var   string
      */
     public $post_content = '';
 
@@ -55,7 +55,7 @@ final class Post
      * Post author.
      *
      * @since 0.9.9
-     * @var int
+     * @var   int
      */
     public $post_author = 0;
 
@@ -63,7 +63,7 @@ final class Post
      * Post type.
      *
      * @since 0.9.9
-     * @var array
+     * @var   array
      */
     public $post_type = [];
 
@@ -71,7 +71,7 @@ final class Post
      * Post attributes.
      *
      * @since 0.9.9
-     * @var array
+     * @var   array
      */
     public $post_attributes = [];
 
@@ -79,7 +79,7 @@ final class Post
      * Post relative url.
      *
      * @since 0.9.9
-     * @var string
+     * @var   string
      */
     public $post_relative_url = '';
 
@@ -87,7 +87,7 @@ final class Post
      * Post featured image.
      *
      * @since 0.9.9
-     * @var string
+     * @var   string
      */
     public $post_featured_image = '';
 
@@ -95,7 +95,7 @@ final class Post
      * Post status.
      *
      * @since 0.9.9
-     * @var string
+     * @var   string
      */
     public $post_status = 'published';
 
@@ -103,7 +103,7 @@ final class Post
      * Post publication date.
      *
      * @since 0.9.9
-     * @var string
+     * @var   string
      */
     public $post_created = '0000-00-00 00:00:00';
 
@@ -111,7 +111,7 @@ final class Post
      * Post modification date.
      *
      * @since 0.9.9
-     * @var string
+     * @var   string
      */
     public $post_modified = '0000-00-00 00:00:00';
 
@@ -134,8 +134,8 @@ final class Post
         $_post = func\ttcms_cache_get($_post_id, 'post');
         if (!$_post) {
             $_post = app()->db->table(Config::get('tbl_prefix') . 'post')
-                    ->where('post_id', (int) $_post_id)
-                    ->first();
+                ->where('post_id', (int) $_post_id)
+                ->first();
             if (!$_post) {
                 return false;
             }
