@@ -340,7 +340,7 @@ function get_all_posts($post_type = null, $limit = 0, $offset = null, $status = 
 
         if ($post_type === null && $limit <= 0 && $offset === null && (empty($status) || $status === 'all')) {
             return $posts->all();
-        } elseif($limit > 0) {
+        } elseif ($limit > 0) {
             return $posts->all();
         } else {
             return $posts->get();
@@ -537,6 +537,8 @@ function update_post_relative_url_posttype($id, $old_slug, $new_slug)
  * 
  * To be only used by `ttcms_insert_post`.
  * 
+ * @file app/functions/db-function.php
+ * 
  * @access private
  * @since 0.9.9
  * @param array $data   Array of post data.
@@ -584,6 +586,8 @@ function ttcms_post_insert_document($data)
  * Updates the post.
  * 
  * To be only used by `ttcms_insert_post`.
+ * 
+ * @file app/functions/db-function.php
  * 
  * @access private
  * @since 0.9.9
@@ -634,9 +638,31 @@ function ttcms_post_update_document($data)
 }
 
 /**
- * Checks if a slug exist among records from a document.
+ * Checks if a slug exists among records from the posttype document.
  * 
- * Currently supports the post and posttype document.
+ * @file app/functions/db-function.php
+ * 
+ * @since 0.9.9
+ * @param int       $posttype_id    Posttype id to check against.
+ * @param string    $slug           Slug to search for.
+ * @return boolean
+ */
+function ttcms_posttype_slug_exist($posttype_id, $slug)
+{
+    $exist = app()->db->table(Config::get('tbl_prefix') . 'posttype')
+            ->where('posttype_slug', $slug)
+            ->where('posttype_id', 'not in', $posttype_id)
+            ->count();
+    if ($exist > 0) {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Checks if a slug exists among records from the post document.
+ * 
+ * @file app/functions/db-function.php
  * 
  * @since 0.9.9
  * @param int       $post_id    Post id to check against.
@@ -660,6 +686,8 @@ function ttcms_post_slug_exist($post_id, $slug, $post_type)
 /**
  * Checks if a post has any children.
  * 
+ * @file app/functions/db-function.php
+ * 
  * @since 0.9.9
  * @param int $post_id Post id to check.
  * @return bool|array False if not, array of children if true.
@@ -672,4 +700,23 @@ function is_post_parent($post_id)
         return false;
     }
     return $children->get();
+}
+
+/**
+ * Reassigns posts to a different user.
+ * 
+ * @file app/functions/db-function.php
+ * 
+ * @since 0.9.9
+ * @param int   $user_id    ID of user being removed.
+ * @param type  $assign_id  ID of user to whom posts will be assigned.
+ */
+function reassign_posts($user_id, $assign_id)
+{
+    $posts = app()->db->table(Config::get('tbl_prefix') . 'post');
+    $query = $posts->where('post_author', (int) $user_id)->map(function($data) use($user_id, $assign_id) {
+        $data['post_author'] = str_replace((int) $user_id, (int) $assign_id, (int) $data['post_author']);
+        return $data;
+    });
+    $query->save();
 }
