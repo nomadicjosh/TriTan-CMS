@@ -76,6 +76,7 @@ Config::set('screen_child', 'all-users');
                                     <?php endif; ?>
 
                                     <div class="modal" id="delete-<?= (int) $user['user_id']; ?>">
+                                        <form method="post" action="<?=func\get_base_url();?>admin/user/<?= (int) $user['user_id']; ?>/d/">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <div class="modal-header">
@@ -85,15 +86,21 @@ Config::set('screen_child', 'all-users');
                                                 </div>
                                                 <div class="modal-body">
                                                     <p><?= func\_t('Are you sure you want to remove the user from this site?', 'tritan-cms'); ?></p>
+                                                    <div class="alert alert-info"><?=func\_t("Would you like to assign this user's content to a different user? Choose below.");?></div>
+                                                    <select class="form-control select2" name="assign_id" style="width: 100%;">
+                                                        <option>&nbsp;</option>
+                                                        <?php func\get_users_reassign((int) $user['user_id']); ?>
+                                                    </select>
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><?= func\_t('Close', 'tritan-cms'); ?></button>
-                                                    <button type="button" class="btn btn-primary" onclick="window.location = '<?= func\get_base_url(); ?>admin/user/<?= (int) $user['user_id']; ?>/d/'"><?= func\_t('Confirm', 'tritan-cms'); ?></button>
+                                                    <button type="submit" class="btn btn-primary"><?= func\_t('Confirm', 'tritan-cms'); ?></button>
                                                 </div>
                                             </div>
                                             <!-- /.modal-content -->
                                         </div>
                                         <!-- /.modal-dialog -->
+                                    </form>
                                     </div>
                                     <!-- /.modal -->
                                 </td>

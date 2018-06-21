@@ -31,6 +31,8 @@ $user = func\get_userdata($this->current_user_id);
 
                 <div class="pull-right">
                     <input type="hidden" name="user_id" value="<?=$this->current_user_id;?>" />
+                    <input type="hidden" name="user_role" value="<?= func\get_role_by_id(func\get_user_option('role', (int) $this->current_user_id))['role']['role_key']; ?>" />
+                    <input type="hidden" name="user_status" value="<?= func\get_user_option('status', (int) $this->current_user_id); ?>" />
                     <button type="submit" class="btn btn-success"><i class="fa fa-pencil"></i> <?= func\_t('Update', 'tritan-cms'); ?></button>
                     <button type="button"<?=func\ae('manage_users');?> class="btn btn-primary" onclick="window.location = '<?= func\get_base_url(); ?>admin/user/'"><i class="fa fa-ban"></i> <?= func\_t('Cancel', 'tritan-cms'); ?></button>
                 </div>

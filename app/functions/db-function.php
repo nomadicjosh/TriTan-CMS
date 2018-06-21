@@ -708,15 +708,21 @@ function is_post_parent($post_id)
  * @file app/functions/db-function.php
  * 
  * @since 0.9.9
- * @param int   $user_id    ID of user being removed.
  * @param type  $assign_id  ID of user to whom posts will be assigned.
+ * @param int   $user_id    ID of user being removed.
  */
-function reassign_posts($user_id, $assign_id)
+function reassign_posts($assign_id, $user_id)
 {
-    $posts = app()->db->table(Config::get('tbl_prefix') . 'post');
-    $query = $posts->where('post_author', (int) $user_id)->map(function($data) use($user_id, $assign_id) {
-        $data['post_author'] = str_replace((int) $user_id, (int) $assign_id, (int) $data['post_author']);
-        return $data;
-    });
-    $query->save();
+    $reassign = app()->db->table(Config::get('tbl_prefix') . 'post');
+    $reassign->begin();
+    try {
+        $reassign->where('post_author', (int) $user_id)
+                ->update([
+                    'post_author' => (int) $assign_id
+        ]);
+        $reassign->commit();
+    } catch (Exception $ex) {
+        $reassign->rollback();
+        _ttcms_flash()->error(sprintf('Reassign post error: %s', $ex->getMessage()));
+    }
 }

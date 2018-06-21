@@ -58,9 +58,9 @@ class User
      * Retrieves the userdata and passes it to User::init().
      *
      * @since 0.9
-     * @param int|string|stdClass|User $user_id     User's ID, a User object, or a user array from the DB.
-     * @param string $name                          Optional. User's username
-     * @param int $site_id                          Optional Site ID, defaults to current site.
+     * @param int|stdClass|User $user_id    User's ID, a User object, or a user array from the DB.
+     * @param string $name                  Optional. User's username
+     * @param int $site_id                  Optional Site ID, defaults to current site.
      */
     public function __construct($user_id = 0, $name = '', $site_id = '')
     {
@@ -96,13 +96,14 @@ class User
      * Sets up object properties.
      *
      * @since  0.9
-     * @param object $data              User DB row array.
+     * @param object $data              User data object.
      * @param int $site_id Optional.    The site ID to initialize
      */
     public function init($data, $site_id = '')
     {
-        $this->data = func\array_to_object($data);
-        $this->user_id = (int) $data['user_id'];
+        $_data = is_array($data) ? func\array_to_object($data) : $data;
+        $this->data = $_data;
+        $this->user_id = (int) $_data->user_id;
 
         $this->for_site($site_id);
     }
@@ -304,7 +305,7 @@ class User
     {
 
         if (!empty($site_id)) {
-            $this->site_id = absint($site_id);
+            $this->site_id = func\absint($site_id);
         } else {
             $this->site_id = func\get_current_site_id();
         }

@@ -1778,3 +1778,4 @@ app()->hook->{'add_filter'}('ttcms_authenticate_user', 'TriTan\\Functions\\ttcms
 app()->hook->{'add_filter'}('ttcms_auth_cookie', 'TriTan\\Functions\\ttcms_set_auth_cookie', 5, 2);
 app()->hook->{'add_filter'}('pre_user_email', '_trim', 5);
 app()->hook->{'add_filter'}('pre_user_url', 'TriTan\\Functions\\ttcms_strip_tags', 5);
+app()->hook->{'add_filter'}('reassign_posts', 'TriTan\\Functions\\reassign_posts', 5, 2);

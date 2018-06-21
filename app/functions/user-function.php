@@ -470,7 +470,7 @@ function ttcms_user_status_label($status)
  * @file app/functions/user-function.php
  * 
  * @since 0.9
- * @param type $active
+ * @param int $active
  */
 function get_user_roles($active = null)
 {
@@ -478,7 +478,7 @@ function get_user_roles($active = null)
             ->all();
 
     foreach ($roles as $role) {
-        echo '<option value="' . (int) _escape($role['role_id']) . '"' . selected($active, (int) _escape($role['role_id']), false) . '>' . _escape($role['role_name']) . '</option>';
+        echo '<option value="' . (string) _escape($role['role_key']) . '"' . selected((int) $active, (int) _escape($role['role_id']), false) . '>' . _escape($role['role_name']) . '</option>';
     }
 }
 
@@ -1131,6 +1131,100 @@ function ttcms_update_user($userdata)
 }
 
 /**
+ * Deletes a user from the usermeta document. To delete user entirely from the system,
+ * see `ttcms_delete_site_user`.
+ * 
+ * @file app/functions/user-function.php
+ * 
+ * @since 0.9.9
+ * @param int $user_id      ID of user being deleted.
+ * @param into $assign_id   ID of user to whom posts will be assigned.
+ *                          Default: NULL.
+ * @return boolean
+ */
+function ttcms_delete_user($user_id, $assign_id = null)
+{
+    if (!is_numeric($user_id)) {
+        return false;
+    }
+
+    if ((int) $user_id == (int) 1) {
+        _ttcms_flash()->{'error'}(func\_t('You are not allowed to delete the super administrator account.', 'tritan-cms'));
+        exit();
+    }
+
+    $_user_id = (int) $user_id;
+    $user = new \TriTan\User($_user_id);
+
+    if (!$user->exists()) {
+        return false;
+    }
+
+    if ((int) $assign_id !== null) {
+        /**
+         * Filter hook is triggered when assign_id is greater than zero.
+         * 
+         * Posts will be reassigned before the user is deleted.
+         * 
+         * @since 0.9.9
+         * @param int $assign_id    ID of user to reassign posts to.
+         *                          Default: NULL.
+         * @param int $_user_id     ID of user to be deleted.
+         * @param int $site_id      The current site's id.
+         */
+        $assign_id = app()->hook->{'apply_filter'}('reassign_posts', (int) $assign_id, (int) $_user_id);
+    }
+
+    /**
+     * Action hook fires immediately before a user is deleted from the usermeta document.
+     *
+     * @since 0.9.9
+     * @param int       $_user_id   ID of the user to delete.
+     * @param int|null  $reassign   ID of the user to reassign posts to.
+     *                              Default: NULL.
+     */
+    app()->hook->{'do_action'}('delete_user', (int) $_user_id, (int) $assign_id);
+
+    $tbl_prefix = Config::get('tbl_prefix');
+
+    $check = app()->db->table('usermeta')
+            ->where('user_id', (int) $_user_id)
+            ->where('meta_key', 'match', "/$tbl_prefix/")
+            ->count();
+
+    if ((int) $check > 0) {
+        $umeta = app()->db->table('usermeta');
+        $umeta->begin();
+        try {
+
+            $umeta->where('user_id', (int) $_user_id)
+                    ->where('meta_key', 'match', "/$tbl_prefix/")
+                    ->delete();
+
+            $umeta->commit();
+        } catch (Exception $ex) {
+            $umeta->rollback();
+            Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: Error: %s', $ex->getCode(), $ex->getMessage()));
+        }
+    }
+
+    clean_user_cache($_user_id);
+    ttcms_cache_flush_namespace('user_meta');
+
+    /**
+     * Action hook fires immediately after a user has been deleted from the usermeta document.
+     *
+     * @since 0.9.9
+     * @param int $_user_id     ID of the user who was deleted.
+     * @param int $assign_id    ID of the user to whom posts were assigned.
+     *                          Default: NULL.
+     */
+    app()->hook->{'do_action'}('deleted_user', (int) $_user_id, (int) $assign_id);
+
+    return true;
+}
+
+/**
  * Email sent to user with new generated password.
  * 
  * @file app/functions/user-function.php
@@ -1240,7 +1334,7 @@ function send_email_change_email($user, $userdata)
  * @file app/functions/user-function.php
  *
  * @since 0.9
- * @param object $user User object to be cached.
+ * @param object|array $user User object/array to be cached.
  * @return bool|null Returns false on failure.
  */
 function update_user_caches($user)
@@ -1249,13 +1343,13 @@ function update_user_caches($user)
         if (!$user->exists()) {
             return false;
         }
-
-        $user = $user;
     }
 
-    ttcms_cache_add(_escape($user->user_id), $user, 'users');
-    ttcms_cache_add(_escape($user->user_login), (int) _escape($user->user_id), 'userlogins');
-    ttcms_cache_add(_escape($user->user_email), (int) _escape($user->user_id), 'useremail');
+    $_user = is_array($user) ? array_to_object($user) : $user;
+
+    ttcms_cache_add(_escape($_user->user_id), $_user, 'users');
+    ttcms_cache_add(_escape($_user->user_login), (int) _escape($_user->user_id), 'userlogins');
+    ttcms_cache_add(_escape($_user->user_email), (int) _escape($_user->user_id), 'useremail');
 }
 
 /**
@@ -1278,18 +1372,20 @@ function clean_user_cache($user)
         return;
     }
 
-    ttcms_cache_delete((int) _escape($user->user_id), 'users');
-    ttcms_cache_delete(_escape($user->user_login), 'userlogins');
-    ttcms_cache_delete(_escape($user->user_email), 'useremail');
+    $_user = is_array($user) ? array_to_object($user) : $user;
+
+    ttcms_cache_delete((int) _escape($_user->user_id), 'users');
+    ttcms_cache_delete(_escape($_user->user_login), 'userlogins');
+    ttcms_cache_delete(_escape($_user->user_email), 'useremail');
 
     /**
      * Fires immediately after the given user's cache is cleaned.
      *
      * @since 0.9
-     * @param int   $user_id User user_id.
-     * @param User  $user    User object.
+     * @param int   $_user_id User user_id.
+     * @param User  $_user    User object.
      */
-    app()->hook->{'do_action'}('clean_user_cache', (int) _escape($user->user_id), $user);
+    app()->hook->{'do_action'}('clean_user_cache', (int) _escape($_user->user_id), $_user);
 }
 
 /**
@@ -1305,74 +1401,76 @@ function clean_user_cache($user)
 function blacklisted_usernames()
 {
     $blacklist = [
-        '400', '401', '403', '404', '405', '406', '407', '408', '409', '410',
-        '411', '412', '413', '414', '415', '416', '417', '421', '422', '423',
-        '424', '426', '428', '429', '431', '500', '501', '502', '503', '504',
-        '505', '506', '507', '508', '509', '510', '511', 'about', 'about-us',
-        'abuse', 'access', 'account', 'accounts', 'ad', 'add', 'admin',
-        'administration', 'administrator', 'ads', 'advertise', 'advertising',
-        'aes128-ctr', 'aes128-gcm', 'aes192-ctr', 'aes256-ctr', 'aes256-gcm',
-        'affiliate', 'affiliates', 'ajax', 'alert', 'alerts', 'alpha', 'amp',
-        'analytics', 'api', 'app', 'apps', 'asc', 'assets', 'atom', 'auth',
-        'authentication', 'authorize', 'autoconfig', 'avatar', 'backup',
-        'banner', 'banners', 'beta', 'billing', 'billings', 'blog', 'blogs',
-        'board', 'bookmark', 'bookmarks', 'broadcasthost', 'business', 'buy',
-        'cache', 'calendar', 'campaign', 'captcha', 'careers', 'cart', 'cas',
-        'categories', 'category', 'cdn', 'cgi', 'cgi-bin', 'chacha20-poly1305',
-        'change', 'channel', 'channels', 'chart', 'chat', 'checkout', 'clear',
-        'client', 'close', 'cms', 'com', 'comment', 'comments', 'community',
-        'compare', 'compose', 'config', 'connect', 'contact', 'contest',
-        'cookies', 'copy', 'copyright', 'count', 'create', 'css',
+        '.htaccess', '.htpasswd', '.well-known', '400', '401', '403', '404',
+        '405', '406', '407', '408', '409', '410', '411', '412', '413', '414',
+        '415', '416', '417', '421', '422', '423', '424', '426', '428', '429',
+        '431', '500', '501', '502', '503', '504', '505', '506', '507', '508',
+        '509', '510', '511', 'about', 'about-us', 'abuse', 'access', 'account',
+        'accounts', 'ad', 'add', 'admin', 'administration', 'administrator',
+        'ads', 'advertise', 'advertising', 'aes128-ctr', 'aes128-gcm',
+        'aes192-ctr', 'aes256-ctr', 'aes256-gcm', 'affiliate', 'affiliates',
+        'ajax', 'alert', 'alerts', 'alpha', 'amp', 'analytics', 'api', 'app',
+        'apps', 'asc', 'assets', 'atom', 'auth', 'authentication', 'authorize',
+        'autoconfig', 'autodiscover', 'avatar', 'backup', 'banner', 'banners',
+        'beta', 'billing', 'billings', 'blog', 'blogs', 'board', 'bookmark',
+        'bookmarks', 'broadcasthost', 'business', 'buy', 'cache', 'calendar',
+        'campaign', 'captcha', 'careers', 'cart', 'cas', 'categories',
+        'category', 'cdn', 'cgi', 'cgi-bin', 'chacha20-poly1305', 'change',
+        'channel', 'channels', 'chart', 'chat', 'checkout', 'clear', 'client',
+        'close', 'cms', 'com', 'comment', 'comments', 'community', 'compare',
+        'compose', 'config', 'connect', 'contact', 'contest', 'cookies', 'copy',
+        'copyright', 'count', 'create', 'crossdomain.xml', 'css',
         'curve25519-sha256', 'customer', 'customers', 'customize', 'dashboard',
         'db', 'deals', 'debug', 'delete', 'desc', 'dev', 'developer',
         'developers', 'diffie-hellman-group-exchange-sha256',
         'diffie-hellman-group14-sha1', 'disconnect', 'discuss', 'dns', 'dns0',
         'dns1', 'dns2', 'dns3', 'dns4', 'docs', 'documentation', 'domain',
-        'download', 'downloads', 'downvote', 'draft', 'drop',
+        'download', 'downloads', 'downvote', 'draft', 'drop', 'drupal',
         'ecdh-sha2-nistp256', 'ecdh-sha2-nistp384', 'ecdh-sha2-nistp521',
         'edit', 'editor', 'email', 'enterprise', 'error', 'errors', 'event',
         'events', 'example', 'exception', 'exit', 'explore', 'export',
-        'extensions', 'false', 'family', 'faq', 'faqs', 'features', 'feed',
-        'feedback', 'feeds', 'feeds', 'file', 'files', 'filter', 'follow',
-        'follower', 'followers', 'following', 'fonts', 'forgot',
+        'extensions', 'false', 'family', 'faq', 'faqs', 'favicon.ico',
+        'features', 'feed', 'feedback', 'feeds', 'file', 'files', 'filter',
+        'follow', 'follower', 'followers', 'following', 'fonts', 'forgot',
         'forgot-password', 'forgotpassword', 'form', 'forms', 'forum', 'forums',
         'friend', 'friends', 'ftp', 'get', 'git', 'go', 'group', 'groups',
         'guest', 'guidelines', 'guides', 'head', 'header', 'help', 'hide',
         'hmac-sha', 'hmac-sha1', 'hmac-sha1-etm', 'hmac-sha2-256',
         'hmac-sha2-256-etm', 'hmac-sha2-512', 'hmac-sha2-512-etm', 'home',
         'host', 'hosting', 'hostmaster', 'htpasswd', 'http', 'httpd', 'https',
-        'icons', 'images', 'imap', 'img', 'import', 'info', 'insert',
-        'investors', 'invitations', 'invite', 'invite', 'invites', 'invoice',
-        'is', 'isatap', 'issues', 'it', 'jobs', 'join', 'js', 'json', 'learn',
-        'legal', 'licensing', 'limit', 'live', 'load', 'local', 'localdomain',
-        'localhost', 'lock', 'login', 'logout', 'lost-password', 'mail',
-        'mail0', 'mail1', 'mail2', 'mail3', 'mail4', 'mail5', 'mail6', 'mail7',
-        'mail8', 'mail9', 'mailer-daemon', 'mailerdaemon', 'map', 'marketing',
-        'marketplace', 'master', 'me', 'media', 'member', 'members', 'message',
-        'messages', 'metrics', 'mis', 'mobile', 'moderator', 'modify', 'more',
-        'mx', 'my', 'net', 'network', 'new', 'news', 'newsletter',
-        'newsletters', 'next', 'nil', 'no-reply', 'nobody', 'noc', 'none',
-        'noreply', 'notification', 'notifications', 'ns', 'ns0', 'ns1', 'ns2',
-        'ns3', 'ns4', 'ns5', 'ns6', 'ns7', 'ns8', 'ns9', 'null', 'oauth',
-        'oauth2', 'offer', 'offers', 'online', 'openid', 'order', 'orders',
-        'overview', 'owner', 'page', 'pages', 'partners', 'passwd', 'password',
-        'pay', 'payment', 'payments', 'photo', 'photos', 'pixel', 'plans',
-        'plugins', 'policies', 'policy', 'pop', 'pop3', 'popular', 'portfolio',
-        'post', 'postfix', 'postmaster', 'poweruser', 'preferences', 'premium',
-        'press', 'previous', 'pricing', 'print', 'privacy', 'privacy-policy',
-        'private', 'prod', 'product', 'production', 'profile', 'profiles',
-        'project', 'projects', 'public', 'purchase', 'put', 'quota', 'redirect',
-        'reduce', 'refund', 'refunds', 'register', 'registration', 'remove',
-        'replies', 'reply', 'report', 'request', 'request-password', 'reset',
-        'reset-password', 'response', 'return', 'returns', 'review', 'reviews',
-        'root', 'rootuser', 'rsa-sha2-2', 'rsa-sha2-512', 'rss', 'rules',
-        'sales', 'save', 'script', 'sdk', 'search', 'secure', 'security',
-        'select', 'services', 'session', 'sessions', 'settings', 'setup',
-        'share', 'shift', 'shop', 'signin', 'signup', 'site', 'sitemap',
-        'sites', 'smtp', 'sort', 'source', 'sql', 'ssh', 'ssh-rsa', 'ssl',
-        'ssladmin', 'ssladministrator', 'sslwebmaster', 'stage', 'staging',
-        'stat', 'static', 'statistics', 'stats', 'status', 'store', 'style',
-        'styles', 'stylesheet', 'stylesheets', 'subdomain', 'subscribe', 'sudo',
+        'humans.txt', 'icons', 'images', 'imap', 'img', 'import', 'info',
+        'insert', 'investors', 'invitations', 'invite', 'invites', 'invoice',
+        'is', 'isatap', 'issues', 'it', 'jobs', 'join', 'joomla', 'js', 'json',
+        'keybase.txt', 'learn', 'legal', 'license', 'licensing', 'limit',
+        'live', 'load', 'local', 'localdomain', 'localhost', 'lock', 'login',
+        'logout', 'lost-password', 'mail', 'mail0', 'mail1', 'mail2', 'mail3',
+        'mail4', 'mail5', 'mail6', 'mail7', 'mail8', 'mail9', 'mailer-daemon',
+        'mailerdaemon', 'map', 'marketing', 'marketplace', 'master', 'me',
+        'media', 'member', 'members', 'message', 'messages', 'metrics', 'mis',
+        'mobile', 'moderator', 'modify', 'more', 'mx', 'my', 'net', 'network',
+        'new', 'news', 'newsletter', 'newsletters', 'next', 'nil', 'no-reply',
+        'nobody', 'noc', 'none', 'noreply', 'notification', 'notifications',
+        'ns', 'ns0', 'ns1', 'ns2', 'ns3', 'ns4', 'ns5', 'ns6', 'ns7', 'ns8',
+        'ns9', 'null', 'oauth', 'oauth2', 'offer', 'offers', 'online',
+        'openid', 'order', 'orders', 'overview', 'owner', 'page', 'pages',
+        'partners', 'passwd', 'password', 'pay', 'payment', 'payments',
+        'photo', 'photos', 'pixel', 'plans', 'plugins', 'policies', 'policy',
+        'pop', 'pop3', 'popular', 'portfolio', 'post', 'postfix', 'postmaster',
+        'poweruser', 'preferences', 'premium', 'press', 'previous', 'pricing',
+        'print', 'privacy', 'privacy-policy', 'private', 'prod', 'product',
+        'production', 'profile', 'profiles', 'project', 'projects', 'public',
+        'purchase', 'put', 'quota', 'redirect', 'reduce', 'refund', 'refunds',
+        'register', 'registration', 'remove', 'replies', 'reply', 'report',
+        'request', 'request-password', 'reset', 'reset-password', 'response',
+        'return', 'returns', 'review', 'reviews', 'robots.txt', 'root',
+        'rootuser', 'rsa-sha2-2', 'rsa-sha2-512', 'rss', 'rules', 'sales',
+        'save', 'script', 'sdk', 'search', 'secure', 'security', 'select',
+        'services', 'session', 'sessions', 'settings', 'setup', 'share',
+        'shift', 'shop', 'signin', 'signup', 'site', 'sitemap', 'sites',
+        'smtp', 'sort', 'source', 'sql', 'ssh', 'ssh-rsa', 'ssl', 'ssladmin',
+        'ssladministrator', 'sslwebmaster', 'stage', 'staging', 'stat',
+        'static', 'statistics', 'stats', 'status', 'store', 'style', 'styles',
+        'stylesheet', 'stylesheets', 'subdomain', 'subscribe', 'sudo',
         'super', 'superuser', 'support', 'survey', 'sync', 'sysadmin', 'system',
         'tablet', 'tag', 'tags', 'team', 'telnet', 'terms', 'terms-of-use',
         'test', 'testimonials', 'theme', 'themes', 'today', 'tools', 'topic',
@@ -1381,8 +1479,9 @@ function blacklisted_usernames()
         'undefined', 'unfollow', 'unsubscribe', 'update', 'upgrade', 'usenet',
         'user', 'username', 'users', 'uucp', 'var', 'verify', 'video', 'view',
         'void', 'vote', 'webmail', 'webmaster', 'website', 'widget', 'widgets',
-        'wiki', 'wpad', 'write', 'www', 'www-data', 'www1', 'www2', 'www3',
-        'www4', 'you', 'yourname', 'yourusername', 'zlib', 'tritan', 'ttcms'
+        'wiki', 'wordpress', 'wpad', 'write', 'www', 'www-data', 'www1', 'www2',
+        'www3', 'www4', 'you', 'yourname', 'yourusername', 'zlib', 'tritan',
+        'ttcms'
     ];
 
     return app()->hook->{'apply_filter'}('blacklisted_usernames', $blacklist);
@@ -1406,6 +1505,13 @@ function recently_published_widget()
     }
 }
 
+/**
+ * TriTan CMS feed widget.
+ * 
+ * @file app/functions/user-function.php
+ * 
+ * @since 0.9.8
+ */
 function tritan_cms_feed_widget()
 {
     $cache = new \TriTan\Cache('rss');
@@ -1434,4 +1540,55 @@ function tritan_cms_feed_widget()
         }
     endif;
     echo $cache->getCache();
+}
+
+/**
+ * Resets a user's password.
+ * 
+ * @since 0.9.9
+ * @param int $user_id ID of user who's password is to be reset. Default: 0.
+ * @return int|Exception User id on success or Exception on failure.
+ */
+function reset_password($user_id = 0)
+{
+    $password = ttcms_generate_password();
+    $data = ['user_id' => (int) $user_id, 'user_pass' => (string) $password];
+
+    try {
+        $user = ttcms_update_user($data);
+        return $user;
+    } catch (Exception $ex) {
+        _ttcms_flash()->{'error'}($ex->getMessage());
+    }
+}
+
+/**
+ * Print a dropdown list of users.
+ * 
+ * @file app/functions/user-function.php
+ * 
+ * @since 0.9
+ * @param int $user_id If working with active record, it will be the user's id.
+ * @return array Dropdown list of users.
+ */
+function get_users_reassign($user_id = 0)
+{
+    $tbl_prefix = Config::get('tbl_prefix');
+
+    $users = [];
+    $site_users = app()->db->table('usermeta')
+            ->where('meta_key', 'match', "/$tbl_prefix/")
+            ->get();
+    foreach ($site_users as $site_user) {
+        $users[] = (int) _escape($site_user['user_id']);
+    }
+
+    $list_users = app()->db->table('user')
+            ->where('user_id', 'in', $users)
+            ->where('user_id', 'not in', (int) $user_id)
+            ->get();
+
+    foreach ($list_users as $user) {
+        echo '<option value="' . (int) _escape($user['user_id']) . '">' . get_name((int) _escape($user['user_id'])) . '</option>';
+    }
 }

@@ -2,7 +2,6 @@
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
-use TriTan\Config;
 use TriTan\Exception\Exception;
 use TriTan\Exception\NotFoundException;
 use Cascade\Cascade;
@@ -41,7 +40,13 @@ $app->group('/admin', function() use ($app, $current_user) {
         if ($app->req->isPost()) {
             try {
 
-                func\ttcms_update_user($app->req->post);
+                $user_id = func\ttcms_update_user($app->req->post);
+                /**
+                 * Set user's role.
+                 */
+                $new_user = new TriTan\User((int) $user_id);
+                $new_user->set_role($app->req->post['user_role']);
+                
                 func\clean_user_cache($app->req->post['user_id']);
 
                 func\ttcms_logger_activity_log_write(func\_t('Update Record', 'tritan-cms'), func\_t('Profile', 'tritan-cms'), func\get_name(func\_escape($current_user->user_id)), (string) func\_escape($current_user->user_login));
@@ -125,7 +130,12 @@ $app->group('/admin', function() use ($app, $current_user) {
                 } else {
                     $user_id = func\ttcms_insert_user($object);
                 }
-
+                /**
+                 * Set user's role.
+                 */
+                $new_user = new TriTan\User((int) $user_id);
+                $new_user->set_role($app->req->post['user_role']);
+    
                 if ($app->req->post['sendemail'] == '1') {
                     func\_ttcms_email()->sendNewUserEmail((int) $user_id, $password);
                 }
@@ -165,8 +175,13 @@ $app->group('/admin', function() use ($app, $current_user) {
             $app->hook->{'do_action'}('pre_update_user', (int) $id);
 
             try {
-                $user = array_merge(['user_id' => $id], $app->req->post);
-                func\ttcms_update_user($user);
+                $user_array = array_merge(['user_id' => $id], $app->req->post);
+                $user_id = func\ttcms_update_user($user_array);
+                /**
+                 * Set user's role.
+                 */
+                $user = new TriTan\User((int) $user_id);
+                $user->set_role($app->req->post['user_role']);
                 func\ttcms_logger_activity_log_write('Update Record', 'User', func\get_name((int) $id), (string) func\_escape($current_user->user_login));
                 func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
             } catch (Exception $ex) {
@@ -340,47 +355,22 @@ $app->group('/admin', function() use ($app, $current_user) {
     /**
      * Before route check.
      */
-    $app->before('GET', '/user/(\d+)/d/', function() use($app) {
+    $app->before('GET|POST', '/user/(\d+)/d/', function() use($app) {
         if (!func\current_user_can('delete_users')) {
             func\_ttcms_flash()->{'error'}(func\_t("You don't have permission to delete users.", 'tritan-cms'), $app->req->server['HTTP_REFERER']);
             exit();
         }
     });
 
-    $app->get('/user/(\d+)/d/', function ($id) use($app, $current_user) {
-        if ((int) $id == (int) '1') {
-            func\_ttcms_flash()->{'error'}(func\_t('You are not allowed to delete the super administrator account.', 'tritan-cms'), func\get_base_url() . 'user/');
-            exit();
-        }
+    $app->post('/user/(\d+)/d/', function ($id) use($app, $current_user) {
 
-        $tbl_prefix = Config::get('tbl_prefix');
+        $user = func\ttcms_delete_user($id, $app->req->post['assign_id']);
 
-        $check = $app->db->table('usermeta')
-                ->where('user_id', (int) $id)
-                ->where('meta_key', 'match', "/$tbl_prefix/")
-                ->count();
-
-        if ((int) $check > 0) {
-            $user = $app->db->table('usermeta');
-            $user->begin();
-            try {
-
-                $user->where('user_id', (int) $id)
-                        ->where('meta_key', 'match', "/$tbl_prefix/")
-                        ->delete();
-
-                $user->commit();
-
-                func\ttcms_logger_activity_log_write(func\_t('Delete Record', 'tritan-cms'), func\_t('User', 'tritan-cms'), func\get_name($id), (string) func\_escape($current_user->user_login));
-                func\clean_user_cache($id);
-                func\ttcms_cache_flush_namespace('user_meta');
-                func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
-            } catch (Exception $e) {
-                $user->rollback();
-                func\_ttcms_flash()->{'error'}($e->getMessage(), $app->req->server['HTTP_REFERER']);
-            }
-        } else {
+        if ($user) {
+            func\ttcms_logger_activity_log_write(func\_t('Delete Record', 'tritan-cms'), func\_t('User', 'tritan-cms'), func\get_name($id), (string) func\_escape($current_user->user_login));
             func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
+        } else {
+            func\_ttcms_flash()->{'error'}(func\_ttcms_flash()->notice(409), $app->req->server['HTTP_REFERER']);
         }
     });
 
@@ -417,22 +407,20 @@ $app->group('/admin', function() use ($app, $current_user) {
     });
 
     $app->get('/user/(\d+)/reset-password/', function ($id) use($app) {
-        $password = func\ttcms_generate_password();
-        $data = ['user_id' => $id, 'user_pass' => $password];
-
-        try {
-            $user = func\ttcms_update_user($data);
-
-            if ($user > 0) {
-                func\_ttcms_flash()->{'success'}(sprintf(func\_t('Password successfully updated for <strong>%s</strong>.', 'tritan-cms'), func\get_name($id)));
-            } else {
-                func\_ttcms_flash()->{'error'}(func\_t('Could not update password.', 'tritan-cms'));
-            }
-        } catch (Exception $ex) {
-            func\_ttcms_flash()->{'error'}($ex->getMessage());
+        $user = new \TriTan\User($id);
+        if (!$user->exists()) {
+            func\_ttcms_flash()->{'error'}(sprintf(func\_t('Requested user does not exist.'), 'tritan-cms'), $app->req->server['HTTP_REFERER']);
         }
+        
+        $user_id = func\reset_password($id);
 
-        func\ttcms_redirect($app->req->server['HTTP_REFERER']);
+        if (func\is_ttcms_exception($user_id)) {
+            func\_ttcms_flash()->{'error'}(sprintf('Update error[%s]: %s', $user_id->getCode(), $user_id->getMessage()), $app->req->server['HTTP_REFERER']);
+        } elseif ($user_id > 0) {
+            func\_ttcms_flash()->{'success'}(sprintf(func\_t('Password successfully updated for <strong>%s</strong>.', 'tritan-cms'), func\get_name($id)), $app->req->server['HTTP_REFERER']);
+        } else {
+            func\_ttcms_flash()->{'error'}(sprintf(func\_t('Could not update password for <strong>%s</strong>.'), 'tritan-cms', func\get_name($id)), $app->req->server['HTTP_REFERER']);
+        }
     });
 
     /**
