@@ -206,6 +206,7 @@ $app->hook->{'do_action'}('admin_init');
                                 <?php $app->hook->{'do_action'}('plugins_submenu'); ?>
                             </ul>
                         </li>
+                        <?php if(func\current_user_can('manage_users')) : ?>
                         <li class="treeview<?= (Config::get('screen_parent') === 'users' ? ' active' : ''); ?>">
                             <a href="#">
                                 <i class="fa fa-user"></i>
@@ -222,6 +223,13 @@ $app->hook->{'do_action'}('admin_init');
                                 <?php $app->hook->{'do_action'}('users_submenu'); ?>
                             </ul>
                         </li>
+                        <?php else : ?>
+                        <li>
+                            <a href="<?= func\get_base_url(); ?>admin/user/profile/">
+                                <i class="fa fa-id-card"></i> <span><?= func\_t('Your Profile', 'tritan-cms'); ?></span>
+                            </a>
+                        </li>
+                        <?php endif; ?>
                         <li<?= func\ae('manage_roles'); ?> class="treeview<?= (Config::get('screen_parent') === 'roles') ? ' active' : ''; ?>">
                             <a href="#">
                                 <i class="fa fa-key"></i>
