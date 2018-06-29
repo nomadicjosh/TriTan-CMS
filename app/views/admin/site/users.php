@@ -59,7 +59,37 @@ Config::set('screen_child', 'sites-user');
                                     <?php if ((int) $user['user_id'] !== 1) : ?>
                                         <a<?= func\ae('delete_users'); ?> href="#" data-toggle="modal" data-target="#delete-<?= (int) $user['user_id']; ?>"><button type="button" class="btn bg-red"><i class="fa fa-trash-o"></i></button></a>
                                     <?php endif; ?>
-
+                                    <?php if(func\does_user_have_sites($user['user_id'])) : ?>
+                                    <div class="modal" id="delete-<?= $user['user_id']; ?>">
+                                        <form method="post" action="<?=func\get_base_url();?>admin/site/users/<?= (int) $user['user_id']; ?>/d/">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span></button>
+                                                    <h4 class="modal-title"><?= func\get_name($user['user_id']); ?></h4>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p><?= func\_t("Are you sure you want to delete this site and all it's content", 'tritan-cms'); ?></p>
+                                                    <div class="alert alert-info"><?=func\_t("Would you like to assign this user's site(s) to a different user? Choose below.");?></div>
+                                                    <select class="form-control select2" name="assign_id" style="width: 100%;">
+                                                        <option>&nbsp;</option>
+                                                        <?php func\get_users_reassign((int) $user['user_id']); ?>
+                                                    </select>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <input type="hidden" name="role" value="admin" />
+                                                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><?= func\_t('Close', 'tritan-cms'); ?></button>
+                                                    <button type="submit" class="btn btn-primary"><?= func\_t('Confirm', 'tritan-cms'); ?></button>
+                                                </div>
+                                            </div>
+                                            <!-- /.modal-content -->
+                                        </div>
+                                        <!-- /.modal-dialog -->
+                                    </form>
+                                    </div>
+                                    <!-- /.modal -->
+                                    <?php else: ?>
                                     <div class="modal" id="delete-<?= (int) $user['user_id']; ?>">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
@@ -81,6 +111,7 @@ Config::set('screen_child', 'sites-user');
                                         <!-- /.modal-dialog -->
                                     </div>
                                     <!-- /.modal -->
+                                    <?php endif; ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

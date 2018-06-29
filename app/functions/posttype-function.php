@@ -521,8 +521,6 @@ function ttcms_delete_posttype($posttype_id = 0)
     app()->hook->{'do_action'}('deleted_posttype', (int) $posttype_id);
 
     clean_posttype_cache($posttype);
-    ttcms_cache_delete('posttype', 'posttype');
-    ttcms_cache_delete('post', 'post');
 
     /**
      * Action hook fires after a posttype is deleted.
@@ -554,6 +552,7 @@ function clean_posttype_cache($posttype)
 
     ttcms_cache_delete((int) _escape($_posttype['posttype_id']), 'posttype');
     ttcms_cache_delete('posttype', 'posttype');
+    ttcms_cache_delete('post', 'post');
 
     /**
      * Fires immediately after the given posttype's cache is cleaned.

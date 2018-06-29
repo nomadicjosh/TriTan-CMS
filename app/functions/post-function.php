@@ -1480,7 +1480,7 @@ function ttcms_insert_post($postdata, $exception = false)
         app()->hook->{'do_action'}('pre_post_insert', (int) $post_id, $data);
         if (false === ttcms_post_insert_document($data)) {
             if ($exception) {
-                throw new Exception(_t('Could not insert post into the post document.'), 'document_update_error');
+                throw new Exception(_t('Could not insert post into the post document.'), 'post_document_insert_error');
             } else {
                 return null;
             }

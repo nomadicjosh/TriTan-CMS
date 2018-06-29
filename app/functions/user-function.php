@@ -909,9 +909,9 @@ function ttcms_insert_user($userdata)
 
     $user_addedby = (int) get_current_user_id() <= (int) 0 ? (int) 1 : (int) get_current_user_id();
 
-    $user_registered = (string) \Jenssegers\Date\Date::now();
+    $user_registered = (string) format_date();
 
-    $user_modified = (string) \Jenssegers\Date\Date::now();
+    $user_modified = (string) format_date();
 
     $compacted = compact('user_login', 'user_fname', 'user_lname', 'user_pass', 'user_email', 'user_url');
     $data = ttcms_unslash($compacted);
@@ -1010,8 +1010,7 @@ function ttcms_insert_user($userdata)
         update_user_option($user_id, $key, if_null($value));
     }
 
-    ttcms_cache_delete($user_id, 'users');
-    ttcms_cache_delete($user_login, 'userlogins');
+    clean_user_cache($user);
 
     if ($update) {
         /**
@@ -1153,8 +1152,8 @@ function ttcms_delete_user($user_id, $assign_id = null)
         exit();
     }
 
-    $_user_id = (int) $user_id;
-    $user = new \TriTan\User($_user_id);
+    $user_id = (int) $user_id;
+    $user = new \TriTan\User($user_id);
 
     if (!$user->exists()) {
         return false;
@@ -1167,59 +1166,41 @@ function ttcms_delete_user($user_id, $assign_id = null)
          * Posts will be reassigned before the user is deleted.
          * 
          * @since 0.9.9
+         * @param int $user_id     ID of user to be deleted.
          * @param int $assign_id    ID of user to reassign posts to.
          *                          Default: NULL.
-         * @param int $_user_id     ID of user to be deleted.
-         * @param int $site_id      The current site's id.
          */
-        $assign_id = app()->hook->{'apply_filter'}('reassign_posts', (int) $assign_id, (int) $_user_id);
+        $user_id = app()->hook->{'apply_filter'}('reassign_posts', (int) $user_id, (int) $assign_id);
     }
 
     /**
      * Action hook fires immediately before a user is deleted from the usermeta document.
      *
      * @since 0.9.9
-     * @param int       $_user_id   ID of the user to delete.
+     * @param int       $user_id   ID of the user to delete.
      * @param int|null  $reassign   ID of the user to reassign posts to.
      *                              Default: NULL.
      */
-    app()->hook->{'do_action'}('delete_user', (int) $_user_id, (int) $assign_id);
+    app()->hook->{'do_action'}('delete_user', (int) $user_id, (int) $assign_id);
 
-    $tbl_prefix = Config::get('tbl_prefix');
-
-    $check = app()->db->table('usermeta')
-            ->where('user_id', (int) $_user_id)
-            ->where('meta_key', 'match', "/$tbl_prefix/")
-            ->count();
-
-    if ((int) $check > 0) {
-        $umeta = app()->db->table('usermeta');
-        $umeta->begin();
-        try {
-
-            $umeta->where('user_id', (int) $_user_id)
-                    ->where('meta_key', 'match', "/$tbl_prefix/")
-                    ->delete();
-
-            $umeta->commit();
-        } catch (Exception $ex) {
-            $umeta->rollback();
-            Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: Error: %s', $ex->getCode(), $ex->getMessage()));
+    $meta = app()->db->table('usermeta')->where('user_id', $user_id)->get(['meta_id']);
+    if ($meta) {
+        foreach ($meta as $mid) {
+            delete_metadata_by_mid('user', $mid['meta_id']);
         }
     }
 
-    clean_user_cache($_user_id);
-    ttcms_cache_flush_namespace('user_meta');
+    clean_user_cache($user_id);
 
     /**
      * Action hook fires immediately after a user has been deleted from the usermeta document.
      *
      * @since 0.9.9
-     * @param int $_user_id     ID of the user who was deleted.
+     * @param int $user_id      ID of the user who was deleted.
      * @param int $assign_id    ID of the user to whom posts were assigned.
      *                          Default: NULL.
      */
-    app()->hook->{'do_action'}('deleted_user', (int) $_user_id, (int) $assign_id);
+    app()->hook->{'do_action'}('deleted_user', (int) $user_id, (int) $assign_id);
 
     return true;
 }
@@ -1377,6 +1358,7 @@ function clean_user_cache($user)
     ttcms_cache_delete((int) _escape($_user->user_id), 'users');
     ttcms_cache_delete(_escape($_user->user_login), 'userlogins');
     ttcms_cache_delete(_escape($_user->user_email), 'useremail');
+    ttcms_cache_delete((int) _escape($_user->user_id), 'user_meta');
 
     /**
      * Fires immediately after the given user's cache is cleaned.
@@ -1591,4 +1573,30 @@ function get_users_reassign($user_id = 0)
     foreach ($list_users as $user) {
         echo '<option value="' . (int) _escape($user['user_id']) . '">' . get_name((int) _escape($user['user_id'])) . '</option>';
     }
+}
+
+/**
+ * Retrieves a list of users by site_id
+ * 
+ * @since 0.9.9
+ * @param int $site_id Site id. Default: 0.
+ * @return object User object.
+ */
+function get_users_by_siteid($site_id = 0)
+{
+    $tbl_prefix = "ttcms_{$site_id}";
+
+    $users = [];
+    $site_users = app()->db->table('usermeta')
+            ->where('meta_key', 'match', "/$tbl_prefix/")
+            ->get();
+    foreach ($site_users as $site_user) {
+        $users[] = (int) _escape($site_user['user_id']);
+    }
+
+    $list_users = app()->db->table('user')
+            ->where('user_id', 'in', $users)
+            ->get();
+
+    return $list_users;
 }

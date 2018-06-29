@@ -8,6 +8,15 @@ TriTan\Config::set('screen_parent', 'sites');
 TriTan\Config::set('screen_child', 'sites');
 ?>
 
+<script src="static/assets/js/url_slug.js" type="text/javascript"></script>
+<script>
+$(function(){
+    $('#site_name').keyup(function() {
+        $('#site_slug').val(url_slug($(this).val()));
+    });
+});
+</script>
+
 <!-- form start -->
 <form name="form" method="post" data-toggle="validator" action="<?= func\get_base_url(); ?>admin/site/" autocomplete="off">
     <!-- Content Wrapper. Contains page content -->
@@ -19,6 +28,7 @@ TriTan\Config::set('screen_child', 'sites');
                 <h3 class="box-title"><?= func\_t('Sites', 'tritan-cms'); ?></h3>
 
                 <div class="pull-right">
+                    <input type="hidden" id="site_slug" name="site_slug" value="<?= __return_post('site_slug'); ?>" />
                     <button type="submit" class="btn btn-success"><i class="fa fa-save"></i> <?= func\_t('Save', 'tritan-cms'); ?></button>
                 </div>
             </div>
@@ -45,7 +55,7 @@ TriTan\Config::set('screen_child', 'sites');
                             </div>
                             <div class="form-group">
                                 <label><?= func\_t('Site Name', 'tritan-cms'); ?></label>
-                                <input type="text" class="form-control" name="site_name" value="<?= __return_post('site_name'); ?>" required/>
+                                <input type="text" id="site_name" class="form-control" name="site_name" value="<?= __return_post('site_name'); ?>" required/>
                             </div>
                             <div class="form-group">
                                 <label><?= func\_t('Path', 'tritan-cms'); ?> <a href="#path" data-toggle="modal"><span class="badge"><i class="fa fa-question"></i></span></a></label>

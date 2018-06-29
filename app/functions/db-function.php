@@ -153,10 +153,17 @@ function ttcms_slugify($title, $table = null)
     $field = $table . '_slug';
 
     $titles = [];
+
     /**
-     * Query post/page table.
+     * Query post/posttype/site document.
      */
-    $results = app()->db->table(Config::get('tbl_prefix') . $table)
+    if ($table === 'site') {
+        $table = $table;
+    } else {
+        $table = Config::get('tbl_prefix') . $table;
+    }
+
+    $results = app()->db->table($table)
             ->where("$field", 'match', "/$slug(-[0-9]+)?$/");
     if ($results->count() > 0) {
         foreach ($results->get() as $item) {
@@ -533,7 +540,7 @@ function update_post_relative_url_posttype($id, $old_slug, $new_slug)
 }
 
 /**
- * Updates the post.
+ * Insert new post into the post document.
  * 
  * To be only used by `ttcms_insert_post`.
  * 
@@ -684,6 +691,28 @@ function ttcms_post_slug_exist($post_id, $slug, $post_type)
 }
 
 /**
+ * Checks if a slug exists among records from the site document.
+ * 
+ * @file app/functions/db-function.php
+ * 
+ * @since 0.9.9
+ * @param int       $site_id    Site id to check against.
+ * @param string    $slug       Slug to search for.
+ * @return boolean
+ */
+function ttcms_site_slug_exist($site_id, $slug)
+{
+    $exist = app()->db->table('site')
+            ->where('site_slug', $slug)
+            ->where('site_id', 'not in', $site_id)
+            ->count();
+    if ($exist > 0) {
+        return true;
+    }
+    return false;
+}
+
+/**
  * Checks if a post has any children.
  * 
  * @file app/functions/db-function.php
@@ -708,10 +737,10 @@ function is_post_parent($post_id)
  * @file app/functions/db-function.php
  * 
  * @since 0.9.9
- * @param type  $assign_id  ID of user to whom posts will be assigned.
  * @param int   $user_id    ID of user being removed.
+ * @param type  $assign_id  ID of user to whom posts will be assigned.
  */
-function reassign_posts($assign_id, $user_id)
+function reassign_posts($user_id, $assign_id)
 {
     $reassign = app()->db->table(Config::get('tbl_prefix') . 'post');
     $reassign->begin();
@@ -723,6 +752,138 @@ function reassign_posts($assign_id, $user_id)
         $reassign->commit();
     } catch (Exception $ex) {
         $reassign->rollback();
-        _ttcms_flash()->error(sprintf('Reassign post error: %s', $ex->getMessage()));
+        _ttcms_flash()->error(sprintf(_t('Reassign post error: %s'), $ex->getMessage()));
+    }
+}
+
+/**
+ * Reassigns sites to a different user.
+ * 
+ * @file app/functions/db-function.php
+ * 
+ * @since 0.9.9
+ * @param int   $user_id    ID of user being removed.
+ * @param array $params     User parameters (assign_id and role).
+ */
+function reassign_sites($user_id, $params = [])
+{
+    $reassign = app()->db->table('site');
+    $reassign->begin();
+    try {
+        $reassign->where('site_owner', (int) $user_id)
+                ->update([
+                    'site_owner' => (int) $params['assign_id']
+        ]);
+        $reassign->commit();
+    } catch (Exception $ex) {
+        $reassign->rollback();
+        _ttcms_flash()->error(sprintf(_t('Reassign site error: %s'), $ex->getMessage()));
+    }
+}
+
+/**
+ * Checks if the requested user is an admin of any sites or has any admin roles.
+ * 
+ * @file app/functions/db-function.php
+ * 
+ * @since 0.9.9
+ * @param int $user_id ID of user to check.
+ * @return bool Returns true if user has sites and false otherwise.
+ */
+function does_user_have_sites($user_id = 0)
+{
+    $owner = app()->db->table('site')
+            ->where('site_owner', $user_id)
+            ->count();
+    if ($owner > 0) {
+        return true;
+    }
+
+    $option = get_user_option('role', $user_id);
+    if ((int) $option == (int) 1 || (int) $option == (int) 2) {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Get an array of sites by user.
+ * 
+ * @since 0.9.9
+ * @param int $user_id The user's id.
+ * @return array
+ */
+function get_users_sites($user_id)
+{
+    $sites = app()->db->table('site')
+            ->where('site_owner', (int) $user_id)
+            ->get();
+    return $sites;
+}
+
+/**
+ * Insert new site into site document.
+ * 
+ * To be only used by `ttcms_insert_site`.
+ * 
+ * @file app/functions/db-function.php
+ * 
+ * @access private
+ * @since 0.9.9
+ * @param array $data   Array of site data.
+ */
+function ttcms_site_insert_document($data)
+{
+    $insert = app()->db->table('site');
+    $insert->begin();
+    try {
+        $insert->insert([
+            'site_id' => (int) $data['site_id'],
+            'site_name' => (string) $data['site_name'],
+            'site_slug' => (string) $data['site_slug'],
+            'site_domain' => (string) $data['site_domain'],
+            'site_path' => (string) $data['site_path'],
+            'site_owner' => (int) $data['site_owner'],
+            'site_status' => (string) $data['site_status'],
+            'site_registered' => (string) $data['site_registered']
+        ]);
+        $insert->commit();
+    } catch (Exception $ex) {
+        $insert->rollback();
+        Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
+        return false;
+    }
+}
+
+/**
+ * Updates the site.
+ * 
+ * To be only used by `ttcms_update_site`.
+ * 
+ * @file app/functions/db-function.php
+ * 
+ * @access private
+ * @since 0.9.9
+ * @param array $data   Array of site data.
+ */
+function ttcms_site_update_document($data)
+{
+    $update = app()->db->table('site');
+    $update->begin();
+    try {
+        $update->where('site_id', (int) $data['site_id'])->update([
+            'site_name' => (string) $data['site_name'],
+            'site_slug' => (string) $data['site_slug'],
+            'site_domain' => (string) $data['site_domain'],
+            'site_path' => (string) $data['site_path'],
+            'site_owner' => (int) $data['site_owner'],
+            'site_status' => (string) $data['site_status'],
+            'site_modified' => (string) format_date()
+        ]);
+        $update->commit();
+    } catch (Exception $ex) {
+        $update->rollback();
+        Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
+        return false;
     }
 }

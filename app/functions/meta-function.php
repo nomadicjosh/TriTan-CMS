@@ -300,7 +300,7 @@ function add_metadata($meta_type, $array_id, $meta_key, $meta_value, $unique = f
         $count = app()->db->table($table)
                 ->where('meta_key', $meta_key)
                 ->where($column, $array_id)
-                ->all();
+                ->get();
         if (count($count)) {
             return false;
         }
@@ -327,7 +327,7 @@ function add_metadata($meta_type, $array_id, $meta_key, $meta_value, $unique = f
     try {
         $result->insert([
             'meta_id' => auto_increment($table, 'meta_id'),
-            $column => if_null($array_id),
+            $column => (int) $array_id,
             'meta_key' => if_null($meta_key),
             'meta_value' => if_null($meta_value)
         ]);
@@ -441,9 +441,20 @@ function delete_metadata($meta_type, $array_id, $meta_key, $meta_value = '', $de
         }
         $meta_ids = app()->db->table($table)
                 ->where('meta_key', $meta_key)
+                ->where($type_column, $array_id)
+                ->get(['meta_id']);
+    } elseif ($delete_all && '' !== $meta_value && null !== $meta_value && false !== $meta_value) {
+        $meta_ids = app()->db->table($table)
+                ->where('meta_key', $meta_key)
                 ->where('meta_value', $meta_value)
                 ->get(['meta_id']);
+    } else {
+        $meta_ids = app()->db->table($table)
+                ->where('meta_key', $meta_key)
+                ->get(['meta_id']);
     }
+
+    $meta_ids = flatten_array($meta_ids);
 
     if (!count($meta_ids)) {
         return false;

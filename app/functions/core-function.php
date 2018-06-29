@@ -2326,3 +2326,15 @@ function sanitize_url($url, $encode = false)
      */
     return app()->hook->{'apply_filter'}('sanitize_url', $clean_url, $esc_url, $raw_url, $encode);
 }
+
+function flatten_array($array) {
+	$flat_array = [];
+	foreach($array as $element) {
+		if (is_array($element)) {
+			$flat_array = array_merge($flat_array, flatten_array($element));
+		} else {
+			$flat_array[] = $element;
+		}
+	}
+	return $flat_array;
+}

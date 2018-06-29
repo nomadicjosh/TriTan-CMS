@@ -1387,19 +1387,30 @@ function eae_encode_str($string)
  * @file app/functions/hook-function.php
  * 
  * @since 0.9
- * @param int $_site_id Site ID.
+ * @param int $site_id Site ID.
+ * @param object $site Site object.
+ * @param bool $update Whether the site is being created or updated.
  * @return bool Returns true on success and false otherwise.
  */
-function create_site_directories($_site_id)
+function create_site_directories($site_id, $site, $update)
 {
+    if($update) {
+        return false;
+    }
+    
+    $site = new \TriTan\Site($site);
+    if((int) $site->site_id <= (int) 0) {
+        return false;
+    }
+    
     try {
-        _mkdir(Config::get('sites_dir') . (int) $_site_id . DS . 'dropins' . DS);
-        _mkdir(Config::get('sites_dir') . (int) $_site_id . DS . 'files' . DS . 'cache' . DS);
-        _mkdir(Config::get('sites_dir') . (int) $_site_id . DS . 'files' . DS . 'logs' . DS);
-        _mkdir(Config::get('sites_dir') . (int) $_site_id . DS . 'themes' . DS);
-        _mkdir(Config::get('sites_dir') . (int) $_site_id . DS . 'uploads' . DS);
-        _mkdir(Config::get('sites_dir') . (int) $_site_id . DS . 'uploads' . DS . '__optimized__' . DS);
-    } catch (Exception $ex) {
+        _mkdir(Config::get('sites_dir') . (int) $site_id . DS . 'dropins' . DS);
+        _mkdir(Config::get('sites_dir') . (int) $site_id . DS . 'files' . DS . 'cache' . DS);
+        _mkdir(Config::get('sites_dir') . (int) $site_id . DS . 'files' . DS . 'logs' . DS);
+        _mkdir(Config::get('sites_dir') . (int) $site_id . DS . 'themes' . DS);
+        _mkdir(Config::get('sites_dir') . (int) $site_id . DS . 'uploads' . DS);
+        _mkdir(Config::get('sites_dir') . (int) $site_id . DS . 'uploads' . DS . '__optimized__' . DS);
+    } catch (\TriTan\Exception\Exception $ex) {
         Cascade::getLogger('error')->error(sprintf('IOSTATE[%s]: Forbidden: %s', $ex->getCode(), $ex->getMessage()));
     }
 
@@ -1415,9 +1426,17 @@ function create_site_directories($_site_id)
  * @param int $_site_id Site ID.
  * @return bool Returns true on success and false otherwise.
  */
-function delete_site_directories($_site_id)
+function delete_site_directories($site_id, $old_site)
 {
-    _rmdir(Config::get('sites_dir') . (int) $_site_id . DS);
+    if((int) $site_id <= (int) 0) {
+        return false;
+    }
+    
+    if((int) $site_id !== (int) $old_site['site_id']) {
+        return false;
+    }
+    
+    _rmdir(Config::get('sites_dir') . (int) $site_id . DS);
 }
 
 /**
@@ -1755,11 +1774,11 @@ app()->hook->{'add_action'}('activated_plugin', 'TriTan\\Functions\\ttcms_plugin
 app()->hook->{'add_action'}('deactivated_plugin', 'TriTan\\Functions\\ttcms_plugin_deactivate_message', 5);
 app()->hook->{'add_action'}('login_form_top', 'TriTan\\Functions\\ttcms_login_form_show_message', 5);
 app()->hook->{'add_action'}('admin_notices', 'TriTan\\Functions\\ttcms_dev_mode', 5);
-app()->hook->{'add_action'}('site_register', 'TriTan\\Functions\\new_site_data', 5, 2);
-app()->hook->{'add_action'}('site_register', 'TriTan\\Functions\\create_site_directories', 5);
-app()->hook->{'add_action'}('delete_site', 'TriTan\\Functions\\delete_site_user_meta', 5);
-app()->hook->{'add_action'}('delete_site', 'TriTan\\Functions\\delete_site_tables', 5);
-app()->hook->{'add_action'}('delete_site', 'TriTan\\Functions\\delete_site_directories', 5);
+app()->hook->{'add_action'}('save_site', 'TriTan\\Functions\\new_site_data', 5, 3);
+app()->hook->{'add_action'}('save_site', 'TriTan\\Functions\\create_site_directories', 5, 3);
+app()->hook->{'add_action'}('deleted_site', 'TriTan\\Functions\\delete_site_user_meta', 5, 2);
+app()->hook->{'add_action'}('deleted_site', 'TriTan\\Functions\\delete_site_tables', 5, 2);
+app()->hook->{'add_action'}('deleted_site', 'TriTan\\Functions\\delete_site_directories', 5, 2);
 app()->hook->{'add_action'}('init', 'TriTan\\Functions\\update_main_site', 5);
 app()->hook->{'add_action'}('reset_password_route', 'TriTan\\Functions\\send_reset_password_email', 5, 2);
 app()->hook->{'add_action'}('password_change_email', 'TriTan\\Functions\\send_password_change_email', 5, 3);
@@ -1779,3 +1798,4 @@ app()->hook->{'add_filter'}('ttcms_auth_cookie', 'TriTan\\Functions\\ttcms_set_a
 app()->hook->{'add_filter'}('pre_user_email', '_trim', 5);
 app()->hook->{'add_filter'}('pre_user_url', 'TriTan\\Functions\\ttcms_strip_tags', 5);
 app()->hook->{'add_filter'}('reassign_posts', 'TriTan\\Functions\\reassign_posts', 5, 2);
+app()->hook->{'add_filter'}('reassign_sites', 'TriTan\\Functions\\reassign_sites', 5, 2);

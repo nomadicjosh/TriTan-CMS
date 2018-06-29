@@ -9,6 +9,15 @@ TriTan\Config::set('screen_child', 'sites');
 
 ?>
 
+<script src="static/assets/js/url_slug.js" type="text/javascript"></script>
+<script>
+$(function(){
+    $('#site_name').keyup(function() {
+        $('#site_slug').val(url_slug($(this).val()));
+    });
+});
+</script>
+
 <!-- form start -->
 <form method="post" action="<?= func\get_base_url(); ?>admin/site/<?= $this->site['site_id']; ?>/" data-toggle="validator" autocomplete="off">
     <!-- Content Wrapper. Contains page content -->
@@ -20,6 +29,7 @@ TriTan\Config::set('screen_child', 'sites');
                 <h3 class="box-title"><?= func\_t('Update Site', 'tritan-cms'); ?></h3>
 
                 <div class="pull-right">
+                    <input type="hidden" id="site_slug" name="site_slug" value="<?= $this->site['site_slug']; ?>" />
                     <button type="submit" class="btn btn-success"><i class="fa fa-pencil"></i> <?= func\_t('Update', 'tritan-cms'); ?></button>
                     <button type="button" class="btn btn-primary" onclick="window.location = '<?= func\get_base_url(); ?>admin/site/'"><i class="fa fa-ban"></i> <?= func\_t('Cancel', 'tritan-cms'); ?></button>
                 </div>
@@ -43,7 +53,7 @@ TriTan\Config::set('screen_child', 'sites');
                             
                             <div class="form-group">
                                 <label><font color="red">*</font> <?= func\_t('Site Name', 'tritan-cms'); ?></label>
-                                <input type="text" class="form-control" name="site_name" value="<?= $this->site['site_name']; ?>" required/>
+                                <input type="text" id="site_name" class="form-control" name="site_name" value="<?= $this->site['site_name']; ?>" required/>
                             </div>
 
                             <div class="form-group">

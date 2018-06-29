@@ -36,6 +36,14 @@ final class Site
     public $site_name;
 
     /**
+     * Slug of site.
+     *
+     * @since 0.9.9
+     * @var string
+     */
+    public $site_slug;
+
+    /**
      * Domain of site.
      *
      * @since 0.9
@@ -153,11 +161,18 @@ final class Site
                 return (int) $this->site_id;
             case 'site_name':
                 return $this->site_name;
+            case 'site_slug':
+                return $this->site_slug;
             case 'site_domain':
                 return $this->site_domain;
             case 'site_path':
                 return $this->site_path;
             case 'site_status':
+                return $this->site_status;
+            case 'site_registered':
+                return $this->site_registered;
+            case 'site_owner':
+                return $this->site_owner;
             default:
                 $details = $this->get_details();
                 if (isset($details->$key)) {
@@ -185,11 +200,18 @@ final class Site
                 return (int) $this->site_id;
             case 'site_name':
                 return $this->site_name;
+            case 'site_slug':
+                return $this->site_slug;
             case 'site_domain':
                 return $this->site_domain;
             case 'site_path':
                 return $this->site_path;
             case 'site_status':
+                return $this->site_status;
+            case 'site_registered':
+                return $this->site_registered;
+            case 'site_owner':
+                return $this->site_owner;
             default:
                 $details = $this->get_details();
                 if (isset($details->$key)) {
@@ -223,30 +245,29 @@ final class Site
     /**
      * Retrieves the details for this site.
      *
-     * This method is used internally to lazy-load the extended properties of a site.
-     *
      * @since 0.9
      * @see Site::__get()
-     * @return stdClass A raw site object with all details included.
+     * @return object Site details.
      */
     private function get_details()
     {
-        $details = func\ttcms_cache_get($this->site_id, 'site-details');
+        $details = func\ttcms_cache_get($this->site_id, 'site_details');
 
         if (false === $details) {
 
+            $details = new \stdClass();
             foreach (get_object_vars($this) as $key => $value) {
                 $details->$key = $value;
             }
 
-            func\ttcms_cache_set($this->site_id, $details, 'site-details');
+            func\ttcms_cache_set($this->site_id, $details, 'site_details');
         }
 
         /**
-         * Filters a site's extended properties.
+         * Filters a site's details.
          *
          * @since 0.9
-         * @param array $details The site details.
+         * @param object $details The site details.
          */
         $details = app()->hook->{'apply_filter'}('site_details', $details);
 
