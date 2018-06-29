@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Command;
+namespace TriTan\Command;
 
 use Nette\Security\Passwords;
 use Symfony\Component\Console\Command\Command;

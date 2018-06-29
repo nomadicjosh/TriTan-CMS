@@ -6,10 +6,10 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $application = new Symfony\Component\Console\Application;
 
 // Register all Commands
-$application->add(new \App\Command\HashPasswordCommand);
-$application->add(new \App\Command\SystemCommand);
-$application->add(new \App\Command\CheckUpdateCommand);
-$application->add(new \App\Command\UpdateCommand);
+$application->add(new \TriTan\Command\HashPasswordCommand);
+$application->add(new \TriTan\Command\SystemCommand);
+$application->add(new \TriTan\Command\CheckUpdateCommand);
+$application->add(new \TriTan\Command\UpdateCommand);
 
 // Run it
 $application->run();
