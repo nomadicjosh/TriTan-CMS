@@ -161,7 +161,7 @@ $app->hook->{'do_action'}('dropins_loaded');
 /**
  * Autoload theme function file if it exist.
  */
-if (file_exists(Config::get('theme_path') . 'functions.php')) {
+if (\TriTan\Functions\ttcms_file_exists(Config::get('theme_path') . 'functions.php', false)) {
     include(Config::get('theme_path') . 'functions.php');
 }
 
