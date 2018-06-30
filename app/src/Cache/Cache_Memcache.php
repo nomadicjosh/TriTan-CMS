@@ -5,7 +5,7 @@ namespace TriTan\Cache;
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use TriTan\Exception\Exception;
-use TriTan\Functions as func;
+use TriTan\Functions\Core;
 
 /**
  * TriTan CMS \Memcache|\Memcached Class.
@@ -66,11 +66,11 @@ class Cache_Memcache extends \TriTan\Cache\Abstract_Cache
         $ext = $this->useMemcached ? 'memcached' : 'memcache';
 
         if ($ext == 'memcached' && !class_exists('memcached')) {
-            throw new Exception(sprintf(_t('Memcached requires PHP <strong>%s</strong> extension to be loaded.'), $ext), 'php_memcache_extension');
+            throw new Exception(sprintf(Core\_t('Memcached requires PHP <strong>%s</strong> extension to be loaded.'), $ext), 'php_memcache_extension');
         }
 
         if ($ext == 'memcache' && !function_exists('memcache_connect')) {
-            throw new Exception(sprintf(_t('Memcached requires PHP <strong>%s</strong> extension to be loaded.'), $ext), 'php_memcache_extension');
+            throw new Exception(sprintf(Core\_t('Memcached requires PHP <strong>%s</strong> extension to be loaded.'), $ext), 'php_memcache_extension');
         }
 
         if ($ext == 'memcache') {
@@ -291,11 +291,11 @@ class Cache_Memcache extends \TriTan\Cache\Abstract_Cache
         if ($this->useMemcached == false) {
             $stats = $this->connection->getStats();
             echo "<p>";
-            echo "<strong>" . func\_t('Cache Hits:', 'tritan-cms') . "</strong> " . $stats['get_hits'] . "<br />";
-            echo "<strong>" . func\_t('Cache Misses:', 'tritan-cms') . "</strong> " . $stats['get_misses'] . "<br />";
-            echo "<strong>" . func\_t('Uptime:', 'tritan-cms') . "</strong> " . $stats['uptime'] . "<br />";
-            echo "<strong>" . func\_t('Memory Usage:', 'tritan-cms') . "</strong> " . $stats['bytes'] . "<br />";
-            echo "<strong>" . func\_t('Memory Available:', 'tritan-cms') . "</strong> " . $stats['limit_maxbytes'] . "<br />";
+            echo "<strong>" . Core\_t('Cache Hits:', 'tritan-cms') . "</strong> " . $stats['get_hits'] . "<br />";
+            echo "<strong>" . Core\_t('Cache Misses:', 'tritan-cms') . "</strong> " . $stats['get_misses'] . "<br />";
+            echo "<strong>" . Core\_t('Uptime:', 'tritan-cms') . "</strong> " . $stats['uptime'] . "<br />";
+            echo "<strong>" . Core\_t('Memory Usage:', 'tritan-cms') . "</strong> " . $stats['bytes'] . "<br />";
+            echo "<strong>" . Core\_t('Memory Available:', 'tritan-cms') . "</strong> " . $stats['limit_maxbytes'] . "<br />";
             echo "</p>";
         }
 
@@ -305,11 +305,11 @@ class Cache_Memcache extends \TriTan\Cache\Abstract_Cache
             $key = $servers[0]['host'] . ':' . $servers[0]['port'];
             $stats = $stats[$key];
             echo "<p>";
-            echo "<strong>" . func\_t('Cache Hits:', 'tritan-cms') . "</strong> " . $stats['get_hits'] . "<br />";
-            echo "<strong>" . func\_t('Cache Misses:', 'tritan-cms') . "</strong> " . $stats['get_misses'] . "<br />";
-            echo "<strong>" . func\_t('Uptime:', 'tritan-cms') . "</strong> " . $stats['uptime'] . "<br />";
-            echo "<strong>" . func\_t('Memory Usage:', 'tritan-cms') . "</strong> " . $stats['bytes'] . "<br />";
-            echo "<strong>" . func\_t('Memory Available:', 'tritan-cms') . "</strong> " . $stats['limit_maxbytes'] . "<br />";
+            echo "<strong>" . Core\_t('Cache Hits:', 'tritan-cms') . "</strong> " . $stats['get_hits'] . "<br />";
+            echo "<strong>" . Core\_t('Cache Misses:', 'tritan-cms') . "</strong> " . $stats['get_misses'] . "<br />";
+            echo "<strong>" . Core\_t('Uptime:', 'tritan-cms') . "</strong> " . $stats['uptime'] . "<br />";
+            echo "<strong>" . Core\_t('Memory Usage:', 'tritan-cms') . "</strong> " . $stats['bytes'] . "<br />";
+            echo "<strong>" . Core\_t('Memory Available:', 'tritan-cms') . "</strong> " . $stats['limit_maxbytes'] . "<br />";
             echo "</p>";
         }
     }

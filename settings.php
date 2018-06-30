@@ -82,7 +82,7 @@ $app->inst->singleton('fenom', function () use($app) {
     return $fenom;
 });
 
-if (\TriTan\Functions\ttcms_file_exists(Config::get('theme_path') . 'views' . DS, false)) {
+if (TriTan\Functions\Core\ttcms_file_exists(Config::get('theme_path') . 'views' . DS, false)) {
     $templates = ['main' => APP_PATH . 'views' . DS, 'theme' => Config::get('theme_path') . 'views' . DS, 'plugin' => TTCMS_PLUGIN_DIR];
 } else {
     $templates = ['main' => APP_PATH . 'views' . DS, 'plugin' => TTCMS_PLUGIN_DIR];
@@ -95,7 +95,7 @@ $app->inst->singleton('foil', function () use($app, $templates) {
     $engine = Foil\engine([
         'folders' => $templates
     ]);
-    $engine->useData(['app' => $app, 'current_user_id' => \TriTan\Functions\get_current_user_id()]);
+    $engine->useData(['app' => $app, 'current_user_id' => TriTan\Functions\User\get_current_user_id()]);
     return $engine;
 });
 
@@ -161,7 +161,7 @@ $app->hook->{'do_action'}('dropins_loaded');
 /**
  * Autoload theme function file if it exist.
  */
-if (\TriTan\Functions\ttcms_file_exists(Config::get('theme_path') . 'functions.php', false)) {
+if (TriTan\Functions\Core\ttcms_file_exists(Config::get('theme_path') . 'functions.php', false)) {
     include(Config::get('theme_path') . 'functions.php');
 }
 

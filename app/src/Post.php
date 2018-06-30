@@ -5,7 +5,8 @@ namespace TriTan;
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use TriTan\Config;
-use TriTan\Functions as func;
+use TriTan\Functions\Meta;
+use TriTan\Functions\Cache;
 
 /**
  * Post API: Post Class
@@ -131,7 +132,7 @@ final class Post
             return false;
         }
 
-        $_post = func\ttcms_cache_get($_post_id, 'post');
+        $_post = Cache\ttcms_cache_get($_post_id, 'post');
         if (!$_post) {
             $_post = app()->db->table(Config::get('tbl_prefix') . 'post')
                 ->where('post_id', (int) $_post_id)
@@ -139,7 +140,7 @@ final class Post
             if (!$_post) {
                 return false;
             }
-            func\ttcms_cache_add($_post_id, $_post, 'post');
+            Cache\ttcms_cache_add($_post_id, $_post, 'post');
         }
 
         return new Post($_post);
@@ -173,7 +174,7 @@ final class Post
      */
     public function __isset($key)
     {
-        return func\metadata_exists('post', $this->post_id, Config::get('tbl_prefix') . $key);
+        return Meta\metadata_exists('post', $this->post_id, Config::get('tbl_prefix') . $key);
     }
 
     /**
@@ -185,7 +186,7 @@ final class Post
      */
     public function __get($key)
     {
-        return func\get_post_meta($this->post_id, $key, true);
+        return Functions\Post\get_post_meta($this->post_id, $key, true);
     }
 
     /**

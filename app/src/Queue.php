@@ -8,7 +8,8 @@ use TriTan\Config;
 use TriTan\Exception\Exception;
 use TriTan\Exception\IOException;
 use Cascade\Cascade;
-use TriTan\Functions as func;
+use TriTan\Functions\Db;
+use TriTan\Functions\Core;
 
 /**
  * Task Manager Queue
@@ -79,7 +80,7 @@ class Queue
             /**
              * Creates a directory with proper permissions.
              */
-            func\_mkdir(Config::get('cache_path') . 'ttcms_queue');
+            Core\_mkdir(Config::get('cache_path') . 'ttcms_queue');
         } catch (IOException $e) {
             Cascade::getLogger('error')->error(sprintf('IOSTATE[%s]: Forbidden: %s', $e->getCode(), $e->getMessage()));
             Cascade::getLogger('system_email')->alert(sprintf('IOSTATE[%s]: Forbidden: %s', $e->getCode(), $e->getMessage()));
@@ -169,7 +170,7 @@ class Queue
      */
     public function enqueue($args)
     {
-        $tasks = func\ttcms_parse_args($args);
+        $tasks = Core\ttcms_parse_args($args);
 
         $count = $this->app->db->table($this->node())
                 ->where('pid', (int) $tasks['task_worker']['pid'])
@@ -180,14 +181,14 @@ class Queue
             try {
                 $node->where('pid', (int) $tasks['task_worker']['pid'])
                         ->update([
-                            'pid' => func\if_null($tasks['task_worker']['pid']),
-                            'name' => func\if_null($tasks['task_worker']['name']),
-                            'task_callback' => func\if_null($tasks['task_worker']['task_callback']),
-                            'action_hook' => func\if_null($tasks['task_worker']['action_hook']),
-                            'schedule' => func\if_null($tasks['task_worker']['schedule']),
-                            'debug' => func\if_null($tasks['task_worker']['debug']),
-                            'max_runtime' => func\if_null($tasks['task_worker']['max_runtime']),
-                            'enabled' => func\if_null($tasks['task_worker']['enabled'])
+                            'pid' => Core\if_null($tasks['task_worker']['pid']),
+                            'name' => Core\if_null($tasks['task_worker']['name']),
+                            'task_callback' => Core\if_null($tasks['task_worker']['task_callback']),
+                            'action_hook' => Core\if_null($tasks['task_worker']['action_hook']),
+                            'schedule' => Core\if_null($tasks['task_worker']['schedule']),
+                            'debug' => Core\if_null($tasks['task_worker']['debug']),
+                            'max_runtime' => Core\if_null($tasks['task_worker']['max_runtime']),
+                            'enabled' => Core\if_null($tasks['task_worker']['enabled'])
                 ]);
                 $node->commit();
             } catch (Exception $ex) {
@@ -199,15 +200,15 @@ class Queue
             $node->begin();
             try {
                 $node->insert([
-                    'tasks_id' => func\auto_increment($this->node(), 'tasks_id'),
-                    'pid' => func\if_null($tasks['task_worker']['pid']),
-                    'name' => func\if_null($tasks['task_worker']['name']),
-                    'task_callback' => func\if_null($tasks['task_worker']['task_callback']),
-                    'action_hook' => func\if_null($tasks['task_worker']['action_hook']),
-                    'schedule' => func\if_null($tasks['task_worker']['schedule']),
-                    'debug' => func\if_null($tasks['task_worker']['debug']),
-                    'max_runtime' => func\if_null($tasks['task_worker']['max_runtime']),
-                    'enabled' => func\if_null($tasks['task_worker']['enabled'])
+                    'tasks_id' => Db\auto_increment($this->node(), 'tasks_id'),
+                    'pid' => Core\if_null($tasks['task_worker']['pid']),
+                    'name' => Core\if_null($tasks['task_worker']['name']),
+                    'task_callback' => Core\if_null($tasks['task_worker']['task_callback']),
+                    'action_hook' => Core\if_null($tasks['task_worker']['action_hook']),
+                    'schedule' => Core\if_null($tasks['task_worker']['schedule']),
+                    'debug' => Core\if_null($tasks['task_worker']['debug']),
+                    'max_runtime' => Core\if_null($tasks['task_worker']['max_runtime']),
+                    'enabled' => Core\if_null($tasks['task_worker']['enabled'])
                 ]);
                 $node->commit();
             } catch (Exception $ex) {
@@ -256,7 +257,7 @@ class Queue
             return 0;
         }
 
-        $pid = func\_file_get_contents($lockFile);
+        $pid = Core\_file_get_contents($lockFile);
         if (!empty($pid)) {
             return 0;
         }
@@ -352,7 +353,7 @@ class Queue
                 $upd->where('pid', (int) $config['pid'])
                         ->update([
                             'executions' => +1,
-                            'lastrun' => (string) \Jenssegers\Date\Date::now()->format('Y-m-d h:i:s'),
+                            'lastrun' => (string) format_date(),
                             'last_runtime' => (double) $time_end
                 ]);
                 $upd->commit();

@@ -5,7 +5,8 @@ namespace TriTan;
 use TriTan\Config;
 use TriTan\Exception;
 use Cascade\Cascade;
-use TriTan\Functions as func;
+use TriTan\Functions\Db;
+use TriTan\Functions\Dependency;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
@@ -51,7 +52,7 @@ class Logger
         $log->begin();
         try {
             $log->insert([
-                'activity_id' => func\auto_increment(Config::get('tbl_prefix') . 'activity', 'activity_id'),
+                'activity_id' => Db\auto_increment(Config::get('tbl_prefix') . 'activity', 'activity_id'),
                 'action' => $action,
                 'process' => $process,
                 'record' => $record,
@@ -63,7 +64,7 @@ class Logger
         } catch (Exception $ex) {
             $log->rollback();
             Cascade::getLogger('error')->error($ex->getMessage());
-            func\_ttcms_flash()->error(func\_ttcms_flash()->notice(409));
+            Dependency\_ttcms_flash()->error(Dependency\_ttcms_flash()->notice(409));
         }
     }
 
@@ -88,7 +89,7 @@ class Logger
             } catch (Exception $ex) {
                 $delete->rollback();
                 Cascade::getLogger('error')->error($ex->getMessage());
-                func\_ttcms_flash()->error(func\_ttcms_flash()->notice(409));
+                Dependency\_ttcms_flash()->error(Dependency\_ttcms_flash()->notice(409));
             }
         }
     }
@@ -118,7 +119,7 @@ class Logger
         $log->begin();
         try {
             $log->insert([
-                'error_id' => func\auto_increment(Config::get('tbl_prefix') . 'error', 'error_id'),
+                'error_id' => Db\auto_increment(Config::get('tbl_prefix') . 'error', 'error_id'),
                 'time' => $date->getTimestamp(),
                 'type' => (int) $type,
                 'string' => (string) $string,
@@ -130,7 +131,7 @@ class Logger
         } catch (Exception $ex) {
             $log->rollback();
             Cascade::getLogger('error')->error($ex->getMessage());
-            func\_ttcms_flash()->error(func\_ttcms_flash()->notice(409));
+            Dependency\_ttcms_flash()->error(Dependency\_ttcms_flash()->notice(409));
         }
     }
 

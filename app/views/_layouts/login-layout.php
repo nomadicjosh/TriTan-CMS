@@ -1,6 +1,6 @@
 <?php
 $app = \Liten\Liten::getInstance();
-use TriTan\Functions as func;
+use TriTan\Functions\Core;
 
 ob_start();
 ob_implicit_flush(0);
@@ -9,10 +9,10 @@ $app->hook->{'do_action'}('login_init');
 <!DOCTYPE html>
 <html>
     <head>
-        <base href="<?= func\get_base_url(); ?>">
+        <base href="<?= Core\get_base_url(); ?>">
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title><?= func\_t('Login', 'tritan-cms') . ' &lsaquo; ' . $app->hook->{'get_option'}('sitename'); ?> &#8212; <?= func\_t('TriTan CMS', 'tritan-cms'); ?></title>
+        <title><?= Core\_t('Login', 'tritan-cms') . ' &lsaquo; ' . $app->hook->{'get_option'}('sitename'); ?> &#8212; <?= Core\_t('TriTan CMS', 'tritan-cms'); ?></title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <meta name="theme-color" content="#ffffff">
@@ -37,4 +37,4 @@ $app->hook->{'do_action'}('login_init');
         <script src="static/assets/js/login.js" type="text/javascript"></script>
     </body>
 </html>
-<?php func\print_gzipped_page(); ?>
+<?php Core\print_gzipped_page(); ?>

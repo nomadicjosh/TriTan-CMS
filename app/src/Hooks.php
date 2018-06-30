@@ -5,7 +5,12 @@ namespace TriTan;
 use TriTan\Config;
 use TriTan\Exception\Exception;
 use Cascade\Cascade;
-use TriTan\Functions as func;
+use TriTan\Functions\Db;
+use TriTan\Functions\Dependency;
+use TriTan\Functions\Cache;
+use TriTan\Functions\Core;
+use TriTan\Functions\Site;
+use TriTan\Functions\Hook;
 
 /**
  * Hooks API: Hook Class
@@ -193,7 +198,7 @@ class Hooks
     public function activate_plugin($plugin)
     {
         $this->app->db->table(Config::get('tbl_prefix') . 'plugin')->insert([
-            'plugin_id' => func\auto_increment(Config::get('tbl_prefix') . 'plugin', 'plugin_id'),
+            'plugin_id' => Db\auto_increment(Config::get('tbl_prefix') . 'plugin', 'plugin_id'),
             'plugin_location' => $plugin
         ]);
     }
@@ -228,26 +233,26 @@ class Hooks
         $q = $plugin->all();
 
         foreach ($q as $v) {
-            $pluginFile = func\_escape($v['plugin_location']);
+            $pluginFile = Core\_escape($v['plugin_location']);
             $plugin = str_replace('.plugin.php', '', $pluginFile);
 
-            if (!func\ttcms_file_exists($plugins_dir . $plugin . DS . $pluginFile, false)) {
+            if (!Core\ttcms_file_exists($plugins_dir . $plugin . DS . $pluginFile, false)) {
                 $file = $plugins_dir . $pluginFile;
             } else {
                 $file = $plugins_dir . $plugin . DS . $pluginFile;
             }
 
-            $error = func\ttcms_php_check_syntax($file);
-            if (func\is_ttcms_exception($error)) {
-                $this->deactivate_plugin(func\_escape($v['plugin_location']));
-                func\_ttcms_flash()->error(sprintf(func\_t('The plugin <strong>%s</strong> has been deactivated because your changes resulted in a <strong>fatal error</strong>. <br /><br />', 'tritan-cms') . $error->getMessage(), func\_escape($v['plugin_location'])));
+            $error = Core\ttcms_php_check_syntax($file);
+            if (Core\is_ttcms_exception($error)) {
+                $this->deactivate_plugin(Core\_escape($v['plugin_location']));
+                Dependency\_ttcms_flash()->error(sprintf(Core\_t('The plugin <strong>%s</strong> has been deactivated because your changes resulted in a <strong>fatal error</strong>. <br /><br />', 'tritan-cms') . $error->getMessage(), Core\_escape($v['plugin_location'])));
                 return false;
             }
 
-            if (func\ttcms_file_exists($file, false)) {
+            if (Core\ttcms_file_exists($file, false)) {
                 require_once ($file);
             } else {
-                $this->deactivate_plugin(func\_escape($v['plugin_location']));
+                $this->deactivate_plugin(Core\_escape($v['plugin_location']));
             }
         }
     }
@@ -659,15 +664,15 @@ class Hooks
     public function add_parsecode($tag, $func)
     {
         if ('' == _trim($tag)) {
-            $message = func\_t('Invalid parsecode name: empty name given.', 'tritan-cms');
-            func\_incorrectly_called(__METHOD__, $message, '0.9');
+            $message = Core\_t('Invalid parsecode name: empty name given.', 'tritan-cms');
+            Hook\_incorrectly_called(__METHOD__, $message, '0.9');
             return;
         }
 
         if (0 !== preg_match('@[<>&/\[\]\x00-\x20]@', $tag)) {
             /* translators: %s: parsecode name */
-            $message = sprintf(func\_t('Invalid parsecode name: %s. Do not use spaces or reserved characters: & / < > [ ]', 'tritan-cms'), $tag);
-            func\_incorrectly_called(__METHOD__, $message, '0.9');
+            $message = sprintf(Core\_t('Invalid parsecode name: %s. Do not use spaces or reserved characters: & / < > [ ]', 'tritan-cms'), $tag);
+            Hook\_incorrectly_called(__METHOD__, $message, '0.9');
             return;
         }
 
@@ -690,8 +695,8 @@ class Hooks
     public function remove_parsecode($tag)
     {
         if ('' == _trim($tag)) {
-            $message = func\_t('Invalid parsecode name: empty name given.', 'tritan-cms');
-            func\_incorrectly_called(__METHOD__, $message, '0.9');
+            $message = Core\_t('Invalid parsecode name: empty name given.', 'tritan-cms');
+            Hook\_incorrectly_called(__METHOD__, $message, '0.9');
             return;
         }
 
@@ -1340,19 +1345,19 @@ class Hooks
 
         if (!isset($this->app->db->option[$option_key])) {
             $meta = $this->app->db->table(Config::get('tbl_prefix') . 'option');
-            $result = func\ttcms_cache_get($option_key, 'option');
+            $result = Cache\ttcms_cache_get($option_key, 'option');
             if (empty($result)) {
                 $result = $meta->where('option_key', '=', $option_key)
                         ->first();
-                func\ttcms_cache_add($option_key, $result, 'option');
+                Cache\ttcms_cache_add($option_key, $result, 'option');
             }
 
             if (is_object($meta)) {
-                $value = func\_escape($result['option_value']);
-                //return _escape($value);
+                $value = Core\_escape($result['option_value']);
+                //return Core\_escape($value);
             } else { // option does not exist, so we must cache its non-existence
-                $value = func\_escape($default);
-                //return _escape($value);
+                $value = Core\_escape($default);
+                //return Core\_escape($value);
             }
             $this->app->db->option[$option_key] = $this->maybe_unserialize($value);
         }
@@ -1389,7 +1394,7 @@ class Hooks
 
         // Fallback to the current site if a site_id is not specified.
         if (!$site_id) {
-            $site_id = func\get_current_site_id();
+            $site_id = Site\get_current_site_id();
         }
 
         $_site_id = (int) $site_id;
@@ -1419,15 +1424,15 @@ class Hooks
         }
 
         $cache_key = "{$_site_id}_{$option}";
-        $value = func\ttcms_cache_get($cache_key, 'site-options');
+        $value = Cache\ttcms_cache_get($cache_key, 'site-options');
 
         if (!isset($value) || false === $value) {
             $row = $this->app->db->table('sitemeta')->where('meta_key', $option)->where('site_id', $_site_id)->first();
 
             if (is_array($row)) {
-                $value = func\_escape($row['meta_value']);
+                $value = Core\_escape($row['meta_value']);
                 $value = $this->maybe_unserialize($value);
-                func\ttcms_cache_set($cache_key, $value, 'site-options');
+                Cache\ttcms_cache_set($cache_key, $value, 'site-options');
             } else {
                 $value = $this->apply_filter("default_site_option_{$option}", $default, $option, $_site_id);
             }
@@ -1458,14 +1463,14 @@ class Hooks
             return false;
         }
 
-        if (!func\is_option_exist($option_key)) {
+        if (!Db\does_option_exist($option_key)) {
             $this->add_option($option_key, $newvalue);
             return true;
         }
 
         $_newvalue = $this->maybe_serialize($newvalue);
 
-        func\ttcms_cache_delete($option_key, 'option');
+        Cache\ttcms_cache_delete($option_key, 'option');
 
         $this->do_action('update_option', $option_key, $oldvalue, $newvalue);
 
@@ -1474,7 +1479,7 @@ class Hooks
         $option_value = $_newvalue;
         try {
             $key->where('option_key', $option_key)->update([
-                'option_value' => func\if_null($option_value)
+                'option_value' => Core\if_null($option_value)
             ]);
 
             if (@count($key) > 0) {
@@ -1484,7 +1489,7 @@ class Hooks
         } catch (Exception $e) {
             $key->rollback();
             Cascade::getLogger('error')->error(sprintf('SQLSTATE[%s]: Error: %s', $e->getCode(), $e->getMessage()));
-            func\_ttcms_flash()->error(func\_ttcms_flash()->notice(409));
+            Dependency\_ttcms_flash()->error(Dependency\_ttcms_flash()->notice(409));
         }
     }
 
@@ -1505,7 +1510,7 @@ class Hooks
 
         // Fallback to the current site if a site ID is not specified.
         if (!$site_id) {
-            $site_id = func\get_current_site_id();
+            $site_id = Site\get_current_site_id();
         }
 
         $_site_id = (int) $site_id;
@@ -1550,7 +1555,7 @@ class Hooks
 
         if ($result) {
             $cache_key = "{$_site_id}_{$option}";
-            func\ttcms_cache_set($cache_key, $value, 'site-options');
+            Cache\ttcms_cache_set($cache_key, $value, 'site-options');
         }
 
         if ($result) {
@@ -1591,13 +1596,13 @@ class Hooks
     public function add_option($name, $value = '')
     {
         // Make sure the option doesn't already exist
-        if (func\is_option_exist($name)) {
+        if (Db\does_option_exist($name)) {
             return;
         }
 
         $_value = $this->maybe_serialize($value);
 
-        func\ttcms_cache_delete($name, 'option');
+        Cache\ttcms_cache_delete($name, 'option');
 
         $this->do_action('add_option', $name, $_value);
 
@@ -1606,9 +1611,9 @@ class Hooks
         try {
             $option_value = $_value;
             $add->insert([
-                'option_id' => (int) func\auto_increment(Config::get('tbl_prefix') . 'option', 'option_id'),
+                'option_id' => (int) Db\auto_increment(Config::get('tbl_prefix') . 'option', 'option_id'),
                 'option_key' => (string) $name,
-                'option_value' => func\if_null($option_value)
+                'option_value' => Core\if_null($option_value)
             ]);
             $this->app->db->option[$name] = $value;
             $add->commit();
@@ -1616,7 +1621,7 @@ class Hooks
         } catch (Exception $e) {
             $add->rollback();
             Cascade::getLogger('error')->error(sprintf('SQLSTATE[%s]: Error: %s', $e->getCode(), $e->getMessage()));
-            func\_ttcms_flash()->error(func\_ttcms_flash()->notice(409));
+            Dependency\_ttcms_flash()->error(Dependency\_ttcms_flash()->notice(409));
         }
     }
 
@@ -1639,7 +1644,7 @@ class Hooks
 
         // Fallback to the current site if a site ID is not specified.
         if (!$site_id) {
-            $site_id = func\get_current_site_id();
+            $site_id = Site\get_current_site_id();
         }
 
         $_site_id = (int) $site_id;
@@ -1669,7 +1674,7 @@ class Hooks
         $result->begin();
         try {
             $result->insert([
-                'meta_id' => func\auto_increment('sitemeta', 'meta_id'),
+                'meta_id' => Db\auto_increment('sitemeta', 'meta_id'),
                 'site_id' => (int) $_site_id,
                 'meta_key' => (string) $option,
                 'meta_value' => $this->maybe_serialize($value)
@@ -1685,7 +1690,7 @@ class Hooks
             return false;
         }
 
-        func\ttcms_cache_set($cache_key, $value, 'site-options');
+        Cache\ttcms_cache_set($cache_key, $value, 'site-options');
 
         if ($result) {
 
@@ -1732,7 +1737,7 @@ class Hooks
                 return false;
             }
 
-            func\ttcms_cache_delete($name, 'option');
+            Cache\ttcms_cache_delete($name, 'option');
 
             $this->do_action('delete_option', $name);
 
@@ -1743,7 +1748,7 @@ class Hooks
         } catch (Exception $e) {
             $delete->rollback();
             Cascade::getLogger('error')->error(sprintf('SQLSTATE[%s]: Error: %s', $e->getCode(), $e->getMessage()));
-            func\_ttcms_flash()->error(func\_ttcms_flash()->notice(409));
+            Dependency\_ttcms_flash()->error(Dependency\_ttcms_flash()->notice(409));
         }
     }
 
@@ -1763,7 +1768,7 @@ class Hooks
 
         // Fallback to the current site if a site ID is not specified.
         if (!$site_id) {
-            $site_id = func\get_current_site_id();
+            $site_id = Site\get_current_site_id();
         }
 
         $_site_id = (int) $site_id;
@@ -1784,7 +1789,7 @@ class Hooks
             return false;
         }
         $cache_key = "{$_site_id}_{$option}";
-        func\ttcms_cache_delete($cache_key, 'site-options');
+        Cache\ttcms_cache_delete($cache_key, 'site-options');
 
         $result = $this->app->db->table('sitemeta');
         $result->begin();

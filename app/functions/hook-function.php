@@ -1,9 +1,12 @@
 <?php
-namespace TriTan\Functions;
+namespace TriTan\Functions\Hook;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use TriTan\Config;
+use TriTan\Functions\Db;
+use TriTan\Functions\Core;
+use TriTan\Functions\Dependency;
 
 /**
  * TriTan CMS Hooks Helper & Wrapper
@@ -158,11 +161,11 @@ function _deprecated_function($function_name, $release, $replacement = null)
      *            Whether to trigger the error for deprecated functions. Default true.
      */
     if (APP_ENV == 'DEV' && app()->hook->{'apply_filter'}('deprecated_function_trigger_error', true)) {
-        if (function_exists('_t')) {
+        if (function_exists('TriTan\\Functions\\Core\\_t')) {
             if (!is_null($replacement)) {
-                _trigger_error(sprintf(_t('%1$s() is <strong>deprecated</strong> since release %2$s! Use %3$s() instead. <br />', 'tritan-cms'), $function_name, $release, $replacement), E_USER_DEPRECATED);
+                _trigger_error(sprintf(Core\_t('%1$s() is <strong>deprecated</strong> since release %2$s! Use %3$s() instead. <br />', 'tritan-cms'), $function_name, $release, $replacement), E_USER_DEPRECATED);
             } else {
-                _trigger_error(sprintf(_t('%1$s() is <strong>deprecated</strong> since release %2$s with no alternative available. <br />', 'tritan-cms'), $function_name, $release), E_USER_DEPRECATED);
+                _trigger_error(sprintf(Core\_t('%1$s() is <strong>deprecated</strong> since release %2$s with no alternative available. <br />', 'tritan-cms'), $function_name, $release), E_USER_DEPRECATED);
             }
         } else {
             if (!is_null($replacement)) {
@@ -221,11 +224,11 @@ function _deprecated_class($class_name, $release, $replacement = null)
      *            Whether to trigger the error for deprecated classes. Default true.
      */
     if (APP_ENV == 'DEV' && app()->hook->{'apply_filter'}('deprecated_class_trigger_error', true)) {
-        if (function_exists('_t')) {
+        if (function_exists('TriTan\\Functions\\Core\\_t')) {
             if (!is_null($replacement)) {
-                _trigger_error(sprintf(_t('%1$s() is <strong>deprecated</strong> since release %2$s! Use %3$s instead. <br />', 'tritan-cms'), $class_name, $release, $replacement), E_USER_DEPRECATED);
+                _trigger_error(sprintf(Core\_t('%1$s() is <strong>deprecated</strong> since release %2$s! Use %3$s instead. <br />', 'tritan-cms'), $class_name, $release, $replacement), E_USER_DEPRECATED);
             } else {
-                _trigger_error(sprintf(_t('%1$s() is <strong>deprecated</strong> since release %2$s with no alternative available. <br />', 'tritan-cms'), $class_name, $release), E_USER_DEPRECATED);
+                _trigger_error(sprintf(Core\_t('%1$s() is <strong>deprecated</strong> since release %2$s with no alternative available. <br />', 'tritan-cms'), $class_name, $release), E_USER_DEPRECATED);
             }
         } else {
             if (!is_null($replacement)) {
@@ -284,11 +287,11 @@ function _deprecated_class_method($method_name, $release, $replacement = null)
      *            Whether to trigger the error for deprecated class methods. Default true.
      */
     if (APP_ENV == 'DEV' && app()->hook->{'apply_filter'}('deprecated_class_method_trigger_error', true)) {
-        if (function_exists('_t')) {
+        if (function_exists('TriTan\\Functions\\Core\\_t')) {
             if (!is_null($replacement)) {
-                _trigger_error(sprintf(_t('%1$s() is <strong>deprecated</strong> since release %2$s! Use %3$s() instead. <br />', 'tritan-cms'), $method_name, $release, $replacement), E_USER_DEPRECATED);
+                _trigger_error(sprintf(Core\_t('%1$s() is <strong>deprecated</strong> since release %2$s! Use %3$s() instead. <br />', 'tritan-cms'), $method_name, $release, $replacement), E_USER_DEPRECATED);
             } else {
-                _trigger_error(sprintf(_t('%1$s() is <strong>deprecated</strong> since release %2$s with no alternative available. <br />', 'tritan-cms'), $method_name, $release), E_USER_DEPRECATED);
+                _trigger_error(sprintf(Core\_t('%1$s() is <strong>deprecated</strong> since release %2$s with no alternative available. <br />', 'tritan-cms'), $method_name, $release), E_USER_DEPRECATED);
             }
         } else {
             if (!is_null($replacement)) {
@@ -354,11 +357,11 @@ function _deprecated_argument($function_name, $release, $message = null)
      *            Whether to trigger the error for deprecated arguments. Default true.
      */
     if (APP_ENV == 'DEV' && app()->hook->{'apply_filter'}('deprecated_argument_trigger_error', true)) {
-        if (function_exists('_t')) {
+        if (function_exists('TriTan\\Functions\\Core\\_t')) {
             if (!is_null($message)) {
-                _trigger_error(sprintf(_t('%1$s() was called with an argument that is <strong>deprecated</strong> since release %2$s! %3$s. <br />', 'tritan-cms'), $function_name, $release, $message), E_USER_DEPRECATED);
+                _trigger_error(sprintf(Core\_t('%1$s() was called with an argument that is <strong>deprecated</strong> since release %2$s! %3$s. <br />', 'tritan-cms'), $function_name, $release, $message), E_USER_DEPRECATED);
             } else {
-                _trigger_error(sprintf(_t('%1$s() was called with an argument that is <strong>deprecated</strong> since release %2$s with no alternative available. <br />', 'tritan-cms'), $function_name, $release), E_USER_DEPRECATED);
+                _trigger_error(sprintf(Core\_t('%1$s() was called with an argument that is <strong>deprecated</strong> since release %2$s with no alternative available. <br />', 'tritan-cms'), $function_name, $release), E_USER_DEPRECATED);
             }
         } else {
             if (!is_null($message)) {
@@ -461,11 +464,11 @@ function _incorrectly_called($function_name, $message, $release)
      *            Whether to trigger the error for _incorrectly_called() calls. Default true.
      */
     if (APP_ENV == 'DEV' && app()->hook->{'apply_filter'}('incorrectly_called_trigger_error', true)) {
-        if (function_exists('_t')) {
-            $release = is_null($release) ? '' : sprintf(_t('(This message was added in release %s.) <br /><br />', 'tritan-cms'), $release);
+        if (function_exists('TriTan\\Functions\\Core\\_t')) {
+            $release = is_null($release) ? '' : sprintf(Core\_t('(This message was added in release %s.) <br /><br />', 'tritan-cms'), $release);
             /* translators: %s: Codex URL */
-            $message .= ' ' . sprintf(_t('Please see <a href="%s">Debugging in TriTan CMS</a> for more information.', 'tritan-cms'), 'https://learn.tritancms.com/start.html#debugging');
-            _trigger_error(sprintf(_t('%1$s() was called <strong>incorrectly</strong>. %2$s %3$s <br />', 'tritan-cms'), $function_name, $message, $release));
+            $message .= ' ' . sprintf(Core\_t('Please see <a href="%s">Debugging in TriTan CMS</a> for more information.', 'tritan-cms'), 'https://learn.tritancms.com/start.html#debugging');
+            _trigger_error(sprintf(Core\_t('%1$s() was called <strong>incorrectly</strong>. %2$s %3$s <br />', 'tritan-cms'), $function_name, $message, $release));
         } else {
             $release = is_null($release) ? '' : sprintf('(This message was added in release %s.) <br /><br />', $release);
             $message .= sprintf(' Please see <a href="%s">Debugging in TriTan CMS</a> for more information.', 'https://learn.tritancms.com/start.html#debugging');
@@ -484,7 +487,7 @@ function _incorrectly_called($function_name, $message, $release)
 function ttcms_admin_copyright_footer()
 {
     $copyright = '<!--  Copyright Line -->' . "\n";
-    $copyright .= '<strong>&#169; ' . _t('Copyright 2017', 'tritan-cms') . ' | ' . _t('Powered by', 'tritan-cms') . ' <a href="//www.tritancms.com/">' . _t('TriTan CMS', 'tritan-cms') . '</a></strong>' . "\n";
+    $copyright .= '<strong>&#169; ' . Core\_t('Copyright 2017', 'tritan-cms') . ' | ' . Core\_t('Powered by', 'tritan-cms') . ' <a href="//www.tritancms.com/">' . Core\_t('TriTan CMS', 'tritan-cms') . '</a></strong>' . "\n";
     $copyright .= '<!--  End Copyright Line -->' . "\n";
 
     return app()->hook->{'apply_filter'}('admin_copyright_footer', $copyright);
@@ -638,7 +641,7 @@ function admin_top_widgets()
  */
 function get_logo_large()
 {
-    $logo = '<strong>' . _t('TriTan', 'tritan-cms') . '</strong>' . _t('CMS', 'tritan-cms');
+    $logo = '<strong>' . Core\_t('TriTan', 'tritan-cms') . '</strong>' . Core\_t('CMS', 'tritan-cms');
     return app()->hook->{'apply_filter'}('logo_large', $logo);
 }
 
@@ -652,7 +655,7 @@ function get_logo_large()
  */
 function get_logo_mini()
 {
-    $logo = '<strong>' . _t('Tri', 'tritan-cms') . '</strong>' . _t('Tan', 'tritan-cms');
+    $logo = '<strong>' . Core\_t('Tri', 'tritan-cms') . '</strong>' . Core\_t('Tan', 'tritan-cms');
     return app()->hook->{'apply_filter'}('logo_mini', $logo);
 }
 
@@ -667,12 +670,12 @@ function get_logo_mini()
 function ttcms_validation_check($data)
 {
     if ($data['m6qIHt4Z5evV'] != '' || !empty($data['m6qIHt4Z5evV'])) {
-        _ttcms_flash()->{'error'}(_t('Spam is not allowed.', 'tritan-cms'), get_base_url() . 'spam' . '/');
+        Dependency\_ttcms_flash()->{'error'}(Core\_t('Spam is not allowed.', 'tritan-cms'), Core\get_base_url() . 'spam' . '/');
         exit();
     }
 
     if ($data['YgexGyklrgi1'] != '' || !empty($data['YgexGyklrgi1'])) {
-        _ttcms_flash()->{'error'}(_t('Spam is not allowed.', 'tritan-cms'), get_base_url() . 'spam' . '/');
+        Dependency\_ttcms_flash()->{'error'}(Core\_t('Spam is not allowed.', 'tritan-cms'), Core\get_base_url() . 'spam' . '/');
         exit();
     }
 }
@@ -819,7 +822,7 @@ function ttcms_parse_str($string, $array)
  */
 function get_footer_release()
 {
-    $release = _t('Powered by TriTan CMS r', 'tritan-cms') . CURRENT_RELEASE;
+    $release = Core\_t('Powered by TriTan CMS r', 'tritan-cms') . CURRENT_RELEASE;
     return app()->hook->{'apply_filter'}('footer_release', $release);
 }
 
@@ -838,19 +841,19 @@ function get_user_avatar($email, $s = 80, $class = '')
 {
     $email_hash = md5(strtolower(_trim($email)));
 
-    if (is_ssl() || app()->hook->{'has_filter'}('base_url')) {
+    if (Core\is_ssl() || app()->hook->{'has_filter'}('base_url')) {
         $url = 'https://secure.gravatar.com/avatar/' . $email_hash . "?s=200";
     } else {
         $url = 'http://www.gravatar.com/avatar/' . $email_hash . "?s=200";
     }
 
     if (get_http_response_code('http://www.gravatar.com/') != 302) {
-        $static_image_url = get_base_url() . "static/assets/img/avatar.png?s=200";
+        $static_image_url = Core\get_base_url() . "static/assets/img/avatar.png?s=200";
         $avatarsize = getimagesize($static_image_url);
-        $avatar = '<img src="' . get_base_url() . 'static/assets/img/avatar.png" ' . resize_image($avatarsize[1], $avatarsize[1], $s) . ' class="' . $class . '" alt="' . $email . '" />';
+        $avatar = '<img src="' . Core\get_base_url() . 'static/assets/img/avatar.png" ' . Core\resize_image($avatarsize[1], $avatarsize[1], $s) . ' class="' . $class . '" alt="' . $email . '" />';
     } else {
         $avatarsize = getimagesize($url);
-        $avatar = '<img src="' . $url . '" ' . resize_image($avatarsize[1], $avatarsize[1], $s) . ' class="' . $class . '" alt="' . $email . '" />';
+        $avatar = '<img src="' . $url . '" ' . Core\resize_image($avatarsize[1], $avatarsize[1], $s) . ' class="' . $class . '" alt="' . $email . '" />';
     }
 
     return app()->hook->{'apply_filter'}('user_avatar', $avatar, $email, $s, $class);
@@ -869,14 +872,14 @@ function get_user_avatar_url($email)
 {
     $email_hash = md5(strtolower(_trim($email)));
 
-    if (is_ssl() || app()->hook->{'has_filter'}('base_url')) {
+    if (Core\is_ssl() || app()->hook->{'has_filter'}('base_url')) {
         $url = 'https://secure.gravatar.com/avatar/' . $email_hash;
     } else {
         $url = 'http://www.gravatar.com/avatar/' . $email_hash;
     }
 
     if (get_http_response_code('http://www.gravatar.com/') != 302) {
-        $avatar = get_base_url() . 'static/assets/img/avatar.png';
+        $avatar = Core\get_base_url() . 'static/assets/img/avatar.png';
     } else {
         $avatar = $url;
     }
@@ -919,7 +922,7 @@ function ttcms_upload_image()
                     
                     $("#set_image").click(function (e) {
                         var elfinder = $("#elfinder").elfinder({
-                            url: "' . get_base_url() . 'admin/connector",
+                            url: "' . Core\get_base_url() . 'admin/connector",
                             resizable: false,
                             onlyMimes: ["image"],
                             uiOptions: {
@@ -1053,7 +1056,7 @@ function get_http_response_code($url)
  */
 function ttcms_plugin_activate_message($plugin_name)
 {
-    $success = _ttcms_flash()->{'success'}(_t('Plugin <strong>activated</strong>.', 'tritan-cms'));
+    $success = Dependency\_ttcms_flash()->{'success'}(Core\_t('Plugin <strong>activated</strong>.', 'tritan-cms'));
     /**
      * Filter the default plugin success activation message.
      *
@@ -1077,7 +1080,7 @@ function ttcms_plugin_activate_message($plugin_name)
  */
 function ttcms_plugin_deactivate_message($plugin_name)
 {
-    $success = _ttcms_flash()->{'success'}(_t('Plugin <strong>deactivated</strong>.', 'tritan-cms'));
+    $success = Dependency\_ttcms_flash()->{'success'}(Core\_t('Plugin <strong>deactivated</strong>.', 'tritan-cms'));
     /**
      * Filter the default plugin success deactivation message.
      *
@@ -1100,7 +1103,7 @@ function ttcms_plugin_deactivate_message($plugin_name)
 function ttcms_dev_mode()
 {
     if (APP_ENV === 'DEV') {
-        echo '<div class="alert dismissable alert-danger center sticky">' . _t('Your system is currently in DEV mode. Please remember to set your system back to PROD mode after testing. When PROD mode is set, this warning message will disappear.', 'tritan-cms') . '</div>';
+        echo '<div class="alert dismissable alert-danger center sticky">' . Core\_t('Your system is currently in DEV mode. Please remember to set your system back to PROD mode after testing. When PROD mode is set, this warning message will disappear.', 'tritan-cms') . '</div>';
     }
 }
 
@@ -1114,7 +1117,7 @@ function ttcms_dev_mode()
  */
 function get_mu_plugin_url()
 {
-    $url = get_base_url() . 'mu-plugins' . '/';
+    $url = Core\get_base_url() . 'mu-plugins' . '/';
     return app()->hook->{'apply_filter'}('the_mu_plugin_url', $url);
 }
 
@@ -1128,7 +1131,7 @@ function get_mu_plugin_url()
  */
 function get_plugin_url()
 {
-    $url = get_base_url() . 'plugins' . '/';
+    $url = Core\get_base_url() . 'plugins' . '/';
     return app()->hook->{'apply_filter'}('the_plugin_url', $url);
 }
 
@@ -1149,9 +1152,9 @@ function get_plugin_url()
  */
 function plugins_url($path = '', $plugin = '')
 {
-    $_path = ttcms_normalize_path($path);
-    $_plugin = ttcms_normalize_path($plugin);
-    $mu_plugin_dir = ttcms_normalize_path(TTCMS_MU_PLUGIN_DIR);
+    $_path = Core\ttcms_normalize_path($path);
+    $_plugin = Core\ttcms_normalize_path($plugin);
+    $mu_plugin_dir = Core\ttcms_normalize_path(TTCMS_MU_PLUGIN_DIR);
 
     if (!empty($_plugin) && 0 === strpos($_plugin, $mu_plugin_dir)) {
         $url = get_mu_plugin_url();
@@ -1211,7 +1214,7 @@ function plugin_dir_url($file)
 function get_theme_url()
 {
     $site_id = Config::get('site_id');
-    $url = get_base_url() . 'private/sites/' . $site_id . '/themes/';
+    $url = Core\get_base_url() . 'private/sites/' . $site_id . '/themes/';
     return app()->hook->{'apply_filter'}("the_theme_url_site_{$site_id}", $url);
 }
 
@@ -1233,8 +1236,8 @@ function get_theme_url()
 function themes_url($path = '', $theme = '')
 {
     $site_id = Config::get('site_id');
-    $_path = ttcms_normalize_path($path);
-    $_theme = ttcms_normalize_path($theme);
+    $_path = Core\ttcms_normalize_path($path);
+    $_theme = Core\ttcms_normalize_path($theme);
 
     $url = get_theme_url();
     $url = set_url_scheme($url);
@@ -1274,7 +1277,7 @@ function themes_url($path = '', $theme = '')
 function get_private_site_url()
 {
     $site_id = Config::get('site_id');
-    $url = get_base_url() . 'private/sites/' . $site_id . '/';
+    $url = Core\get_base_url() . 'private/sites/' . $site_id . '/';
     return app()->hook->{'apply_filter'}("private_site_url_{$site_id}", $url);
 }
 
@@ -1316,7 +1319,7 @@ function eae_encode_emails($string)
     }
 
     // override encoding function with the 'eae_method' filter
-    $method = app()->hook->{'apply_filter'}('eae_method', 'TriTan\\Functions\\eae_encode_str');
+    $method = app()->hook->{'apply_filter'}('eae_method', 'TriTan\\Functions\\Hook\\eae_encode_str');
 
     // override regex pattern with the 'eae_regexp' filter
     $regexp = app()->hook->{'apply_filter'}('eae_regexp', '{
@@ -1382,64 +1385,6 @@ function eae_encode_str($string)
 }
 
 /**
- * Create the needed directories when a new site is created.
- * 
- * @file app/functions/hook-function.php
- * 
- * @since 0.9
- * @param int $site_id Site ID.
- * @param object $site Site object.
- * @param bool $update Whether the site is being created or updated.
- * @return bool Returns true on success and false otherwise.
- */
-function create_site_directories($site_id, $site, $update)
-{
-    if($update) {
-        return false;
-    }
-    
-    $site = new \TriTan\Site($site);
-    if((int) $site->site_id <= (int) 0) {
-        return false;
-    }
-    
-    try {
-        _mkdir(Config::get('sites_dir') . (int) $site_id . DS . 'dropins' . DS);
-        _mkdir(Config::get('sites_dir') . (int) $site_id . DS . 'files' . DS . 'cache' . DS);
-        _mkdir(Config::get('sites_dir') . (int) $site_id . DS . 'files' . DS . 'logs' . DS);
-        _mkdir(Config::get('sites_dir') . (int) $site_id . DS . 'themes' . DS);
-        _mkdir(Config::get('sites_dir') . (int) $site_id . DS . 'uploads' . DS);
-        _mkdir(Config::get('sites_dir') . (int) $site_id . DS . 'uploads' . DS . '__optimized__' . DS);
-    } catch (\TriTan\Exception\Exception $ex) {
-        Cascade::getLogger('error')->error(sprintf('IOSTATE[%s]: Forbidden: %s', $ex->getCode(), $ex->getMessage()));
-    }
-
-    return true;
-}
-
-/**
- * Deletes the site directory when the site is deleted.
- * 
- * @file app/functions/hook-function.php
- * 
- * @since 0.9
- * @param int $_site_id Site ID.
- * @return bool Returns true on success and false otherwise.
- */
-function delete_site_directories($site_id, $old_site)
-{
-    if((int) $site_id <= (int) 0) {
-        return false;
-    }
-    
-    if((int) $site_id !== (int) $old_site['site_id']) {
-        return false;
-    }
-    
-    _rmdir(Config::get('sites_dir') . (int) $site_id . DS);
-}
-
-/**
  * Renders an editor.
  * 
  * @file app/functions/hook-function.php
@@ -1449,7 +1394,7 @@ function delete_site_directories($site_id, $old_site)
  */
 function ttcms_editor($selector = null)
 {
-    ttcms_enqueue_js('default', '//cdn.tinymce.com/4/tinymce.min.js');
+    Core\ttcms_enqueue_js('default', '//cdn.tinymce.com/4/tinymce.min.js');
 
     if ($selector == null) {
         $mce_selector = '#tinymce_editor';
@@ -1510,7 +1455,7 @@ function ttcms_editor($selector = null)
      * @param array  $css           CSS stylesheets to include.
      * @param string $mce_selector  Unique editor identifier, e.g. 'textarea'.
      */
-    $mce_css = app()->hook->{'apply_filter'}('tiny_mce_css', ['//fonts.googleapis.com/css?family=Lato:300,300i,400,400i', get_base_url() . 'static/assets/css/tinymce.css'], $mce_selector);
+    $mce_css = app()->hook->{'apply_filter'}('tiny_mce_css', ['//fonts.googleapis.com/css?family=Lato:300,300i,400,400i', Core\get_base_url() . 'static/assets/css/tinymce.css'], $mce_selector);
 
     /**
      * Fires immediately before TinyMCE is printed.
@@ -1531,8 +1476,8 @@ function ttcms_editor($selector = null)
             plugins: ["<?= implode(',', $mce_plugins); ?>"],
             link_list: [
     <?php
-    foreach (tinymce_link_list() as $link) : {
-            echo "{title: '" . _escape($link['post_title']) . "', value: '" . get_base_url() . _escape($link['post_relative_url']) . "'}," . "\n";
+    foreach (Db\tinymce_link_list() as $link) : {
+            echo "{title: '" . Core\_escape($link['post_title']) . "', value: '" . Core\get_base_url() . Core\_escape($link['post_relative_url']) . "'}," . "\n";
         } endforeach;
     ?>
             ],
@@ -1545,7 +1490,7 @@ function ttcms_editor($selector = null)
         });
         function elFinderBrowser(callback, value, meta) {
             tinymce.activeEditor.windowManager.open({
-                file: "<?= get_base_url(); ?>admin/elfinder/",
+                file: "<?= Core\get_base_url(); ?>admin/elfinder/",
                 title: "elFinder 2.1",
                 width: 900,
                 height: 600,
@@ -1599,41 +1544,12 @@ function ttcms_optimized_image_upload($image)
         return null;
     }
     $site_id = Config::get('site_id');
-    $raw_filename = str_replace(get_base_url(), '', $image);
+    $raw_filename = str_replace(Core\get_base_url(), '', $image);
     $new_filename = str_replace(get_private_site_upload_url(), 'private/sites/' . $site_id . '/uploads/__optimized__/', $image);
     if (!file_exists($new_filename)) {
-        _ttcms_image_optimizer($raw_filename, $new_filename);
+        Dependency\_ttcms_image_optimizer($raw_filename, $new_filename);
     }
     return app()->hook->{'apply_filter'}('optimized_image', $new_filename, $image, $raw_filename);
-}
-
-/**
- * Checks if site exists or is archived.
- * 
- * @file app/functions/hook-function.php
- * 
- * @since 0.9
- */
-function is_site_exist()
-{
-    $base_url = get_base_url();
-    $site_path = str_replace('index.php', '', app()->req->server['PHP_SELF']);
-    $site_domain = str_replace(['http://', 'https://', $site_path], '', $base_url);
-
-    $site = app()->db->table('site')
-            ->where('site_domain', $site_domain)
-            ->where('site_path', $site_path)
-            ->first();
-
-    if (!$site) {
-        app()->res->_format('json', 404);
-        exit();
-    }
-
-    if (_escape($site['site_status']) === 'archive') {
-        app()->res->_format('json', 503);
-        exit();
-    }
 }
 
 /**
@@ -1669,11 +1585,11 @@ function set_url_scheme($url, $scheme = null)
     $orig_scheme = $scheme;
 
     if (!$scheme) {
-        $scheme = is_ssl() ? 'https' : 'http';
+        $scheme = Core\is_ssl() ? 'https' : 'http';
     } elseif ($scheme === 'admin' || $scheme === 'login') {
-        $scheme = is_ssl() ? 'https' : 'http';
+        $scheme = Core\is_ssl() ? 'https' : 'http';
     } elseif ($scheme !== 'http' && $scheme !== 'https' && $scheme !== 'relative') {
-        $scheme = is_ssl() ? 'https' : 'http';
+        $scheme = Core\is_ssl() ? 'https' : 'http';
     }
 
     $url = trim($url);
@@ -1718,14 +1634,14 @@ function add_files_cache_directory()
         /**
          * Re-creates the cache directory with proper permissions.
          */
-        _mkdir($dir);
+        Core\_mkdir($dir);
     } catch (IOException $e) {
         Cascade::getLogger('error')->error(sprintf('IOSTATE[%s]: Forbidden: %s', $e->getCode(), $e->getMessage()));
     }
 
-    $key = _ttcms_random_lib()->generateString(25, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+    $key = Dependency\_ttcms_random_lib()->generateString(25, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
 
-    if (!file_exists($dir . '.htaccess')) {
+    if (!Core\ttcms_file_exists($dir . '.htaccess', false)) {
         $content = "# BEGIN Privatization" . "\n";
         $content .= "# This .htaccess file ensures that other people cannot download your files." . "\n";
         $content .= "<IfModule mod_rewrite.c>" . "\n";
@@ -1737,7 +1653,7 @@ function add_files_cache_directory()
         file_put_contents($dir . '.htaccess', $content);
     }
 
-    if (!file_exists($dir . '.gitignore')) {
+    if (!Core\ttcms_file_exists($dir . '.gitignore', false)) {
         $content = "*" . "\n";
         $content .= "*/" . "\n";
         $content .= "!.gitignore";
@@ -1754,7 +1670,7 @@ function add_files_cache_directory()
  */
 function admin_dashboard_js()
 {
-    ttcms_enqueue_js('default', get_base_url() . 'static/assets/js/pages/dashboard.js');
+    Core\ttcms_enqueue_js('default', Core\get_base_url() . 'static/assets/js/pages/dashboard.js');
 }
 
 /**
@@ -1764,38 +1680,38 @@ function admin_dashboard_js()
  * 
  * @since 0.9
  */
-app()->hook->{'add_action'}('ttcms_admin_head', 'TriTan\\Functions\\head_release_meta', 5);
+app()->hook->{'add_action'}('ttcms_admin_head', 'TriTan\\Functions\\Core\\head_release_meta', 5);
 //app()->hook->{'add_action'}('ttcms_admin_footer', 'TriTan\\Functions\\admin_dashboard_js', 5);
-app()->hook->{'add_action'}('ttcms_head', 'TriTan\\Functions\\head_release_meta', 5);
-app()->hook->{'add_action'}('ttcms_head', 'TriTan\\Functions\\post_css', 5, 2);
-app()->hook->{'add_action'}('ttcms_footer', 'TriTan\\Functions\\post_js', 5, 2);
-app()->hook->{'add_action'}('ttcms_release', 'TriTan\\Functions\\foot_release', 5);
-app()->hook->{'add_action'}('activated_plugin', 'TriTan\\Functions\\ttcms_plugin_activate_message', 5);
-app()->hook->{'add_action'}('deactivated_plugin', 'TriTan\\Functions\\ttcms_plugin_deactivate_message', 5);
-app()->hook->{'add_action'}('login_form_top', 'TriTan\\Functions\\ttcms_login_form_show_message', 5);
-app()->hook->{'add_action'}('admin_notices', 'TriTan\\Functions\\ttcms_dev_mode', 5);
-app()->hook->{'add_action'}('save_site', 'TriTan\\Functions\\new_site_data', 5, 3);
-app()->hook->{'add_action'}('save_site', 'TriTan\\Functions\\create_site_directories', 5, 3);
-app()->hook->{'add_action'}('deleted_site', 'TriTan\\Functions\\delete_site_user_meta', 5, 2);
-app()->hook->{'add_action'}('deleted_site', 'TriTan\\Functions\\delete_site_tables', 5, 2);
-app()->hook->{'add_action'}('deleted_site', 'TriTan\\Functions\\delete_site_directories', 5, 2);
-app()->hook->{'add_action'}('init', 'TriTan\\Functions\\update_main_site', 5);
-app()->hook->{'add_action'}('reset_password_route', 'TriTan\\Functions\\send_reset_password_email', 5, 2);
-app()->hook->{'add_action'}('password_change_email', 'TriTan\\Functions\\send_password_change_email', 5, 3);
-app()->hook->{'add_action'}('email_change_email', 'TriTan\\Functions\\send_email_change_email', 5, 2);
-app()->hook->{'add_action'}('before_router_login', 'TriTan\\Functions\\update_main_site', 5);
-app()->hook->{'add_action'}('before_router_login', 'TriTan\\Functions\\is_site_exist', 6);
-app()->hook->{'add_action'}('ttcms_login', 'TriTan\\Functions\\generate_php_encryption', 5);
-app()->hook->{'add_action'}('enqueue_ttcms_editor', 'TriTan\\Functions\\ttcms_editor', 5);
-app()->hook->{'add_action'}('protect_cache_dir', 'TriTan\\Functions\\add_files_cache_directory', 5);
-app()->hook->{'add_action'}('plugins_loaded', 'TriTan\\Functions\\load_activated_plugins', 1);
+app()->hook->{'add_action'}('ttcms_head', 'TriTan\\Functions\\Core\\head_release_meta', 5);
+app()->hook->{'add_action'}('ttcms_head', 'TriTan\\Functions\\Post\\post_css', 5, 2);
+app()->hook->{'add_action'}('ttcms_footer', 'TriTan\\Functions\\Post\\post_js', 5, 2);
+app()->hook->{'add_action'}('ttcms_release', 'TriTan\\Functions\\Core\\foot_release', 5);
+app()->hook->{'add_action'}('activated_plugin', 'TriTan\\Functions\\Hook\\ttcms_plugin_activate_message', 5);
+app()->hook->{'add_action'}('deactivated_plugin', 'TriTan\\Functions\\Hook\\ttcms_plugin_deactivate_message', 5);
+app()->hook->{'add_action'}('login_form_top', 'TriTan\\Functions\\Auth\\ttcms_login_form_show_message', 5);
+app()->hook->{'add_action'}('admin_notices', 'TriTan\\Functions\\Hook\\ttcms_dev_mode', 5);
+app()->hook->{'add_action'}('save_site', 'TriTan\\Functions\\Site\\new_site_data', 5, 3);
+app()->hook->{'add_action'}('save_site', 'TriTan\\Functions\\Site\\create_site_directories', 5, 3);
+app()->hook->{'add_action'}('deleted_site', 'TriTan\\Functions\\Site\\delete_site_user_meta', 5, 2);
+app()->hook->{'add_action'}('deleted_site', 'TriTan\\Functions\\Site\\delete_site_tables', 5, 2);
+app()->hook->{'add_action'}('deleted_site', 'TriTan\\Functions\\Site\\delete_site_directories', 5, 2);
+app()->hook->{'add_action'}('init', 'TriTan\\Functions\\Site\\update_main_site', 5);
+app()->hook->{'add_action'}('reset_password_route', 'TriTan\\Functions\\User\\send_reset_password_email', 5, 2);
+app()->hook->{'add_action'}('password_change_email', 'TriTan\\Functions\\User\\send_password_change_email', 5, 3);
+app()->hook->{'add_action'}('email_change_email', 'TriTan\\Functions\\User\\send_email_change_email', 5, 2);
+app()->hook->{'add_action'}('before_router_login', 'TriTan\\Functions\\Site\\update_main_site', 5);
+app()->hook->{'add_action'}('before_router_login', 'TriTan\\Functions\\Site\\does_site_exist', 6);
+app()->hook->{'add_action'}('ttcms_login', 'TriTan\\Functions\\Db\\generate_php_encryption', 5);
+app()->hook->{'add_action'}('enqueue_ttcms_editor', 'TriTan\\Functions\\Hook\\ttcms_editor', 5);
+app()->hook->{'add_action'}('protect_cache_dir', 'TriTan\\Functions\\Hook\\add_files_cache_directory', 5);
+app()->hook->{'add_action'}('plugins_loaded', 'TriTan\\Functions\\Hook\\load_activated_plugins', 1);
 app()->hook->{'add_filter'}('the_content', [new \TriTan\Hooks(), 'parsecode_autop']);
 app()->hook->{'add_filter'}('the_content', [new \TriTan\Hooks(), 'parsecode_unautop']);
 app()->hook->{'add_filter'}('the_content', [new \TriTan\Hooks(), 'do_parsecode'], 5);
-app()->hook->{'add_filter'}('the_content', 'TriTan\\Functions\\eae_encode_emails', EAE_FILTER_PRIORITY);
-app()->hook->{'add_filter'}('ttcms_authenticate_user', 'TriTan\\Functions\\ttcms_authenticate', 5, 3);
-app()->hook->{'add_filter'}('ttcms_auth_cookie', 'TriTan\\Functions\\ttcms_set_auth_cookie', 5, 2);
+app()->hook->{'add_filter'}('the_content', 'TriTan\\Functions\\Hook\\eae_encode_emails', EAE_FILTER_PRIORITY);
+app()->hook->{'add_filter'}('ttcms_authenticate_user', 'TriTan\\Functions\\Auth\\ttcms_authenticate', 5, 3);
+app()->hook->{'add_filter'}('ttcms_auth_cookie', 'TriTan\\Functions\\Auth\\ttcms_set_auth_cookie', 5, 2);
 app()->hook->{'add_filter'}('pre_user_email', '_trim', 5);
-app()->hook->{'add_filter'}('pre_user_url', 'TriTan\\Functions\\ttcms_strip_tags', 5);
-app()->hook->{'add_filter'}('reassign_posts', 'TriTan\\Functions\\reassign_posts', 5, 2);
-app()->hook->{'add_filter'}('reassign_sites', 'TriTan\\Functions\\reassign_sites', 5, 2);
+app()->hook->{'add_filter'}('pre_user_url', 'TriTan\\Functions\\Core\\ttcms_strip_tags', 5);
+app()->hook->{'add_filter'}('reassign_posts', 'TriTan\\Functions\\Db\\reassign_posts', 5, 2);
+app()->hook->{'add_filter'}('reassign_sites', 'TriTan\\Functions\\Db\\reassign_sites', 5, 2);

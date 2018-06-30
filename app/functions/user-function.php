@@ -1,12 +1,21 @@
 <?php
 
-namespace TriTan\Functions;
+namespace TriTan\Functions\User;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use TriTan\Config;
 use TriTan\Exception\Exception;
 use Cascade\Cascade;
+use TriTan\Functions\Core;
+use TriTan\Functions\Domain;
+use TriTan\Functions\Auth;
+use TriTan\Functions\Hook;
+use TriTan\Functions\Meta;
+use TriTan\Functions\Db;
+use TriTan\Functions\Cache;
+use TriTan\Functions\Dependency;
+use TriTan\Functions\Post;
 
 /**
  * TriTan CMS User Functions
@@ -31,7 +40,7 @@ function role_perm($id = 0)
     $role = app()->db->table('role')
             ->where('role_id', (int) $id)
             ->first();
-    $perm = app()->hook->{'maybe_unserialize'}(_escape($role['role_permission']));
+    $perm = app()->hook->{'maybe_unserialize'}(Core\_escape($role['role_permission']));
 
     $sql = app()->db->table('permission')->all();
     foreach ($sql as $r) {
@@ -60,7 +69,7 @@ function user_perm($id)
         $array[] = $r;
     }
 
-    $userPerm = app()->hook->{'maybe_unserialize'}(_escape($r['user_perms_permission']));
+    $userPerm = app()->hook->{'maybe_unserialize'}(Core\_escape($r['user_perms_permission']));
     /**
      * Select the role(s) of the user who's
      * userID = $id
@@ -84,7 +93,7 @@ function user_perm($id)
     /* foreach ($role as $r2) {
       $array2[] = $r2;
       } */
-    $perm = app()->hook->{'maybe_unserialize'}(_escape($role['role_permission']));
+    $perm = app()->hook->{'maybe_unserialize'}(Core\_escape($role['role_permission']));
     $permission = app()->db->table('permission')->all();
     foreach ($permission as $row) {
         echo '
@@ -121,7 +130,7 @@ function get_users_dropdown($active = null)
             ->where('meta_key', 'match', "/$tbl_prefix/")
             ->get();
     foreach ($site_users as $site_user) {
-        $users[] = _escape($site_user['user_id']);
+        $users[] = Core\_escape($site_user['user_id']);
     }
 
     $list_users = app()->db->table('user')
@@ -129,7 +138,7 @@ function get_users_dropdown($active = null)
             ->get();
 
     foreach ($list_users as $user) {
-        echo '<option value="' . (int) _escape($user['user_id']) . '"' . selected((int) _escape($user['user_id']), $active, false) . '>' . get_name((int) _escape($user['user_id'])) . '</option>';
+        echo '<option value="' . (int) Core\_escape($user['user_id']) . '"' . selected((int) Core\_escape($user['user_id']), $active, false) . '>' . get_name((int) Core\_escape($user['user_id'])) . '</option>';
     }
 }
 
@@ -151,8 +160,8 @@ function get_users_dropdown($active = null)
 function sanitize_user($username, $strict = false)
 {
     $raw_username = $username;
-    $username = ttcms_strip_tags($username);
-    $username = ttcms_remove_accents($username);
+    $username = Core\ttcms_strip_tags($username);
+    $username = Domain\ttcms_remove_accents($username);
     // Kill octets
     $username = preg_replace('|%([a-fA-F0-9][a-fA-F0-9])|', '', $username);
     // Kill entities
@@ -186,7 +195,7 @@ function sanitize_user($username, $strict = false)
  */
 function get_current_user_id()
 {
-    $cookie = get_secure_cookie_data('TTCMS_COOKIENAME');
+    $cookie = Auth\get_secure_cookie_data('TTCMS_COOKIENAME');
     if ($cookie->user_id <= 0) {
         return (int) 0;
     }
@@ -203,7 +212,7 @@ function get_current_user_id()
  */
 function ttcms_get_current_user()
 {
-    $user = get_userdata(get_current_user_id());
+    $user = Auth\get_userdata(get_current_user_id());
     return $user;
 }
 
@@ -222,23 +231,23 @@ function ttcms_get_current_user()
 function get_name($id, $reverse = false)
 {
     if ('' == _trim($id)) {
-        $message = _t('Invalid user ID: empty ID given.', 'tritan-cms');
-        _incorrectly_called(__FUNCTION__, $message, '0.9');
+        $message = Core\_t('Invalid user ID: empty ID given.', 'tritan-cms');
+        Hook\_incorrectly_called(__FUNCTION__, $message, '0.9');
         return;
     }
 
     if (!is_numeric($id)) {
-        $message = _t('Invalid user id: user id must be numeric.', 'tritan-cms');
-        _incorrectly_called(__FUNCTION__, $message, '0.9');
+        $message = Core\_t('Invalid user id: user id must be numeric.', 'tritan-cms');
+        Hook\_incorrectly_called(__FUNCTION__, $message, '0.9');
         return;
     }
 
-    $name = get_user_by('id', $id);
+    $name = Auth\get_user_by('id', $id);
 
     if ($reverse) {
-        $_name = _escape($name->user_fname) . ' ' . _escape($name->user_lname);
+        $_name = Core\_escape($name->user_fname) . ' ' . Core\_escape($name->user_lname);
     } else {
-        $_name = _escape($name->user_lname) . ', ' . _escape($name->user_fname);
+        $_name = Core\_escape($name->user_lname) . ', ' . Core\_escape($name->user_fname);
     }
 
     return app()->hook->{'apply_filter'}('get_name', $_name);
@@ -262,23 +271,23 @@ function get_name($id, $reverse = false)
 function get_initials($id, $initials = 2)
 {
     if ('' == _trim($id)) {
-        $message = _t('Invalid user ID: empty ID given.', 'tritan-cms');
-        _incorrectly_called(__FUNCTION__, $message, '0.9');
+        $message = Core\_t('Invalid user ID: empty ID given.', 'tritan-cms');
+        Hook\_incorrectly_called(__FUNCTION__, $message, '0.9');
         return;
     }
 
     if (!is_numeric($id)) {
-        $message = _t('Invalid user id: user id must be numeric.', 'tritan-cms');
-        _incorrectly_called(__FUNCTION__, $message, '0.9');
+        $message = Core\_t('Invalid user id: user id must be numeric.', 'tritan-cms');
+        Hook\_incorrectly_called(__FUNCTION__, $message, '0.9');
         return;
     }
 
-    $name = get_user_by('user_id', $id);
+    $name = Auth\get_user_by('user_id', $id);
 
     if ($initials == 2) {
-        $_initials = mb_substr(_escape($name->user_fname), 0, 1, 'UTF-8') . '. ' . mb_substr(_escape($name->user_lname), 0, 1, 'UTF-8') . '.';
+        $_initials = mb_substr(Core\_escape($name->user_fname), 0, 1, 'UTF-8') . '. ' . mb_substr(Core\_escape($name->user_lname), 0, 1, 'UTF-8') . '.';
     } else {
-        $_initials = _escape($name->user_lname) . ', ' . mb_substr(_escape($name->user_fname), 0, 1, 'UTF-8') . '.';
+        $_initials = Core\_escape($name->user_lname) . ', ' . mb_substr(Core\_escape($name->user_fname), 0, 1, 'UTF-8') . '.';
     }
 
     return app()->hook->{'apply_filter'}('get_initials', $_initials);
@@ -299,7 +308,7 @@ function get_initials($id, $initials = 2)
  */
 function get_user_value($id, $field)
 {
-    $value = get_user_by('id', $id);
+    $value = Auth\get_user_by('id', $id);
 
     return $value->{$field};
 }
@@ -317,7 +326,7 @@ function get_perm_roles()
     $query = app()->db->table('role')->all();
 
     foreach ($query as $row) {
-        echo '<option value="' . (int) _escape($row['role_id']) . '">' . _escape($row['role_name']) . '</option>' . "\n";
+        echo '<option value="' . (int) Core\_escape($row['role_id']) . '">' . Core\_escape($row['role_name']) . '</option>' . "\n";
     }
 }
 
@@ -335,8 +344,8 @@ function get_perm_roles()
  */
 function username_exists($username)
 {
-    if ($user = get_user_by('login', $username)) {
-        $user_id = (int) _escape($user->user_id);
+    if ($user = Auth\get_user_by('login', $username)) {
+        $user_id = (int) Core\_escape($user->user_id);
     } else {
         $user_id = false;
     }
@@ -365,8 +374,8 @@ function username_exists($username)
  */
 function email_exists($email)
 {
-    if ($user = get_user_by('email', $email)) {
-        $user_id = (int) _escape($user->user_id);
+    if ($user = Auth\get_user_by('email', $email)) {
+        $user_id = (int) Core\_escape($user->user_id);
     } else {
         $user_id = false;
     }
@@ -478,7 +487,7 @@ function get_user_roles($active = null)
             ->all();
 
     foreach ($roles as $role) {
-        echo '<option value="' . (string) _escape($role['role_key']) . '"' . selected((int) $active, (int) _escape($role['role_id']), false) . '>' . _escape($role['role_name']) . '</option>';
+        echo '<option value="' . (string) Core\_escape($role['role_key']) . '"' . selected((int) $active, (int) Core\_escape($role['role_id']), false) . '>' . Core\_escape($role['role_name']) . '</option>';
     }
 }
 
@@ -496,7 +505,7 @@ function get_users_list($active = null)
             ->all();
 
     foreach ($users as $user) {
-        echo '<option value="' . (int) _escape($user['user_id']) . '"' . selected($active, (int) _escape($user['user_id']), false) . '>' . get_name((int) _escape($user['user_id'])) . '</option>';
+        echo '<option value="' . (int) Core\_escape($user['user_id']) . '"' . selected($active, (int) Core\_escape($user['user_id']), false) . '>' . get_name((int) Core\_escape($user['user_id'])) . '</option>';
     }
 }
 
@@ -513,7 +522,7 @@ function get_users_list($active = null)
  */
 function get_user_meta($user_id, $key = '', $single = false)
 {
-    return get_metadata('user', $user_id, $key, $single);
+    return Meta\get_metadata('user', $user_id, $key, $single);
 }
 
 /**
@@ -527,7 +536,7 @@ function get_user_meta($user_id, $key = '', $single = false)
  */
 function get_user_meta_by_mid($mid)
 {
-    return get_metadata_by_mid('user', $mid);
+    return Meta\get_metadata_by_mid('user', $mid);
 }
 
 /**
@@ -549,7 +558,7 @@ function get_user_meta_by_mid($mid)
  */
 function update_user_meta($user_id, $meta_key, $meta_value, $prev_value = '')
 {
-    return update_metadata('user', $user_id, $meta_key, $meta_value, $prev_value);
+    return Meta\update_metadata('user', $user_id, $meta_key, $meta_value, $prev_value);
 }
 
 /**
@@ -565,9 +574,9 @@ function update_user_meta($user_id, $meta_key, $meta_value, $prev_value = '')
  */
 function update_user_meta_by_mid($mid, $meta_key, $meta_value)
 {
-    $_meta_key = ttcms_unslash($meta_key);
-    $_meta_value = ttcms_unslash($meta_value);
-    return update_metadata_by_mid('user', $mid, $_meta_key, $_meta_value);
+    $_meta_key = Core\ttcms_unslash($meta_key);
+    $_meta_value = Core\ttcms_unslash($meta_value);
+    return Meta\update_metadata_by_mid('user', $mid, $_meta_key, $_meta_value);
 }
 
 /**
@@ -584,7 +593,7 @@ function update_user_meta_by_mid($mid, $meta_key, $meta_value)
  */
 function add_user_meta($user_id, $meta_key, $meta_value, $unique = false)
 {
-    return add_metadata('user', $user_id, $meta_key, $meta_value, $unique);
+    return Meta\add_metadata('user', $user_id, $meta_key, $meta_value, $unique);
 }
 
 /**
@@ -604,7 +613,7 @@ function add_user_meta($user_id, $meta_key, $meta_value, $unique = false)
  */
 function delete_user_meta($user_id, $meta_key, $meta_value = '')
 {
-    return delete_metadata('user', $user_id, $meta_key, $meta_value);
+    return Meta\delete_metadata('user', $user_id, $meta_key, $meta_value);
 }
 
 /**
@@ -618,7 +627,7 @@ function delete_user_meta($user_id, $meta_key, $meta_value = '')
  */
 function delete_user_meta_by_mid($mid)
 {
-    return delete_metadata_by_mid('user', $mid);
+    return Meta\delete_metadata_by_mid('user', $mid);
 }
 
 /**
@@ -646,15 +655,15 @@ function get_user_option($option, $user = 0)
         $user = get_current_user_id();
     }
 
-    $udata = get_userdata($user);
+    $udata = Auth\get_userdata($user);
 
-    if (!$user = (int) _escape($udata->user_id)) {
+    if (!$user = (int) Core\_escape($udata->user_id)) {
         return false;
     }
 
-    if (null != metadata_exists('user', (int) $user, Config::get('tbl_prefix') . $option)) {
+    if (null != Meta\metadata_exists('user', (int) $user, Config::get('tbl_prefix') . $option)) {
         $result = get_user_meta((int) $user, Config::get('tbl_prefix') . $option, true);
-    } elseif (null != metadata_exists('user', (int) $user, $option)) {
+    } elseif (null != Meta\metadata_exists('user', (int) $user, $option)) {
         $result = get_user_meta((int) $user, $option, true);
     } else {
         $result = false;
@@ -773,10 +782,10 @@ function ttcms_insert_user($userdata)
     if (!empty($userdata['user_id'])) {
         $user_id = (int) $userdata['user_id'];
         $update = true;
-        $old_user_data = get_userdata($user_id);
+        $old_user_data = Auth\get_userdata($user_id);
 
         if (!$old_user_data) {
-            throw new Exception(_t('Invalid user id.', 'tritan-cms'), 'invalid_user_id');
+            throw new Exception(Core\_t('Invalid user id.', 'tritan-cms'), 'invalid_user_id');
         }
 
         // hashed in ttcms_update_user(), plaintext if called directly
@@ -784,7 +793,7 @@ function ttcms_insert_user($userdata)
     } else {
         $update = false;
         // Hash the password
-        $user_pass = ttcms_hash_password($userdata['user_pass']);
+        $user_pass = Core\ttcms_hash_password($userdata['user_pass']);
     }
 
     $sanitized_user_login = sanitize_user($userdata['user_login'], true);
@@ -804,13 +813,13 @@ function ttcms_insert_user($userdata)
 
     // user_login must be between 0 and 60 characters.
     if (empty($user_login)) {
-        throw new Exception(_t('Cannot create a user with an empty login name.', 'tritan-cms'), 'empty_user_login');
+        throw new Exception(Core\_t('Cannot create a user with an empty login name.', 'tritan-cms'), 'empty_user_login');
     } elseif (mb_strlen($user_login) > 60) {
-        throw new Exception(_t('Username may not be longer than 60 characters.', 'tritan-cms'), 'user_login_too_long');
+        throw new Exception(Core\_t('Username may not be longer than 60 characters.', 'tritan-cms'), 'user_login_too_long');
     }
 
     if (!$update && username_exists($user_login)) {
-        throw new Exception(_t('Sorry, that username already exists!', 'tritan-cms'), 'existing_user_login');
+        throw new Exception(Core\_t('Sorry, that username already exists!', 'tritan-cms'), 'existing_user_login');
     }
 
     /**
@@ -822,10 +831,10 @@ function ttcms_insert_user($userdata)
     $illegal_logins = (array) app()->hook->{'apply_filter'}('illegal_user_logins', blacklisted_usernames());
 
     if (in_array(strtolower($user_login), array_map('strtolower', $illegal_logins))) {
-        throw new Exception(sprintf(_t('Sorry, the username <strong>%s</strong> is not allowed.', 'tritan-cms'), $user_login), 'invalid_username');
+        throw new Exception(sprintf(Core\_t('Sorry, the username <strong>%s</strong> is not allowed.', 'tritan-cms'), $user_login), 'invalid_username');
     }
 
-    $raw_user_url = if_null($userdata['user_url']);
+    $raw_user_url = Core\if_null($userdata['user_url']);
     /**
      * Filters a user's URL before the user is created or updated.
      *
@@ -834,7 +843,7 @@ function ttcms_insert_user($userdata)
      */
     $user_url = app()->hook->{'apply_filter'}('pre_user_url', $raw_user_url);
 
-    $raw_user_email = if_null($userdata['user_email']);
+    $raw_user_email = Core\if_null($userdata['user_email']);
     /**
      * Filters a user's email before the user is created or updated.
      *
@@ -848,8 +857,8 @@ function ttcms_insert_user($userdata)
      * check if current email and new email are the same, or not, and check `email_exists`
      * accordingly.
      */
-    if ((!$update || (!empty($old_user_data) && 0 !== strcasecmp($user_email, _escape($old_user_data->user_email)) ) ) && email_exists($user_email)) {
-        throw new Exception(_t('Sorry, that email address is already used.', 'tritan-cms'), 'existing_user_email');
+    if ((!$update || (!empty($old_user_data) && 0 !== strcasecmp($user_email, Core\_escape($old_user_data->user_email)) ) ) && email_exists($user_email)) {
+        throw new Exception(Core\_t('Sorry, that email address is already used.', 'tritan-cms'), 'existing_user_email');
     }
 
     // Store values to save in user meta.
@@ -857,7 +866,7 @@ function ttcms_insert_user($userdata)
 
     $meta['username'] = $user_login;
 
-    $user_fname = if_null($userdata['user_fname']);
+    $user_fname = Core\if_null($userdata['user_fname']);
     /**
      * Filters a user's first name before the user is created or updated.
      *
@@ -866,7 +875,7 @@ function ttcms_insert_user($userdata)
      */
     $meta['fname'] = app()->hook->{'apply_filter'}('pre_user_fname', $user_fname);
 
-    $user_lname = if_null($userdata['user_lname']);
+    $user_lname = Core\if_null($userdata['user_lname']);
     /**
      * Filters a user's last name before the user is created or updated.
      *
@@ -877,7 +886,7 @@ function ttcms_insert_user($userdata)
 
     $meta['email'] = $user_email;
 
-    $user_bio = if_null($userdata['user_bio']);
+    $user_bio = Core\if_null($userdata['user_bio']);
     /**
      * Filters a user's bio before the user is created or updated.
      *
@@ -886,7 +895,7 @@ function ttcms_insert_user($userdata)
      */
     $meta['bio'] = app()->hook->{'apply_filter'}('pre_user_bio', $user_bio);
 
-    $user_status = if_null($userdata['user_status']);
+    $user_status = Core\if_null($userdata['user_status']);
     /**
      * Filters a user's status before the user is created or updated.
      *
@@ -897,15 +906,15 @@ function ttcms_insert_user($userdata)
 
     $user_admin_layout = 0;
 
-    $meta['admin_layout'] = if_null($user_admin_layout);
+    $meta['admin_layout'] = Core\if_null($user_admin_layout);
 
     $user_admin_sidebar = 0;
 
-    $meta['admin_sidebar'] = if_null($user_admin_sidebar);
+    $meta['admin_sidebar'] = Core\if_null($user_admin_sidebar);
 
     $user_admin_skin = 'skin-red-light';
 
-    $meta['admin_skin'] = if_null($user_admin_skin);
+    $meta['admin_skin'] = Core\if_null($user_admin_skin);
 
     $user_addedby = (int) get_current_user_id() <= (int) 0 ? (int) 1 : (int) get_current_user_id();
 
@@ -914,7 +923,7 @@ function ttcms_insert_user($userdata)
     $user_modified = (string) format_date();
 
     $compacted = compact('user_login', 'user_fname', 'user_lname', 'user_pass', 'user_email', 'user_url');
-    $data = ttcms_unslash($compacted);
+    $data = Core\ttcms_unslash($compacted);
 
     /**
      * Filters user data before the record is created or updated.
@@ -942,7 +951,7 @@ function ttcms_insert_user($userdata)
 
     if (!$update) {
         $_data = $data + compact('user_addedby', 'user_registered');
-        $user_id = auto_increment('user', 'user_id');
+        $user_id = Db\auto_increment('user', 'user_id');
         $_user_id = ['user_id' => $user_id];
         $data = array_merge($_user_id, $_data);
     } else {
@@ -1007,7 +1016,7 @@ function ttcms_insert_user($userdata)
 
     // Update user meta.
     foreach ($meta as $key => $value) {
-        update_user_option($user_id, $key, if_null($value));
+        update_user_option($user_id, $key, Core\if_null($value));
     }
 
     clean_user_cache($user);
@@ -1058,13 +1067,13 @@ function ttcms_update_user($userdata)
 
     $ID = isset($userdata['user_id']) ? (int) $userdata['user_id'] : (int) 0;
     if (!$ID) {
-        throw new Exception(_t('Invalid user id.', 'tritan-cms'), 'invalid_user_id');
+        throw new Exception(Core\_t('Invalid user id.', 'tritan-cms'), 'invalid_user_id');
     }
 
     // First, get all of the original fields
-    $user_obj = get_userdata($ID);
+    $user_obj = Auth\get_userdata($ID);
     if (!$user_obj) {
-        throw new Exception(_t('Invalid user id.', 'tritan-cms'), 'invalid_user_id');
+        throw new Exception(Core\_t('Invalid user id.', 'tritan-cms'), 'invalid_user_id');
     }
 
     $user = $user_obj->to_array();
@@ -1072,13 +1081,13 @@ function ttcms_update_user($userdata)
     $additional_user_keys = ['username', 'fname', 'lname', 'email', 'bio', 'role', 'status', 'admin_layout', 'admin_sidebar', 'admin_skin'];
     // Add additional custom fields
     foreach ($additional_user_keys as $key) {
-        $user[$key] = get_user_option($key, (int) _escape($user['user_id']));
+        $user[$key] = get_user_option($key, (int) Core\_escape($user['user_id']));
     }
 
     if (!empty($userdata['user_pass']) && $userdata['user_pass'] !== $user_obj->user_pass) {
         // If password is changing, hash it now
         $plaintext_pass = $userdata['user_pass'];
-        $userdata['user_pass'] = ttcms_hash_password($userdata['user_pass']);
+        $userdata['user_pass'] = Core\ttcms_hash_password($userdata['user_pass']);
 
         /**
          * Filters whether to send the password change email.
@@ -1109,13 +1118,13 @@ function ttcms_update_user($userdata)
         $send_email_change_email = app()->hook->{'apply_filter'}('send_email_change_email', true, $user, $userdata);
     }
 
-    ttcms_cache_delete(_escape($user['user_email']), 'useremail');
+    Cache\ttcms_cache_delete(Core\_escape($user['user_email']), 'useremail');
 
     // Merge old and new fields with new fields overwriting old ones.
     $userdata = array_merge($user, $userdata);
     $user_id = ttcms_insert_user($userdata);
 
-    if (!is_ttcms_exception($user_id)) {
+    if (!Core\is_ttcms_exception($user_id)) {
 
         if (!empty($send_password_change_email)) {
             app()->hook->{'do_action'}('password_change_email', $user, $plaintext_pass, $userdata);
@@ -1148,7 +1157,7 @@ function ttcms_delete_user($user_id, $assign_id = null)
     }
 
     if ((int) $user_id == (int) 1) {
-        _ttcms_flash()->{'error'}(func\_t('You are not allowed to delete the super administrator account.', 'tritan-cms'));
+        Dependency\_ttcms_flash()->{'error'}(Core\_t('You are not allowed to delete the super administrator account.', 'tritan-cms'));
         exit();
     }
 
@@ -1186,7 +1195,7 @@ function ttcms_delete_user($user_id, $assign_id = null)
     $meta = app()->db->table('usermeta')->where('user_id', $user_id)->get(['meta_id']);
     if ($meta) {
         foreach ($meta as $mid) {
-            delete_metadata_by_mid('user', $mid['meta_id']);
+            Meta\delete_metadata_by_mid('user', $mid['meta_id']);
         }
     }
 
@@ -1221,22 +1230,22 @@ function send_reset_password_email($user, $password)
 {
     $site_name = app()->hook->{'get_option'}('sitename');
 
-    $message .= sprintf(_t("<p>Hello %s! You requested that your password be reset. Please see your new password below: <br />", 'tritan-cms'), _escape($user['user_fname']));
-    $message .= sprintf(_t('Password: %s', 'tritan-cms'), $password) . "</p>";
-    $message .= sprintf(_t('<p>If you still have problems with logging in, please contact us at %s.', 'tritan-cms'), app()->hook->{'get_option'}('admin_email')) . "</p>";
+    $message .= sprintf(Core\_t("<p>Hello %s! You requested that your password be reset. Please see your new password below: <br />", 'tritan-cms'), Core\_escape($user['user_fname']));
+    $message .= sprintf(Core\_t('Password: %s', 'tritan-cms'), $password) . "</p>";
+    $message .= sprintf(Core\_t('<p>If you still have problems with logging in, please contact us at %s.', 'tritan-cms'), app()->hook->{'get_option'}('admin_email')) . "</p>";
 
-    $message = process_email_html($message, sprintf(_t('[%s] Password Reset', 'tritan-cms'), $site_name));
-    $headers[] = sprintf("From: %s <auto-reply@%s>", $site_name, get_domain_name());
+    $message = Core\process_email_html($message, sprintf(Core\_t('[%s] Password Reset', 'tritan-cms'), $site_name));
+    $headers[] = sprintf("From: %s <auto-reply@%s>", $site_name, Core\get_domain_name());
     if (!function_exists('ttcms_smtp')) {
         $headers[] = 'Content-Type: text/html; charset="UTF-8"';
         $headers[] = sprintf("X-Mailer: TriTan CMS %s", CURRENT_RELEASE);
     }
     try {
-        _ttcms_email()->ttcmsMail(_escape($user['user_email']), sprintf(_t('[%s] Notice of Password Reset', 'tritan-cms'), $site_name), $message, $headers);
+        Dependency\_ttcms_email()->ttcmsMail(Core\_escape($user['user_email']), sprintf(Core\_t('[%s] Notice of Password Reset', 'tritan-cms'), $site_name), $message, $headers);
     } catch (\PHPMailer\PHPMailer\Exception $ex) {
-        _ttcms_flash()->error($ex->getMessage());
+        Dependency\_ttcms_flash()->error($ex->getMessage());
     } catch (Exception $ex) {
-        _ttcms_flash()->error($ex->getMessage());
+        Dependency\_ttcms_flash()->error($ex->getMessage());
     }
 }
 
@@ -1257,22 +1266,22 @@ function send_password_change_email($user, $password, $userdata)
 {
     $site_name = app()->hook->{'get_option'}('sitename');
 
-    $message .= sprintf(_t("<p>Hello %s! This is confirmation that your password on %s was updated to: <br />", 'tritan-cms'), _escape($user['user_fname']), app()->hook->{'get_option'}('sitename'));
-    $message .= sprintf(_t('Password: %s', 'tritan-cms'), $password) . "</p>";
-    $message .= sprintf(_t('<p>If you did not initiate a password change/update, please contact us at %s.', 'tritan-cms'), app()->hook->{'get_option'}('admin_email')) . "</p>";
+    $message .= sprintf(Core\_t("<p>Hello %s! This is confirmation that your password on %s was updated to: <br />", 'tritan-cms'), Core\_escape($user['user_fname']), app()->hook->{'get_option'}('sitename'));
+    $message .= sprintf(Core\_t('Password: %s', 'tritan-cms'), $password) . "</p>";
+    $message .= sprintf(Core\_t('<p>If you did not initiate a password change/update, please contact us at %s.', 'tritan-cms'), app()->hook->{'get_option'}('admin_email')) . "</p>";
 
-    $message = process_email_html($message, sprintf(_t('[%s] Notice of Password Change', 'tritan-cms'), $site_name));
-    $headers[] = sprintf("From: %s <auto-reply@%s>", $site_name, get_domain_name());
+    $message = Core\process_email_html($message, sprintf(Core\_t('[%s] Notice of Password Change', 'tritan-cms'), $site_name));
+    $headers[] = sprintf("From: %s <auto-reply@%s>", $site_name, Core\get_domain_name());
     if (!function_exists('ttcms_smtp')) {
         $headers[] = 'Content-Type: text/html; charset="UTF-8"';
         $headers[] = sprintf("X-Mailer: TriTan CMS %s", CURRENT_RELEASE);
     }
     try {
-        _ttcms_email()->ttcmsMail(_escape($user['user_email']), sprintf(_t('[%s] Notice of Password Change', 'tritan-cms'), $site_name), $message, $headers);
+        Dependency\_ttcms_email()->ttcmsMail(Core\_escape($user['user_email']), sprintf(Core\_t('[%s] Notice of Password Change', 'tritan-cms'), $site_name), $message, $headers);
     } catch (\PHPMailer\PHPMailer\Exception $ex) {
-        _ttcms_flash()->error($ex->getMessage());
+        Dependency\_ttcms_flash()->error($ex->getMessage());
     } catch (Exception $ex) {
-        _ttcms_flash()->error($ex->getMessage());
+        Dependency\_ttcms_flash()->error($ex->getMessage());
     }
 }
 
@@ -1290,22 +1299,22 @@ function send_email_change_email($user, $userdata)
 {
     $site_name = app()->hook->{'get_option'}('sitename');
 
-    $message .= sprintf(_t("<p>Hello %s! This is confirmation that your email on %s was updated to: <br />", 'tritan-cms'), _escape($user['user_fname']), $site_name);
-    $message .= sprintf(_t('Email: %s', 'tritan-cms'), _escape($userdata['user_email'])) . "</p>";
-    $message .= sprintf(_t('<p>If you did not initiate an email change/update, please contact us at %s.', 'tritan-cms'), app()->hook->{'get_option'}('admin_email')) . "</p>";
+    $message .= sprintf(Core\_t("<p>Hello %s! This is confirmation that your email on %s was updated to: <br />", 'tritan-cms'), Core\_escape($user['user_fname']), $site_name);
+    $message .= sprintf(Core\_t('Email: %s', 'tritan-cms'), Core\_escape($userdata['user_email'])) . "</p>";
+    $message .= sprintf(Core\_t('<p>If you did not initiate an email change/update, please contact us at %s.', 'tritan-cms'), app()->hook->{'get_option'}('admin_email')) . "</p>";
 
-    $message = process_email_html($message, sprintf(_t('[%s] Notice of Email Change', 'tritan-cms'), $site_name));
-    $headers[] = sprintf("From: %s <auto-reply@%s>", $site_name, get_domain_name());
+    $message = Core\process_email_html($message, sprintf(Core\_t('[%s] Notice of Email Change', 'tritan-cms'), $site_name));
+    $headers[] = sprintf("From: %s <auto-reply@%s>", $site_name, Core\get_domain_name());
     if (!function_exists('ttcms_smtp')) {
         $headers[] = 'Content-Type: text/html; charset="UTF-8"';
         $headers[] = sprintf("X-Mailer: TriTan CMS %s", CURRENT_RELEASE);
     }
     try {
-        _ttcms_email()->ttcmsMail(_escape($userdata['user_email']), sprintf(_t('[%s] Notice of Email Change', 'tritan-cms'), $site_name), $message, $headers);
+        Dependency\_ttcms_email()->ttcmsMail(Core\_escape($userdata['user_email']), sprintf(Core\_t('[%s] Notice of Email Change', 'tritan-cms'), $site_name), $message, $headers);
     } catch (\PHPMailer\PHPMailer\Exception $ex) {
-        _ttcms_flash()->error($ex->getMessage());
+        Dependency\_ttcms_flash()->error($ex->getMessage());
     } catch (Exception $ex) {
-        _ttcms_flash()->error($ex->getMessage());
+        Dependency\_ttcms_flash()->error($ex->getMessage());
     }
 }
 
@@ -1326,11 +1335,11 @@ function update_user_caches($user)
         }
     }
 
-    $_user = is_array($user) ? array_to_object($user) : $user;
+    $_user = is_array($user) ? Core\array_to_object($user) : $user;
 
-    ttcms_cache_add(_escape($_user->user_id), $_user, 'users');
-    ttcms_cache_add(_escape($_user->user_login), (int) _escape($_user->user_id), 'userlogins');
-    ttcms_cache_add(_escape($_user->user_email), (int) _escape($_user->user_id), 'useremail');
+    Cache\ttcms_cache_add(Core\_escape($_user->user_id), $_user, 'users');
+    Cache\ttcms_cache_add(Core\_escape($_user->user_login), (int) Core\_escape($_user->user_id), 'userlogins');
+    Cache\ttcms_cache_add(Core\_escape($_user->user_email), (int) Core\_escape($_user->user_id), 'useremail');
 }
 
 /**
@@ -1353,12 +1362,12 @@ function clean_user_cache($user)
         return;
     }
 
-    $_user = is_array($user) ? array_to_object($user) : $user;
+    $_user = is_array($user) ? Core\array_to_object($user) : $user;
 
-    ttcms_cache_delete((int) _escape($_user->user_id), 'users');
-    ttcms_cache_delete(_escape($_user->user_login), 'userlogins');
-    ttcms_cache_delete(_escape($_user->user_email), 'useremail');
-    ttcms_cache_delete((int) _escape($_user->user_id), 'user_meta');
+    Cache\ttcms_cache_delete((int) Core\_escape($_user->user_id), 'users');
+    Cache\ttcms_cache_delete(Core\_escape($_user->user_login), 'userlogins');
+    Cache\ttcms_cache_delete(Core\_escape($_user->user_email), 'useremail');
+    Cache\ttcms_cache_delete((int) Core\_escape($_user->user_id), 'user_meta');
 
     /**
      * Fires immediately after the given user's cache is cleaned.
@@ -1367,7 +1376,7 @@ function clean_user_cache($user)
      * @param int   $_user_id User user_id.
      * @param User  $_user    User object.
      */
-    app()->hook->{'do_action'}('clean_user_cache', (int) _escape($_user->user_id), $_user);
+    app()->hook->{'do_action'}('clean_user_cache', (int) Core\_escape($_user->user_id), $_user);
 }
 
 /**
@@ -1479,11 +1488,11 @@ function blacklisted_usernames()
  */
 function recently_published_widget()
 {
-    $posts = get_all_posts(null, 5);
-    $_posts = ttcms_list_sort($posts, 'post_created', 'DESC');
+    $posts = Db\get_all_posts(null, 5);
+    $_posts = Core\ttcms_list_sort($posts, 'post_created', 'DESC');
 
     foreach ($_posts as $post) {
-        echo '<div class="text-muted">' . get_post_datetime(_escape($post['post_id'])) . "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . sprintf('<a href="%s">%s</a>', get_base_url() . 'admin' . '/' . _escape($post['post_type']['post_posttype']) . '/' . _escape($post['post_id']) . '/', _escape($post['post_title'])) . '</div>';
+        echo '<div class="text-muted">' . Post\get_post_datetime(Core\_escape($post['post_id'])) . "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . sprintf('<a href="%s">%s</a>', Core\get_base_url() . 'admin' . '/' . Core\_escape($post['post_type']['post_posttype']) . '/' . Core\_escape($post['post_id']) . '/', Core\_escape($post['post_title'])) . '</div>';
     }
 }
 
@@ -1533,14 +1542,14 @@ function tritan_cms_feed_widget()
  */
 function reset_password($user_id = 0)
 {
-    $password = ttcms_generate_password();
+    $password = Core\ttcms_generate_password();
     $data = ['user_id' => (int) $user_id, 'user_pass' => (string) $password];
 
     try {
         $user = ttcms_update_user($data);
         return $user;
     } catch (Exception $ex) {
-        _ttcms_flash()->{'error'}($ex->getMessage());
+        Dependency\_ttcms_flash()->{'error'}($ex->getMessage());
     }
 }
 
@@ -1562,7 +1571,7 @@ function get_users_reassign($user_id = 0)
             ->where('meta_key', 'match', "/$tbl_prefix/")
             ->get();
     foreach ($site_users as $site_user) {
-        $users[] = (int) _escape($site_user['user_id']);
+        $users[] = (int) Core\_escape($site_user['user_id']);
     }
 
     $list_users = app()->db->table('user')
@@ -1571,7 +1580,7 @@ function get_users_reassign($user_id = 0)
             ->get();
 
     foreach ($list_users as $user) {
-        echo '<option value="' . (int) _escape($user['user_id']) . '">' . get_name((int) _escape($user['user_id'])) . '</option>';
+        echo '<option value="' . (int) Core\_escape($user['user_id']) . '">' . get_name((int) Core\_escape($user['user_id'])) . '</option>';
     }
 }
 
@@ -1591,7 +1600,7 @@ function get_users_by_siteid($site_id = 0)
             ->where('meta_key', 'match', "/$tbl_prefix/")
             ->get();
     foreach ($site_users as $site_user) {
-        $users[] = (int) _escape($site_user['user_id']);
+        $users[] = (int) Core\_escape($site_user['user_id']);
     }
 
     $list_users = app()->db->table('user')

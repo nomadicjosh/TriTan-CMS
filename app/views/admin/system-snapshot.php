@@ -2,7 +2,8 @@
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use TriTan\Config;
-use TriTan\Functions as func;
+use TriTan\Functions\Dependency;
+use TriTan\Functions\Core;
 /**
  * System Snapshot Report View
  *  
@@ -25,14 +26,14 @@ Config::set('screen_child', 'snapshot');
     <div class="box box-solid">
         <div class="box-header with-border">
             <i class="fa fa-file-image-o"></i>
-            <h3 class="box-title"><?= func\_t('System Snapshot Report', 'tritan-cms'); ?></h3>
+            <h3 class="box-title"><?= Core\_t('System Snapshot Report', 'tritan-cms'); ?></h3>
         </div>
     </div>
 
     <!-- Main content -->
     <section class="content">
 
-        <?= func\_ttcms_flash()->showMessage(); ?>
+        <?= Dependency\_ttcms_flash()->showMessage(); ?>
 
         <div class="box box-default">
             <pre>
@@ -42,13 +43,13 @@ Config::set('screen_child', 'snapshot');
                 $report .= $this->app->hook->{'apply_filter'}('system_snapshot_report_before', '');
 
                 $report .= "\n\t" . '** TriTan CMS DATA **' . PHP_EOL . PHP_EOL;
-                $report .= 'Site URL:' . "\t\t\t\t\t\t" . func\get_base_url() . PHP_EOL;
+                $report .= 'Site URL:' . "\t\t\t\t\t\t" . Core\get_base_url() . PHP_EOL;
                 $report .= 'TriTan CMS Release:' . "\t\t\t\t\t" . CURRENT_RELEASE . PHP_EOL;
-                $report .= 'API Key:' . "\t\t\t\t\t\t" . (preg_match('/\s/', $this->app->hook->{'get_option'}('api_key')) ? '<font color="red">' . func\_t('No', 'tritan-cms') . '</font>' : '<font color="green">' . func\_t('Yes', 'tritan-cms') . '</font>') . PHP_EOL;
+                $report .= 'API Key:' . "\t\t\t\t\t\t" . (preg_match('/\s/', $this->app->hook->{'get_option'}('api_key')) ? '<font color="red">' . Core\_t('No', 'tritan-cms') . '</font>' : '<font color="green">' . Core\_t('Yes', 'tritan-cms') . '</font>') . PHP_EOL;
                 $report .= "Active User Count:" . "\t\t\t\t\t" . (int) $user . PHP_EOL;
-                $report .= sprintf("DB Errors:" . "\t\t\t\t\t\t" . ((int) $error <= 0 ? '<font color="green">0</font>' : '<font color="red">' . (int) $error . '</font> (<a href="%s"><strong>Click Here</strong></a>)'), func\get_base_url() . 'admin/error/') . PHP_EOL;
+                $report .= sprintf("DB Errors:" . "\t\t\t\t\t\t" . ((int) $error <= 0 ? '<font color="green">0</font>' : '<font color="red">' . (int) $error . '</font> (<a href="%s"><strong>Click Here</strong></a>)'), Core\get_base_url() . 'admin/error/') . PHP_EOL;
                 $report .= "\n\t" . '** TriTan CMS CONFIG **' . PHP_EOL . PHP_EOL;
-                $report .= 'Environment:' . "\t\t\t\t\t\t" . (APP_ENV == 'PROD' ? '<font color="green">' . func\_t('Production', 'tritan-cms') . '</font>' : '<font color="red">' . func\_t('Development', 'tritan-cms') . '</font>') . PHP_EOL;
+                $report .= 'Environment:' . "\t\t\t\t\t\t" . (APP_ENV == 'PROD' ? '<font color="green">' . Core\_t('Production', 'tritan-cms') . '</font>' : '<font color="red">' . Core\_t('Development', 'tritan-cms') . '</font>') . PHP_EOL;
                 $report .= 'Base Path:' . "\t\t\t\t\t\t" . BASE_PATH . PHP_EOL;
                 $report .= 'Application Path:' . "\t\t\t\t\t" . APP_PATH . PHP_EOL;
 
@@ -64,12 +65,12 @@ Config::set('screen_child', 'snapshot');
                 $report .= 'Post Max:' . "\t\t\t\t\t\t" . ini_get('post_max_size') . PHP_EOL;
                 $report .= 'Time Limit:' . "\t\t\t\t\t\t" . ini_get('max_execution_time') . PHP_EOL;
                 $report .= 'Max Input Vars:' . "\t\t\t\t\t\t" . ini_get('max_input_vars') . PHP_EOL;
-                $report .= 'Cookie Path:' . "\t\t\t\t\t\t" . (func\ttcms_is_writable($this->app->config('cookies.savepath')) ? '<font color="green">' . $this->app->config('cookies.savepath') . '</font>' : '<font color="red">' . $this->app->config('cookies.savepath') . '</font>') . PHP_EOL;
-                $report .= 'Regular Cookie TTL:' . "\t\t\t\t\t" . func\ttcms_seconds_to_time($this->app->config('cookies.lifetime')) . PHP_EOL;
-                $report .= 'Secure Cookie TTL:' . "\t\t\t\t\t" . func\ttcms_seconds_to_time($this->app->hook->{'get_option'}('cookieexpire')) . PHP_EOL;
-                $report .= 'File Save Path:' . "\t\t\t\t\t\t" . (func\ttcms_is_writable(Config::get('site_path') . 'files' . DS) ? '<font color="green">' . Config::get('site_path') . 'files' . DS . '</font>' : '<font color="red">' . Config::get('site_path') . 'files' . DS . '</font>') . PHP_EOL;
-                $report .= 'TriTan CMS Node:' . "\t\t\t\t\t" . (func\ttcms_is_writable(TTCMS_NODEQ_PATH) ? '<font color="green">' . TTCMS_NODEQ_PATH . '</font>' : '<font color="red">' . TTCMS_NODEQ_PATH . '</font>') . PHP_EOL;
-                $report .= 'cURL Enabled:' . "\t\t\t\t\t\t" . (function_exists('curl_version') ? '<font color="green">' . func\_t('Yes', 'tritan-cms') . '</font>' : '<font color="red">' . func\_t('No', 'tritan-cms') . '</font>') . PHP_EOL;
+                $report .= 'Cookie Path:' . "\t\t\t\t\t\t" . (Core\ttcms_is_writable($this->app->config('cookies.savepath')) ? '<font color="green">' . $this->app->config('cookies.savepath') . '</font>' : '<font color="red">' . $this->app->config('cookies.savepath') . '</font>') . PHP_EOL;
+                $report .= 'Regular Cookie TTL:' . "\t\t\t\t\t" . Core\ttcms_seconds_to_time($this->app->config('cookies.lifetime')) . PHP_EOL;
+                $report .= 'Secure Cookie TTL:' . "\t\t\t\t\t" . Core\ttcms_seconds_to_time($this->app->hook->{'get_option'}('cookieexpire')) . PHP_EOL;
+                $report .= 'File Save Path:' . "\t\t\t\t\t\t" . (Core\ttcms_is_writable(Config::get('site_path') . 'files' . DS) ? '<font color="green">' . Config::get('site_path') . 'files' . DS . '</font>' : '<font color="red">' . Config::get('site_path') . 'files' . DS . '</font>') . PHP_EOL;
+                $report .= 'TriTan CMS Node:' . "\t\t\t\t\t" . (Core\ttcms_is_writable(TTCMS_NODEQ_PATH) ? '<font color="green">' . TTCMS_NODEQ_PATH . '</font>' : '<font color="red">' . TTCMS_NODEQ_PATH . '</font>') . PHP_EOL;
+                $report .= 'cURL Enabled:' . "\t\t\t\t\t\t" . (function_exists('curl_version') ? '<font color="green">' . Core\_t('Yes', 'tritan-cms') . '</font>' : '<font color="red">' . Core\_t('No', 'tritan-cms') . '</font>') . PHP_EOL;
 
                 // add filter for end of report
                 $report .= $this->app->hook->{'apply_filter'}('system_snapshot_report_after', '');

@@ -1,9 +1,11 @@
 <?php
 
-namespace TriTan\Functions;
+namespace TriTan\Functions\Cache;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
+
+use TriTan\Functions\Dependency;
 
 /**
  * TriTan CMS Cache API.
@@ -43,7 +45,7 @@ function ttcms_cache_add($key, $data, $namespace = '', $expire = 3600)
      *            When the cache data should expire, in seconds.
      */
     $ttl = app()->hook->{'apply_filter'}('ttcms_cache_increase_ttl', $expire);
-    $cache = _ttcms_cache_init();
+    $cache = Dependency\_ttcms_cache_init();
     return $cache->create($key, $data, $namespace, (int) $ttl);
 }
 
@@ -63,7 +65,7 @@ function ttcms_cache_add($key, $data, $namespace = '', $expire = 3600)
  */
 function ttcms_cache_get($key, $namespace = '')
 {
-    $cache = _ttcms_cache_init();
+    $cache = Dependency\_ttcms_cache_init();
     return $cache->read($key, $namespace);
 }
 
@@ -95,7 +97,7 @@ function ttcms_cache_replace($key, $data, $namespace = '', $expire = 3600)
      *            When the cache data should expire, in seconds.
      */
     $ttl = app()->hook->{'apply_filter'}('ttcms_cache_replace_ttl', $expire);
-    $cache = _ttcms_cache_init();
+    $cache = Dependency\_ttcms_cache_init();
     return $cache->update($key, $data, $namespace, (int) $ttl);
 }
 
@@ -114,7 +116,7 @@ function ttcms_cache_replace($key, $data, $namespace = '', $expire = 3600)
  */
 function ttcms_cache_delete($key, $namespace = '')
 {
-    $cache = _ttcms_cache_init();
+    $cache = Dependency\_ttcms_cache_init();
     return $cache->delete($key, $namespace);
 }
 
@@ -129,7 +131,7 @@ function ttcms_cache_delete($key, $namespace = '')
  */
 function ttcms_cache_flush()
 {
-    $cache = _ttcms_cache_init();
+    $cache = Dependency\_ttcms_cache_init();
     return $cache->flush();
 }
 
@@ -146,7 +148,7 @@ function ttcms_cache_flush()
  */
 function ttcms_cache_flush_namespace($value)
 {
-    $cache = _ttcms_cache_init();
+    $cache = Dependency\_ttcms_cache_init();
     return $cache->flushNamespace($value);
 }
 
@@ -177,7 +179,7 @@ function ttcms_cache_set($key, $data, $namespace = '', $expire = 3600)
      *            When the cache data should expire, in seconds.
      */
     $ttl = app()->hook->{'apply_filter'}('ttcms_cache_increase_ttl', $expire);
-    $cache = _ttcms_cache_init();
+    $cache = Dependency\_ttcms_cache_init();
     return $cache->set($key, $data, $namespace, (int) $ttl);
 }
 
@@ -193,7 +195,7 @@ function ttcms_cache_set($key, $data, $namespace = '', $expire = 3600)
  */
 function ttcms_cache_get_stats()
 {
-    $cache = _ttcms_cache_init();
+    $cache = Dependency\_ttcms_cache_init();
     return $cache->getStats();
 }
 
@@ -214,7 +216,7 @@ function ttcms_cache_get_stats()
  */
 function ttcms_cache_increment($key, $offset = 1, $namespace = '')
 {
-    $cache = _ttcms_cache_init();
+    $cache = Dependency\_ttcms_cache_init();
     return $cache->inc($key, (int) $offset, $namespace);
 }
 
@@ -235,6 +237,6 @@ function ttcms_cache_increment($key, $offset = 1, $namespace = '')
  */
 function ttcms_cache_decrement($key, $offset = 1, $namespace = '')
 {
-    $cache = _ttcms_cache_init();
+    $cache = Dependency\_ttcms_cache_init();
     return $cache->dec($key, (int) $offset, $namespace);
 }

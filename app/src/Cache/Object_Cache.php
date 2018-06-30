@@ -4,7 +4,7 @@ namespace TriTan\Cache;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
-use TriTan\Functions as func;
+use TriTan\Functions\Core;
 
 /**
  * TriTan CMS Object Cache Class
@@ -93,7 +93,7 @@ class Object_Cache
         }
 
         $error = $this->_cache;
-        if (func\is_ttcms_exception($error)) {
+        if (Core\is_ttcms_exception($error)) {
             Cascade\Cascade::getLogger('error')->error(sprintf('IOSTATE[%s]: Forbidden: %s', $error->getCode(), $error->getMessage()));
             return false;
         }

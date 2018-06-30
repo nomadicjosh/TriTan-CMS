@@ -1,7 +1,9 @@
 <?php
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
-use TriTan\Functions as func;
+use TriTan\Functions\Dependency;
+use TriTan\Functions\User;
+use TriTan\Functions\Core;
 $this->layout('main::_layouts/admin-layout');
 $this->section('backend');
 TriTan\Config::set('screen_parent', 'dashboard');
@@ -13,19 +15,19 @@ TriTan\Config::set('screen_child', 'home');
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>
-            <?= func\_t('Dashboard', 'tritan-cms'); ?>
-            <small><?= func\_t('Control panel', 'tritan-cms'); ?></small>
+            <?= Core\_t('Dashboard', 'tritan-cms'); ?>
+            <small><?= Core\_t('Control panel', 'tritan-cms'); ?></small>
         </h1>
         <ol class="breadcrumb">
-            <li><a href="#"><i class="fa fa-dashboard"></i> <?= func\_t('Home', 'tritan-cms'); ?></a></li>
-            <li class="active"><?= func\_t('Dashboard', 'tritan-cms'); ?></li>
+            <li><a href="#"><i class="fa fa-dashboard"></i> <?= Core\_t('Home', 'tritan-cms'); ?></a></li>
+            <li class="active"><?= Core\_t('Dashboard', 'tritan-cms'); ?></li>
         </ol>
     </section>
 
     <!-- Main content -->
     <section class="content">
 
-            <?= func\_ttcms_flash()->showMessage(); ?>
+            <?= Dependency\_ttcms_flash()->showMessage(); ?>
 
         <div class="row">
             <?php //top widgets can go here.  ?>
@@ -39,7 +41,7 @@ TriTan\Config::set('screen_child', 'home');
 
                 <div class="box">
                     <div class="box-header with-border">
-                        <h3 class="box-title"><i class="fa fa-text-width"></i> <?= func\_t('Recently Posted', 'tritan-cms'); ?></h3>
+                        <h3 class="box-title"><i class="fa fa-text-width"></i> <?= Core\_t('Recently Posted', 'tritan-cms'); ?></h3>
                         <div class="box-tools pull-right">
                             <!-- Collapse Button -->
                             <!--<button type="button" class="btn btn-box-tool" data-widget="collapse">
@@ -50,7 +52,7 @@ TriTan\Config::set('screen_child', 'home');
                     </div>
                     <!-- /.box-header -->
                     <div class="box-body">
-                        <?php func\recently_published_widget(); ?>
+                        <?php User\recently_published_widget(); ?>
                     </div>
                     <!-- /.box-body -->
                 </div>
@@ -64,7 +66,7 @@ TriTan\Config::set('screen_child', 'home');
                 
                 <div class="box">
                     <div class="box-header with-border">
-                        <h3 class="box-title"><i class="fa fa-rss"></i> <?= func\_t('TriTan CMS Feed', 'tritan-cms'); ?></h3>
+                        <h3 class="box-title"><i class="fa fa-rss"></i> <?= Core\_t('TriTan CMS Feed', 'tritan-cms'); ?></h3>
                         <div class="box-tools pull-right">
                             <!-- Collapse Button -->
                             <!--<button type="button" class="btn btn-box-tool" data-widget="collapse">
@@ -75,7 +77,7 @@ TriTan\Config::set('screen_child', 'home');
                     </div>
                     <!-- /.box-header -->
                     <div class="box-body">
-                        <?php func\tritan_cms_feed_widget(); ?>
+                        <?php User\tritan_cms_feed_widget(); ?>
                     </div>
                     <!-- /.box-body -->
                 </div>

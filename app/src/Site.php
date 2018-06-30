@@ -2,7 +2,7 @@
 
 namespace TriTan;
 
-use TriTan\Functions as func;
+use TriTan\Functions\Cache;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
@@ -105,7 +105,7 @@ final class Site
             return false;
         }
 
-        $_site = func\ttcms_cache_get($site_id, 'sites');
+        $_site = Cache\ttcms_cache_get($site_id, 'sites');
 
         if (!$_site) {
             $_site = app()->db->table('site')
@@ -116,7 +116,7 @@ final class Site
                 return false;
             }
 
-            func\ttcms_cache_add($site_id, $_site, 'sites');
+            Cache\ttcms_cache_add($site_id, $_site, 'sites');
         }
 
         return new Site($_site);
@@ -251,7 +251,7 @@ final class Site
      */
     private function get_details()
     {
-        $details = func\ttcms_cache_get($this->site_id, 'site_details');
+        $details = Cache\ttcms_cache_get($this->site_id, 'site_details');
 
         if (false === $details) {
 
@@ -260,7 +260,7 @@ final class Site
                 $details->$key = $value;
             }
 
-            func\ttcms_cache_set($this->site_id, $details, 'site_details');
+            Cache\ttcms_cache_set($this->site_id, $details, 'site_details');
         }
 
         /**

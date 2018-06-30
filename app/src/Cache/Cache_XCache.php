@@ -5,7 +5,7 @@ namespace TriTan\Cache;
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use TriTan\Exception\Exception;
-use TriTan\Functions as func;
+use TriTan\Functions\Core;
 
 /**
  * TriTan CMS XCache Cache Class.
@@ -49,7 +49,7 @@ class Cache_XCache extends \TriTan\Cache\Abstract_Cache
         $this->app = !empty($liten) ? $liten : \Liten\Liten::getInstance();
 
         if (!extension_loaded('xcache') && !function_exists('xcache_get')) {
-            throw new Exception(_t('XCache requires PHP XCache extension to be installed and loaded.'), 'php_xcache_extension');
+            throw new Exception(Core\_t('XCache requires PHP XCache extension to be installed and loaded.'), 'php_xcache_extension');
         }
 
         /**
@@ -268,11 +268,11 @@ class Cache_XCache extends \TriTan\Cache\Abstract_Cache
         $info = xcache_info(XC_TYPE_VAR, 0);
 
         echo "<p>";
-        echo "<strong>" . func\_t('Cache Hits:', 'tritan-cms') . "</strong> " . $info['hits'] . "<br />";
-        echo "<strong>" . func\_t('Cache Misses:', 'tritan-cms') . "</strong> " . $info['misses'] . "<br />";
-        echo "<strong>" . func\_t('Uptime:', 'tritan-cms') . "</strong> " . null . "<br />";
-        echo "<strong>" . func\_t('Memory Usage:', 'tritan-cms') . "</strong> " . $info['size'] . "<br />";
-        echo "<strong>" . func\_t('Memory Available:', 'tritan-cms') . "</strong> " . $info['avail'] . "<br />";
+        echo "<strong>" . Core\_t('Cache Hits:', 'tritan-cms') . "</strong> " . $info['hits'] . "<br />";
+        echo "<strong>" . Core\_t('Cache Misses:', 'tritan-cms') . "</strong> " . $info['misses'] . "<br />";
+        echo "<strong>" . Core\_t('Uptime:', 'tritan-cms') . "</strong> " . null . "<br />";
+        echo "<strong>" . Core\_t('Memory Usage:', 'tritan-cms') . "</strong> " . $info['size'] . "<br />";
+        echo "<strong>" . Core\_t('Memory Available:', 'tritan-cms') . "</strong> " . $info['avail'] . "<br />";
         echo "</p>";
     }
 

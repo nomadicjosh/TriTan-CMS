@@ -1,6 +1,8 @@
 <?php
 
-namespace TriTan\Functions;
+namespace TriTan\Functions\Domain;
+
+use TriTan\Functions\Core;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
@@ -166,13 +168,13 @@ function load_plugin_textdomain($domain, $plugin_rel_path = false)
  */
 function ttcms_dropdown_languages($active = '')
 {
-    if (function_exists('enable_url_ssl')) {
+    if (Core\is_ssl()) {
         $protocol = 'https://';
     } else {
         $protocol = 'http://';
     }
 
-    $locales = _file_get_contents($protocol . 'tritan-cms.s3.amazonaws.com/api/1.1/translations.json');
+    $locales = Core\_file_get_contents($protocol . 'tritan-cms.s3.amazonaws.com/api/1.1/translations.json');
     $json = json_decode($locales, true);
     foreach ($json as $locale) {
         echo '<option value="' . $locale['language'] . '"' . selected($active, $locale['language'], false) . '>' . $locale['native_name'] . '</option>';

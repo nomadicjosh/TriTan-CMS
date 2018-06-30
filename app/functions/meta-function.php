@@ -1,6 +1,6 @@
 <?php
 
-namespace TriTan\Functions;
+namespace TriTan\Functions\Meta;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
@@ -15,6 +15,9 @@ if (!defined('BASE_PATH'))
  */
 use TriTan\Exception\Exception;
 use Cascade\Cascade;
+use TriTan\Functions\Core;
+use TriTan\Functions\Db;
+use TriTan\Functions\Cache;
 
 /**
  * Retrieve the name of the metadata table for the specified object type.
@@ -54,7 +57,7 @@ function get_metadata($meta_type, $array_id, $meta_key = '', $single = false)
         return false;
     }
 
-    $array_id = absint($array_id);
+    $array_id = Core\absint($array_id);
     if (!$array_id) {
         return false;
     }
@@ -81,10 +84,10 @@ function get_metadata($meta_type, $array_id, $meta_key = '', $single = false)
         }
     }
 
-    $meta_cache = ttcms_cache_get($array_id, $meta_type . '_meta');
+    $meta_cache = Cache\ttcms_cache_get($array_id, $meta_type . '_meta');
 
     if (!$meta_cache) {
-        $meta_cache = update_meta_cache($meta_type, [$array_id]);
+        $meta_cache = Db\update_meta_cache($meta_type, [$array_id]);
         $meta_cache = $meta_cache[$array_id];
     }
 
@@ -128,7 +131,7 @@ function update_metadata($meta_type, $array_id, $meta_key, $meta_value, $prev_va
         return false;
     }
 
-    $array_id = absint($array_id);
+    $array_id = Core\absint($array_id);
     if (!$array_id) {
         return false;
     }
@@ -204,7 +207,7 @@ function update_metadata($meta_type, $array_id, $meta_key, $meta_value, $prev_va
         $result->where($column, $array_id)
                 ->where('meta_key', $meta_key)
                 ->update([
-                    'meta_value' => if_null($_newvalue)
+                    'meta_value' => Core\if_null($_newvalue)
         ]);
         $result->commit();
     } catch (Exception $ex) {
@@ -217,7 +220,7 @@ function update_metadata($meta_type, $array_id, $meta_key, $meta_value, $prev_va
         return false;
     }
 
-    ttcms_cache_delete($array_id, $meta_type . '_meta');
+    Cache\ttcms_cache_delete($array_id, $meta_type . '_meta');
 
     foreach ($meta_ids as $meta_id) {
         /**
@@ -261,7 +264,7 @@ function add_metadata($meta_type, $array_id, $meta_key, $meta_value, $unique = f
         return false;
     }
 
-    $array_id = absint($array_id);
+    $array_id = Core\absint($array_id);
     if (!$array_id) {
         return false;
     }
@@ -270,11 +273,11 @@ function add_metadata($meta_type, $array_id, $meta_key, $meta_value, $unique = f
     if (!$table) {
         return false;
     }
-    $column = sanitize_key($meta_type . '_id');
+    $column = Core\sanitize_key($meta_type . '_id');
 
     // expected_slashed ($meta_key)
-    $meta_key = ttcms_unslash($meta_key);
-    $meta_value = ttcms_unslash($meta_value);
+    $meta_key = Core\ttcms_unslash($meta_key);
+    $meta_value = Core\ttcms_unslash($meta_value);
 
     /**
      * Filters whether to add metadata of a specific type.
@@ -326,10 +329,10 @@ function add_metadata($meta_type, $array_id, $meta_key, $meta_value, $unique = f
     $result->begin();
     try {
         $result->insert([
-            'meta_id' => auto_increment($table, 'meta_id'),
+            'meta_id' => Db\auto_increment($table, 'meta_id'),
             $column => (int) $array_id,
-            'meta_key' => if_null($meta_key),
-            'meta_value' => if_null($meta_value)
+            'meta_key' => Core\if_null($meta_key),
+            'meta_value' => Core\if_null($meta_value)
         ]);
         $result->commit();
     } catch (Exception $ex) {
@@ -348,7 +351,7 @@ function add_metadata($meta_type, $array_id, $meta_key, $meta_value, $unique = f
             ->where('meta_value', $meta_value)
             ->get([$meta_type . '_id']);
 
-    ttcms_cache_delete($array_id, $meta_type . '_meta');
+    Cache\ttcms_cache_delete($array_id, $meta_type . '_meta');
 
     /**
      * Fires immediately after meta of a specific type is added.
@@ -392,7 +395,7 @@ function delete_metadata($meta_type, $array_id, $meta_key, $meta_value = '', $de
         return false;
     }
 
-    $array_id = absint($array_id);
+    $array_id = Core\absint($array_id);
     if (!$array_id && !$delete_all) {
         return false;
     }
@@ -402,10 +405,10 @@ function delete_metadata($meta_type, $array_id, $meta_key, $meta_value = '', $de
         return false;
     }
 
-    $type_column = sanitize_key($meta_type . '_id');
+    $type_column = Core\sanitize_key($meta_type . '_id');
     // expected_slashed ($meta_key)
-    $meta_key = ttcms_unslash($meta_key);
-    $meta_value = ttcms_unslash($meta_value);
+    $meta_key = Core\ttcms_unslash($meta_key);
+    $meta_value = Core\ttcms_unslash($meta_value);
 
     /**
      * Filters whether to delete metadata of a specific type.
@@ -454,7 +457,7 @@ function delete_metadata($meta_type, $array_id, $meta_key, $meta_value = '', $de
                 ->get(['meta_id']);
     }
 
-    $meta_ids = flatten_array($meta_ids);
+    $meta_ids = Core\flatten_array($meta_ids);
 
     if (!count($meta_ids)) {
         return false;
@@ -505,10 +508,10 @@ function delete_metadata($meta_type, $array_id, $meta_key, $meta_value = '', $de
 
     if ($delete_all) {
         foreach ((array) $array_ids as $o_id) {
-            ttcms_cache_delete($o_id, $meta_type . '_meta');
+            Cache\ttcms_cache_delete($o_id, $meta_type . '_meta');
         }
     } else {
-        ttcms_cache_delete($array_id, $meta_type . '_meta');
+        Cache\ttcms_cache_delete($array_id, $meta_type . '_meta');
     }
 
     /**
@@ -545,7 +548,7 @@ function metadata_exists($meta_type, $array_id, $meta_key)
         return false;
     }
 
-    $array_id = absint($array_id);
+    $array_id = Core\absint($array_id);
     if (!$array_id) {
         return false;
     }
@@ -556,10 +559,10 @@ function metadata_exists($meta_type, $array_id, $meta_key)
         return (bool) $check;
     }
 
-    $meta_cache = ttcms_cache_get($array_id, $meta_type . '_meta');
+    $meta_cache = Cache\ttcms_cache_get($array_id, $meta_type . '_meta');
 
     if (!$meta_cache) {
-        $meta_cache = update_meta_cache($meta_type, [$array_id]);
+        $meta_cache = Db\update_meta_cache($meta_type, [$array_id]);
         $meta_cache = $meta_cache[$array_id];
     }
 
@@ -666,8 +669,8 @@ function update_metadata_by_mid($meta_type, $meta_id, $meta_value, $meta_key = f
         try {
             $result->where('meta_id', $meta_id)
                     ->update([
-                        'meta_key' => if_null($meta_key),
-                        'meta_value' => if_null($meta_value)
+                        'meta_key' => Core\if_null($meta_key),
+                        'meta_value' => Core\if_null($meta_value)
             ]);
             $result->commit();
         } catch (Exception $ex) {
@@ -680,7 +683,7 @@ function update_metadata_by_mid($meta_type, $meta_id, $meta_value, $meta_key = f
         }
 
         // Clear the caches.
-        ttcms_cache_delete($array_id, $meta_type . '_meta');
+        Cache\ttcms_cache_delete($array_id, $meta_type . '_meta');
 
         app()->hook->{'do_action'}("updated_{$meta_type}_meta", $meta_id, $array_id, $meta_key, $_meta_value);
 
@@ -729,7 +732,7 @@ function delete_metadata_by_mid($meta_type, $meta_id)
         $result = (bool) app()->db->table($table)->where('meta_id', $meta_id)->delete();
 
         // Clear the caches.
-        ttcms_cache_delete($array_id, $meta_type . '_meta');
+        Cache\ttcms_cache_delete($array_id, $meta_type . '_meta');
 
         app()->hook->{'do_action'}("deleted_{$meta_type}_meta", (array) $meta_id, $array_id, $meta['meta_key'], $meta['meta_value']);
 

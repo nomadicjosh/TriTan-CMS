@@ -1,6 +1,6 @@
 <?php
 
-namespace TriTan\Functions;
+namespace TriTan\Functions\Db;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
@@ -8,6 +8,11 @@ use TriTan\Config;
 use TriTan\Exception\Exception;
 use Cocur\Slugify\Slugify;
 use Cascade\Cascade;
+use TriTan\Functions\Core;
+use TriTan\Functions\Dependency;
+use TriTan\Functions\Meta;
+use TriTan\Functions\User;
+use TriTan\Functions\Cache;
 
 /**
  * TriTan CMS Database Related Functions
@@ -60,7 +65,7 @@ function auto_increment($table, $pk)
  */
 function ttcms_set_password($password, $user_id)
 {
-    $hash = ttcms_hash_password($password);
+    $hash = Core\ttcms_hash_password($password);
     $user = app()->db->table("user");
     $user->begin();
     try {
@@ -71,7 +76,7 @@ function ttcms_set_password($password, $user_id)
     } catch (Exception $ex) {
         $user->rollback();
         Cascade::getLogger('error')->error($ex->getMessage());
-        _ttcms_flash()->error(_t('Password was not updated.', 'tritan-cms'));
+        Dependency\_ttcms_flash()->error(Core\_t('Password was not updated.', 'tritan-cms'));
     }
 }
 
@@ -126,7 +131,7 @@ function get_post_id($post_slug = null)
             ->where('post_slug', $post_slug)
             ->first();
 
-    return _escape($post['post_id']);
+    return (int) Core\_escape($post['post_id']);
 }
 
 /**
@@ -280,7 +285,7 @@ function get_post_dropdown_list($slug = null, $post_id = 0)
             ->where('post_id', 'not in', $post_id)
             ->get();
     foreach ($posts as $post) {
-        echo '<option value="' . _escape($post['post_slug']) . '"' . selected($slug, _escape($post['post_slug']), false) . '>' . _escape($post['post_title']) . '</option>';
+        echo '<option value="' . Core\_escape($post['post_slug']) . '"' . selected($slug, Core\_escape($post['post_slug']), false) . '>' . Core\_escape($post['post_title']) . '</option>';
     }
 }
 
@@ -388,7 +393,7 @@ function update_meta_cache($meta_type, $array_ids)
         return false;
     }
 
-    $table = _get_meta_table($meta_type);
+    $table = Meta\_get_meta_table($meta_type);
     if (!$table) {
         return false;
     }
@@ -406,7 +411,7 @@ function update_meta_cache($meta_type, $array_ids)
     $ids = [];
     $cache = [];
     foreach ($array_ids as $id) {
-        $cached_array = ttcms_cache_get($id, $cache_key);
+        $cached_array = Cache\ttcms_cache_get($id, $cache_key);
         if (false === $cached_array) {
             $ids[] = $id;
         } else {
@@ -445,7 +450,7 @@ function update_meta_cache($meta_type, $array_ids)
         if (!isset($cache[$id])) {
             $cache[$id] = [];
         }
-        ttcms_cache_add($id, $cache[$id], $cache_key);
+        Cache\ttcms_cache_add($id, $cache[$id], $cache_key);
     }
     return $cache;
 }
@@ -473,7 +478,7 @@ function generate_php_encryption()
         $encrypt->insert([
             'encryption_id' => (int) 1,
             'key' => $key->saveToAsciiSafeString(),
-            'created_at' => (string) \Jenssegers\Date\Date::now()
+            'created_at' => (string) format_date()
         ]);
         $encrypt->commit();
     } catch (Exception $ex) {
@@ -491,13 +496,13 @@ function generate_php_encryption()
  * @param string $option_key Key to check against.
  * @return bool
  */
-function is_option_exist($option_key)
+function does_option_exist($option_key)
 {
     $key = app()->db->table(Config::get('tbl_prefix') . 'option')
             ->where('option_key', '=', $option_key)
             ->first();
 
-    if (_escape((int) $key['option_id']) <= 0) {
+    if (Core\_escape((int) $key['option_id']) <= 0) {
         return false;
     }
 
@@ -528,7 +533,7 @@ function update_post_relative_url_posttype($id, $old_slug, $new_slug)
     } catch (Exception $ex) {
         $post->rollback();
         Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
-        _ttcms_flash()->{'error'}(_ttcms_flash()->notice(409));
+        Dependency\_ttcms_flash()->{'error'}(Dependency\_ttcms_flash()->notice(409));
     }
 
     $collection = app()->db->table(Config::get('tbl_prefix') . 'post');
@@ -558,28 +563,28 @@ function ttcms_post_insert_document($data)
     try {
         $post->insert([
             'post_id' => (int) $data['post_id'],
-            'post_title' => if_null($data['post_title']),
-            'post_slug' => if_null($data['post_slug']),
-            'post_content' => if_null($data['post_content']),
-            'post_author' => if_null($data['post_author']),
+            'post_title' => Core\if_null($data['post_title']),
+            'post_slug' => Core\if_null($data['post_slug']),
+            'post_content' => Core\if_null($data['post_content']),
+            'post_author' => Core\if_null($data['post_author']),
             'post_type' => [
-                'posttype_id' => if_null(_escape($posttype['posttype_id'])),
-                'post_posttype' => if_null($data['post_posttype'])
+                'posttype_id' => (int) $posttype['posttype_id'],
+                'post_posttype' => Core\if_null($data['post_posttype'])
             ],
             'post_attributes' => [
                 'parent' => [
-                    'parent_id' => if_null(get_post_id($data['post_parent'])),
-                    'post_parent' => if_null($data['post_parent'])
+                    'parent_id' => (int) get_post_id($data['post_parent']),
+                    'post_parent' => Core\if_null($data['post_parent'])
                 ],
-                'post_sidebar' => if_null($data['post_sidebar']),
-                'post_show_in_menu' => if_null($data['post_show_in_menu']),
-                'post_show_in_search' => if_null($data['post_show_in_search'])
+                'post_sidebar' => Core\if_null($data['post_sidebar']),
+                'post_show_in_menu' => Core\if_null($data['post_show_in_menu']),
+                'post_show_in_search' => Core\if_null($data['post_show_in_search'])
             ],
-            'post_relative_url' => if_null($data['post_relative_url']),
-            'post_featured_image' => if_null($data['post_featured_image']),
-            'post_status' => if_null($data['post_status']),
-            'post_created' => (string) \Jenssegers\Date\Date::now(),
-            'post_published' => if_null($data['post_published'])
+            'post_relative_url' => Core\if_null($data['post_relative_url']),
+            'post_featured_image' => Core\if_null($data['post_featured_image']),
+            'post_status' => Core\if_null($data['post_status']),
+            'post_created' => (string) format_date(),
+            'post_published' => Core\if_null($data['post_published'])
         ]);
         $post->commit();
     } catch (Exception $ex) {
@@ -607,27 +612,27 @@ function ttcms_post_update_document($data)
     $post->begin();
     try {
         $post->where('post_id', (int) $data['post_id'])->update([
-            'post_title' => if_null($data['post_title']),
-            'post_slug' => if_null($data['post_slug']),
-            'post_content' => if_null($data['post_content']),
-            'post_author' => if_null($data['post_author']),
+            'post_title' => Core\if_null($data['post_title']),
+            'post_slug' => Core\if_null($data['post_slug']),
+            'post_content' => Core\if_null($data['post_content']),
+            'post_author' => Core\if_null($data['post_author']),
             'post_type' => [
-                'posttype_id' => if_null(_escape($posttype['posttype_id'])),
-                'post_posttype' => if_null($data['post_posttype'])
+                'posttype_id' => (int) $posttype['posttype_id'],
+                'post_posttype' => Core\if_null($data['post_posttype'])
             ],
             'post_attributes' => [
                 'parent' => [
-                    'parent_id' => if_null(get_post_id($data['post_parent'])),
-                    'post_parent' => if_null($data['post_parent'])
+                    'parent_id' => (int) get_post_id($data['post_parent']),
+                    'post_parent' => Core\if_null($data['post_parent'])
                 ],
-                'post_sidebar' => if_null($data['post_sidebar']),
-                'post_show_in_menu' => if_null($data['post_show_in_menu']),
-                'post_show_in_search' => if_null($data['post_show_in_search'])
+                'post_sidebar' => Core\if_null($data['post_sidebar']),
+                'post_show_in_menu' => Core\if_null($data['post_show_in_menu']),
+                'post_show_in_search' => Core\if_null($data['post_show_in_search'])
             ],
-            'post_relative_url' => if_null($data['post_relative_url']),
-            'post_featured_image' => if_null($data['post_featured_image']),
-            'post_status' => if_null($data['post_status']),
-            'post_published' => if_null($data['post_published']),
+            'post_relative_url' => Core\if_null($data['post_relative_url']),
+            'post_featured_image' => Core\if_null($data['post_featured_image']),
+            'post_status' => Core\if_null($data['post_status']),
+            'post_published' => Core\if_null($data['post_published']),
             'post_modified' => (string) format_date()
         ]);
         $post->commit();
@@ -752,7 +757,7 @@ function reassign_posts($user_id, $assign_id)
         $reassign->commit();
     } catch (Exception $ex) {
         $reassign->rollback();
-        _ttcms_flash()->error(sprintf(_t('Reassign post error: %s'), $ex->getMessage()));
+        Dependency\_ttcms_flash()->error(sprintf(Core\_t('Reassign post error: %s'), $ex->getMessage()));
     }
 }
 
@@ -767,6 +772,14 @@ function reassign_posts($user_id, $assign_id)
  */
 function reassign_sites($user_id, $params = [])
 {
+    if(!is_numeric($user_id)) {
+        return false;
+    }
+    
+    if((int) $user_id <= 0) {
+        return false;
+    }
+    
     $reassign = app()->db->table('site');
     $reassign->begin();
     try {
@@ -777,7 +790,7 @@ function reassign_sites($user_id, $params = [])
         $reassign->commit();
     } catch (Exception $ex) {
         $reassign->rollback();
-        _ttcms_flash()->error(sprintf(_t('Reassign site error: %s'), $ex->getMessage()));
+        Dependency\_ttcms_flash()->error(sprintf(Core\_t('Reassign site error: %s'), $ex->getMessage()));
     }
 }
 
@@ -799,7 +812,7 @@ function does_user_have_sites($user_id = 0)
         return true;
     }
 
-    $option = get_user_option('role', $user_id);
+    $option = User\get_user_option('role', $user_id);
     if ((int) $option == (int) 1 || (int) $option == (int) 2) {
         return true;
     }

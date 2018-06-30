@@ -1,6 +1,8 @@
 <?php
 
-use TriTan\Functions as func;
+use TriTan\Functions\Auth;
+use TriTan\Functions\Core;
+use TriTan\Functions\Logger;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
@@ -18,9 +20,9 @@ $app->group('/login', function() use ($app) {
      * Before route check.
      */
     $app->before('GET|POST', '/', function() use($app) {
-        if (func\is_user_logged_in()) {
-            $redirect_to = ($app->req->get['redirect_to'] != null ? $app->req->get['redirect_to'] : func\get_base_url() . 'admin' . '/');
-            func\ttcms_redirect($redirect_to);
+        if (Auth\is_user_logged_in()) {
+            $redirect_to = ($app->req->get['redirect_to'] != null ? $app->req->get['redirect_to'] : Core\get_base_url() . 'admin' . '/');
+            Core\ttcms_redirect($redirect_to);
         }
 
         /**
@@ -37,20 +39,20 @@ $app->group('/login', function() use ($app) {
             /**
              * Filters where the admin should be redirected after successful login.
              */
-            $login_link = $app->hook->{'apply_filter'}('admin_login_redirect', func\get_base_url() . 'admin' . '/');
+            $login_link = $app->hook->{'apply_filter'}('admin_login_redirect', Core\get_base_url() . 'admin' . '/');
             /**
              * This function is documented in app/functions/auth-function.php.
              * 
              * @since 0.9
              */
-            func\ttcms_authenticate_user($app->req->post['user_login'], $app->req->post['user_pass'], $app->req->post['rememberme']);
+            Auth\ttcms_authenticate_user($app->req->post['user_login'], $app->req->post['user_pass'], $app->req->post['rememberme']);
 
-            func\ttcms_logger_activity_log_write(func\_t('Authentication', 'tritan-cms'), func\_t('Login', 'tritan-cms'), $app->req->post['user_login'], $app->req->post['user_login']);
-            func\ttcms_redirect($login_link);
+            Logger\ttcms_logger_activity_log_write(Core\_t('Authentication', 'tritan-cms'), Core\_t('Login', 'tritan-cms'), $app->req->post['user_login'], $app->req->post['user_login']);
+            Core\ttcms_redirect($login_link);
         }
 
         $app->foil->render('main::login/index', [
-            'title' => func\_t('Login', 'tritan-cms')
+            'title' => Core\_t('Login', 'tritan-cms')
                 ]
         );
     });

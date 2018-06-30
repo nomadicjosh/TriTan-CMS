@@ -1,11 +1,18 @@
 <?php
 
-namespace TriTan\Functions;
+namespace TriTan\Functions\Post;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use TriTan\Config;
 use TriTan\Exception\Exception;
+use TriTan\Functions\Posttype;
+use TriTan\Functions\Cache;
+use TriTan\Functions\Meta;
+use TriTan\Functions\Db;
+use TriTan\Functions\Core;
+use TriTan\Functions\Hook;
+use TriTan\Functions\User;
 
 /**
  * TriTan CMS Post Functions
@@ -137,7 +144,7 @@ function get_post_modified($post_id = 0)
 {
     $post = get_post($post_id);
     $datetime = app()->hook->{'get_option'}('date_format') . ' ' . app()->hook->{'get_option'}('time_format');
-    $modified = \Jenssegers\Date\Date::parse(_escape($post['post_modified']))->format($datetime);
+    $modified = format_date(Core\_escape($post['post_modified']), $datetime);
     /**
      * Filters the post date.
      *
@@ -164,7 +171,7 @@ function get_post_modified($post_id = 0)
 function get_post_content($post_id = 0)
 {
     $post = get_post($post_id);
-    $content = _escape($post['post_content']);
+    $content = Core\_escape($post['post_content']);
     /**
      * Filters the post date.
      *
@@ -191,8 +198,8 @@ function get_post_content($post_id = 0)
 function get_post_type_name($post_id = 0)
 {
     $post = get_post($post_id);
-    $posttype = get_posttype(_escape($post['post_type']['posttype_id']));
-    $posttype_name = _escape($posttype['posttype_title']);
+    $posttype = Posttype\get_posttype(Core\_escape($post['post_type']['posttype_id']));
+    $posttype_name = Core\_escape($posttype['posttype_title']);
     /**
      * Filters the post posttype name.
      *
@@ -218,7 +225,7 @@ function get_post_type_name($post_id = 0)
  */
 function get_post_posttype_link($post_id = 0)
 {
-    $link = get_base_url() . get_post_posttype_slug($post_id) . '/';
+    $link = Core\get_base_url() . get_post_posttype($post_id) . '/';
     /**
      * Filters the post posttype link.
      *
@@ -245,7 +252,7 @@ function get_post_posttype_link($post_id = 0)
 function get_post_title($post_id = 0)
 {
     $post = get_post($post_id);
-    $title = _escape($post['post_title']);
+    $title = Core\_escape($post['post_title']);
     /**
      * Filters the post title.
      *
@@ -272,7 +279,7 @@ function get_post_title($post_id = 0)
 function get_post_slug($post_id = 0)
 {
     $post = get_post($post_id);
-    $slug = _escape($post['post_slug']);
+    $slug = Core\_escape($post['post_slug']);
     /**
      * Filters the post's slug.
      *
@@ -304,11 +311,11 @@ function get_relative_url($post = 0)
         $_post = get_post($post);
     }
 
-    if ((int) _escape($_post['post_id']) <= 0) {
+    if ((int) Core\_escape($_post['post_id']) <= 0) {
         return false;
     }
 
-    $relative_url = _escape($_post['post_relative_url']);
+    $relative_url = Core\_escape($_post['post_relative_url']);
     /**
      * Filters the post's relative_url.
      *
@@ -340,11 +347,11 @@ function get_permalink($post = 0)
         $_post = get_post($post);
     }
 
-    if (empty(_escape($_post['post_id']))) {
+    if (empty(Core\_escape($_post['post_id']))) {
         return false;
     }
 
-    $link = get_base_url() . get_relative_url($_post);
+    $link = Core\get_base_url() . get_relative_url($_post);
     /**
      * Filters the post's link.
      *
@@ -389,7 +396,7 @@ function the_content($post_id = 0)
  */
 function the_posts($post_type = null, $limit = 0, $offset = null, $status = 'all')
 {
-    return get_all_posts($post_type, $limit, $offset, $status);
+    return Db\get_all_posts($post_type, $limit, $offset, $status);
 }
 
 /**
@@ -407,7 +414,7 @@ function the_posts($post_type = null, $limit = 0, $offset = null, $status = 'all
 function post_css($post_id = 0)
 {
     $post = get_post($post_id);
-    $css = '<style>' . _escape($post['post_css']) . '</style>';
+    $css = '<style>' . Core\_escape($post['post_css']) . '</style>';
     /**
      * Filters the post css code.
      *
@@ -434,7 +441,7 @@ function post_css($post_id = 0)
 function post_js($post_id = 0)
 {
     $post = get_post($post_id);
-    $js = '<script>' . _escape($post['post_js']) . '</script>';
+    $js = '<script>' . Core\_escape($post['post_js']) . '</script>';
     /**
      * Filters the post javascript code.
      *
@@ -481,7 +488,7 @@ function ttcms_post_status_label($status)
  */
 function get_post_meta($post_id, $key = '', $single = false)
 {
-    return get_metadata(Config::get('tbl_prefix') . 'post', $post_id, $key, $single);
+    return Meta\get_metadata(Config::get('tbl_prefix') . 'post', $post_id, $key, $single);
 }
 
 /**
@@ -495,7 +502,7 @@ function get_post_meta($post_id, $key = '', $single = false)
  */
 function get_post_meta_by_mid($mid)
 {
-    return get_metadata_by_mid(Config::get('tbl_prefix') . 'post', $mid);
+    return Meta\get_metadata_by_mid(Config::get('tbl_prefix') . 'post', $mid);
 }
 
 /**
@@ -519,7 +526,7 @@ function get_post_meta_by_mid($mid)
  */
 function update_post_meta($post_id, $meta_key, $meta_value, $prev_value = '')
 {
-    return update_metadata(Config::get('tbl_prefix') . 'post', $post_id, $meta_key, $meta_value, $prev_value);
+    return Meta\update_metadata(Config::get('tbl_prefix') . 'post', $post_id, $meta_key, $meta_value, $prev_value);
 }
 
 /**
@@ -535,9 +542,9 @@ function update_post_meta($post_id, $meta_key, $meta_value, $prev_value = '')
  */
 function update_post_meta_by_mid($mid, $meta_key, $meta_value)
 {
-    $_meta_key = ttcms_unslash($meta_key);
-    $_meta_value = ttcms_unslash($meta_value);
-    return update_metadata_by_mid(Config::get('tbl_prefix') . 'post', $mid, $_meta_key, $_meta_value);
+    $_meta_key = Core\ttcms_unslash($meta_key);
+    $_meta_value = Core\ttcms_unslash($meta_value);
+    return Meta\update_metadata_by_mid(Config::get('tbl_prefix') . 'post', $mid, $_meta_key, $_meta_value);
 }
 
 /**
@@ -555,7 +562,7 @@ function update_post_meta_by_mid($mid, $meta_key, $meta_value)
  */
 function add_post_meta($post_id, $meta_key, $meta_value, $unique = false)
 {
-    return add_metadata(Config::get('tbl_prefix') . 'post', $post_id, $meta_key, $meta_value, $unique);
+    return Meta\add_metadata(Config::get('tbl_prefix') . 'post', $post_id, $meta_key, $meta_value, $unique);
 }
 
 /**
@@ -576,7 +583,7 @@ function add_post_meta($post_id, $meta_key, $meta_value, $unique = false)
  */
 function delete_post_meta($post_id, $meta_key, $meta_value = '')
 {
-    return delete_metadata(Config::get('tbl_prefix') . 'post', $post_id, $meta_key, $meta_value);
+    return Meta\delete_metadata(Config::get('tbl_prefix') . 'post', $post_id, $meta_key, $meta_value);
 }
 
 /**
@@ -590,7 +597,7 @@ function delete_post_meta($post_id, $meta_key, $meta_value = '')
  */
 function delete_post_meta_by_mid($mid)
 {
-    return delete_metadata_by_mid(Config::get('tbl_prefix') . 'post', $mid);
+    return Meta\delete_metadata_by_mid(Config::get('tbl_prefix') . 'post', $mid);
 }
 
 /**
@@ -607,7 +614,7 @@ function delete_post_meta_by_mid($mid)
  */
 function get_post_custom($post_id = 0)
 {
-    $_post_id = absint($post_id);
+    $_post_id = Core\absint($post_id);
     return get_post_meta($_post_id);
 }
 
@@ -692,7 +699,7 @@ function the_permalink($post = 0)
 function get_post_author_id($post_id = 0)
 {
     $post = get_post($post_id);
-    $author_id = _escape($post['post_author']);
+    $author_id = Core\_escape($post['post_author']);
     /**
      * Filters the post author id.
      *
@@ -720,7 +727,7 @@ function get_post_author_id($post_id = 0)
 function get_post_author($post_id = 0, $reverse = false)
 {
     $post = get_post($post_id);
-    $author = get_name(_escape($post['post_author']), $reverse);
+    $author = User\get_name(Core\_escape($post['post_author']), $reverse);
     /**
      * Filters the post author.
      *
@@ -747,7 +754,7 @@ function get_post_author($post_id = 0, $reverse = false)
 function get_post_status($post_id = 0)
 {
     $post = get_post($post_id);
-    $status = _escape($post['post_status']);
+    $status = Core\_escape($post['post_status']);
     /**
      * Filters the post status.
      *
@@ -774,7 +781,7 @@ function get_post_status($post_id = 0)
  */
 function get_post_date($post_id = 0, $type = 'published')
 {
-    return call_user_func_array("Tritan\Functions\get_post_{$type}_date", [&$post_id]);
+    return call_user_func_array("Tritan\Functions\Post\get_post_{$type}_date", [&$post_id]);
 }
 
 /**
@@ -792,7 +799,7 @@ function get_post_date($post_id = 0, $type = 'published')
  */
 function get_post_time($post_id = 0, $type = 'published')
 {
-    return call_user_func_array("Tritan\Functions\get_post_{$type}_time", [&$post_id]);
+    return call_user_func_array("Tritan\Functions\Post\get_post_{$type}_time", [&$post_id]);
 }
 
 /**
@@ -810,7 +817,7 @@ function get_post_time($post_id = 0, $type = 'published')
 function get_post_created_date($post_id = 0)
 {
     $post = get_post($post_id);
-    $date = \Jenssegers\Date\Date::parse(_escape($post['post_created']))->format(app()->hook->{'get_option'}('date_format'));
+    $date = format_date(Core\_escape($post['post_created']), app()->hook->{'get_option'}('date_format'));
     /**
      * Filters the post created date.
      *
@@ -837,7 +844,7 @@ function get_post_created_date($post_id = 0)
 function get_post_created_time($post_id = 0)
 {
     $post = get_post($post_id);
-    $time = \Jenssegers\Date\Date::parse(_escape($post['post_created']))->format(app()->hook->{'get_option'}('time_format'));
+    $time = format_date(Core\_escape($post['post_created']), app()->hook->{'get_option'}('time_format'));
     /**
      * Filters the post created time.
      *
@@ -864,7 +871,7 @@ function get_post_created_time($post_id = 0)
 function get_post_published_date($post_id = 0)
 {
     $post = get_post($post_id);
-    $date = \Jenssegers\Date\Date::parse(_escape($post['post_published']))->format(app()->hook->{'get_option'}('date_format'));
+    $date = format_date(Core\_escape($post['post_published']), app()->hook->{'get_option'}('date_format'));
     /**
      * Filters the post published date.
      *
@@ -891,7 +898,7 @@ function get_post_published_date($post_id = 0)
 function get_post_published_time($post_id = 0)
 {
     $post = get_post($post_id);
-    $time = \Jenssegers\Date\Date::parse(_escape($post['post_published']))->format(app()->hook->{'get_option'}('time_format'));
+    $time = format_date(Core\_escape($post['post_published']), app()->hook->{'get_option'}('time_format'));
     /**
      * Filters the post published time.
      *
@@ -918,7 +925,7 @@ function get_post_published_time($post_id = 0)
 function get_post_modified_date($post_id = 0)
 {
     $post = get_post($post_id);
-    $date = \Jenssegers\Date\Date::parse(_escape($post['post_modified']))->format(app()->hook->{'get_option'}('date_format'));
+    $date = format_date(Core\_escape($post['post_modified']), app()->hook->{'get_option'}('date_format'));
     /**
      * Filters the post modified date.
      *
@@ -945,7 +952,7 @@ function get_post_modified_date($post_id = 0)
 function get_post_modified_time($post_id = 0)
 {
     $post = get_post($post_id);
-    $time = \Jenssegers\Date\Date::parse(_escape($post['post_modified']))->format(app()->hook->{'get_option'}('time_format'));
+    $time = format_date(Core\_escape($post['post_modified']), app()->hook->{'get_option'}('time_format'));
     /**
      * Filters the post modified time.
      *
@@ -971,8 +978,8 @@ function get_post_modified_time($post_id = 0)
  */
 function get_post_posttype_id($post_id = 0)
 {
-    $post = get_post_by('post_id', $post_id);
-    $posttype_id = _escape($post['post_type']['posttype_id']);
+    $post = Db\get_post_by('post_id', $post_id);
+    $posttype_id = Core\_escape($post['post_type']['posttype_id']);
     /**
      * Filters the post posttype id.
      *
@@ -998,8 +1005,8 @@ function get_post_posttype_id($post_id = 0)
  */
 function get_post_posttype($post_id = 0)
 {
-    $post = get_post_by('post_id', $post_id);
-    $posttype = _escape($post['post_type']['post_posttype']);
+    $post = Db\get_post_by('post_id', $post_id);
+    $posttype = Core\_escape($post['post_type']['post_posttype']);
     /**
      * Filters the post posttype.
      *
@@ -1025,8 +1032,8 @@ function get_post_posttype($post_id = 0)
  */
 function get_post_parent_id($post_id = 0)
 {
-    $post = get_post_by('post_id', $post_id);
-    $parent_id = _escape($post['post_attributes']['parent']['parent_id']);
+    $post = Db\get_post_by('post_id', $post_id);
+    $parent_id = Core\_escape($post['post_attributes']['parent']['parent_id']);
     /**
      * Filters the post parent id.
      *
@@ -1052,8 +1059,8 @@ function get_post_parent_id($post_id = 0)
  */
 function get_post_parent($post_id = 0)
 {
-    $post = get_post_by('post_id', $post_id);
-    $parent = _escape($post['post_attributes']['parent']['post_parent']);
+    $post = Db\get_post_by('post_id', $post_id);
+    $parent = Core\_escape($post['post_attributes']['parent']['post_parent']);
     /**
      * Filters the post parent.
      *
@@ -1079,8 +1086,8 @@ function get_post_parent($post_id = 0)
  */
 function get_post_sidebar($post_id = 0)
 {
-    $post = get_post_by('post_id', $post_id);
-    $sidebar = _escape($post['post_attributes']['post_sidebar']);
+    $post = Db\get_post_by('post_id', $post_id);
+    $sidebar = Core\_escape($post['post_attributes']['post_sidebar']);
     /**
      * Filters the post sidebar.
      *
@@ -1106,8 +1113,8 @@ function get_post_sidebar($post_id = 0)
  */
 function get_post_show_in_menu($post_id = 0)
 {
-    $post = get_post_by('post_id', $post_id);
-    $menu = _escape($post['post_attributes']['post_show_in_menu']);
+    $post = Db\get_post_by('post_id', $post_id);
+    $menu = Core\_escape($post['post_attributes']['post_show_in_menu']);
     /**
      * Filters the post show in menu.
      *
@@ -1133,8 +1140,8 @@ function get_post_show_in_menu($post_id = 0)
  */
 function get_post_show_in_search($post_id = 0)
 {
-    $post = get_post_by('post_id', $post_id);
-    $search = _escape($post['post_attributes']['post_show_in_search']);
+    $post = Db\get_post_by('post_id', $post_id);
+    $search = Core\_escape($post['post_attributes']['post_show_in_search']);
     /**
      * Filters the post show in search.
      *
@@ -1160,8 +1167,8 @@ function get_post_show_in_search($post_id = 0)
  */
 function ttcms_unique_post_slug($original_slug, $original_title, $post_id, $post_type)
 {
-    if (ttcms_post_slug_exist($post_id, $original_slug, $post_type)) {
-        $post_slug = ttcms_slugify($original_title, 'post');
+    if (Db\ttcms_post_slug_exist($post_id, $original_slug, $post_type)) {
+        $post_slug = Db\ttcms_slugify($original_title, 'post');
     } else {
         $post_slug = $original_slug;
     }
@@ -1210,7 +1217,7 @@ function ttcms_unique_post_slug($original_slug, $original_title, $post_id, $post
  */
 function ttcms_insert_post($postdata, $exception = false)
 {
-    $user_id = get_current_user_id();
+    $user_id = User\get_current_user_id();
 
     $defaults = [
         'post_title' => null,
@@ -1226,7 +1233,7 @@ function ttcms_insert_post($postdata, $exception = false)
         'post_status' => 'draft'
     ];
 
-    $_postdata = ttcms_parse_args($postdata, $defaults);
+    $_postdata = Core\ttcms_parse_args($postdata, $defaults);
 
     // Are we updating or creating?
     if (!empty($_postdata['post_id'])) {
@@ -1236,7 +1243,7 @@ function ttcms_insert_post($postdata, $exception = false)
 
         if (is_null($post_before)) {
             if ($exception) {
-                throw new Exception(_t('Invalid post id.', 'tritan-cms'), 'invalid_post_id');
+                throw new Exception(Core\_t('Invalid post id.', 'tritan-cms'), 'invalid_post_id');
             } else {
                 return null;
             }
@@ -1255,7 +1262,7 @@ function ttcms_insert_post($postdata, $exception = false)
         app()->hook->{'do_action'}('post_previous_status', $previous_status, (int) $post_id, $update);
     } else {
         $update = false;
-        $post_id = auto_increment(Config::get('tbl_prefix') . 'post', 'post_id');
+        $post_id = Db\auto_increment(Config::get('tbl_prefix') . 'post', 'post_id');
 
         $previous_status = 'new';
         /**
@@ -1341,7 +1348,7 @@ function ttcms_insert_post($postdata, $exception = false)
 
     if ($post_author <= 0 || $post_author === null) {
         if ($exception) {
-            throw new Exception(_t('Post author cannot be zero or null.', 'tritan-cms'), 'empty_post_author');
+            throw new Exception(Core\_t('Post author cannot be zero or null.', 'tritan-cms'), 'empty_post_author');
         } else {
             return null;
         }
@@ -1392,7 +1399,7 @@ function ttcms_insert_post($postdata, $exception = false)
      */
     $post_relative_url = app()->hook->{'apply_filter'}('pre_post_relative_url', (string) $raw_post_relative_url);
 
-    $raw_post_featured_image = ttcms_optimized_image_upload($_postdata['post_featured_image']);
+    $raw_post_featured_image = Hook\ttcms_optimized_image_upload($_postdata['post_featured_image']);
     /**
      * Filters a post's featured image before the post is created or updated.
      *
@@ -1420,14 +1427,14 @@ function ttcms_insert_post($postdata, $exception = false)
     $maybe_null = !$post_title && !$post_content;
     if (app()->hook->{'apply_filter'}('ttcms_insert_post_empty_content', $maybe_null, $_postdata)) {
         if ($exception) {
-            throw new Exception(_t('The title and content are null'), 'empty_content');
+            throw new Exception(Core\_t('The title and content are null'), 'empty_content');
         } else {
             return null;
         }
     }
 
     if (!$update) {
-        if (empty($_postdata['post_published']) || php_like('%0000-00-00 00:00', $_postdata['post_published'])) {
+        if (empty($_postdata['post_published']) || Core\php_like('%0000-00-00 00:00', $_postdata['post_published'])) {
             $post_published = format_date('now', 'Y-m-d h:i A');
         } else {
             $post_published = format_date($_postdata['post_published'], 'Y-m-d h:i A');
@@ -1437,7 +1444,7 @@ function ttcms_insert_post($postdata, $exception = false)
     }
 
     $compacted = compact('post_title', 'post_slug', 'post_content', 'post_author', 'post_posttype', 'post_parent', 'post_sidebar', 'post_show_in_menu', 'post_show_in_search', 'post_relative_url', 'post_featured_image', 'post_status', 'post_published');
-    $data = ttcms_unslash($compacted);
+    $data = Core\ttcms_unslash($compacted);
 
     /**
      * Filters post data before the record is created or updated.
@@ -1478,9 +1485,9 @@ function ttcms_insert_post($postdata, $exception = false)
          * @param array $data    Array of post data.
          */
         app()->hook->{'do_action'}('pre_post_insert', (int) $post_id, $data);
-        if (false === ttcms_post_insert_document($data)) {
+        if (false === Db\ttcms_post_insert_document($data)) {
             if ($exception) {
-                throw new Exception(_t('Could not insert post into the post document.'), 'post_document_insert_error');
+                throw new Exception(Core\_t('Could not insert post into the post document.'), 'post_document_insert_error');
             } else {
                 return null;
             }
@@ -1495,9 +1502,9 @@ function ttcms_insert_post($postdata, $exception = false)
          * @param array $data    Array of post data.
          */
         app()->hook->{'do_action'}('pre_post_update', (int) $post_id, $data);
-        if (false === ttcms_post_update_document($data)) {
+        if (false === Db\ttcms_post_update_document($data)) {
             if ($exception) {
-                throw new Exception(_t('Could not update post within the post document.'), 'post_document_update_error');
+                throw new Exception(Core\_t('Could not update post within the post document.'), 'post_document_update_error');
             } else {
                 return null;
             }
@@ -1595,7 +1602,7 @@ function ttcms_update_post($postdata = [], $exception = false)
 
     if (is_null($post)) {
         if ($exception) {
-            throw new Exception(_t('Invalid post ID.'), 'invalid_post');
+            throw new Exception(Core\_t('Invalid post ID.'), 'invalid_post');
         }
         return null;
     }
@@ -1631,13 +1638,13 @@ function ttcms_delete_post($post_id = 0)
      */
     app()->hook->{'do_action'}('before_delete_post', (int) $post_id);
 
-    if (is_post_parent($post_id)) {
-        foreach (is_post_parent($post_id) as $children) {
+    if (Db\is_post_parent($post_id)) {
+        foreach (Db\is_post_parent($post_id) as $children) {
             $update_children = app()->db->table(Config::get('tbl_prefix') . 'post');
             $update_children->begin();
             try {
-                $update_children->where('post_attributes.parent.parent_id', _escape($children['post_attributes']['parent']['parent_id']))
-                        ->where('post_attributes.parent.post_parent', _escape($children['post_attributes']['parent']['post_parent']))
+                $update_children->where('post_attributes.parent.parent_id', Core\_escape($children['post_attributes']['parent']['parent_id']))
+                        ->where('post_attributes.parent.post_parent', Core\_escape($children['post_attributes']['parent']['post_parent']))
                         ->update([
                             'post_attributes.parent.parent_id' => null,
                             'post_attributes.parent.post_parent' => null
@@ -1688,9 +1695,9 @@ function ttcms_delete_post($post_id = 0)
 
     clean_post_cache($post);
 
-    if (is_post_parent($post_id)) {
-        foreach (is_post_parent($post_id) as $children) {
-            clean_post_cache(_escape($children['post_id']));
+    if (Db\is_post_parent($post_id)) {
+        foreach (Db\is_post_parent($post_id) as $children) {
+            clean_post_cache(Core\_escape($children['post_id']));
         }
     }
 
@@ -1722,8 +1729,8 @@ function clean_post_cache($post)
         return;
     }
 
-    ttcms_cache_delete((int) _escape($_post['post_id']), 'post');
-    ttcms_cache_delete((int) _escape($_post['post_id']), 'post_meta');
+    Cache\ttcms_cache_delete((int) Core\_escape($_post['post_id']), 'post');
+    Cache\ttcms_cache_delete((int) Core\_escape($_post['post_id']), 'post_meta');
 
     /**
      * Fires immediately after the given post's cache is cleaned.
@@ -1732,5 +1739,5 @@ function clean_post_cache($post)
      * @param int   $_post['post_id']   Post id.
      * @param array $_post              Post array.
      */
-    app()->hook->{'do_action'}('clean_post_cache', (int) _escape($_post['post_id']), $_post);
+    app()->hook->{'do_action'}('clean_post_cache', (int) Core\_escape($_post['post_id']), $_post);
 }

@@ -1,6 +1,8 @@
 <?php
 
-namespace TriTan\Functions;
+namespace TriTan\Functions\Deprecated;
+
+use TriTan\Functions\Hook;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
@@ -24,7 +26,7 @@ if (!defined('BASE_PATH'))
  */
 function clean_pre($matches)
 {
-    _deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'clean_pre'}");
+    Hook\_deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'clean_pre'}");
 
     return app()->hook->{'clean_pre'}($matches);
 }
@@ -41,7 +43,7 @@ function clean_pre($matches)
  */
 function add_parsecode($tag, $func)
 {
-    _deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'add_parsecode'}()");
+    Hook\_deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'add_parsecode'}()");
 
     return app()->hook->{'add_parsecode'}($tag, $func);
 }
@@ -58,7 +60,7 @@ function add_parsecode($tag, $func)
  */
 function remove_parsecode($tag)
 {
-    _deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'remove_parsecode'}");
+    Hook\_deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'remove_parsecode'}");
 
     return app()->hook->{'remove_parsecode'}($tag);
 }
@@ -78,7 +80,7 @@ function remove_parsecode($tag)
  */
 function remove_all_parsecodes()
 {
-    _deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'remove_all_parsecodes'}");
+    Hook\_deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'remove_all_parsecodes'}");
 
     return app()->hook->{'remove_all_parsecodes'}();
 }
@@ -101,7 +103,7 @@ function remove_all_parsecodes()
  */
 function do_parsecode($content)
 {
-    _deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'do_parsecode'}");
+    Hook\_deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'do_parsecode'}");
 
     return app()->hook->{'do_parsecode'}($content);
 }
@@ -130,7 +132,7 @@ function do_parsecode($content)
  */
 function get_parsecode_regex()
 {
-    _deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'get_parsecode_regex'}");
+    Hook\_deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'get_parsecode_regex'}");
 
     return app()->hook->{'get_parsecode_regex'}();
 }
@@ -150,7 +152,7 @@ function get_parsecode_regex()
  */
 function do_parsecode_tag($m)
 {
-    _deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'do_parsecode_tag'}");
+    Hook\_deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'do_parsecode_tag'}");
 
     return app()->hook->{'do_parsecode_tag'}($m);
 }
@@ -171,7 +173,7 @@ function do_parsecode_tag($m)
  */
 function parsecode_parse_atts($text)
 {
-    _deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'parsecode_parse_atts'}");
+    Hook\_deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'parsecode_parse_atts'}");
 
     return app()->hook->{'parsecode_parse_atts'}($text);
 }
@@ -196,7 +198,7 @@ function parsecode_parse_atts($text)
  */
 function parsecode_atts($pairs, $atts)
 {
-    _deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'parsecode_atts'}");
+    Hook\_deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'parsecode_atts'}");
 
     return app()->hook->{'parsecode_atts'}($pairs, $atts);
 }
@@ -214,7 +216,7 @@ function parsecode_atts($pairs, $atts)
  */
 function strip_parsecodes($content)
 {
-    _deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'strip_parsecodes'}");
+    Hook\_deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'strip_parsecodes'}");
 
     return app()->hook->{'strip_parsecodes'}($content);
 }
@@ -229,7 +231,7 @@ function strip_parsecodes($content)
  */
 function strip_parsecode_tag($m)
 {
-    _deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'strip_parsecode_tag'}");
+    Hook\_deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'strip_parsecode_tag'}");
 
     return app()->hook->{'strip_parsecode_tag'}($m);
 }
@@ -246,7 +248,7 @@ function strip_parsecode_tag($m)
  */
 function ttcms_autop($pee, $br = 1)
 {
-    _deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'ttcms_autop'}");
+    Hook\_deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'ttcms_autop'}");
 
     return app()->hook->{'ttcms_autop'}($pee, $br);
 }
@@ -261,7 +263,7 @@ function ttcms_autop($pee, $br = 1)
  */
 function _autop_newline_preservation_helper($matches)
 {
-    _deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'_autop_newline_preservation_helper'}");
+    Hook\_deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'_autop_newline_preservation_helper'}");
 
     return app()->hook->{'_autop_newline_preservation_helper'}($matches);
 }
@@ -277,7 +279,7 @@ function _autop_newline_preservation_helper($matches)
  */
 function parsecode_unautop($pee)
 {
-    _deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'parsecode_unautop'}");
+    Hook\_deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'parsecode_unautop'}");
 
     return app()->hook->{'parsecode_unautop'}($pee);
 }
@@ -294,9 +296,9 @@ function parsecode_unautop($pee)
  */
 function hasPermission($perm)
 {
-    _deprecated_function(__FUNCTION__, '0.9.8', 'Tritan\Functions\Auth\current_user_can');
+    Hook\_deprecated_function(__FUNCTION__, '0.9.8', 'Tritan\Functions\Auth\current_user_can');
 
-    return current_user_can($perm);
+    return \TriTan\Functions\Auth\current_user_can($perm);
 }
 
 /**
@@ -314,7 +316,7 @@ function hasPermission($perm)
  */
 function get_post_posttype_slug($post_id = 0)
 {
-    _deprecated_function(__FUNCTION__, '0.9.9', 'TriTan\Functions\Post\get_post_posttype');
+    Hook\_deprecated_function(__FUNCTION__, '0.9.9', 'TriTan\Functions\Post\get_post_posttype');
 
-    return get_post_posttype($post_id);
+    return \TriTan\Functions\Post\get_post_posttype($post_id);
 }

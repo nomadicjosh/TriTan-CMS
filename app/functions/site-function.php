@@ -1,6 +1,6 @@
 <?php
 
-namespace TriTan\Functions;
+namespace TriTan\Functions\Site;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
@@ -17,6 +17,13 @@ use TriTan\Config;
 use TriTan\Exception\Exception;
 use TriTan\Error;
 use Cascade\Cascade;
+use TriTan\Functions\User;
+use TriTan\Functions\Cache;
+use TriTan\Functions\Db;
+use TriTan\Functions\Core;
+use TriTan\Functions\Auth;
+use TriTan\Functions\Dependency;
+use TriTan\Functions\Meta;
 
 /**
  * Retrieves site data given a site ID or post array.
@@ -129,25 +136,61 @@ function site_exists($site_domain, $site_path)
  */
 function add_site_user_meta($site_id, $params = [])
 {
-    $userdata = get_userdata((int) $params['assign_id']);
+    $userdata = Auth\get_userdata((int) $params['assign_id']);
     $data = [
-        'username' => if_null(_escape($userdata->user_login)),
-        'fname' => if_null(_escape($userdata->user_fname)),
-        'lname' => if_null(_escape($userdata->user_lname)),
-        'email' => if_null(_escape($userdata->user_email)),
-        'bio' => if_null(_escape($userdata->bio)),
-        'status' => if_null(_escape($userdata->status)),
-        'admin_layout' => _escape($userdata->admin_layout) <= 0 ? (int) 0 : (int) _escape($userdata->admin_layout),
-        'admin_sidebar' => _escape($userdata->admin_sidebar) <= 0 ? (int) 0 : (int) _escape($userdata->admin_sidebar),
-        'admin_skin' => _escape($userdata->admin_skin) == null ? (string) 'skin-red-light' : (string) _escape($userdata->admin_skin)
+        'username' => Core\if_null(Core\_escape($userdata->user_login)),
+        'fname' => Core\if_null(Core\_escape($userdata->user_fname)),
+        'lname' => Core\if_null(Core\_escape($userdata->user_lname)),
+        'email' => Core\if_null(Core\_escape($userdata->user_email)),
+        'bio' => Core\if_null(Core\_escape($userdata->bio)),
+        'status' => Core\if_null(Core\_escape($userdata->status)),
+        'admin_layout' => Core\_escape($userdata->admin_layout) <= 0 ? (int) 0 : (int) Core\_escape($userdata->admin_layout),
+        'admin_sidebar' => Core\_escape($userdata->admin_sidebar) <= 0 ? (int) 0 : (int) Core\_escape($userdata->admin_sidebar),
+        'admin_skin' => Core\_escape($userdata->admin_skin) == null ? (string) 'skin-red-light' : (string) Core\_escape($userdata->admin_skin)
     ];
     foreach ($data as $meta_key => $meta_value) {
         $prefix = "ttcms_{$site_id}_";
-        update_user_meta((int) $params['assign_id'], $prefix . $meta_key, $meta_value);
+        User\update_user_meta((int) $params['assign_id'], $prefix . $meta_key, $meta_value);
     }
 
-    $user = new \TriTan\User($params['assign_id'], if_null(_escape($userdata->user_login)), $site_id);
+    $user = new \TriTan\User($params['assign_id'], Core\if_null(Core\_escape($userdata->user_login)), $site_id);
     $user->set_role($params['role']);
+}
+
+/**
+ * Create the needed directories when a new site is created.
+ * 
+ * @file app/functions/hook-function.php
+ * 
+ * @since 0.9
+ * @param int $site_id Site ID.
+ * @param object $site Site object.
+ * @param bool $update Whether the site is being created or updated.
+ * @return bool Returns true on success and false otherwise.
+ */
+function create_site_directories($site_id, $site, $update)
+{
+    if ($update) {
+        return false;
+    }
+
+    $site = new \TriTan\Site($site);
+    if ((int) $site->site_id <= (int) 0) {
+        return false;
+    }
+
+    try {
+        Core\_mkdir(Config::get('sites_dir') . (int) $site_id . DS . 'dropins' . DS);
+        Core\_mkdir(Config::get('sites_dir') . (int) $site_id . DS . 'files' . DS . 'cache' . DS);
+        Core\_mkdir(Config::get('sites_dir') . (int) $site_id . DS . 'files' . DS . 'logs' . DS);
+        Core\_mkdir(Config::get('sites_dir') . (int) $site_id . DS . 'themes' . DS);
+        Core\_mkdir(Config::get('sites_dir') . (int) $site_id . DS . 'uploads' . DS);
+        Core\_mkdir(Config::get('sites_dir') . (int) $site_id . DS . 'uploads' . DS . '__optimized__' . DS);
+    } catch (Exception $ex) {
+        Cascade::getLogger('error')->error(sprintf('IOSTATE[%s]: Forbidden: %s', $ex->getCode(), $ex->getMessage()));
+    }
+
+    return true;
 }
 
 /**
@@ -177,9 +220,9 @@ function delete_site_user_meta($site_id, $old_site)
                 ->delete();
         $umeta->commit();
 
-        $users = get_users_by_siteid($site_id);
+        $users = User\get_users_by_siteid($site_id);
         foreach ($users as $user) {
-            clean_user_cache($user->user_id);
+            User\clean_user_cache($user->user_id);
         }
     } catch (Exception $ex) {
         $umeta->rollback();
@@ -209,11 +252,33 @@ function delete_site_tables($site_id, $old_site)
     $tables = glob(app()->config('db.savepath') . "ttcms_{$site_id}_*.json");
     if (is_array($tables)) {
         foreach ($tables as $table) {
-            if (file_exists($table)) {
+            if (Core\ttcms_file_exists($table, false)) {
                 unlink($table);
             }
         }
     }
+}
+
+/**
+ * Deletes the site directory when the site is deleted.
+ * 
+ * @file app/functions/site-function.php
+ * 
+ * @since 0.9
+ * @param int $_site_id Site ID.
+ * @return bool Returns true on success and false otherwise.
+ */
+function delete_site_directories($site_id, $old_site)
+{
+    if ((int) $site_id <= (int) 0) {
+        return false;
+    }
+
+    if ((int) $site_id !== (int) $old_site['site_id']) {
+        return false;
+    }
+
+    _rmdir(Config::get('sites_dir') . (int) $site_id . DS);
 }
 
 /**
@@ -227,7 +292,7 @@ function delete_site_tables($site_id, $old_site)
  */
 function get_current_site_id()
 {
-    return absint(Config::get('site_id'));
+    return Core\absint(Config::get('site_id'));
 }
 
 /**
@@ -241,7 +306,7 @@ function get_current_site_id()
 function update_main_site()
 {
     $main_site = app()->db->table('site')->where('site_id', (int) 1)->first();
-    if (_escape($main_site['site_domain']) === TTCMS_MAINSITE && _escape($main_site['site_path']) === TTCMS_MAINSITE_PATH) {
+    if (Core\_escape($main_site['site_domain']) === TTCMS_MAINSITE && Core\_escape($main_site['site_path']) === TTCMS_MAINSITE_PATH) {
         return false;
     }
 
@@ -252,7 +317,7 @@ function update_main_site()
                 ->update([
                     'site_domain' => (string) TTCMS_MAINSITE,
                     'site_path' => (string) TTCMS_MAINSITE_PATH,
-                    'site_registered' => (string) \Jenssegers\Date\Date::now()
+                    'site_registered' => (string) format_date()
         ]);
         $site->commit();
     } catch (Exception $ex) {
@@ -278,7 +343,7 @@ function get_multisite_users()
             ->where('meta_key', 'match', "/$tbl_prefix/")
             ->get();
     foreach ($site_users as $site_user) {
-        $users[] = _escape($site_user['user_id']);
+        $users[] = Core\_escape($site_user['user_id']);
     }
 
     $list_users = app()->db->table('user')
@@ -307,7 +372,7 @@ function add_user_to_site($user, $site, $role)
     if ($user instanceof \TriTan\User) {
         $userdata = $user;
     } else {
-        $userdata = get_userdata($user);
+        $userdata = Auth\get_userdata($user);
     }
 
     if ($site instanceof \TriTan\Site) {
@@ -316,24 +381,24 @@ function add_user_to_site($user, $site, $role)
         $_site = get_site($site);
     }
 
-    if (!username_exists(_escape($userdata->user_login))) {
+    if (!User\username_exists(Core\_escape($userdata->user_login))) {
         return false;
     }
 
-    if (!site_exists(_escape($_site['site_domain']), _escape($_site['site_path']))) {
+    if (!site_exists(Core\_escape($_site['site_domain']), Core\_escape($_site['site_path']))) {
         return false;
     }
 
     // Store values to save in user meta.
     $meta = [];
 
-    $meta['username'] = if_null($userdata->user_login);
+    $meta['username'] = Core\if_null($userdata->user_login);
 
-    $meta['fname'] = if_null($userdata->user_fname);
+    $meta['fname'] = Core\if_null($userdata->user_fname);
 
-    $meta['lname'] = if_null($userdata->user_lname);
+    $meta['lname'] = Core\if_null($userdata->user_lname);
 
-    $meta['email'] = if_null($userdata->user_email);
+    $meta['email'] = Core\if_null($userdata->user_email);
 
     $meta['bio'] = null;
 
@@ -345,7 +410,7 @@ function add_user_to_site($user, $site, $role)
 
     $meta['admin_sidebar'] = (int) 0;
 
-    $meta['admin_skin'] = 'skin-red-light';
+    $meta['admin_skin'] = (string) 'skin-red-light';
 
     /**
      * Filters a user's meta values and keys immediately after the user is added
@@ -372,14 +437,14 @@ function add_user_to_site($user, $site, $role)
 
     // Make sure meta data doesn't already exist for this user.
     $prefix = "ttcms_{$_site['site_id']}_";
-    if (!get_user_meta(_escape($userdata->user_id), $prefix . $meta['role'], true)) {
+    if (!User\get_user_meta(Core\_escape($userdata->user_id), $prefix . $meta['role'], true)) {
         // Update user meta.
         foreach ($meta as $key => $value) {
-            update_user_meta(_escape($userdata->user_id), $prefix . $key, if_null($value));
+            User\update_user_meta(Core\_escape($userdata->user_id), $prefix . $key, Core\if_null($value));
         }
     }
 
-    return (int) _escape($userdata->user_id);
+    return (int) Core\_escape($userdata->user_id);
 }
 
 /**
@@ -423,9 +488,9 @@ function ttcms_insert_site($sitedata, $exception = false)
 
         if (is_null($site_before)) {
             if ($exception) {
-                throw new Exception(_t('Invalid site id.', 'tritan-cms'), 'invalid_site_id');
+                throw new Exception(Core\_t('Invalid site id.', 'tritan-cms'), 'invalid_site_id');
             } else {
-                return new Error('invalid_site_id', _t('Invalid site id.', 'tritan-cms'));
+                return new Error('invalid_site_id', Core\_t('Invalid site id.', 'tritan-cms'));
             }
         }
         $previous_status = get_site_status((int) $site_id);
@@ -441,7 +506,7 @@ function ttcms_insert_site($sitedata, $exception = false)
         app()->hook->{'do_action'}('site_previous_status', $previous_status, (int) $site_id, $update);
     } else {
         $update = false;
-        $site_id = auto_increment('site', 'site_id');
+        $site_id = Db\auto_increment('site', 'site_id');
 
         $previous_status = 'new';
         /**
@@ -456,7 +521,7 @@ function ttcms_insert_site($sitedata, $exception = false)
         app()->hook->{'do_action'}('site_previous_status', $previous_status, (int) $site_id, $update);
     }
 
-    $raw_site_domain = isset($sitedata['subdomain']) ? if_null($sitedata['subdomain'] . '.' . app()->req->server['HTTP_HOST']) : if_null($sitedata['site_domain']);
+    $raw_site_domain = isset($sitedata['subdomain']) ? _trim(Core\if_null($sitedata['subdomain']) . '.' . app()->req->server['HTTP_HOST']) : _trim(Core\if_null($sitedata['site_domain']));
     /**
      * Filters a site's domain before the site is created or updated.
      *
@@ -470,21 +535,21 @@ function ttcms_insert_site($sitedata, $exception = false)
     // site_domain cannot be empty.
     if (empty($site_domain)) {
         if ($exception) {
-            throw new Exception(_t('Cannot create a site with an empty domain name.', 'tritan-cms'), 'empty_site_domain');
+            throw new Exception(Core\_t('Cannot create a site with an empty domain name.', 'tritan-cms'), 'empty_site_domain');
         } else {
-            return new Error('empty_site_domain', _t('Cannot create a site with an empty domain name.', 'tritan-cms'));
+            return new Error('empty_site_domain', Core\_t('Cannot create a site with an empty domain name.', 'tritan-cms'));
         }
     }
 
     if (!$update && site_domain_exists($site_domain)) {
         if ($exception) {
-            throw new Exception(_t('Sorry, that site already exists!', 'tritan-cms'), 'existing_site_doamin');
+            throw new Exception(Core\_t('Sorry, that site already exists!', 'tritan-cms'), 'existing_site_doamin');
         } else {
-            return new Error('existing_site_doamin', _t('Sorry, that site already exists!', 'tritan-cms'));
+            return new Error('existing_site_doamin', Core\_t('Sorry, that site already exists!', 'tritan-cms'));
         }
     }
 
-    $raw_site_name = if_null($sitedata['site_name']);
+    $raw_site_name = Core\if_null($sitedata['site_name']);
     /**
      * Filters a site's name before the site is created or updated.
      *
@@ -517,7 +582,7 @@ function ttcms_insert_site($sitedata, $exception = false)
      */
     $site_slug = app()->hook->{'apply_filter'}('pre_site_slug', (string) $raw_site_slug);
 
-    $raw_site_path = if_null($sitedata['site_path']);
+    $raw_site_path = Core\if_null($sitedata['site_path']);
     /**
      * Filters a site's path before the site is created or updated.
      *
@@ -531,18 +596,18 @@ function ttcms_insert_site($sitedata, $exception = false)
      * check if current email and new email are the same, or not, and check `email_exists`
      * accordingly.
      */
-    if ((!$update || (!empty($site_before) && 0 !== strcasecmp($site_domain . $site_path, _escape($site_before->site_domain) . _escape($site_before->site_path)) ) ) && site_exists($site_domain, $site_path)
+    if ((!$update || (!empty($site_before) && 0 !== strcasecmp($site_domain . $site_path, Core\_escape($site_before->site_domain) . Core\_escape($site_before->site_path)) ) ) && site_exists($site_domain, $site_path)
     ) {
         if ($exception) {
-            throw new Exception(_t('Sorry, that site domain and path is already used.', 'tritan-cms'), 'existing_site_domainpath');
+            throw new Exception(Core\_t('Sorry, that site domain and path is already used.', 'tritan-cms'), 'existing_site_domainpath');
         } else {
-            return new Error('existing_site_domainpath', _t('Sorry, that site domain and path is already used.', 'tritan-cms'));
+            return new Error('existing_site_domainpath', Core\_t('Sorry, that site domain and path is already used.', 'tritan-cms'));
         }
     }
 
-    $site_owner = $sitedata['site_owner'] == '' ? if_null(get_current_user_id()) : if_null($sitedata['site_owner']);
+    $site_owner = $sitedata['site_owner'] == '' ? Core\if_null(User\get_current_user_id()) : Core\if_null($sitedata['site_owner']);
 
-    $raw_site_status = $sitedata['site_status'] == '' ? (string) 'public' : if_null($sitedata['site_status']);
+    $raw_site_status = $sitedata['site_status'] == '' ? (string) 'public' : Core\if_null($sitedata['site_status']);
     /**
      * Filters a site's status before the site is created or updated.
      *
@@ -551,12 +616,12 @@ function ttcms_insert_site($sitedata, $exception = false)
      */
     $site_status = app()->hook->{'apply_filter'}('pre_site_status', $raw_site_status);
 
-    $site_registered = (string) \Jenssegers\Date\Date::now();
+    $site_registered = (string) format_date();
 
-    $site_modified = (string) \Jenssegers\Date\Date::now();
+    $site_modified = (string) format_date();
 
     $compacted = compact('site_id', 'site_name', 'site_slug', 'site_domain', 'site_path', 'site_owner', 'site_status', 'site_registered', 'site_modified');
-    $data = ttcms_unslash($compacted);
+    $data = Core\ttcms_unslash($compacted);
 
     /**
      * Filters site data before the record is created or updated.
@@ -579,19 +644,19 @@ function ttcms_insert_site($sitedata, $exception = false)
     $data = app()->hook->{'apply_filter'}('ttcms_pre_insert_site_data', $data, $update, $update ? (int) $site_id : null);
 
     if ($update) {
-        if (false === ttcms_site_update_document($data)) {
+        if (false === Db\ttcms_site_update_document($data)) {
             if ($exception) {
-                throw new Exception(_t('Could not update site within the site document.'), 'site_document_update_error');
+                throw new Exception(Core\_t('Could not update site within the site document.'), 'site_document_update_error');
             } else {
-                return new Error('site_document_update_error', _t('Could not update site within the site document.'));
+                return new Error('site_document_update_error', Core\_t('Could not update site within the site document.'));
             }
         }
     } else {
-        if (false === ttcms_site_insert_document($data)) {
+        if (false === Db\ttcms_site_insert_document($data)) {
             if ($exception) {
-                throw new Exception(_t('Could not insert site into the site document.'), 'site_document_insert_error');
+                throw new Exception(Core\_t('Could not insert site into the site document.'), 'site_document_insert_error');
             } else {
-                return new Error('site_document_insert_error', _t('Could not insert site into the site document.'));
+                return new Error('site_document_insert_error', Core\_t('Could not insert site into the site document.'));
             }
         }
     }
@@ -673,9 +738,9 @@ function ttcms_update_site($sitedata, $exception = false)
     if ($sitedata instanceof \TriTan\Site) {
         $sitedata = get_object_vars($sitedata);
     }
-    
+
     $details = app()->db->table('site')->where('site_id', $sitedata['site_id'])->first();
-    if((int) $details['site_owner'] !== (int) $sitedata['site_owner']) {
+    if ((int) $details['site_owner'] !== (int) $sitedata['site_owner']) {
         $owner_change = true;
         $previous_owner = $details['site_owner'];
     } else {
@@ -685,26 +750,28 @@ function ttcms_update_site($sitedata, $exception = false)
     $ID = isset($sitedata['site_id']) ? (int) $sitedata['site_id'] : (int) 0;
     if ($ID <= 0) {
         if ($exception) {
-            throw new Exception(_t('Invalid site id.', 'tritan-cms'), 'invalid_site_id');
+            throw new Exception(Core\_t('Invalid site id.', 'tritan-cms'), 'invalid_site_id');
         } else {
-            return new Error('invalid_site_id', _t('Invalid site id.', 'tritan-cms'));
+            return new Error('invalid_site_id', Core\_t('Invalid site id.', 'tritan-cms'));
         }
     }
 
     $site_id = ttcms_insert_site($sitedata);
-    
+
     /**
      * If the site admin has changed, delete usermeta data of the old admin
      * and add usermeta data for the new
      */
-    if($site_id > 0 && $owner_change) {
+    if ($site_id > 0 && $owner_change) {
         $meta_key = "ttcms_{$site_id}";
         $old_meta = app()->db->table('usermeta')->where('user_id', (int) $previous_owner)->where('meta_key', 'match', "/$meta_key/")->get();
         foreach ($old_meta as $meta) {
-            delete_user_meta((int) $previous_owner, $meta['meta_key'], $meta['meta_value']);
+            User\delete_user_meta((int) $previous_owner, $meta['meta_key'], $meta['meta_value']);
         }
         add_user_to_site((int) $sitedata['site_owner'], (int) $sitedata['site_id'], 'admin');
     }
+    
+    clean_site_cache($site_id);
 
     return $site_id;
 }
@@ -721,7 +788,7 @@ function ttcms_update_site($sitedata, $exception = false)
 function ttcms_delete_site($site_id, $exception = false)
 {
     if ((int) $site_id == (int) 1) {
-        _ttcms_flash()->{'error'}(_t('You are not allowed to delete the main site.', 'tritan-cms'));
+        Dependency\_ttcms_flash()->{'error'}(Core\_t('You are not allowed to delete the main site.', 'tritan-cms'));
         exit();
     }
 
@@ -729,9 +796,9 @@ function ttcms_delete_site($site_id, $exception = false)
 
     if (!$old_site) {
         if ($exception) {
-            throw new Exception(_t('Site does not exist.'), 'no_site_exists');
+            throw new Exception(Core\_t('Site does not exist.'), 'no_site_exists');
         } else {
-            return new Error('no_site_exists', _t('Site does not exist.'));
+            return new Error('no_site_exists', Core\_t('Site does not exist.'));
         }
     }
 
@@ -788,7 +855,7 @@ function ttcms_delete_site_user($user_id, $params = [], $exception = false)
     }
 
     if ((int) $user_id == (int) 1) {
-        _ttcms_flash()->{'error'}(func\_t('You are not allowed to delete the super administrator account.', 'tritan-cms'));
+        Dependency\_ttcms_flash()->{'error'}(Core\_t('You are not allowed to delete the super administrator account.', 'tritan-cms'));
         exit();
     }
 
@@ -798,38 +865,60 @@ function ttcms_delete_site_user($user_id, $params = [], $exception = false)
         return false;
     }
 
-    $check = array_filter($params);
-    if (!empty($check)) {
+    $sites = Db\get_users_sites((int) $user_id);
+
+    if ((int) $params['assign_id'] > 0) {
+        /**
+         * Clean cache of the assigned user.
+         */
+        User\clean_user_cache((int) $params['assign_id']);
         /**
          * We need to reassign the site(s) to the selected user and create the
          * needed usermeta for the site.
          */
-        $sites = get_users_sites($user_id);
-        foreach ($sites as $site) {
-            add_user_to_site((int) $params['assign_id'], (int) _escape($site['site_id']), $params['role']);
+        if (null != $sites && false != $sites) {
+            foreach ($sites as $site) {
+                clean_site_cache((int) $site['site_id']);
+                add_user_to_site((int) $params['assign_id'], (int) Core\_escape($site['site_id']), $params['role']);
+            }
+            /**
+             * Filter hook is triggered when assign_id is greater than zero.
+             * 
+             * Sites will be reassigned before the user is deleted.
+             * 
+             * @since 0.9.9
+             * @param int $user_id    ID of user to be deleted.
+             * @param array $params   User parameters (assign_id and role).
+             */
+            $params = app()->hook->{'apply_filter'}('reassign_sites', (int) $user_id, $params);
         }
-        /**
-         * Filter hook is triggered when assign_id is greater than zero.
-         * 
-         * Sites will be reassigned before the user is deleted.
-         * 
-         * @since 0.9.9
-         * @param int $user_id    ID of user to be deleted.
-         * @param array $params   User parameters (assign_id and role).
-         */
-        $params = app()->hook->{'apply_filter'}('reassign_sites', (int) $user_id, $params);
     } else {
-        $site_delete = app()->db->table('site');
-        $site_delete->begin();
-        try {
-            $site_delete->where('site_owner', $user_id)->delete();
-            $site_delete->commit();
-        } catch (Exception $ex) {
-            $site_delete->rollback();
-            if ($exception) {
-                sprintf('ERROR[%s]: %s', $ex->getCode(), $ex->getMessage());
-            } else {
-                return new Error($ex->getCode(), $ex->getMessage());
+        if (null != $sites && false != $sites) {
+            foreach ($sites as $old_site) {
+                $site_delete = app()->db->table('site');
+                $site_delete->begin();
+                try {
+                    $site_delete->where('site_owner', $user_id)->delete();
+                    $site_delete->commit();
+                } catch (Exception $ex) {
+                    $site_delete->rollback();
+                    if ($exception) {
+                        sprintf('ERROR[%s]: %s', $ex->getCode(), $ex->getMessage());
+                    } else {
+                        return new Error($ex->getCode(), $ex->getMessage());
+                    }
+                }
+                
+                clean_site_cache((int) $old_site['site_id']);
+                
+                /**
+                 * Action hook triggered after the site is deleted.
+                 * 
+                 * @since 0.9.9
+                 * @param int $id           Site ID.
+                 * @param array $old_site   Data array of site that was deleted.
+                 */
+                app()->hook->{'do_action'}('deleted_site', (int) $old_site['site_id'], $old_site);
             }
         }
     }
@@ -842,13 +931,6 @@ function ttcms_delete_site_user($user_id, $params = [], $exception = false)
      * @param array $params   User parameters (assign_id and role).
      */
     app()->hook->{'do_action'}('delete_site_user', (int) $user_id, $params);
-    
-    /**
-     * Clean site cache before deleting user.
-     */
-    foreach (get_users_sites($user_id) as $site) {
-        clean_site_cache($site['site_id']);
-    }
 
     /**
      * Finally delete the user.
@@ -863,7 +945,7 @@ function ttcms_delete_site_user($user_id, $params = [], $exception = false)
         $meta = app()->db->table('usermeta')->where('user_id', $user_id)->get(['meta_id']);
         if ($meta) {
             foreach ($meta as $mid) {
-                delete_metadata_by_mid('user', $mid['meta_id']);
+                Meta\delete_metadata_by_mid('user', $mid['meta_id']);
             }
         }
     } catch (Exception $ex) {
@@ -878,7 +960,7 @@ function ttcms_delete_site_user($user_id, $params = [], $exception = false)
     /**
      * Clear the cache of the deleted user.
      */
-    clean_user_cache($user_id);
+    User\clean_user_cache($user_id);
 
     /**
      * Action hook fires immediately after a user has been deleted from the usermeta document.
@@ -918,84 +1000,84 @@ function new_site_data($site_id, $site, $update)
     }
 
     $sitedata = get_site((int) $site_id);
-    $userdata = get_userdata((int) $site->site_owner);
-    $api_key = _ttcms_random_lib()->generateString(20, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+    $userdata = Auth\get_userdata((int) $site->site_owner);
+    $api_key = Dependency\_ttcms_random_lib()->generateString(20, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
 
     $prefix = "ttcms_{$sitedata['site_id']}_";
 
     $option = app()->db->table($prefix . 'option');
     $option->insert([
-        'option_id' => auto_increment($prefix . 'option', 'option_id'),
+        'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'sitename',
-        'option_value' => _escape($sitedata['site_name'])
+        'option_value' => $sitedata['site_name']
     ]);
     $option->insert([
-        'option_id' => auto_increment($prefix . 'option', 'option_id'),
+        'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'site_description',
         'option_value' => 'Just another TriTan CMS site.'
     ]);
     $option->insert([
-        'option_id' => auto_increment($prefix . 'option', 'option_id'),
+        'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'admin_email',
-        'option_value' => _escape($userdata->user_email)
+        'option_value' => $userdata->user_email
     ]);
     $option->insert([
-        'option_id' => auto_increment($prefix . 'option', 'option_id'),
+        'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'ttcms_core_locale',
         'option_value' => 'en_US'
     ]);
     $option->insert([
-        'option_id' => auto_increment($prefix . 'option', 'option_id'),
+        'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'cookieexpire',
         'option_value' => (int) 604800
     ]);
     $option->insert([
-        'option_id' => auto_increment($prefix . 'option', 'option_id'),
+        'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'cookiepath',
         'option_value' => '/'
     ]);
     $option->insert([
-        'option_id' => auto_increment($prefix . 'option', 'option_id'),
+        'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'enable_cron_jobs',
         'option_value' => (int) 0
     ]);
     $option->insert([
-        'option_id' => auto_increment($prefix . 'option', 'option_id'),
+        'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'system_timezone',
         'option_value' => 'America/New_York'
     ]);
     $option->insert([
-        'option_id' => auto_increment($prefix . 'option', 'option_id'),
+        'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'api_key',
         'option_value' => (string) $api_key
     ]);
     $option->insert([
-        'option_id' => auto_increment($prefix . 'option', 'option_id'),
+        'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'date_format',
         'option_value' => 'd F Y'
     ]);
     $option->insert([
-        'option_id' => auto_increment($prefix . 'option', 'option_id'),
+        'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'time_format',
         'option_value' => 'h:m A'
     ]);
     $option->insert([
-        'option_id' => auto_increment($prefix . 'option', 'option_id'),
+        'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'admin_skin',
         'option_value' => 'skin-red-light'
     ]);
     $option->insert([
-        'option_id' => auto_increment($prefix . 'option', 'option_id'),
+        'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'site_cache',
         'option_value' => (int) 0
     ]);
     $option->insert([
-        'option_id' => auto_increment($prefix . 'option', 'option_id'),
+        'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'current_site_theme',
         'option_value' => ''
     ]);
     $option->insert([
-        'option_id' => auto_increment($prefix . 'option', 'option_id'),
+        'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'posts_per_page',
         'option_value' => (int) 6
     ]);
@@ -1003,13 +1085,13 @@ function new_site_data($site_id, $site, $update)
     // Store values to save in user meta.
     $meta = [];
 
-    $meta['username'] = if_null($userdata->user_login);
+    $meta['username'] = Core\if_null($userdata->user_login);
 
-    $meta['fname'] = if_null($userdata->user_fname);
+    $meta['fname'] = Core\if_null($userdata->user_fname);
 
-    $meta['lname'] = if_null($userdata->user_lname);
+    $meta['lname'] = Core\if_null($userdata->user_lname);
 
-    $meta['email'] = if_null($userdata->user_email);
+    $meta['email'] = Core\if_null($userdata->user_email);
 
     $meta['bio'] = null;
 
@@ -1021,7 +1103,7 @@ function new_site_data($site_id, $site, $update)
 
     $meta['admin_sidebar'] = (int) 0;
 
-    $meta['admin_skin'] = 'skin-red-light';
+    $meta['admin_skin'] = (string) 'skin-red-light';
 
     /**
      * Filters a user's meta values and keys immediately after the user is added
@@ -1048,10 +1130,10 @@ function new_site_data($site_id, $site, $update)
 
     // Update user meta.
     foreach ($meta as $key => $value) {
-        update_user_meta(_escape($userdata->user_id), $prefix . $key, if_null($value));
+        User\update_user_meta(Core\_escape($userdata->user_id), $prefix . $key, Core\if_null($value));
     }
 
-    return (int) _escape($sitedata['site_id']);
+    return (int) Core\_escape($sitedata['site_id']);
 }
 
 /**
@@ -1080,6 +1162,35 @@ function ttcms_site_status_label($status)
 }
 
 /**
+ * Checks if site exists or is archived.
+ * 
+ * @file app/functions/site-function.php
+ * 
+ * @since 0.9
+ */
+function does_site_exist()
+{
+    $base_url = Core\get_base_url();
+    $site_path = str_replace('index.php', '', app()->req->server['PHP_SELF']);
+    $site_domain = str_replace(['http://', 'https://', $site_path], '', $base_url);
+
+    $site = app()->db->table('site')
+            ->where('site_domain', $site_domain)
+            ->where('site_path', $site_path)
+            ->first();
+
+    if (!$site) {
+        app()->res->_format('json', 404);
+        exit();
+    }
+
+    if (Core\_escape($site['site_status']) === 'archive') {
+        app()->res->_format('json', 503);
+        exit();
+    }
+}
+
+/**
  * A function which retrieves TriTan CMS site name.
  * 
  * Purpose of this function is for the `site_name`
@@ -1094,7 +1205,7 @@ function ttcms_site_status_label($status)
 function get_site_name($site_id = 0)
 {
     $site = get_site($site_id);
-    $name = _escape($site['site_name']);
+    $name = Core\_escape($site['site_name']);
     /**
      * Filters the site name.
      *
@@ -1121,7 +1232,7 @@ function get_site_name($site_id = 0)
 function get_site_domain($site_id = 0)
 {
     $site = get_site($site_id);
-    $domain = _escape($site['site_domain']);
+    $domain = Core\_escape($site['site_domain']);
     /**
      * Filters the site domain.
      *
@@ -1148,7 +1259,7 @@ function get_site_domain($site_id = 0)
 function get_site_path($site_id = 0)
 {
     $site = get_site($site_id);
-    $path = _escape($site['site_path']);
+    $path = Core\_escape($site['site_path']);
     /**
      * Filters the site path.
      *
@@ -1175,7 +1286,7 @@ function get_site_path($site_id = 0)
 function get_site_owner($site_id = 0)
 {
     $site = get_site($site_id);
-    $owner = _escape($site['site_owner']);
+    $owner = Core\_escape($site['site_owner']);
     /**
      * Filters the site owner.
      *
@@ -1202,7 +1313,7 @@ function get_site_owner($site_id = 0)
 function get_site_status($site_id = 0)
 {
     $site = get_site($site_id);
-    $status = _escape($site['site_status']);
+    $status = Core\_escape($site['site_status']);
     /**
      * Filters the site status.
      *
@@ -1241,16 +1352,16 @@ function clean_site_cache($site)
         ]);
     }
 
-    $site_id = _escape($site->site_id);
-    $site_domain_path_key = md5(_escape($site->site_domain) . _escape($site->site_path));
+    $site_id = Core\_escape($site->site_id);
+    $site_domain_path_key = md5(Core\_escape($site->site_domain) . Core\_escape($site->site_path));
 
-    ttcms_cache_delete((int) _escape($site->site_id), 'sites');
-    ttcms_cache_delete((int) _escape($site->site_id), 'site_details');
-    ttcms_cache_delete((int) _escape($site->site_id) . 'short', 'site_details');
-    ttcms_cache_delete($site_domain_path_key, 'site_lookup');
-    ttcms_cache_delete($site_domain_path_key, 'site_id_cache');
-    ttcms_cache_delete('current_site_' . _escape($site->site_domain), 'site_options');
-    ttcms_cache_delete('current_site_' . _escape($site->site_domain) . _escape($site->site_path), 'site_options');
+    Cache\ttcms_cache_delete((int) Core\_escape($site->site_id), 'sites');
+    Cache\ttcms_cache_delete((int) Core\_escape($site->site_id), 'site_details');
+    Cache\ttcms_cache_delete((int) Core\_escape($site->site_id) . 'short', 'site_details');
+    Cache\ttcms_cache_delete($site_domain_path_key, 'site_lookup');
+    Cache\ttcms_cache_delete($site_domain_path_key, 'site_id_cache');
+    Cache\ttcms_cache_delete('current_site_' . Core\_escape($site->site_domain), 'site_options');
+    Cache\ttcms_cache_delete('current_site_' . Core\_escape($site->site_domain) . Core\_escape($site->site_path), 'site_options');
 
     /**
      * Fires immediately after the given site's cache is cleaned.
@@ -1262,7 +1373,7 @@ function clean_site_cache($site)
      */
     app()->hook->{'do_action'}('clean_site_cache', (int) $site_id, $site, $site_domain_path_key);
 
-    ttcms_cache_set('last_changed', microtime(), 'sites');
+    Cache\ttcms_cache_set('last_changed', microtime(), 'sites');
 }
 
 /**
@@ -1280,54 +1391,54 @@ function get_sitedata($fields = null, $get_all = true)
             $site_id = (int) $fields['site_id'];
         } elseif (null !== $fields['site_domain'] && null !== $fields['site_path']) {
             $key = md5($fields['site_domain'] . $fields['site_path']);
-            $site = ttcms_cache_get($key, 'site_lookup');
+            $site = Cache\ttcms_cache_get($key, 'site_lookup');
 
             if (false !== $site) {
                 return $site;
             }
 
             if (substr($fields['site_domain'], 0, 4) == 'www.') {
-                $nowww = substr(_escape($fields['site_domain']), 4);
+                $nowww = substr(Core\_escape($fields['site_domain']), 4);
                 $site = app()->db->table('site')
-                        ->where('site_domain', 'in', [$nowww, _escape($fields['site_domain'])])
-                        ->where('site_path', _escape($fields['site_path']))
+                        ->where('site_domain', 'in', [$nowww, Core\_escape($fields['site_domain'])])
+                        ->where('site_path', Core\_escape($fields['site_path']))
                         ->sortBy('site_domain', 'DESC')
                         ->get();
             } else {
                 $site = app()->db->table('site')
-                        ->where('site_domain', _escape($fields['site_domain']))
-                        ->where('site_path', _escape($fields['site_path']))
+                        ->where('site_domain', Core\_escape($fields['site_domain']))
+                        ->where('site_path', Core\_escape($fields['site_path']))
                         ->get();
             }
 
             if (null !== $site) {
-                ttcms_cache_set((int) $site['site_id'] . 'short', $site, 'site_details');
+                Cache\ttcms_cache_set((int) $site['site_id'] . 'short', $site, 'site_details');
                 $site_id = (int) $site['site_id'];
             } else {
                 return false;
             }
         } elseif (null !== $fields['site_domain']) {
             $key = md5($fields['site_domain']);
-            $site = ttcms_cache_get($key, 'site_lookup');
+            $site = Cache\ttcms_cache_get($key, 'site_lookup');
 
             if (null !== $site) {
                 return $site;
             }
 
             if (substr($fields['site_domain'], 0, 4) == 'www.') {
-                $nowww = substr(_escape($fields['site_domain']), 4);
+                $nowww = substr(Core\_escape($fields['site_domain']), 4);
                 $site = app()->db->table('site')
-                        ->where('site_domain', 'in', [$nowww, _escape($fields['site_domain'])])
+                        ->where('site_domain', 'in', [$nowww, Core\_escape($fields['site_domain'])])
                         ->sortBy('site_domain', 'DESC')
                         ->get();
             } else {
                 $site = app()->db->table('site')
-                        ->where('site_domain', _escape($fields['site_domain']))
+                        ->where('site_domain', Core\_escape($fields['site_domain']))
                         ->get();
             }
 
             if ($site) {
-                ttcms_cache_set((int) $site['site_id'] . 'short', $site, 'site_details');
+                Cache\ttcms_cache_set((int) $site['site_id'] . 'short', $site, 'site_details');
                 $site_id = (int) $site['site_id'];
             } else {
                 return false;
@@ -1347,7 +1458,7 @@ function get_sitedata($fields = null, $get_all = true)
 
     $site_id = (int) $site_id;
     $all = $get_all == true ? '' : 'short';
-    $details = ttcms_cache_get($site_id . $all, 'site_details');
+    $details = Cache\ttcms_cache_get($site_id . $all, 'site_details');
 
     if ($details) {
         if (!is_object($details)) {
@@ -1355,7 +1466,7 @@ function get_sitedata($fields = null, $get_all = true)
                 return false;
             } else {
                 // Clear old pre-json object. Cache clients do better with that.
-                ttcms_cache_delete($site_id . $all, 'site_details');
+                Cache\ttcms_cache_delete($site_id . $all, 'site_details');
                 unset($details);
             }
         } else {
@@ -1365,9 +1476,9 @@ function get_sitedata($fields = null, $get_all = true)
 
     // Try the other cache.
     if ($get_all) {
-        $details = ttcms_cache_get($site_id . 'short', 'site_details');
+        $details = Cache\ttcms_cache_get($site_id . 'short', 'site_details');
     } else {
-        $details = ttcms_cache_get($site_id, 'site_details');
+        $details = Cache\ttcms_cache_get($site_id, 'site_details');
         // If short was requested and full cache is set, we can return.
         if ($details) {
             if (!is_object($details)) {
@@ -1375,7 +1486,7 @@ function get_sitedata($fields = null, $get_all = true)
                     return false;
                 } else {
                     // Clear old pre-json object. Cache clients do better with that.
-                    ttcms_cache_delete($site_id, 'site_details');
+                    Cache\ttcms_cache_delete($site_id, 'site_details');
                     unset($details);
                 }
             } else {
@@ -1388,7 +1499,7 @@ function get_sitedata($fields = null, $get_all = true)
         $details = \TriTan\Site::get_instance($site_id);
         if (!$details) {
             // Set the full cache.
-            ttcms_cache_set($site_id, -1, 'site_details');
+            Cache\ttcms_cache_set($site_id, -1, 'site_details');
             return false;
         }
     }
@@ -1398,7 +1509,7 @@ function get_sitedata($fields = null, $get_all = true)
     }
 
     if (!$get_all) {
-        ttcms_cache_set($site_id . $all, $details, 'site_details');
+        Cache\ttcms_cache_set($site_id . $all, $details, 'site_details');
         return $details;
     }
 
@@ -1410,10 +1521,10 @@ function get_sitedata($fields = null, $get_all = true)
      */
     $details = app()->hook->{'apply_filter'}('site_details', $details);
 
-    ttcms_cache_set($site_id . $all, $details, 'site_details');
+    Cache\ttcms_cache_set($site_id . $all, $details, 'site_details');
 
     $key = md5($details->site_domain . $details->site_path);
-    ttcms_cache_set($key, $details, 'site_lookup');
+    Cache\ttcms_cache_set($key, $details, 'site_lookup');
 
     return $details;
 }
@@ -1431,8 +1542,8 @@ function get_sitedata($fields = null, $get_all = true)
  */
 function ttcms_unique_site_slug($original_slug, $original_title, $site_id)
 {
-    if (ttcms_site_slug_exist($site_id, $original_slug)) {
-        $site_slug = ttcms_slugify($original_title, 'site');
+    if (Db\ttcms_site_slug_exist($site_id, $original_slug)) {
+        $site_slug = Db\ttcms_slugify($original_title, 'site');
     } else {
         $site_slug = $original_slug;
     }

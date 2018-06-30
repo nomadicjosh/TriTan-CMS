@@ -1,10 +1,11 @@
 <?php
 
-namespace TriTan\Functions;
+namespace TriTan\Functions\Logger;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use TriTan\Config;
+use TriTan\Functions\Dependency;
 /**
  * TriTan CMS Logging Functions
  *
@@ -74,7 +75,7 @@ $config = [
             'mailer' => new \TriTan\Email,
             'message' => 'This message will be replaced with the real one.',
             'email_to' => app()->hook->{'apply_filter'}('system_alert_email', app()->hook->{'get_option'}('admin_email')),
-            'subject' => _t('TriTan CMS System Alert!', 'tritan-cms')
+            'subject' => \TriTan\Functions\Core\_t('TriTan CMS System Alert!', 'tritan-cms')
         ]
     ],
     'processors' => [
@@ -115,25 +116,8 @@ Cascade::fileConfig(app()->hook->{'apply_filter'}('monolog_cascade_config', $con
  */
 function ttcms_error_handler($type, $string, $file, $line)
 {
-    $logger = _ttcms_logger();
+    $logger = Dependency\_ttcms_logger();
     $logger->logError($type, $string, $file, $line);
-}
-
-/**
- * Set Error Log for Debugging.
- * 
- * @file app/functions/logger-function.php
- * 
- * @since 0.9
- * @param string|array $value The data to be catched.
- */
-function ttcms_error_log($value)
-{
-    if (is_array($value)) {
-        error_log(var_export($value, true));
-    } else {
-        error_log($value);
-    }
 }
 
 /**
@@ -145,7 +129,7 @@ function ttcms_error_log($value)
  */
 function ttcms_logger_activity_log_write($action, $process, $record, $uname)
 {
-    $logger = _ttcms_logger();
+    $logger = Dependency\_ttcms_logger();
     $logger->writeLog($action, $process, $record, $uname);
 }
 
@@ -158,7 +142,7 @@ function ttcms_logger_activity_log_write($action, $process, $record, $uname)
  */
 function ttcms_logger_error_log_purge()
 {
-    $logger = _ttcms_logger();
+    $logger = Dependency\_ttcms_logger();
     $logger->purgeErrorLog();
 }
 
@@ -171,7 +155,7 @@ function ttcms_logger_error_log_purge()
  */
 function ttcms_logger_activity_log_purge()
 {
-    $logger = _ttcms_logger();
+    $logger = Dependency\_ttcms_logger();
     $logger->purgeActivityLog();
 }
 
@@ -189,7 +173,7 @@ function ttcms_logger_activity_log_purge()
 function ttcms_monolog($name, $message)
 {
     $log = new \Monolog\Logger(_trim($name));
-    $log->pushHandler(new \Monolog\Handler\StreamHandler(BASE_PATH . 'static' . DS . 'tmp' . DS . 'logs' . DS . _trim($name) . '.' . \Jenssegers\Date\Date::now()->format('m-d-Y') . '.txt'));
+    $log->pushHandler(new \Monolog\Handler\StreamHandler(BASE_PATH . 'static' . DS . 'tmp' . DS . 'logs' . DS . _trim($name) . '.' . format_date('now', 'm-d-Y') . '.txt'));
     $log->addError($message);
 }
 
@@ -218,7 +202,7 @@ function ttcms_set_environment()
         error_reporting(E_ALL & ~E_NOTICE);
         ini_set('display_errors', 'Off');
         ini_set('log_errors', 'On');
-        ini_set('error_log', Config::get('site_path') . 'files' . DS . 'logs' . DS . 'ttcms-error-' . \Jenssegers\Date\Date::now()->format('Y-m-d') . '.txt');
-        set_error_handler('TriTan\\Functions\\ttcms_error_handler', E_ALL & ~E_NOTICE);
+        ini_set('error_log', Config::get('site_path') . 'files' . DS . 'logs' . DS . 'ttcms-error-' . format_date('now', 'Y-m-d') . '.txt');
+        set_error_handler('TriTan\\Functions\\Logger\\ttcms_error_handler', E_ALL & ~E_NOTICE);
     }
 }

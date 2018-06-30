@@ -1,39 +1,40 @@
 <?php
 
-use TriTan\Functions as func;
+use TriTan\Functions\Core;
+use TriTan\Functions\Hook;
 
 /**
  * This file is used for lazy loading of the routers
  * and modules when called.
  */
 
-if (strpos(func\get_path_info('/rest'), "/rest") === 0)
+if (strpos(Core\get_path_info('/rest'), "/rest") === 0)
 {
     require($app->config('routers_dir') . 'rest.router.php');
 }
 
-elseif (strpos(func\get_path_info('/admin/user'), "/admin/user") === 0)
+elseif (strpos(Core\get_path_info('/admin/user'), "/admin/user") === 0)
 {
     require($app->config('routers_dir') . 'user.router.php');
 }
 
-elseif (strpos(func\get_path_info('/admin/site'), "/admin/site") === 0)
+elseif (strpos(Core\get_path_info('/admin/site'), "/admin/site") === 0)
 {
     require($app->config('routers_dir') . 'site.router.php');
 }
 
-elseif (strpos(func\get_path_info('/admin'), "/admin") === 0)
+elseif (strpos(Core\get_path_info('/admin'), "/admin") === 0)
 {
     require($app->config('routers_dir') . 'admin.router.php');
-    func\_ttcms_post_router();
+    Hook\_ttcms_post_router();
 }
 
-elseif (strpos(func\get_path_info('/login'), "/login") === 0)
+elseif (strpos(Core\get_path_info('/login'), "/login") === 0)
 {
     require($app->config('routers_dir') . 'login.router.php');
 }
 
-elseif (strpos(func\get_path_info('/cronjob'), "/cronjob") === 0)
+elseif (strpos(Core\get_path_info('/cronjob'), "/cronjob") === 0)
 {
     require($app->config('routers_dir') . 'cron.router.php');
 }

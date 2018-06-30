@@ -5,7 +5,8 @@ namespace TriTan;
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use TriTan\Config;
-use TriTan\Functions as func;
+use TriTan\Functions\User;
+use TriTan\Functions\Core;
 
 /**
  * Access Control Level Class
@@ -51,7 +52,7 @@ class ACL
         if ($userID != '') {
             $this->_userID = floatval($userID);
         } else {
-            $this->_userID = floatval(func\get_current_user_id());
+            $this->_userID = floatval(User\get_current_user_id());
         }
         $this->_userRoles = $this->getUserRoles('ids');
         $this->buildACL();
@@ -78,7 +79,7 @@ class ACL
                 ->where('permission_id', floatval($permID))
                 ->first();
 
-        return func\_escape($permission['permission_key']);
+        return Core\_escape($permission['permission_key']);
     }
 
     public function getPermNameFromID($permID)
@@ -87,7 +88,7 @@ class ACL
                 ->where('permission_id', floatval($permID))
                 ->first();
 
-        return func\_escape($permission['permission_name']);
+        return Core\_escape($permission['permission_name']);
     }
 
     public function getRoleNameFromID($roleID)
@@ -96,7 +97,7 @@ class ACL
                 ->where('role_id', floatval($roleID))
                 ->first();
 
-        return func\_escape($role['role_name']);
+        return Core\_escape($role['role_name']);
     }
     
     public function getRoleIDFromKey($roleKey)
@@ -105,7 +106,7 @@ class ACL
                 ->where('role_key', (string) $roleKey)
                 ->first();
 
-        return (int) func\_escape($role['role_id']);
+        return (int) Core\_escape($role['role_id']);
     }
 
     public function getUserRoles()
@@ -117,7 +118,7 @@ class ACL
 
         $resp = [];
         foreach ($strSQL as $r) {
-            $resp[] = func\_escape($r['role_id']);
+            $resp[] = Core\_escape($r['role_id']);
         }
 
         return $resp;
@@ -134,7 +135,7 @@ class ACL
         $resp = [];
         foreach ($strSQL as $r) {
             if ($_format == 'full') {
-                $resp[] = ["ID" => func\_escape($r['role_id']), "Name" => func\_escape($r['role_name']), "Key" => func\_escape($r['role_key'])];
+                $resp[] = ["ID" => Core\_escape($r['role_id']), "Name" => Core\_escape($r['role_name']), "Key" => Core\_escape($r['role_key'])];
             } else {
                 $resp[] = $r->id;
             }
@@ -153,9 +154,9 @@ class ACL
         $resp = [];
         foreach ($strSQL as $r) {
             if ($_format == 'full') {
-                $resp[$r['permission_key']] = ['ID' => func\ _escape($r['permission_id']), 'Name' => func\_escape($r['permission_name']), 'Key' => func\_escape($r['permission_key'])];
+                $resp[$r['permission_key']] = ['ID' => Core\_escape($r['permission_id']), 'Name' => Core\_escape($r['permission_name']), 'Key' => Core\_escape($r['permission_key'])];
             } else {
-                $resp[] = func\_escape($r->permission_id);
+                $resp[] = Core\_escape($r->permission_id);
             }
         }
         return $resp;
@@ -186,7 +187,7 @@ class ACL
             } else {
                 $hP = false;
             }
-            $perms[$pK] = ['perm' => $pK, 'inheritted' => true, 'value' => $hP, 'Name' => $this->getPermNameFromID(func\_escape($r['permission_id'])), 'ID' => func\_escape($r['permission_id'])];
+            $perms[$pK] = ['perm' => $pK, 'inheritted' => true, 'value' => $hP, 'Name' => $this->getPermNameFromID(Core\_escape($r['permission_id'])), 'ID' => Core\_escape($r['permission_id'])];
         }
         return $perms;
     }
@@ -200,7 +201,7 @@ class ACL
 
         $perms = [];
         foreach ($strSQL as $r) {
-            $pK = strtolower($this->getPermKeyFromID(func\_escape($r['permission_id'])));
+            $pK = strtolower($this->getPermKeyFromID(Core\_escape($r['permission_id'])));
             if ($pK == '') {
                 continue;
             }
@@ -209,7 +210,7 @@ class ACL
             } else {
                 $hP = false;
             }
-            $perms[$pK] = ['perm' => $pK, 'inheritted' => false, 'value' => $hP, 'Name' => $this->getPermNameFromID(func\_escape($r['permission_id'])), 'ID' => func\_escape($r['permission_id'])];
+            $perms[$pK] = ['perm' => $pK, 'inheritted' => false, 'value' => $hP, 'Name' => $this->getPermNameFromID(Core\_escape($r['permission_id'])), 'ID' => Core\_escape($r['permission_id'])];
         }
         return $perms;
     }
@@ -228,14 +229,14 @@ class ACL
     {
         $user_role = $this->app->db->table('usermeta')
                 ->where('meta_key', Config::get('tbl_prefix') . 'role')
-                ->where('user_id', func\get_current_user_id())
+                ->where('user_id', User\get_current_user_id())
                 ->first();
 
         $perms = $this->app->db->table('role')
-                ->where('role_id', (int) func\_escape($user_role['meta_value']))
+                ->where('role_id', (int) Core\_escape($user_role['meta_value']))
                 ->first();
 
-        $perm = app()->hook->{'maybe_unserialize'}(func\_escape($perms['role_permission']));
+        $perm = app()->hook->{'maybe_unserialize'}(Core\_escape($perms['role_permission']));
 
         if (in_array($permKey, $perm)) {
             return true;
@@ -248,7 +249,7 @@ class ACL
         $strSQL = $this->app->db->table('user')
                 ->where('user_id', floatval($id))
                 ->first();
-        return func\_escape($strSQL['user_login']);
+        return Core\_escape($strSQL['user_login']);
     }
 
 }

@@ -3,7 +3,8 @@ if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use Jenssegers\Date\Date;
 use TriTan\Config;
-use TriTan\Functions as func;
+use TriTan\Functions\Dependency;
+use TriTan\Functions\Core;
 
 /**
  * Audit Trail View
@@ -26,14 +27,14 @@ Config::set('screen_child', 'audit');
     <div class="box box-solid">
         <div class="box-header with-border">
             <i class="fa fa-road"></i>
-            <h3 class="box-title"><?= func\_t('Audit Trail', 'tritan-cms'); ?></h3>
+            <h3 class="box-title"><?= Core\_t('Audit Trail', 'tritan-cms'); ?></h3>
         </div>
     </div>
 
     <!-- Main content -->
     <section class="content">
 
-        <?= func\_ttcms_flash()->showMessage(); ?> 
+        <?= Dependency\_ttcms_flash()->showMessage(); ?> 
 
         <!-- SELECT2 EXAMPLE -->
         <div class="box box-default">
@@ -41,12 +42,12 @@ Config::set('screen_child', 'audit');
                 <table id="example2" class="table table-bordered table-hover">
                     <thead>
                         <tr>
-                            <th class="text-center"><?= func\_t('Action', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= func\_t('Process', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= func\_t('Record', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= func\_t('Username', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= func\_t('Action Date', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= func\_t('Expire Date', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= Core\_t('Action', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= Core\_t('Process', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= Core\_t('Record', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= Core\_t('Username', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= Core\_t('Action Date', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= Core\_t('Expire Date', 'tritan-cms'); ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -56,19 +57,19 @@ Config::set('screen_child', 'audit');
                                 <td class="text-center"><?= $aud['process']; ?></td>
                                 <td class="text-center"><?= $aud['record']; ?></td>
                                 <td class="text-center"><?= $aud['uname']; ?></td>
-                                <td class="text-center"><?= Date::parse($aud['created_at'])->format('D, M d, o'); ?></td>
-                                <td class="text-center"><?= Date::parse($aud['expires_at'])->format('D, M d, o'); ?></td>
+                                <td class="text-center"><?= format_date($aud['created_at'], 'D, M d, o'); ?></td>
+                                <td class="text-center"><?= format_date($aud['expires_at'], 'D, M d, o'); ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th class="text-center"><?= func\_t('Action', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= func\_t('Process', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= func\_t('Record', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= func\_t('Username', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= func\_t('Action Date', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= func\_t('Expire Date', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= Core\_t('Action', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= Core\_t('Process', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= Core\_t('Record', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= Core\_t('Username', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= Core\_t('Action Date', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= Core\_t('Expire Date', 'tritan-cms'); ?></th>
                         </tr>
                     </tfoot>
                 </table>

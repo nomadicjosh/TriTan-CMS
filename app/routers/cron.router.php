@@ -6,7 +6,8 @@ use TriTan\Exception\Exception;
 use TriTan\Config;
 use TriTan\Queue\NodeqQueue as Queue;
 use Cascade\Cascade;
-use TriTan\Functions as func;
+use TriTan\Functions\Core;
+use TriTan\Functions\Logger;
 
 /**
  * Cron Router
@@ -31,14 +32,14 @@ $app->get('/cronjob/', function () use($app) {
     $app->hook->{'do_action'}('ttcms_task_worker_cron');
 
     $error_count = $app->db->table(Config::get('tbl_prefix') . 'error')
-            ->where(strtotime('add_date'), '<=', strtotime('-5 days'))
+            ->where('add_date', '<=', strtotime('-5 days'))
             ->count();
 
     if ((int) $error_count > 0) {
         $error = $app->db->table(Config::get('tbl_prefix') . 'error');
         $error->begin();
         try {
-            $error->where(strtotime('add_date'), '<=', strtotime('-5 days'))
+            $error->where('add_date', '<=', strtotime('-5 days'))
                     ->delete();
             $error->commit();
         } catch (Exception $e) {
@@ -47,8 +48,8 @@ $app->get('/cronjob/', function () use($app) {
         }
     }
 
-    func\ttcms_logger_error_log_purge();
-    func\ttcms_logger_activity_log_purge();
+    Logger\ttcms_logger_error_log_purge();
+    Logger\ttcms_logger_activity_log_purge();
 
     try {
 
@@ -66,7 +67,7 @@ $app->get('/cronjob/', function () use($app) {
                     $delete = $app->db->table(Config::get('tbl_prefix') . 'tasks');
                     $delete->begin();
                     try {
-                        $delete->where('tasks_id', (int) _escape($queue['tasks_id']))
+                        $delete->where('tasks_id', (int) Core\_escape($queue['tasks_id']))
                                 ->delete();
                         $delete->commit();
                     } catch (Exception $e) {

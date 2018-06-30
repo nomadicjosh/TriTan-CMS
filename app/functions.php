@@ -43,6 +43,23 @@ app()->inst->singleton('form', function () {
 });
 
 /**
+ * Set Error Log for Debugging.
+ * 
+ * @file app/functions.php
+ * 
+ * @since 0.9
+ * @param string|array $value The data to be catched.
+ */
+function ttcms_error_log($value)
+{
+    if (is_array($value)) {
+        error_log(var_export($value, true));
+    } else {
+        error_log($value);
+    }
+}
+
+/**
  * Returns the url based on route.
  * 
  * @file app/functions.php
@@ -1962,11 +1979,11 @@ function ttcms_get_theme_routers()
 }
 
 require( APP_PATH . 'functions' . DS . 'hook-function.php' );
-require( APP_PATH . 'functions' . DS . 'global-function.php' );
+require( APP_PATH . 'functions' . DS . 'dependency-function.php' );
 require( APP_PATH . 'functions' . DS . 'menu-function.php' );
 require( APP_PATH . 'functions' . DS . 'auth-function.php' );
 require( APP_PATH . 'functions' . DS . 'cache-function.php' );
-require( APP_PATH . 'functions' . DS . 'textdomain-function.php' );
+require( APP_PATH . 'functions' . DS . 'domain-function.php' );
 require( APP_PATH . 'functions' . DS . 'core-function.php' );
 require( APP_PATH . 'functions' . DS . 'meta-function.php' );
 require( APP_PATH . 'functions' . DS . 'site-function.php' );

@@ -5,21 +5,28 @@ if (!defined('BASE_PATH'))
 use TriTan\Config;
 use TriTan\Exception\Exception;
 use Cascade\Cascade;
-use TriTan\Functions as func;
+use TriTan\Functions\Db;
+use TriTan\Functions\Dependency;
+use TriTan\Functions\Auth;
+use TriTan\Functions\User;
+use TriTan\Functions\Cache;
+use TriTan\Functions\Core;
+use TriTan\Functions\Logger;
+use TriTan\Functions\Hook;
 
-$current_user = func\get_userdata(func\get_current_user_id());
+$current_user = Auth\get_userdata(User\get_current_user_id());
 
 /**
  * Before router checks to make sure the logged in user
  * us allowed to access admin.
  */
 $app->before('GET|POST', '/admin(.*)', function() {
-    if (!func\is_user_logged_in()) {
-        func\_ttcms_flash()->{'error'}(func\_t('401 - Error: Unauthorized.', 'tritan-cms'), func\get_base_url() . 'login' . '/');
+    if (!Auth\is_user_logged_in()) {
+        Dependency\_ttcms_flash()->{'error'}(Core\_t('401 - Error: Unauthorized.', 'tritan-cms'), Core\get_base_url() . 'login' . '/');
         exit();
     }
-    if (!func\current_user_can('access_admin')) {
-        func\_ttcms_flash()->{'error'}(func\_t('403 - Error: Forbidden.', 'tritan-cms'), func\get_base_url());
+    if (!Auth\current_user_can('access_admin')) {
+        Dependency\_ttcms_flash()->{'error'}(Core\_t('403 - Error: Forbidden.', 'tritan-cms'), Core\get_base_url());
         exit();
     }
 });
@@ -29,14 +36,14 @@ $app->group('/admin', function() use ($app, $current_user) {
     $app->get('/', function () use($app) {
 
         $app->foil->render('main::admin/index', [
-            'title' => func\_t('Admin Dashboard', 'tritan-cms')
+            'title' => Core\_t('Admin Dashboard', 'tritan-cms')
                 ]
         );
     });
 
     $app->before('GET', '/media/', function() {
-        if (!func\current_user_can('manage_media')) {
-            func\_ttcms_flash()->{'error'}(func\_t('You do not have permission to manage the media library.', 'tritan-cms'), func\get_base_url() . 'admin' . '/');
+        if (!Auth\current_user_can('manage_media')) {
+            Dependency\_ttcms_flash()->{'error'}(Core\_t('You do not have permission to manage the media library.', 'tritan-cms'), Core\get_base_url() . 'admin' . '/');
             exit();
         }
     });
@@ -44,14 +51,14 @@ $app->group('/admin', function() use ($app, $current_user) {
     $app->get('/media/', function () use($app) {
 
         $app->foil->render('main::admin/media', [
-            'title' => func\_t('Media Library', 'tritan-cms')
+            'title' => Core\_t('Media Library', 'tritan-cms')
                 ]
         );
     });
 
     $app->before('GET', '/ftp/', function() {
-        if (!func\current_user_can('manage_ftp')) {
-            func\_ttcms_flash()->{'error'}(func\_t('You do not have permission to manage FTP.', 'tritan-cms'), func\get_base_url() . 'admin' . '/');
+        if (!Auth\current_user_can('manage_ftp')) {
+            Dependency\_ttcms_flash()->{'error'}(Core\_t('You do not have permission to manage FTP.', 'tritan-cms'), Core\get_base_url() . 'admin' . '/');
             exit();
         }
     });
@@ -59,7 +66,7 @@ $app->group('/admin', function() use ($app, $current_user) {
     $app->get('/ftp/', function () use($app) {
 
         $app->foil->render('main::admin/ftp', [
-            'title' => func\_t('FTP', 'tritan-cms')
+            'title' => Core\_t('FTP', 'tritan-cms')
                 ]
         );
     });
@@ -69,8 +76,8 @@ $app->group('/admin', function() use ($app, $current_user) {
      * us allowed to manage options/settings.
      */
     $app->before('GET|POST', '/options-general/', function() {
-        if (!func\current_user_can('manage_options')) {
-            func\_ttcms_flash()->{'error'}(func\_t('You do not have permission to manage options.', 'tritan-cms'), func\get_base_url() . 'admin' . '/');
+        if (!Auth\current_user_can('manage_options')) {
+            Dependency\_ttcms_flash()->{'error'}(Core\_t('You do not have permission to manage options.', 'tritan-cms'), Core\get_base_url() . 'admin' . '/');
             exit();
         }
     });
@@ -95,19 +102,19 @@ $app->group('/admin', function() use ($app, $current_user) {
                 $site->where('site_id', (int) Config::get('site_id'))
                         ->update([
                             'site_name' => $app->req->post['sitename'],
-                            'site_modified' => (string) Jenssegers\Date\Date::now()
+                            'site_modified' => (string) format_date()
                 ]);
                 $site->commit();
             } catch (Exception $ex) {
                 $site->rollback();
                 Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
             }
-            func\ttcms_logger_activity_log_write(func\_t('Update Record', 'tritan-cms'), func\_t('Options', 'tritan-cms'), func\_t('General Options', 'tritan-cms'), func\_escape($current_user->user_login));
-            func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
+            Logger\ttcms_logger_activity_log_write(Core\_t('Update Record', 'tritan-cms'), Core\_t('Options', 'tritan-cms'), Core\_t('General Options', 'tritan-cms'), Core\_escape($current_user->user_login));
+            Dependency\_ttcms_flash()->{'success'}(Dependency\_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
         }
 
         $app->foil->render('main::admin/options-general', [
-            'title' => func\_t('General Options', 'tritan-cms'),
+            'title' => Core\_t('General Options', 'tritan-cms'),
                 ]
         );
     });
@@ -117,8 +124,8 @@ $app->group('/admin', function() use ($app, $current_user) {
      * us allowed to manage options/settings.
      */
     $app->before('GET|POST', '/options-reading/', function() {
-        if (!func\current_user_can('manage_options')) {
-            func\_ttcms_flash()->{'error'}(func\_t('You do not have permission to manage options.', 'tritan-cms'), func\get_base_url() . 'admin' . '/');
+        if (!Auth\current_user_can('manage_options')) {
+            Dependency\_ttcms_flash()->{'error'}(Core\_t('You do not have permission to manage options.', 'tritan-cms'), Core\get_base_url() . 'admin' . '/');
             exit();
         }
     });
@@ -134,12 +141,12 @@ $app->group('/admin', function() use ($app, $current_user) {
                 $value = $app->req->post[$option_name];
                 $app->hook->{'update_option'}($option_name, $value);
             }
-            func\ttcms_logger_activity_log_write(func\_t('Update Record', 'tritan-cms'), func\_t('Options', 'tritan-cms'), func\_t('Reading Options', 'tritan-cms'), func\_escape($current_user->user_login));
-            func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
+            Logger\ttcms_logger_activity_log_write(Core\_t('Update Record', 'tritan-cms'), Core\_t('Options', 'tritan-cms'), Core\_t('Reading Options', 'tritan-cms'), Core\_escape($current_user->user_login));
+            Dependency\_ttcms_flash()->{'success'}(Dependency\_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
         }
 
         $app->foil->render('main::admin/options-reading', [
-            'title' => func\_t('Reading Options', 'tritan-cms'),
+            'title' => Core\_t('Reading Options', 'tritan-cms'),
                 ]
         );
     });
@@ -148,21 +155,21 @@ $app->group('/admin', function() use ($app, $current_user) {
      * Before route check.
      */
     $app->before('GET|POST', '/plugin/', function() {
-        if (!func\current_user_can('manage_plugins')) {
-            func\_ttcms_flash()->{'error'}(func\_t("You do not have permission to manage plugins.", 'tritan-cms'), func\get_base_url() . 'admin' . '/');
+        if (!Auth\current_user_can('manage_plugins')) {
+            Dependency\_ttcms_flash()->{'error'}(Core\_t("You do not have permission to manage plugins.", 'tritan-cms'), Core\get_base_url() . 'admin' . '/');
         }
     });
 
     $app->get('/plugin/', function() use($app) {
-        $app->foil->render('main::admin/plugin/index', ['title' => func\_t('Plugins', 'tritan-cms')]);
+        $app->foil->render('main::admin/plugin/index', ['title' => Core\_t('Plugins', 'tritan-cms')]);
     });
 
     /**
      * Before route check.
      */
     $app->before('GET|POST', '/plugin/install/', function() {
-        if (!func\current_user_can('install_plugins')) {
-            func\_ttcms_flash()->{'error'}(func\_t("You do not have permission to install plugins.", 'tritan-cms'), func\get_base_url() . 'admin' . '/');
+        if (!Auth\current_user_can('install_plugins')) {
+            Dependency\_ttcms_flash()->{'error'}(Core\_t("You do not have permission to install plugins.", 'tritan-cms'), Core\get_base_url() . 'admin' . '/');
         }
     });
 
@@ -186,7 +193,7 @@ $app->group('/admin', function() use ($app, $current_user) {
             $continue = strtolower($name[1]) == 'zip' ? true : false;
 
             if (!$continue) {
-                func\_ttcms_flash()->{'error'}(func\_t('The file you are trying to upload is not the accepted file type (.zip). Please try again.', 'tritan-cms'));
+                Dependency\_ttcms_flash()->{'error'}(Core\_t('The file you are trying to upload is not the accepted file type (.zip). Please try again.', 'tritan-cms'));
             }
             $target_path = BASE_PATH . 'plugins' . DS . $_FILES["plugin_zip"]["name"];
             if (move_uploaded_file($_FILES["plugin_zip"]["tmp_name"], $target_path)) {
@@ -197,18 +204,18 @@ $app->group('/admin', function() use ($app, $current_user) {
                     $zip->close();
                     unlink($target_path);
                 }
-                func\_ttcms_flash()->{'success'}(func\_t('Your plugin was uploaded and installed properly.', 'tritan-cms'), $app->req->server['HTTP_REFERER']);
+                Dependency\_ttcms_flash()->{'success'}(Core\_t('Your plugin was uploaded and installed properly.', 'tritan-cms'), $app->req->server['HTTP_REFERER']);
             } else {
-                func\_ttcms_flash()->{'error'}(func\_t('There was a problem uploading your plugin. Please try again or check the plugin package.', 'tritan-cms'), $app->req->server['HTTP_REFERER']);
+                Dependency\_ttcms_flash()->{'error'}(Core\_t('There was a problem uploading your plugin. Please try again or check the plugin package.', 'tritan-cms'), $app->req->server['HTTP_REFERER']);
             }
         }
 
-        $app->foil->render('main::admin/plugin/install', ['title' => func\_t('Install Plugins', 'tritan-cms')]);
+        $app->foil->render('main::admin/plugin/install', ['title' => Core\_t('Install Plugins', 'tritan-cms')]);
     });
 
     $app->before('GET|POST', '/plugin/activate/', function () {
-        if (!func\current_user_can('manage_plugins')) {
-            func\_ttcms_flash()->{'error'}(func\_t('Permission denied to activate a plugin.', 'tritan-cms'), func\get_base_url() . 'admin' . '/');
+        if (!Auth\current_user_can('manage_plugins')) {
+            Dependency\_ttcms_flash()->{'error'}(Core\_t('Permission denied to activate a plugin.', 'tritan-cms'), Core\get_base_url() . 'admin' . '/');
             exit();
         }
     });
@@ -224,22 +231,22 @@ $app->group('/admin', function() use ($app, $current_user) {
          *
          * @since 0.9
          */
-        func\ttcms_validate_plugin($plugin_name);
+        Core\ttcms_validate_plugin($plugin_name);
 
         if (ob_get_length() > 0) {
             $output = ob_get_clean();
-            $error = new TriTan\Error('unexpected_output', func\_t('The plugin generated unexpected output.', 'tritan-cms'), $output);
+            $error = new TriTan\Error('unexpected_output', Core\_t('The plugin generated unexpected output.', 'tritan-cms'), $output);
             Cascade::getLogger('error')->{'error'}(sprintf('PLUGIN[%s]: %s', $error->get_error_code(), $error->get_error_message()));
-            func\_ttcms_flash()->{'error'}($error->get_error_message());
+            Dependency\_ttcms_flash()->{'error'}($error->get_error_message());
         }
         ob_end_clean();
 
-        func\ttcms_redirect($app->req->server['HTTP_REFERER']);
+        Core\ttcms_redirect($app->req->server['HTTP_REFERER']);
     });
 
     $app->before('GET|POST', '/deactivate/', function () {
-        if (!func\current_user_can('manage_plugins')) {
-            func\_ttcms_flash()->{'error'}(func\_t('Permission denied to deactivate a plugin.', 'tritan-cms'), func\get_base_url() . 'admin' . '/');
+        if (!Auth\current_user_can('manage_plugins')) {
+            Dependency\_ttcms_flash()->{'error'}(Core\_t('Permission denied to deactivate a plugin.', 'tritan-cms'), Core\get_base_url() . 'admin' . '/');
             exit();
         }
     });
@@ -270,7 +277,7 @@ $app->group('/admin', function() use ($app, $current_user) {
          */
         $app->hook->{'do_action'}('deactivate_' . $pluginName);
 
-        func\deactivate_plugin($pluginName);
+        Hook\deactivate_plugin($pluginName);
 
         /**
          * Fires after a specific plugin has been deactivated.
@@ -284,15 +291,15 @@ $app->group('/admin', function() use ($app, $current_user) {
          */
         $app->hook->{'do_action'}('deactivated_plugin', $pluginName);
 
-        func\ttcms_redirect($app->req->server['HTTP_REFERER']);
+        Core\ttcms_redirect($app->req->server['HTTP_REFERER']);
     });
 
     /**
      * Before route check.
      */
     $app->before('GET|POST|PATCH|PUT|OPTIONS|DELETE', '/connector/', function() {
-        if (!func\is_user_logged_in()) {
-            func\_ttcms_flash()->{'error'}(func\_t("You do not have permission to access requested screen", 'tritan-cms'), func\get_base_url() . 'admin' . '/');
+        if (!Auth\is_user_logged_in()) {
+            Dependency\_ttcms_flash()->{'error'}(Core\_t("You do not have permission to access requested screen", 'tritan-cms'), Core\get_base_url() . 'admin' . '/');
             exit();
         }
     });
@@ -300,7 +307,7 @@ $app->group('/admin', function() use ($app, $current_user) {
     $app->match('GET|POST|PATCH|PUT|OPTIONS|DELETE', '/connector/', function () use($app) {
         error_reporting(0);
         try {
-            func\_mkdir(BASE_PATH . 'private' . DS . 'sites' . DS . (int) Config::get('site_id') . DS . 'uploads' . DS . '__optimized__' . DS);
+            Core\_mkdir(BASE_PATH . 'private' . DS . 'sites' . DS . (int) Config::get('site_id') . DS . 'uploads' . DS . '__optimized__' . DS);
         } catch (\TriTan\Exception\IOException $e) {
             Cascade::getLogger('error')->error(sprintf('IOSTATE[%s]: Unable to create directory: %s', $e->getCode(), $e->getMessage()));
         }
@@ -315,9 +322,9 @@ $app->group('/admin', function() use ($app, $current_user) {
                     'alias' => 'Media Library',
                     'mimeDetect' => 'auto',
                     'accessControl' => 'access',
-                    'tmbURL' => func\get_base_url() . 'private/sites/' . (int) Config::get('site_id') . '/uploads/' . '.tmb',
+                    'tmbURL' => Core\get_base_url() . 'private/sites/' . (int) Config::get('site_id') . '/uploads/' . '.tmb',
                     'tmpPath' => Config::get('site_path') . 'uploads' . DS . '.tmb',
-                    'URL' => func\get_base_url() . 'private/sites/' . (int) Config::get('site_id') . '/uploads/',
+                    'URL' => Core\get_base_url() . 'private/sites/' . (int) Config::get('site_id') . '/uploads/',
                     'attributes' => [
                         [
                             'read' => true,
@@ -408,8 +415,8 @@ $app->group('/admin', function() use ($app, $current_user) {
      * Before route check.
      */
     $app->before('GET|POST|PATCH|PUT|OPTIONS|DELETE', '/ftp-connector/', function() {
-        if (!func\is_user_logged_in()) {
-            func\_ttcms_flash()->{'error'}(func\_t("You do not have permission to access requested screen", 'tritan-cms'), func\get_base_url() . 'admin' . '/');
+        if (!Auth\is_user_logged_in()) {
+            Dependency\_ttcms_flash()->{'error'}(Core\_t("You do not have permission to access requested screen", 'tritan-cms'), Core\get_base_url() . 'admin' . '/');
             exit();
         }
     });
@@ -417,7 +424,7 @@ $app->group('/admin', function() use ($app, $current_user) {
     $app->match('GET|POST|PATCH|PUT|OPTIONS|DELETE', '/ftp-connector/', function () use($app) {
         error_reporting(0);
         try {
-            func\_mkdir(BASE_PATH . 'private' . DS . 'sites' . DS . (int) Config::get('site_id') . DS . 'uploads' . DS . '__optimized__' . DS);
+            Core\_mkdir(BASE_PATH . 'private' . DS . 'sites' . DS . (int) Config::get('site_id') . DS . 'uploads' . DS . '__optimized__' . DS);
         } catch (\TriTan\Exception\IOException $e) {
             Cascade::getLogger('error')->error(sprintf('IOSTATE[%s]: Unable to create directory: %s', $e->getCode(), $e->getMessage()));
         }
@@ -428,7 +435,7 @@ $app->group('/admin', function() use ($app, $current_user) {
                 [
                     'driver' => 'LocalFileSystem',
                     'path' => BASE_PATH . 'private' . DS,
-                    'tmbURL' => func\get_base_url() . 'private/.tmb',
+                    'tmbURL' => Core\get_base_url() . 'private/.tmb',
                     'tmpPath' => BASE_PATH . 'private' . DS . '.tmb',
                     'detectDirIcon' => 'favicon.ico',
                     'alias' => 'Files',
@@ -511,9 +518,9 @@ $app->group('/admin', function() use ($app, $current_user) {
                     'alias' => 'Media Library',
                     'mimeDetect' => 'auto',
                     'accessControl' => 'access',
-                    'tmbURL' => func\get_base_url() . 'private/sites/' . (int) Config::get('site_id') . '/uploads/' . '.tmb',
+                    'tmbURL' => Core\get_base_url() . 'private/sites/' . (int) Config::get('site_id') . '/uploads/' . '.tmb',
                     'tmpPath' => Config::get('site_path') . 'uploads' . DS . '.tmb',
-                    'URL' => func\get_base_url() . 'private/sites/' . (int) Config::get('site_id') . '/uploads/',
+                    'URL' => Core\get_base_url() . 'private/sites/' . (int) Config::get('site_id') . '/uploads/',
                     'attributes' => [
                         [
                             'read' => true,
@@ -604,8 +611,8 @@ $app->group('/admin', function() use ($app, $current_user) {
      * Before route check.
      */
     $app->before('GET|POST', '/elfinder/', function() {
-        if (!func\is_user_logged_in()) {
-            func\_ttcms_flash()->{'error'}(func\_t("You don't have permission to view the requested screen", 'tritan-cms'), func\get_base_url() . 'login' . '/');
+        if (!Auth\is_user_logged_in()) {
+            Dependency\_ttcms_flash()->{'error'}(Core\_t("You don't have permission to view the requested screen", 'tritan-cms'), Core\get_base_url() . 'login' . '/');
             exit();
         }
     });
@@ -622,8 +629,8 @@ $app->group('/admin', function() use ($app, $current_user) {
      * Before route check.
      */
     $app->before('GET|POST', '/permission.*', function() {
-        if (!func\current_user_can('manage_roles')) {
-            func\_ttcms_flash()->{'error'}(func\_t("You don't have permission to manage roles/permissions.", 'tritan-cms'), func\get_base_url() . 'admin' . '/');
+        if (!Auth\current_user_can('manage_roles')) {
+            Dependency\_ttcms_flash()->{'error'}(Core\_t("You don't have permission to manage roles/permissions.", 'tritan-cms'), Core\get_base_url() . 'admin' . '/');
             exit();
         }
     });
@@ -632,7 +639,7 @@ $app->group('/admin', function() use ($app, $current_user) {
 
 
         $app->foil->render('main::admin/permission/index', [
-            'title' => func\_t('Manage Permissions', 'tritan-cms')
+            'title' => Core\_t('Manage Permissions', 'tritan-cms')
                 ]
         );
     });
@@ -644,16 +651,16 @@ $app->group('/admin', function() use ($app, $current_user) {
             try {
                 $perm->where('permission_id', (int) $id)
                         ->update([
-                            'permission_key' => func\if_null($app->req->post['permission_key']),
-                            'permission_name' => func\if_null($app->req->post['permission_name']),
+                            'permission_key' => Core\if_null($app->req->post['permission_key']),
+                            'permission_name' => Core\if_null($app->req->post['permission_name']),
                 ]);
                 $perm->commit();
-                func\ttcms_logger_activity_log_write(func\_t('Update Record', 'tritan-cms'), func\_t('Permission', 'tritan-cms'), $app->req->post['permission_name'], func\_escape($current_user->user_login));
-                func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
+                Logger\ttcms_logger_activity_log_write(Core\_t('Update Record', 'tritan-cms'), Core\_t('Permission', 'tritan-cms'), $app->req->post['permission_name'], Core\_escape($current_user->user_login));
+                Dependency\_ttcms_flash()->{'success'}(Dependency\_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
             } catch (Exception $ex) {
                 $perm->rollback();
                 Cascade::getLogger('error')->{'error'}($ex->getMessage());
-                func\_ttcms_flash()->{'error'}($ex->getMessage());
+                Dependency\_ttcms_flash()->{'error'}($ex->getMessage());
             }
         }
 
@@ -680,7 +687,7 @@ $app->group('/admin', function() use ($app, $current_user) {
         }
         /**
          * If data is zero, 404 not found.
-         */ elseif ((int) func\_escape($perm['permission_id']) <= 0) {
+         */ elseif ((int) Core\_escape($perm['permission_id']) <= 0) {
 
             $app->res->_format('json', 404);
             exit();
@@ -692,7 +699,7 @@ $app->group('/admin', function() use ($app, $current_user) {
          */ else {
 
             $app->foil->render('main::admin/permission/update', [
-                'title' => func\_t('Update Permission', 'tritan-cms'),
+                'title' => Core\_t('Update Permission', 'tritan-cms'),
                 'perm' => $perm
                     ]
             );
@@ -705,24 +712,24 @@ $app->group('/admin', function() use ($app, $current_user) {
             $perm = $app->db->table('permission');
             $perm->begin();
             try {
-                $permission_id = func\auto_increment('permission', 'permission_id');
+                $permission_id = Db\auto_increment('permission', 'permission_id');
                 $perm->insert([
                     'permission_id' => (int) $permission_id,
-                    'permission_key' => func\if_null($app->req->post['permission_key']),
-                    'permission_name' => func\if_null($app->req->post['permission_name']),
+                    'permission_key' => Core\if_null($app->req->post['permission_key']),
+                    'permission_name' => Core\if_null($app->req->post['permission_name']),
                 ]);
                 $perm->commit();
-                func\ttcms_logger_activity_log_write(func\_t('Create Record', 'tritan-cms'), func\_t('Permission', 'tritan-cms'), $app->req->post['permission_name'], func\_escape($current_user->user_login));
-                func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), func\get_base_url() . 'admin/permission' . '/');
+                Logger\ttcms_logger_activity_log_write(Core\_t('Create Record', 'tritan-cms'), Core\_t('Permission', 'tritan-cms'), $app->req->post['permission_name'], Core\_escape($current_user->user_login));
+                Dependency\_ttcms_flash()->{'success'}(Dependency\_ttcms_flash()->notice(200), Core\get_base_url() . 'admin/permission' . '/');
             } catch (Exception $ex) {
                 $perm->rollback();
                 Cascade::getLogger('error')->{'error'}($ex->getMessage());
-                func\_ttcms_flash()->{'error'}($ex->getMessage());
+                Dependency\_ttcms_flash()->{'error'}($ex->getMessage());
             }
         }
 
         $app->foil->render('main::admin/permission/create', [
-            'title' => func\_t('Create New Permission', 'tritan-cms')
+            'title' => Core\_t('Create New Permission', 'tritan-cms')
                 ]
         );
     });
@@ -731,8 +738,8 @@ $app->group('/admin', function() use ($app, $current_user) {
      * Before route check.
      */
     $app->before('GET|POST', '/role(.*)', function() {
-        if (!func\current_user_can('manage_roles')) {
-            func\_ttcms_flash()->{'error'}(func\_t("You don't have permission to manage roles/permissions.", 'tritan-cms'), func\get_base_url() . 'admin' . '/');
+        if (!Auth\current_user_can('manage_roles')) {
+            Dependency\_ttcms_flash()->{'error'}(Core\_t("You don't have permission to manage roles/permissions.", 'tritan-cms'), Core\get_base_url() . 'admin' . '/');
             exit();
         }
     });
@@ -740,7 +747,7 @@ $app->group('/admin', function() use ($app, $current_user) {
     $app->match('GET|POST', '/role/', function () use($app) {
 
         $app->foil->render('main::admin/role/index', [
-            'title' => func\_t('Manage Roles', 'tritan-cms')
+            'title' => Core\_t('Manage Roles', 'tritan-cms')
                 ]
         );
     });
@@ -771,7 +778,7 @@ $app->group('/admin', function() use ($app, $current_user) {
         }
         /**
          * If data is zero, 404 not found.
-         */ elseif ((int) func\_escape($role['role_id']) <= 0) {
+         */ elseif ((int) Core\_escape($role['role_id']) <= 0) {
 
             $app->res->_format('json', 404);
             exit();
@@ -783,7 +790,7 @@ $app->group('/admin', function() use ($app, $current_user) {
          */ else {
 
             $app->foil->render('main::admin/role/update', [
-                'title' => func\_t('Update Role', 'tritan-cms'),
+                'title' => Core\_t('Update Role', 'tritan-cms'),
                 'role' => $role
                     ]
             );
@@ -796,7 +803,7 @@ $app->group('/admin', function() use ($app, $current_user) {
             $role = $app->db->table('role');
             $role->begin();
             try {
-                $role_id = func\auto_increment('role', 'role_id');
+                $role_id = Db\auto_increment('role', 'role_id');
                 $role->insert([
                     'role_id' => (int) $role_id,
                     'role_name' => (string) $app->req->post['role_name'],
@@ -804,16 +811,16 @@ $app->group('/admin', function() use ($app, $current_user) {
                     'role_permission' => $app->hook->{'maybe_serialize'}($app->req->post['role_permission'])
                 ]);
                 $role->commit();
-                func\ttcms_logger_activity_log_write(func\_t('Create Record', 'tritan-cms'), func\_t('Role', 'tritan-cms'), $app->req->post['role_name'], func\_escape($current_user->user_login));
-                func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), func\get_base_url() . 'admin/role' . '/' . (int) $role_id . '/');
+                Logger\ttcms_logger_activity_log_write(Core\_t('Create Record', 'tritan-cms'), Core\_t('Role', 'tritan-cms'), $app->req->post['role_name'], Core\_escape($current_user->user_login));
+                Dependency\_ttcms_flash()->{'success'}(Dependency\_ttcms_flash()->notice(200), Core\get_base_url() . 'admin/role' . '/' . (int) $role_id . '/');
             } catch (Exception $e) {
                 $role->rollback();
-                func\_ttcms_flash()->{'error'}($e->getMessage());
+                Dependency\_ttcms_flash()->{'error'}($e->getMessage());
             }
         }
 
         $app->foil->render('main::admin/role/create', [
-            'title' => func\_t('Create Role', 'tritan-cms')
+            'title' => Core\_t('Create Role', 'tritan-cms')
                 ]
         );
     });
@@ -829,22 +836,22 @@ $app->group('/admin', function() use ($app, $current_user) {
                         'role_permission' => $app->hook->{'maybe_serialize'}($app->req->post['role_permission'])
             ]);
             $role->commit();
-            func\ttcms_logger_activity_log_write(func\_t('Update Record', 'tritan-cms'), func\_t('Role', 'tritan-cms'), $app->req->post['role_name'], func\_escape($current_user->user_login));
-            func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200));
+            Logger\ttcms_logger_activity_log_write(Core\_t('Update Record', 'tritan-cms'), Core\_t('Role', 'tritan-cms'), $app->req->post['role_name'], Core\_escape($current_user->user_login));
+            Dependency\_ttcms_flash()->{'success'}(Dependency\_ttcms_flash()->notice(200));
         } catch (Exception $e) {
             $role->rollback();
-            func\_ttcms_flash()->{'error'}($e->getMessage());
+            Dependency\_ttcms_flash()->{'error'}($e->getMessage());
         }
 
-        func\ttcms_redirect($app->req->server['HTTP_REFERER']);
+        Core\ttcms_redirect($app->req->server['HTTP_REFERER']);
     });
 
     /**
      * Before route check.
      */
     $app->before('GET|POST', '/system-snapshot/', function () {
-        if (!func\current_user_can('manage_settings')) {
-            func\_ttcms_flash()->{'error'}(func\_t("You don't have permission to view the System Snapshot Report screen.", 'tritan-cms'), func\get_base_url() . 'admin' . '/');
+        if (!Auth\current_user_can('manage_settings')) {
+            Dependency\_ttcms_flash()->{'error'}(Core\_t("You don't have permission to view the System Snapshot Report screen.", 'tritan-cms'), Core\get_base_url() . 'admin' . '/');
         }
     });
 
@@ -852,15 +859,15 @@ $app->group('/admin', function() use ($app, $current_user) {
         $user = $app->db->table('user')->where('user_status', 'A');
         $error = $app->db->table(Config::get('tbl_prefix') . 'error');
         $app->foil->render('main::admin/system-snapshot', [
-            'title' => func\_t('System Snapshot Report', 'tritan-cms'),
+            'title' => Core\_t('System Snapshot Report', 'tritan-cms'),
             'user' => (int) $user->count(),
             'error' => (int) $error->count()
         ]);
     });
 
     $app->before('GET|POST', '/error/(.*)', function () {
-        if (!func\current_user_can('manage_settings')) {
-            func\_ttcms_flash()->{'error'}(func\_t("You don't have permission to view the Error Log screen.", 'tritan-cms'), func\get_base_url() . 'admin' . '/');
+        if (!Auth\current_user_can('manage_settings')) {
+            Dependency\_ttcms_flash()->{'error'}(Core\_t("You don't have permission to view the Error Log screen.", 'tritan-cms'), Core\get_base_url() . 'admin' . '/');
             exit();
         }
     });
@@ -870,7 +877,7 @@ $app->group('/admin', function() use ($app, $current_user) {
                 ->all();
 
         $app->foil->render('main::error/index', [
-            'title' => func\_t('Error Logs', 'tritan-cms'),
+            'title' => Core\_t('Error Logs', 'tritan-cms'),
             'errors' => $errors
                 ]
         );
@@ -883,23 +890,23 @@ $app->group('/admin', function() use ($app, $current_user) {
             $errors->where('error_id', (int) $id)
                     ->delete();
             $errors->commit();
-            func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), func\get_base_url() . 'admin/error/' . '/');
+            Dependency\_ttcms_flash()->{'success'}(Dependency\_ttcms_flash()->notice(200), Core\get_base_url() . 'admin/error/' . '/');
         } catch (Exception $ex) {
             $errors->rollback();
             Cascade::getLogger('error')->{'error'}($ex->getMessage());
-            func\_ttcms_flash()->{'error'}($ex->getMessage());
+            Dependency\_ttcms_flash()->{'error'}($ex->getMessage());
         }
 
         $app->foil->render('main::error/index', [
-            'title' => func\_t('Error Logs', 'tritan-cms'),
+            'title' => Core\_t('Error Logs', 'tritan-cms'),
             'errors' => $errors
                 ]
         );
     });
 
     $app->before('GET|POST', '/audit-trail/', function () {
-        if (!func\current_user_can('manage_settings')) {
-            func\_ttcms_flash()->{'error'}(func\_t("You don't have permission to view the Audit Trail screen.", 'tritan-cms'), func\get_base_url() . 'admin' . '/');
+        if (!Auth\current_user_can('manage_settings')) {
+            Dependency\_ttcms_flash()->{'error'}(Core\_t("You don't have permission to view the Audit Trail screen.", 'tritan-cms'), Core\get_base_url() . 'admin' . '/');
             exit();
         }
     });
@@ -911,7 +918,7 @@ $app->group('/admin', function() use ($app, $current_user) {
                 ->get();
 
         $app->foil->render('main::error/audit', [
-            'title' => func\_t('Audit Trail', 'tritan-cms'),
+            'title' => Core\_t('Audit Trail', 'tritan-cms'),
             'audit' => $audit
                 ]
         );
@@ -921,8 +928,8 @@ $app->group('/admin', function() use ($app, $current_user) {
      * Before route check.
      */
     $app->before('GET|POST', '/flush-cache/', function () {
-        if (!func\current_user_can('manage_settings')) {
-            func\_ttcms_flash()->{'error'}(func\_t("You are not allowed to flush the site cache.", 'tritan-cms'), func\get_base_url() . 'admin' . '/');
+        if (!Auth\current_user_can('manage_settings')) {
+            Dependency\_ttcms_flash()->{'error'}(Core\_t("You are not allowed to flush the site cache.", 'tritan-cms'), Core\get_base_url() . 'admin' . '/');
             exit();
         }
     });
@@ -931,7 +938,7 @@ $app->group('/admin', function() use ($app, $current_user) {
         if ($app->hook->{'get_option'}('current_site_theme') !== 'null' && $app->hook->{'get_option'}('current_site_theme') !== '' && $app->hook->{'get_option'}('current_site_theme') !== false) {
             $app->fenom->clearAllCompiles();
         }
-        func\ttcms_cache_flush();
+        Cache\ttcms_cache_flush();
         /**
          * Action is triggered after cache is flushed and cache
          * directory is re-created.
@@ -940,7 +947,7 @@ $app->group('/admin', function() use ($app, $current_user) {
          */
         $app->hook->{'do_action'}('protect_cache_dir');
 
-        func\_ttcms_flash()->{'success'}(func\_t('Cache flushed successfully.', 'tritan-cms'), $app->req->server['HTTP_REFERER']);
+        Dependency\_ttcms_flash()->{'success'}(Core\_t('Cache flushed successfully.', 'tritan-cms'), $app->req->server['HTTP_REFERER']);
     });
 
     /**

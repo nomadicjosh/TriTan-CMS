@@ -1,6 +1,6 @@
 <?php
 
-namespace TriTan\Functions;
+namespace TriTan\Functions\Dependency;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');

@@ -1,11 +1,15 @@
 <?php
 
-namespace TriTan\Functions;
+namespace TriTan\Functions\Posttype;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use TriTan\Config;
 use Cascade\Cascade;
+use TriTan\Functions\Post;
+Use TriTan\Functions\Db;
+use TriTan\Functions\Core;
+use TriTan\Functions\Cache;
 
 /**
  * TriTan CMS Post Type Functions
@@ -49,7 +53,7 @@ function get_posttype($posttype, $array = true)
     }
 
     if ($array == false) {
-        $_posttype = array_to_object($_posttype);
+        $_posttype = Core\array_to_object($_posttype);
     }
 
     /**
@@ -78,7 +82,7 @@ function get_posttype($posttype, $array = true)
 function get_posttype_title($posttype_id = 0)
 {
     $posttype = get_posttype($posttype_id);
-    $title = _escape($posttype['posttype_title']);
+    $title = Core\_escape($posttype['posttype_title']);
     /**
      * Filters the posttype title.
      *
@@ -105,7 +109,7 @@ function get_posttype_title($posttype_id = 0)
 function get_posttype_slug($posttype_id = 0)
 {
     $posttype = get_posttype($posttype_id);
-    $slug = _escape($posttype['posttype_slug']);
+    $slug = Core\_escape($posttype['posttype_slug']);
     /**
      * Filters the posttype's slug.
      *
@@ -132,7 +136,7 @@ function get_posttype_slug($posttype_id = 0)
 function get_posttype_description($posttype_id = 0)
 {
     $posttype = get_posttype($posttype_id);
-    $description = _escape($posttype['posttype_description']);
+    $description = Core\_escape($posttype['posttype_description']);
     /**
      * Filters the posttype's description.
      *
@@ -158,7 +162,7 @@ function get_posttype_description($posttype_id = 0)
  */
 function get_posttype_permalink($posttype_id = 0)
 {
-    $link = get_base_url() . get_posttype_slug($posttype_id) . '/';
+    $link = Core\get_base_url() . get_posttype_slug($posttype_id) . '/';
     /**
      * Filters the posttype's link.
      *
@@ -181,8 +185,8 @@ function get_posttype_permalink($posttype_id = 0)
  */
 function ttcms_unique_posttype_slug($original_slug, $original_title, $posttype_id)
 {
-    if (ttcms_posttype_slug_exist($posttype_id, $original_slug)) {
-        $posttype_slug = ttcms_slugify($original_title, 'posttype');
+    if (Db\ttcms_posttype_slug_exist($posttype_id, $original_slug)) {
+        $posttype_slug = Db\ttcms_slugify($original_title, 'posttype');
     } else {
         $posttype_slug = $original_slug;
     }
@@ -227,7 +231,7 @@ function ttcms_insert_posttype($posttypedata, $exception = false)
 
         if (is_null($posttype_before)) {
             if ($exception) {
-                throw new Exception(_t('Invalid posttype id.', 'tritan-cms'), 'invalid_posttype_id');
+                throw new Exception(Core\_t('Invalid posttype id.', 'tritan-cms'), 'invalid_posttype_id');
             } else {
                 return null;
             }
@@ -246,7 +250,7 @@ function ttcms_insert_posttype($posttypedata, $exception = false)
         app()->hook->{'do_action'}('posttype_previous_slug', $previous_slug, (int) $posttype_id, $update);
     } else {
         $update = false;
-        $posttype_id = auto_increment(Config::get('tbl_prefix') . 'posttype', 'posttype_id');
+        $posttype_id = Db\auto_increment(Config::get('tbl_prefix') . 'posttype', 'posttype_id');
 
         $previous_slug = null;
         /**
@@ -313,14 +317,14 @@ function ttcms_insert_posttype($posttypedata, $exception = false)
     $maybe_null = !$posttype_title && !$posttype_slug;
     if (app()->hook->{'apply_filter'}('ttcms_insert_posttype_empty_content', $maybe_null, $posttypedata)) {
         if ($exception) {
-            throw new Exception(_t('The title and slug are null'), 'empty_content');
+            throw new Exception(Core\_t('The title and slug are null'), 'empty_content');
         } else {
             return null;
         }
     }
 
     $compacted = compact('posttype_title', 'posttype_slug', 'posttype_description');
-    $data = ttcms_unslash($compacted);
+    $data = Core\ttcms_unslash($compacted);
 
     /**
      * Filters posttype data before the record is created or updated.
@@ -394,12 +398,12 @@ function ttcms_insert_posttype($posttypedata, $exception = false)
          * 
          * @since 0.9.6
          */
-        if ((string) _escape($posttype_before->posttype_slug) != (string) _escape($posttype_after->posttype_slug)) {
-            update_post_relative_url_posttype($posttype_id, _escape($posttype_before->posttype_slug), (string) _escape($posttype_after->posttype_slug));
+        if ((string) Core\_escape($posttype_before->posttype_slug) != (string) Core\_escape($posttype_after->posttype_slug)) {
+            Db\update_post_relative_url_posttype($posttype_id, Core\_escape($posttype_before->posttype_slug), (string) Core\_escape($posttype_after->posttype_slug));
         }
 
-        ttcms_cache_flush_namespace('post');
-        ttcms_cache_flush_namespace('post_meta');
+        Cache\ttcms_cache_flush_namespace('post');
+        Cache\ttcms_cache_flush_namespace('post_meta');
 
         /**
          * Action hook triggered after existing post has been updated.
@@ -447,7 +451,7 @@ function ttcms_update_posttype($posttypedata = [], $exception = false)
 
     if (is_null($posttype)) {
         if ($exception) {
-            throw new Exception(_t('Invalid posttype id.'), 'invalid_posttype_id');
+            throw new Exception(Core\_t('Invalid posttype id.'), 'invalid_posttype_id');
         }
         return null;
     }
@@ -550,9 +554,9 @@ function clean_posttype_cache($posttype)
         return;
     }
 
-    ttcms_cache_delete((int) _escape($_posttype['posttype_id']), 'posttype');
-    ttcms_cache_delete('posttype', 'posttype');
-    ttcms_cache_delete('post', 'post');
+    Cache\ttcms_cache_delete((int) Core\_escape($_posttype['posttype_id']), 'posttype');
+    Cache\ttcms_cache_delete('posttype', 'posttype');
+    Cache\ttcms_cache_delete('post', 'post');
 
     /**
      * Fires immediately after the given posttype's cache is cleaned.
@@ -561,5 +565,5 @@ function clean_posttype_cache($posttype)
      * @param int   $_posttype['posttype_id']   Posttype id.
      * @param array $_posttype                  Posttype array.
      */
-    app()->hook->{'do_action'}('clean_posttype_cache', (int) _escape($_posttype['posttype_id']), $_posttype);
+    app()->hook->{'do_action'}('clean_posttype_cache', (int) Core\_escape($_posttype['posttype_id']), $_posttype);
 }

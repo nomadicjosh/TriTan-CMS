@@ -6,7 +6,8 @@ if (!defined('BASE_PATH')) {
     exit('No direct script access allowed');
 }
 use TriTan\Config;
-use TriTan\Functions as func;
+use TriTan\Functions\Cache;
+use TriTan\Functions\Post;
 
 /**
  * Post Type API: Post Type Class
@@ -68,7 +69,7 @@ final class PostType
             return false;
         }
 
-        $posttype = func\ttcms_cache_get($_id, 'posttype');
+        $posttype = Cache\ttcms_cache_get($_id, 'posttype');
         if (!$posttype) {
             $posttype = app()->db->table(Config::get('tbl_prefix') . 'posttype')
                     ->where('posttype_id', (int) $_id)
@@ -76,7 +77,7 @@ final class PostType
             if (!$posttype) {
                 return false;
             }
-            func\ttcms_cache_add($_id, $posttype, 'posttype');
+            Cache\ttcms_cache_add($_id, $posttype, 'posttype');
         }
 
         return $posttype;

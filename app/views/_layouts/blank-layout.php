@@ -1,6 +1,6 @@
 <?php
 
-use TriTan\Functions as func;
+use TriTan\Functions\Core;
 
 ob_start();
 ob_implicit_flush(0);
@@ -8,4 +8,4 @@ ob_implicit_flush(0);
 $this->section('blank');
 $this->stop();
 
-func\print_gzipped_page();
+Core\print_gzipped_page();

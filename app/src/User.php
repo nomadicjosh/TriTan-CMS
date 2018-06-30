@@ -3,7 +3,11 @@
 namespace TriTan;
 
 use TriTan\Config;
-use TriTan\Functions as func;
+use TriTan\Functions\Meta;
+use TriTan\Functions\Cache;
+use TriTan\Functions\Core;
+use TriTan\Functions\Site;
+use TriTan\Functions\Hook;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
@@ -101,7 +105,7 @@ class User
      */
     public function init($data, $site_id = '')
     {
-        $_data = is_array($data) ? func\array_to_object($data) : $data;
+        $_data = is_array($data) ? Core\array_to_object($data) : $data;
         $this->data = $_data;
         $this->user_id = (int) $_data->user_id;
 
@@ -148,12 +152,12 @@ class User
                 $db_field = 'user_id';
                 break;
             case 'email':
-                $user_id = func\ttcms_cache_get($value, 'useremail');
+                $user_id = Cache\ttcms_cache_get($value, 'useremail');
                 $db_field = 'user_email';
                 break;
             case 'login':
-                $value = func\sanitize_user($value);
-                $user_id = func\ttcms_cache_get($value, 'userlogins');
+                $value = Functions\User\sanitize_user($value);
+                $user_id = Cache\ttcms_cache_get($value, 'userlogins');
                 $db_field = 'user_login';
                 break;
             default:
@@ -161,7 +165,7 @@ class User
         }
 
         if (false !== $user_id) {
-            if ($user = func\ttcms_cache_get($user_id, 'users')) {
+            if ($user = Cache\ttcms_cache_get($user_id, 'users')) {
                 return $user;
             }
         }
@@ -170,7 +174,7 @@ class User
             return false;
         }
 
-        func\update_user_caches($user);
+        Functions\User\update_user_caches($user);
 
         return $user;
     }
@@ -187,7 +191,7 @@ class User
         if (isset($this->data->$key)) {
             return true;
         }
-        return func\metadata_exists('user', $this->user_id, Config::get('tbl_prefix') . $key);
+        return Meta\metadata_exists('user', $this->user_id, Config::get('tbl_prefix') . $key);
     }
 
     /**
@@ -206,7 +210,7 @@ class User
         if (isset($this->data->$key)) {
             $value = $this->data->$key;
         } else {
-            $value = func\get_user_meta($this->user_id, Config::get('tbl_prefix') . $key, true);
+            $value = Functions\User\get_user_meta($this->user_id, Config::get('tbl_prefix') . $key, true);
         }
 
         return $value;
@@ -305,9 +309,9 @@ class User
     {
 
         if (!empty($site_id)) {
-            $this->site_id = func\absint($site_id);
+            $this->site_id = Core\absint($site_id);
         } else {
-            $this->site_id = func\get_current_site_id();
+            $this->site_id = Site\get_current_site_id();
         }
     }
 
@@ -319,17 +323,17 @@ class User
      */
     public function set_role($role)
     {
-        $old_role = func\get_user_meta($this->user_id, Config::get('tbl_prefix') . 'role', true);
+        $old_role = Functions\User\get_user_meta($this->user_id, Config::get('tbl_prefix') . 'role', true);
 
         if (is_numeric($role)) {
-            $message = func\_t('Invalid role. Must use role_key (super, admin, editor, etc.) and not role_id.', 'tritan-cms');
-            func\_incorrectly_called(__FUNCTION__, $message, '0.9.8');
+            $message = Core\_t('Invalid role. Must use role_key (super, admin, editor, etc.) and not role_id.', 'tritan-cms');
+            Hook\_incorrectly_called(__FUNCTION__, $message, '0.9.8');
             return;
         }
 
         $new_role = $this->acl->getRoleIDFromKey($role);
 
-        func\update_user_meta($this->user_id, Config::get('tbl_prefix') . 'role', $new_role, $old_role);
+        Functions\User\update_user_meta($this->user_id, Config::get('tbl_prefix') . 'role', $new_role, $old_role);
 
         /**
          * Fires after the user's role has been added/changed.

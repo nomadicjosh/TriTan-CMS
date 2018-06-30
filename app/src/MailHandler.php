@@ -8,7 +8,7 @@ use Monolog\Logger;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\MailHandler as ttcms_MailHandler;
 use TriTan\Email;
-use TriTan\Functions as func;
+use TriTan\Functions\Core;
 
 /**
  * Monolog Handler Email Class
@@ -53,7 +53,7 @@ class MailHandler extends ttcms_MailHandler
      */
     protected function buildMessage($content, array $records)
     {
-        $sitename = func\get_domain_name();
+        $sitename = Core\get_domain_name();
 
         $site = $this->app->hook{'get_option'}('sitename');
 
@@ -71,7 +71,7 @@ class MailHandler extends ttcms_MailHandler
             $headers = "From: $site <auto-reply@$sitename>\r\n";
             $headers .= sprintf("X-Mailer: TriTan CMS %s\r\n", CURRENT_RELEASE);
             $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-            $body = func\process_email_html($content, $subjectFormatter->format($this->getHighestRecord($records)));
+            $body = Core\process_email_html($content, $subjectFormatter->format($this->getHighestRecord($records)));
             $message = $this->mailer->ttcmsMail($this->email_to, $subjectFormatter->format($this->getHighestRecord($records)), $body, $headers);
         }
         return $message;

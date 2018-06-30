@@ -5,7 +5,7 @@ namespace TriTan\Cache;
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
 use TriTan\Exception\Exception;
-use TriTan\Functions as func;
+use TriTan\Functions\Core;
 
 /**
  * TriTan CMS APC Cache Class.
@@ -49,7 +49,7 @@ class Cache_APC extends \TriTan\Cache\Abstract_Cache
         $this->app = !empty($liten) ? $liten : \Liten\Liten::getInstance();
 
         if (!extension_loaded('apc') && !ini_get('apc.enabled') || !function_exists('apc_fetch')) {
-            throw new Exception(_t('APC requires PHP APC extension to be installed and loaded.'), 'php_apc_extension');
+            throw new Exception(Core\_t('APC requires PHP APC extension to be installed and loaded.'), 'php_apc_extension');
         }
 
         /**
@@ -269,11 +269,11 @@ class Cache_APC extends \TriTan\Cache\Abstract_Cache
         }
 
         echo "<p>";
-        echo "<strong>" . func\_t('Cache Hits:', 'tritan-cms') . "</strong> " . $info['num_hits'] . "<br />";
-        echo "<strong>" . func\_t('Cache Misses:', 'tritan-cms') . "</strong> " . $info['num_misses'] . "<br />";
-        echo "<strong>" . func\_t('Uptime:', 'tritan-cms') . "</strong> " . $info['start_time'] . "<br />";
-        echo "<strong>" . func\_t('Memory Usage:', 'tritan-cms') . "</strong> " . $info['mem_size'] . "<br />";
-        echo "<strong>" . func\_t('Memory Available:', 'tritan-cms') . "</strong> " . $sma['avail_mem'] . "<br />";
+        echo "<strong>" . Core\_t('Cache Hits:', 'tritan-cms') . "</strong> " . $info['num_hits'] . "<br />";
+        echo "<strong>" . Core\_t('Cache Misses:', 'tritan-cms') . "</strong> " . $info['num_misses'] . "<br />";
+        echo "<strong>" . Core\_t('Uptime:', 'tritan-cms') . "</strong> " . $info['start_time'] . "<br />";
+        echo "<strong>" . Core\_t('Memory Usage:', 'tritan-cms') . "</strong> " . $info['mem_size'] . "<br />";
+        echo "<strong>" . Core\_t('Memory Available:', 'tritan-cms') . "</strong> " . $sma['avail_mem'] . "<br />";
         echo "</p>";
     }
 

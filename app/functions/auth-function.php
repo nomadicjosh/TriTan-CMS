@@ -1,6 +1,6 @@
 <?php
 
-namespace TriTan\Functions;
+namespace TriTan\Functions\Auth;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
@@ -9,6 +9,11 @@ use TriTan\Exception\Exception;
 use TriTan\Exception\UnauthorizedException;
 use TriTan\Exception\NotFoundException;
 use Cascade\Cascade;
+use TriTan\Functions\Core;
+use TriTan\Functions\User;
+use TriTan\Functions\Db;
+use TriTan\Functions\Dependency;
+use TriTan\Functions\Logger;
 
 /**
  * TriTan CMS Auth Helper
@@ -29,7 +34,7 @@ use Cascade\Cascade;
  */
 function current_user_can($perm)
 {
-    $acl = new \TriTan\ACL(get_current_user_id());
+    $acl = new \TriTan\ACL(User\get_current_user_id());
 
     if ($acl->hasPermission($perm) && is_user_logged_in()) {
         return true;
@@ -48,8 +53,8 @@ function current_user_can($perm)
  */
 function hasRole($role_id)
 {
-    $user = get_userdata(get_current_user_id());
-    if ((int) $role_id === (int) _escape($user->user_role)) {
+    $user = get_userdata(User\get_current_user_id());
+    if ((int) $role_id === (int) Core\_escape($user->user_role)) {
         return true;
     }
     return false;
@@ -72,10 +77,10 @@ function get_role_by_id($role = 0)
 
     $data = [];
     $data['role'] = [
-        'role_id' => _escape($sql['role_id']),
-        'role_name' => _escape($sql['role_name']),
-        'role_key' => _escape($sql['role_key']),
-        'role_permission' => _escape($sql['role_permission'])
+        'role_id' => Core\_escape($sql['role_id']),
+        'role_name' => Core\_escape($sql['role_name']),
+        'role_key' => Core\_escape($sql['role_key']),
+        'role_permission' => Core\_escape($sql['role_permission'])
     ];
 
     return app()->hook->{'apply_filter'}('role_by_id', $data, $role);
@@ -105,9 +110,9 @@ function get_userdata($user_id)
  */
 function is_user_logged_in()
 {
-    $user = get_user_by('id', get_current_user_id());
+    $user = get_user_by('id', User\get_current_user_id());
 
-    if ('' != (int) _escape($user->user_id) && app()->cookies->{'verifySecureCookie'}('TTCMS_COOKIENAME')) {
+    if ('' != (int) Core\_escape($user->user_id) && app()->cookies->{'verifySecureCookie'}('TTCMS_COOKIENAME')) {
         return true;
     }
 
@@ -171,7 +176,7 @@ function ttcms_authenticate($login, $password, $rememberme)
             ->first();
 
     if (false == $user) {
-        _ttcms_flash()->{'error'}(sprintf(_t('Sorry, an account for <strong>%s</strong> does not exist.', 'tritan-cms'), $login), app()->req->server['HTTP_REFERER']);
+        Dependency\_ttcms_flash()->{'error'}(sprintf(Core\_t('Sorry, an account for <strong>%s</strong> does not exist.', 'tritan-cms'), $login), app()->req->server['HTTP_REFERER']);
         return;
     }
 
@@ -179,11 +184,11 @@ function ttcms_authenticate($login, $password, $rememberme)
     $ll->begin();
     try {
         $ll->insert([
-            'last_login_id' => auto_increment('last_login', 'last_login_id'),
+            'last_login_id' => Db\auto_increment('last_login', 'last_login_id'),
             'site_id' => (int) Config::get('site_id'),
-            'user_id' => (int) _escape($user['user_id']),
+            'user_id' => (int) Core\_escape($user['user_id']),
             'user_ip' => (string) app()->req->server['REMOTE_ADDR'],
-            'login_timestamp' => (string) \Jenssegers\Date\Date::now()
+            'login_timestamp' => (string) format_date()
         ]);
         $ll->commit();
     } catch (Exception $ex) {
@@ -206,10 +211,10 @@ function ttcms_authenticate($login, $password, $rememberme)
         Cascade::getLogger('error')->{'error'}(sprintf('AUTHSTATE[%s]: Unauthorized: %s', $e->getCode(), $e->getMessage()));
     }
 
-    ttcms_logger_activity_log_write('Authentication', 'Login', get_name(_escape($user['user_id'])), _escape($user['user_login']));
+    Logger\ttcms_logger_activity_log_write('Authentication', 'Login', User\get_name(Core\_escape($user['user_id'])), Core\_escape($user['user_login']));
 
-    $redirect_to = (app()->req->post['redirect_to'] != null ? app()->req->post['redirect_to'] : get_base_url());
-    ttcms_redirect($redirect_to);
+    $redirect_to = (app()->req->post['redirect_to'] != null ? app()->req->post['redirect_to'] : Core\get_base_url());
+    Core\ttcms_redirect($redirect_to);
 }
 
 /**
@@ -227,33 +232,33 @@ function ttcms_authenticate_user($login, $password, $rememberme)
     if (empty($login) || empty($password)) {
 
         if (empty($login)) {
-            _ttcms_flash()->{'error'}(_t('<strong>ERROR</strong>: The username/email field is empty.', 'tritan-cms'), app()->req->server['HTTP_REFERER']);
+            Dependency\_ttcms_flash()->{'error'}(Core\_t('<strong>ERROR</strong>: The username/email field is empty.', 'tritan-cms'), app()->req->server['HTTP_REFERER']);
         }
 
         if (empty($password)) {
-            _ttcms_flash()->{'error'}(_t('<strong>ERROR</strong>: The password field is empty.', 'tritan-cms'), app()->req->server['HTTP_REFERER']);
+            Dependency\_ttcms_flash()->{'error'}(Core\_t('<strong>ERROR</strong>: The password field is empty.', 'tritan-cms'), app()->req->server['HTTP_REFERER']);
         }
         return;
     }
 
-    if (validate_email($login)) {
+    if (User\validate_email($login)) {
         $user = get_user_by('email', $login);
 
-        if (false == _escape($user->user_email)) {
-            _ttcms_flash()->{'error'}(_t('<strong>ERROR</strong>: Invalid email address.', 'tritan-cms'), app()->req->server['HTTP_REFERER']);
+        if (false == Core\_escape($user->user_email)) {
+            Dependency\_ttcms_flash()->{'error'}(Core\_t('<strong>ERROR</strong>: Invalid email address.', 'tritan-cms'), app()->req->server['HTTP_REFERER']);
             return;
         }
     } else {
         $user = get_user_by('login', $login);
 
-        if (false == _escape($user->user_login)) {
-            _ttcms_flash()->{'error'}(_t('<strong>ERROR</strong>: Invalid username.', 'tritan-cms'), app()->req->server['HTTP_REFERER']);
+        if (false == Core\_escape($user->user_login)) {
+            Dependency\_ttcms_flash()->{'error'}(Core\_t('<strong>ERROR</strong>: Invalid username.', 'tritan-cms'), app()->req->server['HTTP_REFERER']);
             return;
         }
     }
 
-    if (!ttcms_check_password($password, $user->user_pass, $user->user_id)) {
-        _ttcms_flash()->{'error'}(_t('<strong>ERROR</strong>: The password you entered is incorrect.', 'tritan-cms'), app()->req->server['HTTP_REFERER']);
+    if (!Core\ttcms_check_password($password, $user->user_pass, $user->user_id)) {
+        Dependency\_ttcms_flash()->{'error'}(Core\_t('<strong>ERROR</strong>: The password you entered is incorrect.', 'tritan-cms'), app()->req->server['HTTP_REFERER']);
         return;
     }
 
@@ -304,8 +309,8 @@ function ttcms_set_auth_cookie($user, $rememberme = '')
 
     $auth_cookie = [
         'key' => 'TTCMS_COOKIENAME',
-        'user_id' => (int) _escape($user['user_id']),
-        'user_login' => (string) _escape($user['user_login']),
+        'user_id' => (int) Core\_escape($user['user_id']),
+        'user_login' => (string) Core\_escape($user['user_login']),
         'remember' => (isset($rememberme) ? $rememberme : _t('no', 'tritan-cms')),
         'exp' => (int) $expire + time()
     ];
@@ -346,7 +351,7 @@ function ttcms_clear_auth_cookie()
      */
     $file1 = app()->config('cookies.savepath') . 'cookies.' . $vars1['data'];
     try {
-        if (ttcms_file_exists($file1)) {
+        if (Core\ttcms_file_exists($file1)) {
             unlink($file1);
         }
     } catch (NotFoundException $e) {
@@ -360,7 +365,7 @@ function ttcms_clear_auth_cookie()
      * It it exists, we need to delete it.
      */
     $file2 = app()->config('cookies.savepath') . 'cookies.' . $vars2['data'];
-    if (ttcms_file_exists($file2, false)) {
+    if (Core\ttcms_file_exists($file2, false)) {
         @unlink($file2);
     }
 
@@ -382,7 +387,7 @@ function ttcms_clear_auth_cookie()
  */
 function ttcms_login_form_show_message()
 {
-    echo app()->hook->{'apply_filter'}('login_form_show_message', _ttcms_flash()->showMessage());
+    echo app()->hook->{'apply_filter'}('login_form_show_message', Dependency\_ttcms_flash()->showMessage());
 }
 
 /**

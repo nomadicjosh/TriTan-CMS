@@ -1,6 +1,6 @@
 <?php
 
-namespace TriTan\Functions;
+namespace TriTan\Functions\Core;
 
 if (!defined('BASE_PATH'))
     exit('No direct script access allowed');
@@ -23,6 +23,9 @@ use TriTan\Exception\IOException;
 use Cascade\Cascade;
 use Jenssegers\Date\Date;
 use Respect\Validation\Validator as v;
+use TriTan\Functions\Hook;
+use TriTan\Functions\Db;
+use TriTan\Functions\Dependency;
 
 /**
  * Retrieves TriTan CMS site root url.
@@ -346,7 +349,7 @@ function ttcms_parse_args($args, $defaults = '')
     } elseif (is_array($args)) {
         $r = $args;
     } else {
-        ttcms_parse_str($args, $r);
+        Hook\ttcms_parse_str($args, $r);
     }
 
     if (is_array($defaults)) {
@@ -393,7 +396,7 @@ function ttcms_hash_password($password)
 {
     if ('' == _trim($password)) {
         $message = _t('Invalid password: empty password given.', 'tritan-cms');
-        _incorrectly_called(__FUNCTION__, $message, '0.9');
+        Hook\_incorrectly_called(__FUNCTION__, $message, '0.9');
         return;
     }
 
@@ -426,7 +429,7 @@ function ttcms_check_password($password, $hash, $user_id = '')
         $check = ($hash == md5($password));
         if ($check && $user_id) {
             // Rehash using new hash.
-            ttcms_set_password($password, $user_id);
+            Db\ttcms_set_password($password, $user_id);
             $hash = ttcms_hash_password($password);
         }
         return app()->hook->{'apply_filter'}('check_password', $check, $password, $hash, $user_id);
@@ -510,7 +513,7 @@ function get_age($birthdate = '0000-00-00')
     $date = new Date($birthdate);
     $age = $date->age;
 
-    if ($birthdate <= '0000-00-00' || $age == \Jenssegers\Date\Date::now()->format('Y')) {
+    if ($birthdate <= '0000-00-00' || $age == format_date('now', 'Y')) {
         return _t('Unknown', 'tritan-cms');
     }
     return $age;
@@ -645,7 +648,7 @@ function check_mime_type($file, $mode = 0)
 {
     if ('' == _trim($file)) {
         $message = _t('Invalid file: empty file given.', 'tritan-cms');
-        _incorrectly_called(__FUNCTION__, $message, '0.9');
+        Hook\_incorrectly_called(__FUNCTION__, $message, '0.9');
         return;
     }
 
@@ -788,7 +791,7 @@ function is_duplicate_function($filename)
 {
     if ('' == _trim($filename)) {
         $message = _t('Invalid file name: empty file name given.', 'tritan-cms');
-        _incorrectly_called(__FUNCTION__, $message, '0.9');
+        Hook\_incorrectly_called(__FUNCTION__, $message, '0.9');
         return;
     }
 
@@ -818,7 +821,7 @@ function ttcms_php_check_includes($filename)
 {
     if ('' == _trim($filename)) {
         $message = _t('Invalid file name: empty file name given.', 'tritan-cms');
-        _incorrectly_called(__FUNCTION__, $message, '0.9');
+        Hook\_incorrectly_called(__FUNCTION__, $message, '0.9');
         return;
     }
 
@@ -940,7 +943,7 @@ function ttcms_validate_plugin($plugin_name)
 
     $error = ttcms_php_check_syntax($file);
     if (is_ttcms_exception($error)) {
-        _ttcms_flash()->error(_t('Plugin could not be activated because it triggered a <strong>fatal error</strong>. <br /><br />', 'tritan-cms') . $error->getMessage());
+        Dependency\_ttcms_flash()->error(_t('Plugin could not be activated because it triggered a <strong>fatal error</strong>. <br /><br />', 'tritan-cms') . $error->getMessage());
         return false;
     }
 
@@ -1718,7 +1721,7 @@ function validate_url($url)
 function stripslashes_deep($value)
 {
     $_value = is_array($value) ?
-            array_map('TriTan\\Functions\\stripslashes_deep', $value) :
+            array_map('TriTan\\Functions\\Core\\stripslashes_deep', $value) :
             stripslashes($value);
 
     return $_value;
@@ -2237,7 +2240,7 @@ function ttcms_generate_password($length = 12, $special_chars = true, $extra_spe
         $chars .= '-_ []{}<>~`+=,.;:/?|';
     }
 
-    $password = _ttcms_random_lib()->generateString($length, $chars);
+    $password = Dependency\_ttcms_random_lib()->generateString($length, $chars);
 
     /**
      * Filters the system generated password.
@@ -2327,14 +2330,22 @@ function sanitize_url($url, $encode = false)
     return app()->hook->{'apply_filter'}('sanitize_url', $clean_url, $esc_url, $raw_url, $encode);
 }
 
-function flatten_array($array) {
-	$flat_array = [];
-	foreach($array as $element) {
-		if (is_array($element)) {
-			$flat_array = array_merge($flat_array, flatten_array($element));
-		} else {
-			$flat_array[] = $element;
-		}
-	}
-	return $flat_array;
+/**
+ * Turns multi-dimensional array into a regular array.
+ * 
+ * @since 0.9.9
+ * @param array $array The array to convert.
+ * @return array
+ */
+function flatten_array($array)
+{
+    $flat_array = [];
+    foreach ($array as $element) {
+        if (is_array($element)) {
+            $flat_array = array_merge($flat_array, flatten_array($element));
+        } else {
+            $flat_array[] = $element;
+        }
+    }
+    return $flat_array;
 }
