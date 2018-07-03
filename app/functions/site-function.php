@@ -28,8 +28,8 @@ use TriTan\Functions\Meta;
  * @file app/functions/site-function.php
  *
  * @since 0.9
- * @param int|object|array $site
- *            Site ID, object or array.
+ * @param int|Site|null $site
+ *            Site ID or object.
  * @param bool $object
  *            If set to true, data will return as an object, else as an array.
  * @return array|object

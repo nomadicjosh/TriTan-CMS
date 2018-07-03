@@ -24,8 +24,8 @@ use TriTan\Functions\Cache;
  * @file app/functions/posttype-function.php
  *
  * @since 0.9
- * @param int|Post $posttype
- *            Post Type ID or post type array.
+ * @param int|Posttype $posttype
+ *            Post Type ID or post type object.
  * @param bool $array
  *              If set to true, data will return as an array, else as an object.
  *              Default: true.

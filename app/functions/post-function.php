@@ -60,7 +60,7 @@ function the_post()
  *
  * @since 0.9
  * @param int|Post|null $post
- *            Post ID or post array.
+ *            Post ID or post object.
  * @param bool $object
  *              If set to true, data will return as an object, else as an array.
  *              Default: false.
@@ -778,7 +778,7 @@ function get_post_status($post_id = 0)
  */
 function get_post_date($post_id = 0, $type = 'published')
 {
-    return call_user_func_array("Tritan\Functions\Post\get_post_{$type}_date", [&$post_id]);
+    return call_user_func_array("Tritan\\Functions\\Post\\the_{$type}_date", ['Y-m-d',&$post_id]);
 }
 
 /**
@@ -796,7 +796,7 @@ function get_post_date($post_id = 0, $type = 'published')
  */
 function get_post_time($post_id = 0, $type = 'published')
 {
-    return call_user_func_array("Tritan\Functions\Post\get_post_{$type}_time", [&$post_id]);
+    return call_user_func_array("Tritan\\Functions\\Post\\the_{$type}_time", ['h:i A',&$post_id]);
 }
 
 /**
@@ -849,7 +849,7 @@ function get_post_created_date(string $format = 'U', bool $gmt = false, $post = 
  */
 function the_created_date(string $format = '', $post = null)
 {
-    $post = get_post($post);
+    $post = get_post($post, true);
 
     if (!$post) {
         return false;
@@ -926,7 +926,7 @@ function get_post_created_time(string $format = 'U', bool $gmt = false, $post = 
  */
 function the_created_time(string $format = '', $post = null)
 {
-    $post = get_post($post);
+    $post = get_post($post, true);
 
     if (!$post) {
         return false;
@@ -1000,7 +1000,7 @@ function get_post_published_date(string $format = 'U', bool $gmt = false, $post 
  */
 function the_published_date(string $format = '', $post = null)
 {
-    $post = get_post($post);
+    $post = get_post($post, true);
 
     if (!$post) {
         return false;
@@ -1036,7 +1036,7 @@ function the_published_date(string $format = '', $post = null)
  */
 function get_post_published_time(string $format = 'U', bool $gmt = false, $post = null, bool $translate = false)
 {
-    $post = get_post($post_id);
+    $post = get_post($post);
 
     if (!$post) {
         return false;
@@ -1074,7 +1074,7 @@ function get_post_published_time(string $format = 'U', bool $gmt = false, $post 
  */
 function the_published_time(string $format = '', $post = null)
 {
-    $post = get_post($post);
+    $post = get_post($post, true);
 
     if (!$post) {
         return false;
@@ -1148,7 +1148,7 @@ function get_post_modified_date(string $format = 'U', bool $gmt = false, $post =
  */
 function the_modified_date(string $format = '', $post = null)
 {
-    $post = get_post($post);
+    $post = get_post($post, true);
 
     if (!$post) {
         return false;
@@ -1222,7 +1222,7 @@ function get_post_modified_time(string $format = 'U', bool $gmt = false, $post =
  */
 function the_modified_time(string $format = '', $post = null)
 {
-    $post = get_post($post);
+    $post = get_post($post, true);
 
     if (!$post) {
         return false;
