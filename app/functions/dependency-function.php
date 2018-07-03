@@ -1,16 +1,13 @@
 <?php
-
 namespace TriTan\Functions\Dependency;
 
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use Spatie\ImageOptimizer\OptimizerChainFactory;
 
 /**
  * TriTan CMS Global Scope Functions.
  *
  * @license GPLv3
- *         
+ *
  * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
@@ -21,7 +18,7 @@ use Spatie\ImageOptimizer\OptimizerChainFactory;
  * the type of caching system used.
  *
  * @file app/functions/global-function.php
- * 
+ *
  * @since 0.9
  */
 function _ttcms_cache_init()
@@ -35,7 +32,7 @@ function _ttcms_cache_init()
  * Sets up PHPMailer global scope.
  *
  * @file app/functions/global-function.php
- * 
+ *
  * @since 0.9
  * @param bool $bool
  *            Set whether to use exceptions for error handling. Default: true.
@@ -50,7 +47,7 @@ function _ttcms_phpmailer($bool = true)
  * Sets up TriTan CMS Email global scope.
  *
  * @file app/functions/global-function.php
- * 
+ *
  * @since 0.9
  */
 function _ttcms_email()
@@ -63,7 +60,7 @@ function _ttcms_email()
  * Sets up TriTan CMS Logger global scope.
  *
  * @file app/functions/global-function.php
- * 
+ *
  * @since 0.9
  */
 function _ttcms_logger()
@@ -76,7 +73,7 @@ function _ttcms_logger()
  * Sets up TriTan CMS Flash Messages global scope.
  *
  * @file app/functions/global-function.php
- * 
+ *
  * @since 0.9
  */
 function _ttcms_flash()
@@ -87,9 +84,9 @@ function _ttcms_flash()
 
 /**
  * Sets up random number and string generator global scope.
- * 
+ *
  * @file app/functions/global-function.php
- * 
+ *
  * @since 0.9
  * @return type
  */
@@ -102,9 +99,9 @@ function _ttcms_random_lib()
 
 /**
  * Image optimizer.
- * 
+ *
  * @file app/functions/global-function.php
- * 
+ *
  * @since 0.9
  * @param string $pathToImage       Path to original image.
  * @param string $pathToOptimizded  Path to where optimized image should be saved.

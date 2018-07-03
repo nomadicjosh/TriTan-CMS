@@ -1,17 +1,16 @@
 <?php
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use TriTan\Config;
 use TriTan\Functions\Dependency;
 use TriTan\Functions\Auth;
 use TriTan\Functions\User;
 use TriTan\Functions\Core;
 use TriTan\Functions\Hook;
+
 /**
  * Update Profile View
- *  
+ *
  * @license GPLv3
- * 
+ *
  * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
@@ -46,7 +45,7 @@ $user = Auth\get_userdata($this->current_user_id);
         <!-- Main content -->
         <section class="content">
 
-            <?= Dependency\_ttcms_flash()->showMessage(); ?> 
+            <?= Dependency\_ttcms_flash()->showMessage(); ?>
 
             <div class="row">
                 <!-- left column -->
@@ -73,7 +72,7 @@ $user = Auth\get_userdata($this->current_user_id);
                                     <input type="checkbox" class="js-switch" name="user_admin_sidebar"<?= checked('1', User\get_user_option('admin_sidebar', (int) Core\_escape($user->user_id))); ?> value="1" />
                                 </div>
                             </div>
-                            
+
                             <div class="form-group">
                                 <label><strong><?= Core\_t('Skin', 'tritan-cms'); ?></strong></label>
                                 <ul style="list-style: none;margin:0px 0px 0px -30px;">
@@ -163,11 +162,11 @@ $user = Auth\get_userdata($this->current_user_id);
                                     </li>
                                 </ul>
                             </div>
-                            
+
                             <?php
                             /**
                              * Fires at the end of the 'Layout Options' section on the 'Profile' screen.
-                             * 
+                             *
                              * @since 0.9
                              * @param array $user User object.
                              */
@@ -175,7 +174,7 @@ $user = Auth\get_userdata($this->current_user_id);
                             ?>
                         </div>
                     </div>
-                    
+
                     <div class="box box-primary">
                         <div class="box-header with-border">
                             <h3 class="box-title"><?= Core\_t('Name', 'tritan-cms'); ?></h3>
@@ -196,11 +195,11 @@ $user = Auth\get_userdata($this->current_user_id);
                                 <label><strong><font color="red">*</font> <?= Core\_t('Last Name', 'tritan-cms'); ?></strong></label>
                                 <input type="text" class="form-control" name="user_lname" value="<?= User\get_user_option('lname', (int) Core\_escape($user->user_id)); ?>" required>
                             </div>
-                            
+
                             <?php
                             /**
                              * Fires at the end of the 'Name' section on the 'Profile' screen.
-                             * 
+                             *
                              * @since 0.9
                              * @param array $user User object.
                              */
@@ -208,7 +207,7 @@ $user = Auth\get_userdata($this->current_user_id);
                             ?>
                         </div>
                     </div>
-                    
+
                     <div class="box box-primary">
                         <div class="box-header with-border">
                             <h3 class="box-title"><?= Core\_t('Contact info', 'tritan-cms'); ?></h3>
@@ -220,51 +219,51 @@ $user = Auth\get_userdata($this->current_user_id);
                                 <label><strong><font color="red">*</font> <?= Core\_t('Email', 'tritan-cms'); ?></strong></label>
                                 <input type="email" class="form-control" name="user_email" value="<?= User\get_user_option('email', (int) Core\_escape($user->user_id)); ?>" required>
                             </div>
-                            
+
                             <div class="form-group">
                                 <label><strong><?= Core\_t('URL', 'tritan-cms'); ?></strong></label>
                                 <input type="text" class="form-control" name="user_url" value="<?= Auth\get_userdata((int) Core\_escape($user->user_id))->user_url; ?>" />
                             </div>
-                            
+
                             <?php
                             /**
                              * Fires at the end of the 'Contact info' section on the 'Profile' screen.
-                             * 
+                             *
                              * @since 0.9
                              * @param array $user User object.
                              */
                             $this->app->hook->{'do_action'}('user_profile_contact', $user);
                             ?>
-                            
+
                         </div>
                     </div>
-                    
+
                     <div class="box box-primary">
                         <div class="box-header with-border">
                             <h3 class="box-title"><?= Core\_t('Password', 'tritan-cms'); ?></h3>
                         </div>
                         <!-- /.box-header -->
                         <div class="box-body">
-                            
+
                             <div class="form-group">
                                 <label><strong><?= Core\_t('New Password', 'tritan-cms'); ?></strong></label>
                                 <input type="text" class="form-control" name="user_pass" />
                                 <p class="help-block"><?= Core\_t('Leave blank if not updating password.', 'tritan-cms'); ?></p>
                             </div>
-                            
+
                             <?php
                             /**
                              * Fires at the end of the 'New Password' section on the 'Profile' screen.
-                             * 
+                             *
                              * @since 0.9
                              * @param array $user User object.
                              */
                             $this->app->hook->{'do_action'}('user_profile_password', $user);
                             ?>
-                            
+
                         </div>
                     </div>
-                    
+
                     <div class="box box-primary">
                         <div class="box-header with-border">
                             <h3 class="box-title"><?= Core\_t('About yourself', 'tritan-cms'); ?></h3>
@@ -276,36 +275,36 @@ $user = Auth\get_userdata($this->current_user_id);
                                 <label><strong><?= Core\_t('Biography', 'tritan-cms'); ?></strong></label>
                                 <textarea class="form-control" name="user_bio" rows="5"><?= User\get_user_option('bio', (int) Core\_escape($user->user_id)); ?></textarea>
                             </div>
-                            
+
                             <div class="form-group">
                                 <label><strong><?= Core\_t('Profile Picture', 'tritan-cms'); ?></strong></label>
                                 <div><?= Hook\get_user_avatar(User\get_user_option('email', (int) Core\_escape($user->user_id)), 100);?></div>
                                 <p class="help-block"><?= sprintf(Core\_t('You can change your profile picture on <a href="%s">Gravatar</a>.', 'tritan-cms'), '//en.gravatar.com/'); ?></p>
                             </div>
-                            
+
                             <?php
                             /**
                              * Fires at the end of the 'About yourself' section on the 'Profile' screen.
-                             * 
+                             *
                              * @since 0.9
                              * @param array $user User object.
                              */
                             $this->app->hook->{'do_action'}('user_profile_about', $user);
                             ?>
-                            
+
                         </div>
                     </div>
-                    
+
                     <?php
                     /**
                      * Fires after the 'About yourself' section on the 'Profile' screen.
-                     * 
+                     *
                      * @since 0.9
                      * @param array $user User object.
                      */
                     $this->app->hook->{'do_action'}('user_profile', $user);
                     ?>
-                    
+
                 </div>
                 <!-- /.box-body -->
             </div>

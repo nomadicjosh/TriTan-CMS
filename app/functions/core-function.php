@@ -1,15 +1,11 @@
 <?php
-
 namespace TriTan\Functions\Core;
-
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 
 /**
  * TriTan CMS Core Functions
  *
  * @license GPLv3
- *         
+ *
  * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
@@ -29,9 +25,9 @@ use TriTan\Functions\Dependency;
 
 /**
  * Retrieves TriTan CMS site root url.
- * 
+ *
  * Uses `base_url` filter.
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
@@ -49,7 +45,7 @@ function get_base_url()
  * This function will check if the path is an existing directory,
  * if not, then it will be created with set permissions and also created
  * recursively if needed.
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
@@ -84,7 +80,7 @@ function _mkdir($path)
 
 /**
  * Displays the returned translated text.
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
@@ -116,10 +112,10 @@ function get_path_info($relative)
 /**
  * Custom function to use curl, fopen, or use file_get_contents
  * if curl is not available.
- * 
+ *
  * Uses `trigger_include_path_search`, `resource_context` and `stream_context_create_options`
  * filters.
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
@@ -181,8 +177,7 @@ function _file_get_contents($filename, $use_include_path = false, $context = tru
         fclose($handle);
         if ($contents) {
             return $contents;
-        } else
-        if (!function_exists('curl_init')) {
+        } elseif (!function_exists('curl_init')) {
             return false;
         } else {
             $ch = curl_init();
@@ -202,12 +197,12 @@ function _file_get_contents($filename, $use_include_path = false, $context = tru
 
 /**
  * Resize image function.
- * 
+ *
  * Example Usage:
- * 
+ *
  *      $size = getimagesize('static/assets/img/avatar.png');
  *      resize_image($size[0], $size[1], 80);
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
@@ -233,9 +228,9 @@ function resize_image($width, $height, $target)
 
 /**
  * Turn all URLs into clickable links.
- * 
+ *
  * @file app/functions/core-function.php
- * 
+ *
  * @since 0.9
  * @param string $value
  * @param array  $protocols  http/https, ftp, mail, twitter
@@ -262,22 +257,27 @@ function make_clickable($value, $protocols = ['http', 'mail'], array $attributes
     foreach ((array) $protocols as $protocol) {
         switch ($protocol) {
             case 'http':
-            case 'https': $value = preg_replace_callback('~(?:(https?)://([^\s<]+)|(www\.[^\s<]+?\.[^\s<]+))(?<![\.,:])~i', function ($match) use ($protocol, &$links, $attr) {
-                    if ($match[1])
+            case 'https':
+                $value = preg_replace_callback('~(?:(https?)://([^\s<]+)|(www\.[^\s<]+?\.[^\s<]+))(?<![\.,:])~i', function ($match) use ($protocol, &$links, $attr) {
+                    if ($match[1]) {
                         $protocol = $match[1];
+                    }
                     $link = $match[2] ?: $match[3];
                     return '<' . array_push($links, "<a $attr href=\"$protocol://$link\">$link</a>") . '>';
                 }, $value);
                 break;
-            case 'mail': $value = preg_replace_callback('~([^\s<]+?@[^\s<]+?\.[^\s<]+)(?<![\.,:])~', function ($match) use (&$links, $attr) {
+            case 'mail':
+                $value = preg_replace_callback('~([^\s<]+?@[^\s<]+?\.[^\s<]+)(?<![\.,:])~', function ($match) use (&$links, $attr) {
                     return '<' . array_push($links, "<a $attr href=\"mailto:{$match[1]}\">{$match[1]}</a>") . '>';
                 }, $value);
                 break;
-            case 'twitter': $value = preg_replace_callback('~(?<!\w)[@#](\w++)~', function ($match) use (&$links, $attr) {
+            case 'twitter':
+                $value = preg_replace_callback('~(?<!\w)[@#](\w++)~', function ($match) use (&$links, $attr) {
                     return '<' . array_push($links, "<a $attr href=\"https://twitter.com/" . ($match[0][0] == '@' ? '' : 'search/%23') . $match[1] . "\">{$match[0]}</a>") . '>';
                 }, $value);
                 break;
-            default: $value = preg_replace_callback('~' . preg_quote($protocol, '~') . '://([^\s<]+?)(?<![\.,:])~i', function ($match) use ($protocol, &$links, $attr) {
+            default:
+                $value = preg_replace_callback('~' . preg_quote($protocol, '~') . '://([^\s<]+?)(?<![\.,:])~i', function ($match) use ($protocol, &$links, $attr) {
                     return '<' . array_push($links, "<a $attr href=\"$protocol://{$match[1]}\">{$match[1]}</a>") . '>';
                 }, $value);
                 break;
@@ -332,7 +332,7 @@ function percent($num_amount, $num_total)
  *
  * This function is used throughout TriTan CMS to allow for both string or array
  * to be merged into another array.
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
@@ -361,7 +361,7 @@ function ttcms_parse_args($args, $defaults = '')
 
 /**
  * Prints generator meta tag in admin head.
- * 
+ *
  * @since 0.9
  * @return string
  */
@@ -372,7 +372,7 @@ function head_release_meta()
 
 /**
  * Prints installed TriTan release in admin footer.
- * 
+ *
  * @since 0.9
  * @return string
  */
@@ -384,7 +384,7 @@ function foot_release()
 
 /**
  * Hashes a plain text password.
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
@@ -410,9 +410,9 @@ function ttcms_hash_password($password)
  * Checks a plain text password against a hashed password.
  *
  * Uses `check_password` filter.
- * 
+ *
  * @file app/functions/core-function.php
- * 
+ *
  * @since 0.9
  * @param string $password
  *            Plain test password.
@@ -447,7 +447,7 @@ function ttcms_check_password($password, $hash, $user_id = '')
 /**
  * Prints a list of timezones which includes
  * current time.
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
@@ -500,7 +500,7 @@ function generate_timezone_list()
 
 /**
  * Get age by birthdate.
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
@@ -521,11 +521,11 @@ function get_age($birthdate = '0000-00-00')
 
 /**
  * Converts a string into unicode values.
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
- * @param string $string            
+ * @param string $string
  * @return mixed
  */
 function unicoder($string)
@@ -540,7 +540,7 @@ function unicoder($string)
 
 /**
  * Returns the layout header information
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
@@ -552,7 +552,6 @@ function get_layouts_header($layout_dir = '')
 {
     $layouts_header = [];
     if ($handle = opendir($layout_dir)) {
-
         while ($file = readdir($handle)) {
             if (is_file($layout_dir . $file)) {
                 if (strpos($layout_dir . $file, '.layout.php')) {
@@ -565,13 +564,14 @@ function get_layouts_header($layout_dir = '')
                     preg_match('|Layout Slug:(.*)$|mi', $layout_data, $layout_slug);
 
                     foreach ([
-                'name',
-                'layout_slug'
+                      'name',
+                      'layout_slug'
                     ] as $field) {
-                        if (!empty(${$field}))
+                        if (!empty(${$field})) {
                             ${$field} = trim(${$field}[1]);
-                        else
+                        } else {
                             ${$field} = '';
+                        }
                     }
                     $layout_data = [
                         'filename' => $file,
@@ -581,8 +581,7 @@ function get_layouts_header($layout_dir = '')
                     ];
                     $layouts_header[] = $layout_data;
                 }
-            } else
-            if ((is_dir($layout_dir . $file)) && ($file != '.') && ($file != '..')) {
+            } elseif ((is_dir($layout_dir . $file)) && ($file != '.') && ($file != '..')) {
                 get_layouts_header($layout_dir . $file . '/');
             }
         }
@@ -595,7 +594,7 @@ function get_layouts_header($layout_dir = '')
 /**
  * Subdomain as directory function uses the subdomain
  * of the install as a directory.
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
@@ -615,7 +614,7 @@ function subdomain_as_directory()
 
 /**
  * Strips out all duplicate values and compact the array.
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
@@ -636,9 +635,9 @@ function array_unique_compact($a)
 
 /**
  * Checks the mime type of a file.
- * 
+ *
  * @file app/functions/core-function.php
- * 
+ *
  * @since 0.9
  * @param string $file  File to check.
  * @param int $mode     Perform a full check or extension check only.
@@ -707,7 +706,7 @@ function check_mime_type($file, $mode = 0)
  * Check whether variable is an TriTan CMS Error.
  *
  * Returns true if $object is an object of the `\TriTan\Error` class.
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
@@ -724,7 +723,7 @@ function is_ttcms_error($object)
  * Check whether variable is an TriTan CMS Exception.
  *
  * Returns true if $object is an object of the `\TriTan\Exception\BaseException` class.
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
@@ -739,7 +738,7 @@ function is_ttcms_exception($object)
 
 /**
  * Returns the datetime of when the content of file was changed.
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
@@ -753,7 +752,7 @@ function file_mod_time($file)
 
 /**
  * Returns an array of function names in a file.
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
@@ -781,11 +780,11 @@ function get_functions_in_file($filename, $sort = false)
 
 /**
  * Checks a given file for any duplicated named user functions.
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
- * @param string $filename            
+ * @param string $filename
  */
 function is_duplicate_function($filename)
 {
@@ -810,7 +809,7 @@ function is_duplicate_function($filename)
 /**
  * Performs a check within a php script and returns any other files
  * that might have been required or included.
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
@@ -856,8 +855,9 @@ function ttcms_php_check_includes($filename)
         if ($include = $quoteSplit[1]) {
             // If the path is not absolute, add the dir and separator
             // Then call realpath to chop out extra separators
-            if (strpos($include, ':') === false)
+            if (strpos($include, ':') === false) {
                 $include = realpath($dir . DS . $include);
+            }
 
             array_push($includes, $include);
         }
@@ -868,7 +868,7 @@ function ttcms_php_check_includes($filename)
 
 /**
  * Performs a syntax and error check of a given PHP script.
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
@@ -921,10 +921,10 @@ function ttcms_php_check_syntax($filename, $check_includes = true)
 /**
  * Validates a plugin and checks to make sure there are no syntax and/or
  * parsing errors.
- * 
+ *
  * Uses `activate_plugin`, `activate_$plugin_name`, and `activated_plugin`
  * actions hooks.
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
@@ -949,7 +949,7 @@ function ttcms_validate_plugin($plugin_name)
 
     try {
         if (ttcms_file_exists($file)) {
-            include_once ($file);
+            include_once($file);
         }
     } catch (NotFoundException $e) {
         Cascade::getLogger('error')->error(sprintf('FILESTATE[%s]: File not found: %s', $e->getCode(), $e->getMessage()));
@@ -1004,11 +1004,11 @@ function ttcms_validate_plugin($plugin_name)
 /**
  * Single file writable atribute check.
  * Thanks to legolas558.users.sf.net
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
- * @param string $path            
+ * @param string $path
  * @return true
  */
 function win_is_writable($path)
@@ -1037,7 +1037,7 @@ function win_is_writable($path)
 
 /**
  * Alternative to PHP's native is_writable function due to a Window's bug.
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
@@ -1055,7 +1055,7 @@ function ttcms_is_writable($path)
 
 /**
  * Takes an array and turns it into an object.
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
@@ -1074,7 +1074,7 @@ function array_to_object(array $array)
 
 /**
  * Strip close comment and close php tags from file headers.
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
@@ -1096,7 +1096,7 @@ function _ttcms_cleanup_file_header_comment($str)
  *
  * If the file data is not within that first 8kB, then the author should correct
  * their plugin file and move the data headers to the top.
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
@@ -1126,7 +1126,7 @@ function ttcms_get_file_data($file, $default_headers, $context = '')
      * the context where extra headers might be loaded.
      *
      * @since 0.9
-     *       
+     *
      * @param array $extra_context_headers
      *            Empty array by default.
      */
@@ -1137,10 +1137,11 @@ function ttcms_get_file_data($file, $default_headers, $context = '')
         $all_headers = $default_headers;
     }
     foreach ($all_headers as $field => $regex) {
-        if (preg_match('/^[ \t\/*#@]*' . preg_quote($regex, '/') . ':(.*)$/mi', $file_data, $match) && $match[1])
+        if (preg_match('/^[ \t\/*#@]*' . preg_quote($regex, '/') . ':(.*)$/mi', $file_data, $match) && $match[1]) {
             $all_headers[$field] = _ttcms_cleanup_file_header_comment($match[1]);
-        else
+        } else {
             $all_headers[$field] = '';
+        }
     }
     return $all_headers;
 }
@@ -1170,11 +1171,11 @@ function ttcms_get_file_data($file, $default_headers, $context = '')
  * The plugin file is assumed to have permissions to allow for scripts to read
  * the file. This is not checked however and the file is only opened for
  * reading.
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
- *       
+ *
  * @param string $plugin_file
  *            Path to the plugin file
  * @param bool $markup
@@ -1184,7 +1185,7 @@ function ttcms_get_file_data($file, $default_headers, $context = '')
  *            Optional. If the returned data should be translated. Default true.
  * @return array {
  *         Plugin data. Values will be empty if not supplied by the plugin.
- *        
+ *
  *         @type string $Name Name of the plugin. Should be unique.
  *         @type string $Title Title of the plugin and link to the plugin's site (if set).
  *         @type string $Description Plugin description.
@@ -1220,11 +1221,11 @@ function get_plugin_data($plugin_file, $markup = true, $translate = true)
 /**
  * A wrapper for htmLawed which is a set of functions
  * for html purifier
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
- * @param string $str            
+ * @param string $str
  * @return mixed
  */
 function _escape($t, $C = 1, $S = [])
@@ -1234,9 +1235,9 @@ function _escape($t, $C = 1, $S = [])
 
 /**
  * Converts seconds to time format.
- * 
+ *
  * @file app/functions/core-function.php
- * 
+ *
  * @since 0.9
  * @param numeric $seconds
  */
@@ -1273,9 +1274,9 @@ function ttcms_seconds_to_time($seconds)
 
 /**
  * Checks whether a file or directory exists.
- * 
+ *
  * @file app/functions/core-function.php
- * 
+ *
  * @since 0.9
  * @param string $filename  Path to the file or directory.
  * @param bool $throw       Determines whether to do a simple check or throw an exception.
@@ -1299,9 +1300,9 @@ function ttcms_file_exists($filename, $throw = true)
  * Add the template to the message body.
  *
  * Looks for {content} into the template and replaces it with the message.
- * 
+ *
  * Uses `email_template` filter hook.
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
@@ -1319,9 +1320,9 @@ function set_email_template($body)
 
 /**
  * Replace variables in the template.
- * 
+ *
  * Uses `email_template_tags` filter hook.
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
@@ -1350,9 +1351,9 @@ function template_vars_replacement($template)
 
 /**
  * Process the HTML version of the text.
- * 
+ *
  * Uses `email_template_body` filter hook.
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
@@ -1379,9 +1380,9 @@ function process_email_html($text, $title)
 
 /**
  * Retrieve the domain name.
- * 
+ *
  * @file app/functions/core-function.php
- * 
+ *
  * @since 0.9
  * @return string
  */
@@ -1396,19 +1397,19 @@ function get_domain_name()
 
 /**
  * SQL Like operator in PHP.
- * 
+ *
  * Returns `true` if match else `false`.
- * 
+ *
  * Example Usage:
- * 
+ *
  *      php_like('%uc%','Lucy'); //true
  *      php_like('%cy', 'Lucy'); //true
  *      php_like('lu%', 'Lucy'); //true
  *      php_like('%lu', 'Lucy'); //false
  *      php_like('cy%', 'Lucy'); //false
- * 
+ *
  * @file app/functions/core-function.php
- * 
+ *
  * @since 0.9
  * @param string $pattern
  * @param string $subject
@@ -1422,9 +1423,9 @@ function php_like($pattern, $subject)
 
 /**
  * Url shortening function.
- * 
+ *
  * @file app/functions/core-function.php
- * 
+ *
  * @since 0.9
  * @param string $url URL
  * @param int $length Characters to check against.
@@ -1445,11 +1446,11 @@ function ttcms_url_shorten($url, $length = 80)
 
 /**
  * Redirects to another page.
- * 
+ *
  * Uses `ttcms_redirect` and `ttcms_redirect_status` filter hooks.
- * 
+ *
  * @file app/functions/core-function.php
- * 
+ *
  * @since 0.9
  * @param string $location The path to redirect to
  * @param int $status Status code to use
@@ -1476,8 +1477,9 @@ function ttcms_redirect($location, $status = 302)
      */
     $_status = app()->hook->{'apply_filter'}('ttcms_redirect_status', $status, $_location);
 
-    if (!$_location)
+    if (!$_location) {
         return false;
+    }
 
     header("Location: $_location", true, $_status);
     return true;
@@ -1485,11 +1487,11 @@ function ttcms_redirect($location, $status = 302)
 
 /**
  * Retrieves a modified URL query string.
- * 
+ *
  * Uses `query_arg_port` filter hook.
- * 
+ *
  * @file app/functions/core-function.php
- * 
+ *
  * @since 0.9
  * @param string $key A query variable key.
  * @param string $value A query variable value, or a URL to act upon.
@@ -1524,11 +1526,11 @@ function add_query_arg($key, $value, $url)
 
 /**
  * Retrieves the login url.
- * 
+ *
  * Uses `login_url` filter hook.
- * 
+ *
  * @file app/functions/core-function.php
- * 
+ *
  * @since 0.9
  * @param string $redirect Path to redirect to on log in.
  * @return string Returns the login url.
@@ -1543,7 +1545,7 @@ function ttcms_login_url($redirect = '')
 
     /**
      * Validates & protects redirect url against XSS attacks.
-     * 
+     *
      * @since 0.9
      */
     if (!empty($redirect) && !validate_url($redirect)) {
@@ -1562,9 +1564,9 @@ function ttcms_login_url($redirect = '')
 
 /**
  * Create a backup of TriTan CMS install.
- * 
+ *
  * @file app/functions/core-function.php
- * 
+ *
  * @since 0.9
  * @param type $source Path/directory to zip.
  * @param type $destination Target for zipped file.
@@ -1590,18 +1592,19 @@ function ttcms_system_backup($source, $destination)
             $file = str_replace('\\', '/', $file);
 
             // Ignore "." and ".." folders
-            if (in_array(substr($file, strrpos($file, '/') + 1), array('.', '..')))
+            if (in_array(substr($file, strrpos($file, '/') + 1), array('.', '..'))) {
                 continue;
+            }
 
             $file = realpath($file);
 
             if (is_dir($file) === true) {
                 $zip->addEmptyDir(str_replace($source . '/', '', $file . '/'));
-            } else if (is_file($file) === true) {
+            } elseif (is_file($file) === true) {
                 $zip->addFromString(str_replace($source . '/', '', $file), _file_get_contents($file));
             }
         }
-    } else if (is_file($source) === true) {
+    } elseif (is_file($source) === true) {
         $zip->addFromString(basename($source), _file_get_contents($source));
     }
 
@@ -1610,9 +1613,9 @@ function ttcms_system_backup($source, $destination)
 
 /**
  * Used to retrieve values within a range.
- * 
+ *
  * @file app/functions/core-function.php
- * 
+ *
  * @since 0.9
  * @param mixed $val
  * @param mixed $min
@@ -1628,11 +1631,11 @@ function ttcms_between($val, $min, $max)
  * Sort array of objects by field.
  *
  * Example Usage:
- *      
+ *
  *      ttcms_list_sort($post,'post_id','ASC', false);
- * 
+ *
  * @file app/functions/core-function.php
- * 
+ *
  * @since 0.9
  * @param array $objects        Array of objects to sort.
  * @param string/array $orderby Name of field or array of fields to filter by.
@@ -1654,14 +1657,14 @@ function ttcms_list_sort(&$objects, $orderby = [], $order = 'ASC', $preserve_key
  * Pluralizes a word if quantity is not one.
  *
  * Example Usage:
- * 
+ *
  *      ttcms_pluralize(4, 'cat'); // cats
  *      ttcms_pluralize(3, 'kitty'); // kitties
  *      ttcms_pluralize(2, 'octopus', 'octopii'); // octopii
  *      ttcms_pluralize(1, 'mouse', 'mice'); // mouse
- * 
+ *
  * @file app/functions/core-function.php
- * 
+ *
  * @since 0.9
  * @param int $quantity     Number of items.
  * @param string $singular  Singular form of word.
@@ -1691,15 +1694,15 @@ function ttcms_pluralize($quantity, $singular, $plural = null)
 
 /**
  * Validates a url.
- * 
+ *
  * Example Usage:
- * 
+ *
  *      if(validate_url('https://google.com/')) {
  *          //do something;
  *      }
- * 
+ *
  * @file app/functions/core-function.php
- * 
+ *
  * @since 0.9
  * @param string $url Url to validate.
  * @return bool True if valid, false otherwise.
@@ -1711,9 +1714,9 @@ function validate_url($url)
 
 /**
  * Navigates through an array, object, or scalar, and removes slashes from the values.
- * 
+ *
  * @file app/functions/core-function.php
- * 
+ *
  * @since 0.9
  * @param mixed $value  The value to be stripped.
  * @return mixed Stripped value.
@@ -1730,9 +1733,9 @@ function stripslashes_deep($value)
 /**
  * This should be used to remove slashes from data passed to core API that
  * expects data to be unslashed.
- * 
+ *
  * @file app/functions/core-function.php
- * 
+ *
  * @since 0.9
  * @param string|array String or array of strings to unslash.
  * @return string|array Unslashed value.
@@ -1744,7 +1747,7 @@ function ttcms_unslash($value)
 
 /**
  * Convert a value to non-negative integer.
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
@@ -1758,9 +1761,9 @@ function absint($maybeint)
 
 /**
  * Checks if a variable is null. If not null, check if integer or string.
- * 
+ *
  * @file app/functions/core-function.php
- * 
+ *
  * @since 0.9
  * @param string|int $var   Variable to check.
  * @return string|int|null Returns null if empty otherwise a string or an integer.
@@ -1775,9 +1778,9 @@ function if_null($var)
  * Sanitizes a string key.
  *
  * Keys are used as internal identifiers. Lowercase alphanumeric characters, dashes and underscores are allowed.
- * 
+ *
  * Uses `sanitize_key` filter hook.
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
@@ -1802,9 +1805,9 @@ function sanitize_key($key)
 
 /**
  * Get an array that represents directory tree.
- * 
+ *
  * @file app/functions/core-function.php
- * 
+ *
  * @since 0.9
  * @param string $dir   Directory path
  * @param string $bool  Include sub directories
@@ -1829,9 +1832,9 @@ function directory_listing($dir, $bool = "dirs")
 
 /**
  * Get a list of themes available for a specific site.
- * 
+ *
  * @file app/functions/core-function.php
- * 
+ *
  * @since 0.9
  * @param string $active The name to check against.
  * @return array Theme options to choose from.
@@ -1848,9 +1851,9 @@ function get_site_themes($active = null)
 
 /**
  * Determines if the server is running Apache.
- * 
+ *
  * @file app/functions/core-function.php
- * 
+ *
  * @since 0.9
  * @return bool
  */
@@ -1863,11 +1866,11 @@ function is_apache()
 
 /**
  * Whether the current request is for an administrative interface.
- * 
+ *
  * @file app/functions/core-function.php
- * 
+ *
  * e.g. `/admin/`
- * 
+ *
  * @since 0.9
  * @return bool True if an admin screen, otherwise false.
  */
@@ -1881,9 +1884,9 @@ function is_admin()
 
 /**
  * Determines if SSL is used.
- * 
+ *
  * Checks if `base_url` filter hook is present.
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
@@ -1898,7 +1901,7 @@ function is_ssl()
         if ('1' == app()->req->server['HTTPS']) {
             return true;
         }
-    } elseif (isset(app()->req->server['SERVER_PORT']) && ( '443' == app()->req->server['SERVER_PORT'] )) {
+    } elseif (isset(app()->req->server['SERVER_PORT']) && ('443' == app()->req->server['SERVER_PORT'])) {
         return true;
     }
 
@@ -1910,18 +1913,18 @@ function is_ssl()
 
 /**
  * Enqueues stylesheets.
- * 
+ *
  * Uses `default_css_pipeline`, `plugin_css_pipeline` and `theme_css_pipeline`
  * filter hooks.
- * 
+ *
  * Example Usage:
- * 
+ *
  *      ttcms_enqueue_css('default', '//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css')
  *      ttcms_enqueue_css('plugin', ['fontawesome','select2-css'], false, plugin_basename( dirname(__FILE__) ))
  *      ttcms_enqueue_css('theme', 'style.css')
- * 
+ *
  * @file app/functions/core-function.php
- * 
+ *
  * @since 0.9
  * @param string $config            Set whether to use `default` config or `plugin` config.
  * @param string|array $asset       Relative path or URL to stylesheet(s) to enqueue.
@@ -1975,18 +1978,18 @@ function ttcms_enqueue_css($config, $asset, $minify = false, $plugin_slug = null
 
 /**
  * Enqueues javascript.
- * 
+ *
  * Uses `default_js_pipeline`, `plugin_js_pipeline` and `theme_js_pipeline`
  * filter hooks.
- * 
+ *
  * Example Usage:
- * 
+ *
  *      ttcms_enqueue_js('default', 'jquery-ui')
  *      ttcms_enqueue_js('plugin', 'select2-js', false, plugin_basename( dirname(__FILE__) ))
  *      ttcms_enqueue_js('theme', 'config.js')
- * 
+ *
  * @file app/functions/core-function.php
- * 
+ *
  * @since 0.9
  * @param string $config            Set whether to use `default`, `plugin`  or `theme` config.
  * @param string|array $asset       Relative path or URL to javascripts(s) to enqueue.
@@ -2053,9 +2056,9 @@ function ttcms_enqueue_js($config, $asset, $minify = false, $plugin_slug = null)
 
 /**
  * Normalize a filesystem path.
- * 
+ *
  * @file app/functions/core-function.php
- * 
+ *
  * @since 0.9
  * @param string $path Path to normalize.
  * @return string Normalized path.
@@ -2076,15 +2079,15 @@ function ttcms_normalize_path($path)
  * This differs from PHP's native strip_tags() function because this function removes the contents of
  * the `<script>` and `<style>` tags. E.g. `strip_tags( '<script>something</script>' )`
  * will return `'something'`. By default, ttcms_strip_tags will return `''`.
- * 
+ *
  * Example Usage:
- * 
+ *
  *      $string = '<b>sample</b> text with <div>tags</div>';
- * 
+ *
  *      ttcms_strip_tags($string); //returns 'text with'
  *      ttcms_strip_tags($string, false, '<b>'); //returns '<b>sample</b> text with'
  *      ttcms_strip_tags($string, false, '<b>', true); //returns 'text with <div>tags</div>'
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9
@@ -2122,11 +2125,11 @@ function ttcms_strip_tags($string, $remove_breaks = false, $tags = '', $invert =
 
 /**
  * Beautifies a filename for use.
- * 
+ *
  * Uses `beautified_filename` filter hook.
- * 
+ *
  * @file app/functions/core-function.php
- * 
+ *
  * @since 0.9
  * @param string $filename Filename to beautify.
  * @return string Beautified filename.
@@ -2153,7 +2156,7 @@ function beautify_filename($filename)
 
     /**
      * Filters a beautified filename.
-     * 
+     *
      * @since 0.9
      * @param string $filename     Beautified filename.
      * @param string $filename_raw The filename prior to beautification.
@@ -2169,11 +2172,11 @@ function beautify_filename($filename)
 
 /**
  * Sanitizes a filename.
- * 
+ *
  * Uses `sanitized_filename` filter hook.
- * 
+ *
  * @file app/functions/core-function.php
- * 
+ *
  * @since 0.9
  * @param string $filename  Name of file to sanitize.
  * @param bool $beautify    Whether or not to beautify the sanitized filename.
@@ -2184,13 +2187,16 @@ function sanitize_filename($filename, $beautify = true)
     $filename_raw = $filename;
     // sanitize filename
     $filename = preg_replace(
-            '~
+        '~
         [<>:"/\\|?*]|            # file system reserved https://en.wikipedia.org/wiki/Filename#Reserved_characters_and_words
         [\x00-\x1F]|             # control characters http://msdn.microsoft.com/en-us/library/windows/desktop/aa365247%28v=vs.85%29.aspx
         [\x7F\xA0\xAD]|          # non-printing characters DEL, NO-BREAK SPACE, SOFT HYPHEN
         [#\[\]@!$&\'()+,;=]|     # URI reserved https://tools.ietf.org/html/rfc3986#section-2.2
         [{}^\~`]                 # URL unsafe characters https://www.ietf.org/rfc/rfc1738.txt
-        ~x', '-', $filename_raw);
+        ~x',
+        '-',
+        $filename_raw
+    );
     // avoids ".", ".." or ".hiddenFiles"
     $filename = ltrim($filename, '.-');
     // optional beautification
@@ -2200,7 +2206,7 @@ function sanitize_filename($filename, $beautify = true)
 
     /**
      * Filters a sanitized filename.
-     * 
+     *
      * @since 0.9
      * @param string $filename     Sanitized filename.
      * @param string $filename_raw The filename prior to sanitization.
@@ -2217,7 +2223,7 @@ function sanitize_filename($filename, $beautify = true)
  * Generates a random password drawn from the defined set of characters.
  *
  * Uses `random_lib` library to create passwords with far less predictability.
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9.7
@@ -2253,15 +2259,15 @@ function ttcms_generate_password($length = 12, $special_chars = true, $extra_spe
 
 /**
  * Sanitizes a url to be used safely.
- * 
+ *
  * Example usage:
- * 
+ *
  *      $url = "http://www.example.com/?message=test&<script>alert('XSS');</script>";
- * 
+ *
  *      sanitize_url($url); //returns 'http://www.example.com/?message=test&38;';
- * 
+ *
  * @file app/functions/core-function.php
- * 
+ *
  * @since 0.9.8
  * @file app/functions/core-function.php
  * @param string $url   The url to be sanitized.
@@ -2320,7 +2326,7 @@ function sanitize_url($url, $encode = false)
     }
     /**
      * Filters a string sanitized for output as a URL.
-     * 
+     *
      * @since 0.9.8
      * @param string $clean_url The Sanitized url to be returned.
      * @param string $esc_url   URL stripped of HTML tags.
@@ -2332,7 +2338,7 @@ function sanitize_url($url, $encode = false)
 
 /**
  * Turns multi-dimensional array into a regular array.
- * 
+ *
  * @since 0.9.9
  * @param array $array The array to convert.
  * @return array
@@ -2348,4 +2354,33 @@ function flatten_array($array)
         }
     }
     return $flat_array;
+}
+
+/**
+ * Returns the maintenance mode route.
+ *
+ * @since 0.9.9
+ * @param object $app The application object.
+ * @return bool|route
+ */
+function ttcms_maintenance_mode($app)
+{
+    if ($app->hook->{'get_option'}('maintenance_mode') == (int) 0) {
+        return false;
+    }
+
+    if (strpos(get_path_info('/logout'), "/logout") === 0) {
+        return false;
+    }
+
+    if (strpos(get_path_info('/reset-password'), "/reset-password") === 0) {
+        return false;
+    }
+    
+    $app->match('GET|POST', '/(.*)', function () use ($app) {
+        $app->res->_format('json', 503);
+        exit();
+    });
+    
+    return $app;
 }

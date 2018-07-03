@@ -2,9 +2,9 @@
 
 /**
  * Settings
- *  
+ *
  * @license GPLv3
- * 
+ *
  * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
@@ -53,7 +53,7 @@ Config::set('theme_dir', Config::get('site_path') . 'themes' . DS);
  * A functions file may include any dependency injections
  * or preliminary functions for your application.
  */
-require( APP_PATH . 'functions.php' );
+require(APP_PATH . 'functions.php');
 
 /**
  * Fires before the site's theme is loaded.
@@ -75,7 +75,7 @@ Config::set('theme_path', Config::get('theme_dir') . Config::get('active_theme')
 /**
  * Sets up the Fenom global variable.
  */
-$app->inst->singleton('fenom', function () use($app) {
+$app->inst->singleton('fenom', function () use ($app) {
     $fenom = new Fenom(new Fenom\Provider(Config::get('theme_path') . 'views' . DS));
     $fenom->setCompileDir(Config::get('cache_path'));
     $app->hook->{'get_option'}('site_cache') == 0 ? $fenom->setOptions(Fenom::DISABLE_CACHE) : '';
@@ -91,7 +91,7 @@ if (TriTan\Functions\Core\ttcms_file_exists(Config::get('theme_path') . 'views' 
 /**
  * Sets up the Foil global variable.
  */
-$app->inst->singleton('foil', function () use($app, $templates) {
+$app->inst->singleton('foil', function () use ($app, $templates) {
     $engine = Foil\engine([
         'folders' => $templates
     ]);
@@ -113,20 +113,20 @@ $app->hook->{'do_action'}('after_setup_theme');
  * loaded every time each site is loaded.
  */
 foreach (ttcms_get_mu_plugins() as $mu_plugin) {
-    include_once( $mu_plugin );
+    include_once($mu_plugin);
 }
 unset($mu_plugin);
 
 /**
  * Fires once all must-use plugins have loaded.
- * 
+ *
  * @since 0.9
  */
 $app->hook->{'do_action'}('muplugins_loaded');
 
 /**
  * Fires once activated plugins have loaded.
- * 
+ *
  * @since 0.9
  */
 $app->hook->{'do_action'}('plugins_loaded');
@@ -147,13 +147,13 @@ include(APP_PATH . 'routers.php');
  * plugin.
  */
 foreach (ttcms_get_site_dropins() as $site_dropin) {
-    include_once( $site_dropin );
+    include_once($site_dropin);
 }
 unset($site_dropin);
 
 /**
  * Fires once all dropins have loaded.
- * 
+ *
  * @since 0.9
  */
 $app->hook->{'do_action'}('dropins_loaded');
@@ -169,7 +169,7 @@ if (TriTan\Functions\Core\ttcms_file_exists(Config::get('theme_path') . 'functio
  * Autoload specific site Theme Routers if they exist.
  */
 foreach (ttcms_get_theme_routers() as $theme_router) {
-    include( $theme_router );
+    include($theme_router);
 }
 
 /**

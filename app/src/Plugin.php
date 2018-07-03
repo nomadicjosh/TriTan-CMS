@@ -1,24 +1,19 @@
 <?php
-
 namespace TriTan;
 
 use TriTan\Functions\Core;
-
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 
 /**
  * Plugin Class for Hook System
  *
  * @license GPLv3
- *         
+ *
  * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
  */
 class Plugin
 {
-
     public $path = '';
     public $app;
 
@@ -101,7 +96,7 @@ class Plugin
      * Get the filesystem directory path (with trailing slash) for the plugin __FILE__ passed in.
      *
      * @since 0.9
-     *       
+     *
      * @param string $filename
      *            The filename of the plugin (__FILE__).
      * @return string The filesystem path of the directory that contains the plugin.
@@ -110,5 +105,4 @@ class Plugin
     {
         return add_trailing_slash(dirname($filename));
     }
-
 }

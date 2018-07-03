@@ -1,8 +1,6 @@
 <?php
 namespace TriTan\Functions\Hook;
 
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use TriTan\Config;
 use TriTan\Functions\Db;
 use TriTan\Functions\Core;
@@ -12,7 +10,7 @@ use TriTan\Functions\Dependency;
  * TriTan CMS Hooks Helper & Wrapper
  *
  * @license GPLv3
- *         
+ *
  * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
@@ -25,7 +23,7 @@ use TriTan\Functions\Dependency;
  * @see \TriTan\Hooks::register_admin_page()
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @param string $slug
  *            Plugin's slug.
@@ -40,13 +38,13 @@ function register_admin_page($slug, $title, $function)
 }
 
 /**
- * Wrapper function for Hooks::activate_plugin() and
+ * Wrapper function for Hooks::activatePlugin() and
  * activates plugin based on $_GET['id'].
  *
- * @see \TriTan\Hooks::activate_plugin()
+ * @see \TriTan\Hooks::activatePlugin()
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @param string $id
  *            ID of the plugin to be activated.
@@ -54,17 +52,17 @@ function register_admin_page($slug, $title, $function)
  */
 function activate_plugin($id)
 {
-    return app()->hook->{'activate_plugin'}($id);
+    return app()->hook->{'activatePlugin'}($id);
 }
 
 /**
- * Wrapper function for Hooks::deactivate_plugin() and
+ * Wrapper function for Hooks::deactivatePlugin() and
  * deactivates plugin based on $_GET['id'].
  *
- * @see \TriTan\Hooks::deactivate_plugin()
+ * @see \TriTan\Hooks::deactivatePlugin()
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @param string $id
  *            ID of the plugin to be deactivated.
@@ -72,17 +70,17 @@ function activate_plugin($id)
  */
 function deactivate_plugin($id)
 {
-    return app()->hook->{'deactivate_plugin'}($id);
+    return app()->hook->{'deactivatePlugin'}($id);
 }
 
 /**
- * Wrapper function for Hooks::load_activated_plugins() and
+ * Wrapper function for Hooks::loadActivatedPlugins() and
  * loads all activated plugins for inclusion.
  *
- * @see \TriTan\Hooks::load_activated_plugins()
+ * @see \TriTan\Hooks::loadActivatedPlugins()
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @param string $plugins_dir
  *            Loads plugins from specified folder
@@ -93,17 +91,17 @@ function load_activated_plugins($plugins_dir = '')
     if (null == $plugins_dir) {
         $plugins_dir = app()->hook->{'apply_filter'}('plugins_directory', BASE_PATH . 'plugins' . DS);
     }
-    return app()->hook->{'load_activated_plugins'}($plugins_dir);
+    return app()->hook->{'loadActivatedPlugins'}($plugins_dir);
 }
 
 /**
- * Wrapper function for Hooks::is_plugin_activated() and
+ * Wrapper function for Hooks::isPluginActivated() and
  * checks if a particular plugin is activated
  *
- * @see \TriTan\Hooks::is_plugin_activated()
+ * @see \TriTan\Hooks::isPluginActivated()
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @param string $plugin
  *            Name of plugin file.
@@ -111,7 +109,7 @@ function load_activated_plugins($plugins_dir = '')
  */
 function is_plugin_activated($plugin)
 {
-    return app()->hook->{'is_plugin_activated'}($plugin);
+    return app()->hook->{'isPluginActivated'}($plugin);
 }
 
 /**
@@ -126,9 +124,9 @@ function is_plugin_activated($plugin)
  * This function is to be used in every function that is deprecated.
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
- *       
+ *
  * @param string $function_name
  *            The function that was called.
  * @param string $release
@@ -142,7 +140,7 @@ function _deprecated_function($function_name, $release, $replacement = null)
      * Fires when a deprecated function is called.
      *
      * @since 0.9
-     *       
+     *
      * @param string $function_name
      *            The function that was called.
      * @param string $replacement
@@ -156,7 +154,7 @@ function _deprecated_function($function_name, $release, $replacement = null)
      * Filter whether to trigger an error for deprecated functions.
      *
      * @since 0.9
-     *       
+     *
      * @param bool $trigger
      *            Whether to trigger the error for deprecated functions. Default true.
      */
@@ -189,9 +187,9 @@ function _deprecated_function($function_name, $release, $replacement = null)
  * This function is to be used in every class that is deprecated.
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
- *       
+ *
  * @param string $class_name
  *            The class that was called.
  * @param string $release
@@ -205,7 +203,7 @@ function _deprecated_class($class_name, $release, $replacement = null)
      * Fires when a deprecated class is called.
      *
      * @since 0.9
-     *       
+     *
      * @param string $class_name
      *            The class that was called.
      * @param string $replacement
@@ -219,7 +217,7 @@ function _deprecated_class($class_name, $release, $replacement = null)
      * Filter whether to trigger an error for deprecated classes.
      *
      * @since 0.9
-     *       
+     *
      * @param bool $trigger
      *            Whether to trigger the error for deprecated classes. Default true.
      */
@@ -252,9 +250,9 @@ function _deprecated_class($class_name, $release, $replacement = null)
  * This function is to be used in every class's method that is deprecated.
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
- *       
+ *
  * @param string $method_name
  *            The class method that was called.
  * @param string $release
@@ -268,7 +266,7 @@ function _deprecated_class_method($method_name, $release, $replacement = null)
      * Fires when a deprecated class method is called.
      *
      * @since 0.9
-     *       
+     *
      * @param string $method_name
      *            The class's method that was called.
      * @param string $replacement
@@ -282,7 +280,7 @@ function _deprecated_class_method($method_name, $release, $replacement = null)
      * Filter whether to trigger an error for deprecated class methods.
      *
      * @since 0.9
-     *       
+     *
      * @param bool $trigger
      *            Whether to trigger the error for deprecated class methods. Default true.
      */
@@ -315,7 +313,7 @@ function _deprecated_class_method($method_name, $release, $replacement = null)
  * argument.
  *
  * Default behavior is to trigger a user error if `APP_ENV` is set to `DEV`.
- * 
+ *
  * Example Usage:
  *
  *      if ( ! empty( $deprecated ) ) {
@@ -323,9 +321,9 @@ function _deprecated_class_method($method_name, $release, $replacement = null)
  *      }
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
- *       
+ *
  * @param string $function_name
  *            The function that was called.
  * @param string $release
@@ -339,7 +337,7 @@ function _deprecated_argument($function_name, $release, $message = null)
      * Fires when a deprecated argument is called.
      *
      * @since 0.9
-     *       
+     *
      * @param string $function_name
      *            The function that was called.
      * @param string $message
@@ -352,7 +350,7 @@ function _deprecated_argument($function_name, $release, $message = null)
      * Filter whether to trigger an error for deprecated arguments.
      *
      * @since 0.9
-     *       
+     *
      * @param bool $trigger
      *            Whether to trigger the error for deprecated arguments. Default true.
      */
@@ -379,9 +377,9 @@ function _deprecated_argument($function_name, $release, $message = null)
  * Default behavior is to trigger a user error if `APP_ENV` is set to `DEV`.
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
- * 
+ *
  * @param string $hook        The hook that was used.
  * @param string $release     The release of TriTan CMS that deprecated the hook.
  * @param string $replacement Optional. The hook that should have been used.
@@ -393,7 +391,7 @@ function _deprecated_hook($hook, $release, $replacement = null, $message = null)
      * Fires when a deprecated hook is called.
      *
      * @since 0.9
-     * 
+     *
      * @param string $hook        The hook that was called.
      * @param string $replacement The hook that should be used as a replacement.
      * @param string $release     The release of TriTan CMS that deprecated the argument used.
@@ -405,7 +403,7 @@ function _deprecated_hook($hook, $release, $replacement = null, $message = null)
      * Filters whether to trigger deprecated hook errors.
      *
      * @since 0.9
-     * 
+     *
      * @param bool $trigger Whether to trigger deprecated hook errors. Requires
      *                      `APP_DEV` to be defined DEV.
      */
@@ -429,9 +427,9 @@ function _deprecated_hook($hook, $release, $replacement = null, $message = null)
  * Default behavior is to trigger a user error if `APP_ENV` is set to `DEV`.
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
- *       
+ *
  * @param string $function_name
  *            The function that was called.
  * @param string $message
@@ -445,7 +443,7 @@ function _incorrectly_called($function_name, $message, $release)
      * Fires when the given function is being used incorrectly.
      *
      * @since 0.9
-     *       
+     *
      * @param string $function_name
      *            The function that was called.
      * @param string $message
@@ -459,7 +457,7 @@ function _incorrectly_called($function_name, $message, $release)
      * Filter whether to trigger an error for _incorrectly_called() calls.
      *
      * @since 3.1.0
-     *       
+     *
      * @param bool $trigger
      *            Whether to trigger the error for _incorrectly_called() calls. Default true.
      */
@@ -481,7 +479,7 @@ function _incorrectly_called($function_name, $message, $release)
  * Prints copyright in the admin footer.
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  */
 function ttcms_admin_copyright_footer()
@@ -498,7 +496,7 @@ function ttcms_admin_copyright_footer()
  * to the menu structure.
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @uses app()->hook->{'do_action'}() Calls 'admin_menu' hook.
  */
@@ -508,7 +506,7 @@ app()->hook->{'do_action'}('admin_menu');
  * Fires the admin_head action.
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  */
 function admin_head()
@@ -531,7 +529,7 @@ function admin_head()
  * Fires the ttcms_head action.
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  */
 function ttcms_head()
@@ -554,7 +552,7 @@ function ttcms_head()
  * Fires the admin_footer action via backend.
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  */
 function admin_footer()
@@ -577,7 +575,7 @@ function admin_footer()
  * Fires the ttcms_footer action via the admin.
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  */
 function ttcms_footer()
@@ -601,7 +599,7 @@ function ttcms_footer()
  * Fires the ttcms_release action.
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  */
 function ttcms_release()
@@ -618,7 +616,7 @@ function ttcms_release()
  * Fires the admin_top_widgets action.
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  */
 function admin_top_widgets()
@@ -633,9 +631,9 @@ function admin_top_widgets()
 
 /**
  * Large logo. Filterable.
- * 
+ *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @return string
  */
@@ -647,9 +645,9 @@ function get_logo_large()
 
 /**
  * Mini logo. Filterable.
- * 
+ *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @return string
  */
@@ -661,9 +659,9 @@ function get_logo_mini()
 
 /**
  * Checks data to make sure it is a valid request.
- * 
+ *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @param mixed $data
  */
@@ -682,9 +680,9 @@ function ttcms_validation_check($data)
 
 /**
  * Retrieve name of the current theme.
- * 
+ *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @return string Theme name.
  */
@@ -703,7 +701,7 @@ function get_theme()
  * Retrieve theme directory URI.
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @uses app()->hook->{'apply_filter'}() Calls 'theme_directory_uri' filter.
  * @return string TriTan CMS theme directory uri.
@@ -720,9 +718,9 @@ function get_theme_directory_uri()
  * Retrieve javascript directory uri.
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
- * @uses app()->hook->{'apply_filter'}() Calls 'javascript_directory_uri' filter. 
+ * @uses app()->hook->{'apply_filter'}() Calls 'javascript_directory_uri' filter.
  * @return string TriTan CMS javascript url.
  */
 function get_javascript_directory_uri()
@@ -737,9 +735,9 @@ function get_javascript_directory_uri()
  * Retrieve less directory uri.
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
- * @uses app()->hook->{'apply_filter'}() Calls 'less_directory_uri' filter.   
+ * @uses app()->hook->{'apply_filter'}() Calls 'less_directory_uri' filter.
  * @return string TriTan CMS less url.
  */
 function get_less_directory_uri()
@@ -754,9 +752,9 @@ function get_less_directory_uri()
  * Retrieve css directory uri.
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
- * @uses app()->hook->{'apply_filter'}() Calls 'css_directory_uri' filter.   
+ * @uses app()->hook->{'apply_filter'}() Calls 'css_directory_uri' filter.
  * @return string TriTan CMS css url.
  */
 function get_css_directory_uri()
@@ -771,9 +769,9 @@ function get_css_directory_uri()
  * Retrieve image directory uri.
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9.4
- * @uses app()->hook->{'apply_filter'}() Calls 'image_directory_uri' filter.   
+ * @uses app()->hook->{'apply_filter'}() Calls 'image_directory_uri' filter.
  * @return string TriTan CMS image url.
  */
 function get_image_directory_uri()
@@ -790,7 +788,7 @@ function get_image_directory_uri()
  * Uses {@link http://www.php.net/parse_str parse_str()}
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @param string $string
  *            The string to be parsed.
@@ -814,10 +812,10 @@ function ttcms_parse_str($string, $array)
  * Frontend portal footer powered by and release.
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @uses app()->hook->{'apply_filter'}() Calls 'met_footer_release' filter.
- *      
+ *
  * @return mixed.
  */
 function get_footer_release()
@@ -828,9 +826,9 @@ function get_footer_release()
 
 /**
  * Retrieve the avatar `<img>` tag for user.
- * 
+ *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @param string $email User's email address.
  * @param int $s        Height and width of the avatar image file in pixels. Default 80.
@@ -861,9 +859,9 @@ function get_user_avatar($email, $s = 80, $class = '')
 
 /**
  * Retrieves the avatar url.
- * 
+ *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @param string $email Email address of user.
  * @return string The url of the avatar that was found, or default if not found.
@@ -904,7 +902,7 @@ function nocache_headers()
  * Upload image button.
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  */
 function ttcms_upload_image()
@@ -916,10 +914,10 @@ function ttcms_upload_image()
             <script src="//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" type="text/javascript"></script>
             <script>
                 $(document).ready(function () {
-                
+
                     $("#remove_image").hide();
                     $("#set_image").show();
-                    
+
                     $("#set_image").click(function (e) {
                         var elfinder = $("#elfinder").elfinder({
                             url: "' . Core\get_base_url() . 'admin/connector",
@@ -952,7 +950,7 @@ function ttcms_upload_image()
 
                                         var imgPath = "<img src=\'"+imgURL+"\' id=\"append-image\" style=\"width:260px;height:auto;background-size:contain;margin-bottom:.9em;background-repeat:no-repeat\"/>";
                                         $("#elfinder_image").append(imgPath); //add the image to a div so you can see the selected images
-                                        
+
                                         $("#remove_image").show();
                                         $("#set_image").hide();
 
@@ -972,13 +970,13 @@ function ttcms_upload_image()
                             height: 500
                         });
                         $("#remove_image").click(function () {
-                        
+
                             $("#upload_image").val("");
                             $("#elfinder_image").find("#append-image").remove(); //remove image from div when user clicks remove image button.
-                            
+
                             $("#remove_image").hide();
                             $("#set_image").show();
-                                        
+
                             return false;
                         });
                     });
@@ -991,7 +989,7 @@ function ttcms_upload_image()
  * Compares release values.
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @param string $current
  *            Current release value.
@@ -1025,7 +1023,7 @@ function compare_releases($current, $latest, $operator = '>')
  * of a given resource.
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @param string $url
  *            URL of resource/website.
@@ -1049,7 +1047,7 @@ function get_http_response_code($url)
  * Plugin success message when plugin is activated successfully.
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @param string $plugin_name
  *            The name of the plugin that was just activated.
@@ -1073,7 +1071,7 @@ function ttcms_plugin_activate_message($plugin_name)
  * Plugin success message when plugin is deactivated successfully.
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @param string $plugin_name
  *            The name of the plugin that was just deactivated.
@@ -1095,9 +1093,9 @@ function ttcms_plugin_deactivate_message($plugin_name)
 
 /**
  * Shows an error message when system is in DEV mode.
- * 
+ *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  */
 function ttcms_dev_mode()
@@ -1109,9 +1107,9 @@ function ttcms_dev_mode()
 
 /**
  * Returns full base url of MU Plugins.
- * 
+ *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @return string MU Plugin base url.
  */
@@ -1123,9 +1121,9 @@ function get_mu_plugin_url()
 
 /**
  * Returns full base url of Plugins.
- * 
+ *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @return string Plugin base url.
  */
@@ -1141,7 +1139,7 @@ function get_plugin_url()
  * Defaults to the plugins directory URL if no arguments are supplied.
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @param  string $path   Optional. Extra path appended to the end of the URL, including
  *                        the relative directory if $plugin is supplied. Default empty.
@@ -1190,9 +1188,9 @@ function plugins_url($path = '', $plugin = '')
 
 /**
  * Get the URL directory path (with trailing slash) for the plugin __FILE__ passed in.
- * 
+ *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @param string $file The filename of the plugin (__FILE__).
  * @return string the URL path of the directory that contains the plugin.
@@ -1205,9 +1203,9 @@ function plugin_dir_url($file)
 
 /**
  * Returns full base url of a site's theme.
- * 
+ *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @return string Site's theme base url.
  */
@@ -1224,7 +1222,7 @@ function get_theme_url()
  * Defaults to the site's theme directory URL if no arguments are supplied.
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @param  string $path   Optional. Extra path appended to the end of the URL, including
  *                        the relative directory if $theme is supplied. Default empty.
@@ -1268,9 +1266,9 @@ function themes_url($path = '', $theme = '')
 
 /**
  * Returns full base url of a site's private url.
- * 
+ *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @return string Site's private base url.
  */
@@ -1283,9 +1281,9 @@ function get_private_site_url()
 
 /**
  * Returns full base url of a site's private upload url.
- * 
+ *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @return string Site's private upload base url.
  */
@@ -1304,7 +1302,7 @@ function get_private_site_upload_url()
  * http://daringfireball.net/projects/markdown/
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @param string $string
  *            Text with email addresses to encode
@@ -1314,8 +1312,9 @@ function eae_encode_emails($string)
 {
     // abort if $string doesn't contain a @-sign
     if (app()->hook->{'apply_filter'}('eae_at_sign_check', true)) {
-        if (strpos($string, '@') === false)
+        if (strpos($string, '@') === false) {
             return $string;
+        }
     }
 
     // override encoding function with the 'eae_method' filter
@@ -1353,7 +1352,7 @@ function eae_encode_emails($string)
  * the BBEdit-Talk with some optimizations by Milian Wolff.
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @param string $string
  *            Text with email addresses to encode
@@ -1365,19 +1364,18 @@ function eae_encode_str($string)
     $seed = mt_rand(0, (int) abs(crc32($string) / strlen($string)));
 
     foreach ($chars as $key => $char) {
-
         $ord = ord($char);
 
         if ($ord < 128) { // ignore non-ascii chars
             $r = ($seed * (1 + $key)) % 100; // pseudo "random function"
 
-            if ($r > 60 && $char != '@')
+            if ($r > 60 && $char != '@') {
                 ; // plain character (not encoded), if not @-sign
-            else
-            if ($r < 45)
+            } elseif ($r < 45) {
                 $chars[$key] = '&#x' . dechex($ord) . ';'; // hexadecimal
-            else
+            } else {
                 $chars[$key] = '&#' . $ord . ';'; // decimal (ascii)
+            }
         }
     }
 
@@ -1386,9 +1384,9 @@ function eae_encode_str($string)
 
 /**
  * Renders an editor.
- * 
+ *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @param string $selector HTML ID attribute value for the textarea and TinyMCE. Can only be /[a-z]+/.
  */
@@ -1404,7 +1402,7 @@ function ttcms_editor($selector = null)
 
     /**
      * Filters the default theme for TinyMCE.
-     * 
+     *
      * @since 0.9
      * @param string $theme Theme used for TinyMCE.
      */
@@ -1417,7 +1415,7 @@ function ttcms_editor($selector = null)
     ];
     /**
      * Filters the list of default TinyMCE plugins.
-     * 
+     *
      * @since 0.9
      * @param array $plugins An array of default TinyMCE plugins.
      */
@@ -1462,8 +1460,7 @@ function ttcms_editor($selector = null)
      *
      * @since 0.9
      */
-    app()->hook->{'do_action'}('before_ttcms_tiny_mce');
-    ?>
+    app()->hook->{'do_action'}('before_ttcms_tiny_mce'); ?>
     <script type="text/javascript">
         tinymce.init({
             selector: "<?= $mce_selector; ?>",
@@ -1476,10 +1473,9 @@ function ttcms_editor($selector = null)
             plugins: ["<?= implode(',', $mce_plugins); ?>"],
             link_list: [
     <?php
-    foreach (Db\tinymce_link_list() as $link) : {
+    foreach (Db\tinymce_link_list() as $link) :
             echo "{title: '" . Core\_escape($link['post_title']) . "', value: '" . Core\get_base_url() . Core\_escape($link['post_relative_url']) . "'}," . "\n";
-        } endforeach;
-    ?>
+    endforeach; ?>
             ],
             toolbar1: "<?= implode(' ', $mce_buttons_1); ?>",
             toolbar2: "<?= implode(' ', $mce_buttons_2); ?>",
@@ -1531,9 +1527,9 @@ function ttcms_editor($selector = null)
 
 /**
  * Returns an optimized image for use.
- * 
+ *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @param string $image Original image file.
  * @return string Optimized image file.
@@ -1556,7 +1552,7 @@ function ttcms_optimized_image_upload($image)
  * Post router function.
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9.4
  */
 function _ttcms_post_router()
@@ -1573,7 +1569,7 @@ function _ttcms_post_router()
  * Sets the scheme for a URL.
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9.4
  * @param string      $url    Absolute URL that includes a scheme
  * @param string|null $scheme Optional. Scheme to give $url. Currently 'http', 'https', 'login',
@@ -1623,7 +1619,7 @@ function set_url_scheme($url, $scheme = null)
  * Adds missing files to site's cache directory.
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9.5
  */
 function add_files_cache_directory()
@@ -1663,9 +1659,9 @@ function add_files_cache_directory()
 
 /**
  * Loads javascript for backend dashboard.
- * 
+ *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9.8
  */
 function admin_dashboard_js()
@@ -1675,9 +1671,9 @@ function admin_dashboard_js()
 
 /**
  * Default actions and filters.
- * 
+ *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  */
 app()->hook->{'add_action'}('ttcms_admin_head', 'TriTan\\Functions\\Core\\head_release_meta', 5);
@@ -1705,6 +1701,7 @@ app()->hook->{'add_action'}('ttcms_login', 'TriTan\\Functions\\Db\\generate_php_
 app()->hook->{'add_action'}('enqueue_ttcms_editor', 'TriTan\\Functions\\Hook\\ttcms_editor', 5);
 app()->hook->{'add_action'}('protect_cache_dir', 'TriTan\\Functions\\Hook\\add_files_cache_directory', 5);
 app()->hook->{'add_action'}('plugins_loaded', 'TriTan\\Functions\\Hook\\load_activated_plugins', 1);
+app()->hook->{'add_action'}('maintenance_mode', 'TriTan\\Functions\\Core\\ttcms_maintenance_mode', 1);
 app()->hook->{'add_filter'}('the_content', [new \TriTan\Hooks(), 'parsecode_autop']);
 app()->hook->{'add_filter'}('the_content', [new \TriTan\Hooks(), 'parsecode_unautop']);
 app()->hook->{'add_filter'}('the_content', [new \TriTan\Hooks(), 'do_parsecode'], 5);

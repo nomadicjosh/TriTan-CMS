@@ -1,9 +1,6 @@
 <?php
-
 namespace TriTan;
 
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use TriTan\Config;
 use TriTan\Functions\Meta;
 use TriTan\Functions\Cache;
@@ -14,7 +11,7 @@ use TriTan\Functions\Cache;
  * @package TriTan_CMS
  * @author  Joshua Parker <joshmac3@icloud.com>
  * @license GPLv3
- *         
+ *
  * @since 0.9
  */
 final class Post
@@ -120,7 +117,7 @@ final class Post
      * Retrieve Post instance.
      *
      * @global app $app TriTan CMS application object.
-     *        
+     *
      * @param int $post_id
      *            Post ID.
      * @return Post|false Post array, false otherwise.
@@ -199,5 +196,4 @@ final class Post
     {
         return get_object_vars($this);
     }
-
 }

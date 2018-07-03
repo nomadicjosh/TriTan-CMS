@@ -1,9 +1,6 @@
 <?php
-
 namespace TriTan\Queue;
 
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use TriTan\Config;
 use TriTan\Exception\Exception;
 use Cascade\Cascade;
@@ -12,7 +9,7 @@ use TriTan\Functions\Core;
 
 /**
  * NodeQ Task Manager Queue
- *  
+ *
  * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
@@ -49,15 +46,15 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
 
     /**
      * Application object.
-     * 
+     *
      * @var object
      */
     public $app;
 
     /**
      * Table prefix.
-     * 
-     * @var type 
+     *
+     * @var type
      */
     public $prefix;
 
@@ -111,7 +108,6 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
         try {
             $id = $this->doCreateItem($data);
         } catch (Exception $e) {
-
             Cascade::getLogger('error')->error(sprintf('NODEQSTATE: %s', $e->getMessage()), ['Queue' => 'NodeQueue::createItem']);
         }
         /**
@@ -225,7 +221,7 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
                     $update->where('expire', (int) 0)->where('queue_id', (int) Core\_escape($item['queue_id']))
                             ->update([
                                 'expire' => (int) time() + ($this->lease_time <= (int) 0 ? (int) $lease_time : (int) $this->lease_time)
-                    ]);
+                            ]);
                     $update->commit();
                     return $item;
                 } catch (Exception $e) {
@@ -257,7 +253,7 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
             $update->where('queue_id', (int) $item['queue_id'])
                     ->update([
                         'expire' => (int) 0
-            ]);
+                    ]);
             $update->commit();
         } catch (Exception $e) {
             $update->rollback();
@@ -349,7 +345,7 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
                     ->where('expire', '<', REQUEST_TIME)
                     ->update([
                         'expire' => (int) 0
-            ]);
+                    ]);
             $update->commit();
         } catch (Exception $e) {
             $update->rollback();
@@ -400,7 +396,7 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
                         'executions' => Core\if_null(Core\_escape($runs['executions']) + 1),
                         'lastrun' => (string) format_date(),
                         'last_runtime' => (double) $time_end
-            ]);
+                    ]);
             $task->commit();
         } catch (Exception $e) {
             $task->rollback();
@@ -408,5 +404,4 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
         }
         return true;
     }
-
 }

@@ -1,7 +1,4 @@
 <?php
-
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use TriTan\Exception\Exception;
 use TriTan\Config;
 use TriTan\Queue\NodeqQueue as Queue;
@@ -13,19 +10,19 @@ use TriTan\Functions\Logger;
  * Cron Router
  *
  * @license GPLv3
- *         
+ *
  * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
  */
-$app->before('POST|PUT|DELETE|OPTIONS', '/cronjob/', function () use($app) {
+$app->before('POST|PUT|DELETE|OPTIONS', '/cronjob/', function () use ($app) {
     header('Content-Type: application/json');
     $app->res->_format('json', 404);
     exit();
 });
 
-$app->get('/cronjob/', function () use($app) {
-    if ($app->hook->{'get_option'}('enable_cron_jobs') != (int) 1) {
+$app->get('/cronjob/', function () use ($app) {
+    if ($app->hook->{'get_option'}('cron_jobs') != (int) 1) {
         exit();
     }
 
@@ -52,11 +49,9 @@ $app->get('/cronjob/', function () use($app) {
     Logger\ttcms_logger_activity_log_purge();
 
     try {
-
         $tasks = $app->db->table(Config::get('tbl_prefix') . 'tasks')
                 ->where('enabled', '1');
         if ((int) $tasks->count() > 0) {
-
             $array = [];
             foreach ($tasks->get() as $task) {
                 $array[] = (array) $task;

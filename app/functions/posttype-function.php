@@ -1,13 +1,10 @@
 <?php
-
 namespace TriTan\Functions\Posttype;
 
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use TriTan\Config;
 use Cascade\Cascade;
 use TriTan\Functions\Post;
-Use TriTan\Functions\Db;
+use TriTan\Functions\Db;
 use TriTan\Functions\Core;
 use TriTan\Functions\Cache;
 
@@ -15,7 +12,7 @@ use TriTan\Functions\Cache;
  * TriTan CMS Post Type Functions
  *
  * @license GPLv3
- *         
+ *
  * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
@@ -25,7 +22,7 @@ use TriTan\Functions\Cache;
  * Retrieves post type data given a post type ID or post type array.
  *
  * @file app/functions/posttype-function.php
- * 
+ *
  * @since 0.9
  * @param int|Post $posttype
  *            Post Type ID or post type array.
@@ -69,10 +66,10 @@ function get_posttype($posttype, $array = true)
 
 /**
  * A function which retrieves a TriTan CMS post type title.
- * 
+ *
  * Purpose of this function is for the `posttype_title`
  * filter.
- * 
+ *
  * @file app/functions/posttype-function.php
  *
  * @since 0.9.9
@@ -96,10 +93,10 @@ function get_posttype_title($posttype_id = 0)
 
 /**
  * A function which retrieves a TriTan CMS posttype slug.
- * 
+ *
  * Purpose of this function is for the `posttype_slug`
  * filter.
- * 
+ *
  * @file app/functions/posttype-function.php
  *
  * @since 0.9.9
@@ -123,10 +120,10 @@ function get_posttype_slug($posttype_id = 0)
 
 /**
  * A function which retrieves a TriTan CMS posttype description.
- * 
+ *
  * Purpose of this function is for the `posttype_description`
  * filter.
- * 
+ *
  * @file app/functions/posttype-function.php
  *
  * @since 0.9.9
@@ -150,10 +147,10 @@ function get_posttype_description($posttype_id = 0)
 
 /**
  * A function which retrieves a TriTan CMS posttype's permalink.
- * 
+ *
  * Purpose of this function is for the `posttype_permalink`
  * filter.
- * 
+ *
  * @file app/functions/posttype-function.php
  *
  * @since 0.9.9
@@ -176,7 +173,7 @@ function get_posttype_permalink($posttype_id = 0)
 
 /**
  * Creates a unique posttype slug.
- * 
+ *
  * @since 0.9.8
  * @param string $original_slug     Original slug of posttype.
  * @param string $original_title    Original title of posttype.
@@ -192,7 +189,7 @@ function ttcms_unique_posttype_slug($original_slug, $original_title, $posttype_i
     }
     /**
      * Filters the unique posttype slug before returned.
-     * 
+     *
      * @since 0.9.9
      * @param string    $posttype_slug      Unique posttype slug.
      * @param string    $original_slug      The posttype's original slug.
@@ -208,7 +205,7 @@ function ttcms_unique_posttype_slug($original_slug, $original_title, $posttype_i
  * All of the `$posttypedata` array fields have filters associated with the values. The filters
  * have the prefix 'pre_' followed by the field name. An example using 'posttype_title' would have
  * the filter called, 'pre_posttype_title' that can be hooked into.
- * 
+ *
  * @file app/functions/posttype-function.php
  *
  * @since 0.9.9
@@ -217,7 +214,7 @@ function ttcms_unique_posttype_slug($original_slug, $original_title, $posttype_i
  *      @type string $posttype_title        The posttype's title.
  *      @type string $posttype_slug         The posttype's slug.
  *      @type string $posttype_description  The posttype's description.
- * 
+ *
  * @return int|Exception|null   The newly created posttype's posttype_id, Exception or returns null
  *                              if the posttype could not be created or updated.
  */
@@ -309,7 +306,7 @@ function ttcms_insert_posttype($posttypedata, $exception = false)
 
     /*
      * Filters whether the posttype is null.
-     * 
+     *
      * @since 0.9.9
      * @param bool  $maybe_empty Whether the posttype should be considered "null".
      * @param array $_postdata   Array of post data.
@@ -336,7 +333,7 @@ function ttcms_insert_posttype($posttypedata, $exception = false)
      *      @type string $posttype_title    The posttype's title.
      *      @type string $posttype_slug     The posttype's slug.
      *      @type string $posttype_author   The posttype's description.
-     * 
+     *
      * @param bool     $update          Whether the posttype is being updated rather than created.
      * @param int|null $posttype_id     ID of the posttype to be updated or created.
      */
@@ -395,7 +392,7 @@ function ttcms_insert_posttype($posttypedata, $exception = false)
         /**
          * If posttype slug has changed, update all posts that may be affected
          * by this change.
-         * 
+         *
          * @since 0.9.6
          */
         if ((string) Core\_escape($posttype_before->posttype_slug) != (string) Core\_escape($posttype_after->posttype_slug)) {
@@ -431,9 +428,9 @@ function ttcms_insert_posttype($posttypedata, $exception = false)
 
 /**
  * Update a posttype in the post document.
- * 
+ *
  * See {@see ttcms_insert_posttype()} For what fields can be set in $posttypedata.
- * 
+ *
  * @file app/functions/posttype-function.php
  *
  * @since 0.9.9
@@ -464,7 +461,7 @@ function ttcms_update_posttype($posttypedata = [], $exception = false)
 
 /**
  * Deletes a posttype from the posttype document.
- * 
+ *
  * @since 0.9.9
  * @param int $posttype_id The id of the posttype to delete.
  * @return boolean
@@ -539,9 +536,9 @@ function ttcms_delete_posttype($posttype_id = 0)
 
 /**
  * Clean posttype caches.
- * 
+ *
  * Uses `clean_posttype_cache` action.
- * 
+ *
  * @file app/functions/posttype-function.php
  *
  * @since 0.9.9

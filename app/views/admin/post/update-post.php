@@ -1,11 +1,11 @@
 <?php
-if (!defined('BASE_PATH')) exit('No direct script access allowed');
 use TriTan\Functions\Db;
 use TriTan\Functions\Dependency;
 use TriTan\Functions\Auth;
 use TriTan\Functions\User;
 use TriTan\Functions\Core;
 use TriTan\Functions\Hook;
+
 $this->layout('main::_layouts/admin-layout');
 $this->section('backend');
 TriTan\Config::set('screen_parent', $this->posttype);
@@ -76,7 +76,7 @@ TriTan\Config::set('post_id', $this->post['post_id']);
                     <!-- /.box-body -->
                 </div>
                 <!-- /.left column -->
-                
+
                 <?php $this->app->hook->{'do_action'}('update_post_metabox', $this->posttype, $this->post, 'normal', 'middle'); ?>
 
                 <div class="col-md-3">
@@ -122,7 +122,7 @@ TriTan\Config::set('post_id', $this->post['post_id']);
                                 <label><strong><font color="red">*</font> <?= Core\_t('Status', 'tritan-cms'); ?></strong></label>
                                 <select class="form-control select2" name="post_status" style="width: 100%;" required>
                                     <option>&nbsp;</option>
-                                    <?php if(Auth\current_user_can('publish_posts')) : ?>
+                                    <?php if (Auth\current_user_can('publish_posts')) : ?>
                                     <option value="published"<?= selected('published', $this->post['post_status'], false); ?>><?= Core\_t('Publish', 'tritan-cms'); ?></option>
                                     <?php endif; ?>
                                     <option value="draft"<?= selected('draft', $this->post['post_status'], false); ?>><?= Core\_t('Draft', 'tritan-cms'); ?></option>
@@ -192,7 +192,7 @@ TriTan\Config::set('post_id', $this->post['post_id']);
                         <div class="box-body">
                             <div id="elfinder"></div>
                             <div id="elfinder_image"><img src="<?= $this->post['post_featured_image']; ?>" style="width:280px;height:auto;background-size:contain;margin-bottom:.9em;background-repeat:no-repeat" /></div>
-                            <?php if($this->post['post_featured_image'] != '') : ?>
+                            <?php if ($this->post['post_featured_image'] != '') : ?>
                             <button type="button" class="btn btn-primary" onclick="window.location = '<?= Core\get_base_url(); ?>admin/<?= $this->posttype; ?>/<?= (int) $this->post['post_id']; ?>/remove-featured-image/'"><?= Core\_t('Remove featured image', 'tritan-cms'); ?></button>
                             <?php else : ?>
                             <button type="button" id="set_image" class="btn btn-primary" style="display:none;"><?= Core\_t('Set featured image', 'tritan-cms'); ?></button>
@@ -217,7 +217,7 @@ TriTan\Config::set('post_id', $this->post['post_id']);
 <?php
 /**
  * Fires before the update post screen is fully loaded.
- * 
+ *
  * @since 0.9
  */
 $this->app->hook->{'do_action'}('enqueue_ttcms_editor');

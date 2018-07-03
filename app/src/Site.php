@@ -1,17 +1,13 @@
 <?php
-
 namespace TriTan;
 
 use TriTan\Functions\Cache;
-
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 
 /**
  * Site API: Site Class
  *
  * @license GPLv3
- *         
+ *
  * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
@@ -254,7 +250,6 @@ final class Site
         $details = Cache\ttcms_cache_get($this->site_id, 'site_details');
 
         if (false === $details) {
-
             $details = new \stdClass();
             foreach (get_object_vars($this) as $key => $value) {
                 $details->$key = $value;
@@ -273,5 +268,4 @@ final class Site
 
         return $details;
     }
-
 }

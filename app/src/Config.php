@@ -1,20 +1,17 @@
-<?php namespace TriTan;
-
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
+<?php
+namespace TriTan;
 
 /**
  * Config API: Stores all configuration information for TriTan CMS.
  *
  * @license GPLv3
- *         
+ *
  * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
  */
 final class Config
 {
-
     protected static $config = [];
 
     /**
@@ -31,7 +28,7 @@ final class Config
 
     /**
      * Indicates whether or not a config parameter exists.
-     * 
+     *
      * @param string $name  A config parameter name
      * @return bool true, if the config parameter exists, otherwise false
      */

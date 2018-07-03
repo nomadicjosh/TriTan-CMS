@@ -1,9 +1,8 @@
 <?php
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use TriTan\Functions\Dependency;
 use TriTan\Functions\User;
 use TriTan\Functions\Core;
+
 $this->layout('main::_layouts/admin-layout');
 $this->section('backend');
 TriTan\Config::set('screen_parent', 'dashboard');
@@ -30,7 +29,7 @@ TriTan\Config::set('screen_child', 'home');
             <?= Dependency\_ttcms_flash()->showMessage(); ?>
 
         <div class="row">
-            <?php //top widgets can go here.  ?>
+            <?php //top widgets can go here.?>
         </div>
         <!-- /.row -->
 
@@ -63,7 +62,7 @@ TriTan\Config::set('screen_child', 'home');
 
             <!-- Left col -->
             <section class="col-lg-6 connectedSortable">
-                
+
                 <div class="box">
                     <div class="box-header with-border">
                         <h3 class="box-title"><i class="fa fa-rss"></i> <?= Core\_t('TriTan CMS Feed', 'tritan-cms'); ?></h3>

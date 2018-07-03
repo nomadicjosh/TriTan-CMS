@@ -1,9 +1,6 @@
 <?php
-
 namespace TriTan;
 
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use TriTan\Config;
 use TriTan\Exception\Exception;
 use TriTan\Exception\IOException;
@@ -13,7 +10,7 @@ use TriTan\Functions\Core;
 
 /**
  * Task Manager Queue
- *  
+ *
  * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
@@ -23,7 +20,7 @@ class Queue
 
     /**
      * Application object.
-     * 
+     *
      * @var object
      */
     public $app;
@@ -40,33 +37,33 @@ class Queue
 
     /**
      * Node where queues are saved.
-     * 
-     * @var type 
+     *
+     * @var type
      */
     public $node = 'tasks';
 
     /**
      * Set the directory for where pid is found.
-     * 
-     * @var type 
+     *
+     * @var type
      */
     public $dir = '';
 
     /**
      * ID of the running process.
-     * 
-     * @var type 
+     *
+     * @var type
      */
     public $pid = 0;
 
     /**
      * Table prefix.
-     * @var type 
+     * @var type
      */
     public $prefix;
 
     /**
-     * 
+     *
      * @param \Liten\Liten $liten
      */
     public function __construct(array $config = [], \Liten\Liten $liten = null)
@@ -165,7 +162,7 @@ class Queue
 
     /**
      * Create a new job and save it to the queue or update the job if it exists.
-     * 
+     *
      * @since 0.9
      */
     public function enqueue($args)
@@ -189,7 +186,7 @@ class Queue
                             'debug' => Core\if_null($tasks['task_worker']['debug']),
                             'max_runtime' => Core\if_null($tasks['task_worker']['max_runtime']),
                             'enabled' => Core\if_null($tasks['task_worker']['enabled'])
-                ]);
+                        ]);
                 $node->commit();
             } catch (Exception $ex) {
                 $node->rollback();
@@ -355,7 +352,7 @@ class Queue
                             'executions' => +1,
                             'lastrun' => (string) format_date(),
                             'last_runtime' => (double) $time_end
-                ]);
+                        ]);
                 $upd->commit();
             } catch (Exception $e) {
                 $upd->rollback();
@@ -363,5 +360,4 @@ class Queue
             }
         }
     }
-
 }

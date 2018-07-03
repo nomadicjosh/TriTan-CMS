@@ -1,16 +1,13 @@
 <?php
-
 namespace TriTan\Functions\Domain;
 
 use TriTan\Functions\Core;
 
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 /**
  * TriTan CMS Text Domain.
- *  
+ *
  * @license GPLv3
- * 
+ *
  * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
@@ -20,15 +17,14 @@ $t->register();
 
 /**
  * Loads the current or default locale.
- * 
+ *
  * @file app/functions/textdomain-function.php
- * 
+ *
  * @since 0.9
  * @return string The locale.
  */
 function load_core_locale()
 {
-
     if (is_readable(BASE_PATH . 'config.php')) {
         $locale = app()->hook->{'get_option'}('ttcms_core_locale');
     } else {
@@ -41,7 +37,7 @@ function load_core_locale()
  * Load a .mo file into the text domain.
  *
  * @file app/functions/textdomain-function.php
- * 
+ *
  * @since 0.9
  *
  * @param string $domain Text domain. Unique identifier for retrieving translated strings.
@@ -101,7 +97,7 @@ function load_textdomain($domain, $path)
  * Load default translated strings based on locale.
  *
  * @file app/functions/textdomain-function.php
- * 
+ *
  * @since 0.9
  * @param string $domain Text domain. Unique identifier for retrieving translated strings.
  * @param string $path Path to the .mo file.
@@ -124,7 +120,7 @@ function load_default_textdomain($domain, $path)
  * If the path is not given then it will be the root of the plugin directory.
  *
  * @file app/functions/textdomain-function.php
- * 
+ *
  * @since 0.9
  * @param string $domain          Unique identifier for retrieving translated strings
  * @param string $plugin_rel_path Optional. Relative path to TTCMS_PLUGIN_DIR where the locale directory resides.
@@ -136,9 +132,9 @@ function load_plugin_textdomain($domain, $plugin_rel_path = false)
     $locale = load_core_locale();
     /**
      * Filter a plugin's locale.
-     * 
+     *
      * @since 0.9
-     * 
+     *
      * @param string $locale The plugin's current locale.
      * @param string $domain Text domain. Unique identifier for retrieving translated strings.
      */
@@ -160,9 +156,9 @@ function load_plugin_textdomain($domain, $plugin_rel_path = false)
 
 /**
  * Retrieves a list of available locales.
- * 
+ *
  * @file app/functions/textdomain-function.php
- * 
+ *
  * @since 0.9
  * @param string $active
  */
@@ -174,7 +170,7 @@ function ttcms_dropdown_languages($active = '')
         $protocol = 'http://';
     }
 
-    $locales = Core\_file_get_contents($protocol . 'tritan-cms.s3.amazonaws.com/api/1.1/translations.json');
+    $locales = Core\_file_get_contents($protocol . 'tritan-cms.s3.amazonaws.com/api/1.1/locale.json');
     $json = json_decode($locales, true);
     foreach ($json as $locale) {
         echo '<option value="' . $locale['language'] . '"' . selected($active, $locale['language'], false) . '>' . $locale['native_name'] . '</option>';
@@ -553,7 +549,7 @@ function ttcms_dropdown_languages($active = '')
  * | U+00B7   | l·l   | ll          | Flown dot (between two Ls)              |
  *
  * @file app/functions/textdomain-function.php
- * 
+ *
  * @since 0.9
  *
  * @param string $string Text that might have accent characters
@@ -561,8 +557,9 @@ function ttcms_dropdown_languages($active = '')
  */
 function ttcms_remove_accents($string)
 {
-    if (!preg_match('/[\x80-\xff]/', $string))
+    if (!preg_match('/[\x80-\xff]/', $string)) {
         return $string;
+    }
 
     if (mb_check_encoding($string, 'UTF-8')) {
         $chars = [
@@ -835,7 +832,7 @@ function ttcms_remove_accents($string)
  * will be used.
  *
  * @file app/functions/textdomain-function.php
- * 
+ *
  * @since 0.9
  *
  * @param string $string          The string to be sanitized.
@@ -847,8 +844,9 @@ function ttcms_sanitize_string($string, $fallback_string = '', $context = 'save'
 {
     $raw_string = $string;
 
-    if ('save' == $context)
+    if ('save' == $context) {
         $string = ttcms_remove_accents($string);
+    }
 
     /**
      * Filters a sanitized string.
@@ -861,8 +859,9 @@ function ttcms_sanitize_string($string, $fallback_string = '', $context = 'save'
      */
     $string = app()->hook->{'apply_filter'}('sanitize_string', $string, $raw_string, $context);
 
-    if ('' === $string || false === $string)
+    if ('' === $string || false === $string) {
         $string = $fallback_string;
+    }
 
     return $string;
 }

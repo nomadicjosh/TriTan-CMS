@@ -1,5 +1,4 @@
 <?php
-
 namespace TriTan;
 
 use TriTan\Config;
@@ -10,20 +9,20 @@ use TriTan\Config;
  * @link http://www.litenframework.com
  * @version 0.9
  * @package Liten
- *         
+ *
  *          The MIT License (MIT)
  *          Copyright (c) 2015 Joshua Parker
- *         
+ *
  *          Permission is hereby granted, free of charge, to any person obtaining a copy
  *          of this software and associated documentation files (the "Software"), to deal
  *          in the Software without restriction, including without limitation the rights
  *          to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  *          copies of the Software, and to permit persons to whom the Software is
  *          furnished to do so, subject to the following conditions:
- *         
+ *
  *          The above copyright notice and this permission notice shall be included in
  *          all copies or substantial portions of the Software.
- *         
+ *
  *          THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  *          IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  *          FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -32,8 +31,6 @@ use TriTan\Config;
  *          OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *          THE SOFTWARE.
  */
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 
 defined('CACHE_PATH') or define('CACHE_PATH', Config::get('cache_path'));
 
@@ -47,7 +44,7 @@ class Cache
      * @since 1.0.1
      * @var string
      */
-    protected $_cachepath = CACHE_PATH;
+    protected $cachepath = CACHE_PATH;
 
     /**
      * The key name of the cache file
@@ -83,7 +80,7 @@ class Cache
      * @since 1.0.1
      * @var string
      */
-    protected $_cachefile;
+    protected $cachefile;
 
     /**
      * Execution Time
@@ -92,7 +89,7 @@ class Cache
      * @since 1.0.1
      * @var float
      */
-    protected $_starttime;
+    protected $starttime;
 
     /**
      * Logs errors that may occur
@@ -101,23 +98,24 @@ class Cache
      * @since 1.0.1
      * @var float
      */
-    protected $_log;
+    protected $log;
 
     public function __construct($name = '')
     {
         $this->cachename = $name;
-        if (!is_dir($this->_cachepath) || !is_writeable($this->_cachepath))
-            mkdir($this->_cachepath, 0755);
-        $this->_cachefile = $this->_cachepath . md5($this->cachename) . $this->extension;
+        if (!is_dir($this->cachepath) || !is_writeable($this->cachepath)) {
+            mkdir($this->cachepath, 0755);
+        }
+        $this->cachefile = $this->cachepath . md5($this->cachename) . $this->extension;
         $mtime = microtime();
         $mtime = explode(" ", $mtime);
         $mtime = $mtime[1] + $mtime[0];
-        $this->_starttime = $mtime;
+        $this->starttime = $mtime;
     }
 
     /**
      * Sets objects that should be cached.
-     * 
+     *
      * @access public
      * @since 1.0.1
      * @param string (required) $key Prefix of the cache file
@@ -127,7 +125,7 @@ class Cache
     public function set($key, $data)
     {
         $values = serialize($data);
-        $cachefile = $this->_cachepath . $key . $this->extension;
+        $cachefile = $this->cachepath . $key . $this->extension;
         $cache = fopen($cachefile, 'w');
         if ($cache) {
             fwrite($cache, $values);
@@ -139,7 +137,7 @@ class Cache
 
     /**
      * Cached data by its Prefix
-     * 
+     *
      * @access public
      * @since 1.0.1
      * @param string (required) $key Returns cached objects by its key.
@@ -147,7 +145,7 @@ class Cache
      */
     public function get($key)
     {
-        $cachefile = $this->_cachepath . $key . $this->extension;
+        $cachefile = $this->cachepath . $key . $this->extension;
         $file = fopen($cachefile, 'r');
         if (filemtime($cachefile) < (time() - $this->setTTL)) {
             $this->clearCache($key);
@@ -162,45 +160,45 @@ class Cache
 
     /**
      * Begins the section where caching begins
-     * 
+     *
      * @access public
      * @since 1.0.1
      * @return mixed
      */
     public function setCache()
     {
-        if (!$this->isCacheValid($this->_cachefile)) {
+        if (!$this->isCacheValid($this->cachefile)) {
             ob_start();
-            return $this->addLog('Could not find valid cachefile: ' . $this->_cachefile);
+            return $this->addLog('Could not find valid cachefile: ' . $this->cachefile);
         } else {
             return true;
         }
     }
 
     /**
-     * Ends the section where caching stops and returns 
+     * Ends the section where caching stops and returns
      * the cached file.
-     * 
+     *
      * @access public
      * @since 1.0.1
      * @return mixed
      */
     public function getCache()
     {
-        if (!$this->isCacheValid($this->_cachefile)) {
+        if (!$this->isCacheValid($this->cachefile)) {
             $output = ob_get_contents();
             ob_end_clean();
-            $this->writeCache($output, $this->_cachefile);
+            $this->writeCache($output, $this->cachefile);
         } else {
-            $output = $this->readCache($this->_cachefile);
+            $output = $this->readCache($this->cachefile);
         }
         return $output;
     }
 
     /**
-     * Reads a cache file if it exists and prints it out 
+     * Reads a cache file if it exists and prints it out
      * to the screen.
-     * 
+     *
      * @access public
      * @since 1.0.1
      * @param string (required) $filename Full path to the requested cache file
@@ -220,7 +218,7 @@ class Cache
 
     /**
      * Writes cache data to be read
-     * 
+     *
      * @access public
      * @since 1.0.1
      * @param string (required) $data Data that should be cached
@@ -241,7 +239,7 @@ class Cache
 
     /**
      * Checks if a cache file is valid
-     * 
+     *
      * @access public
      * @since 1.0.1
      * @param string (required) $filename Name of the cache file
@@ -258,7 +256,7 @@ class Cache
 
     /**
      * Execution time of the cached page
-     * 
+     *
      * @access public
      * @since 1.0.1
      * @return mixed
@@ -269,13 +267,13 @@ class Cache
         $mtime = explode(" ", $mtime);
         $mtime = $mtime[1] + $mtime[0];
         $endtime = $mtime;
-        $totaltime = ($endtime - $this->_starttime);
+        $totaltime = ($endtime - $this->starttime);
         return "<!-- This cache file was built for ( " . $_SERVER['SERVER_NAME'] . " ) in " . $totaltime . " seconds, on " . gmdate("M d, Y") . " @ " . gmdate("H:i:s A") . " UTC. -->" . "\n";
     }
 
     /**
      * Clears the cache base on cache file name/key
-     * 
+     *
      * @access public
      * @since 1.0.1
      * @param string (required) $filename Key name of cache
@@ -283,7 +281,7 @@ class Cache
      */
     public function clearCache($filename)
     {
-        $cachelog = $this->_cachepath . md5($filename) . $this->extension;
+        $cachelog = $this->cachepath . md5($filename) . $this->extension;
         if (file_exists($cachelog)) {
             unlink($cachelog);
         }
@@ -291,14 +289,14 @@ class Cache
 
     /**
      * Clears all cache files
-     * 
+     *
      * @access public
      * @since 1.0.1
      * @return mixed
      */
     public function purge()
     {
-        foreach (glob($this->_cachepath . '*' . $this->extension) as $file) {
+        foreach (glob($this->cachepath . '*' . $this->extension) as $file) {
             if (file_exists($file)) {
                 unlink($file);
             }
@@ -307,7 +305,7 @@ class Cache
 
     /**
      * Prints a log if error occurs
-     * 
+     *
      * @access public
      * @since 1.0.1
      * @param mixed (required) $value Message that should be returned
@@ -315,8 +313,7 @@ class Cache
      */
     public function addLog($value)
     {
-        $this->_log = [];
-        array_push($this->_log, round((microtime(true) - $this->_starttime), 5) . 's - ' . $value);
+        $this->log = [];
+        array_push($this->log, round((microtime(true) - $this->starttime), 5) . 's - ' . $value);
     }
-
 }

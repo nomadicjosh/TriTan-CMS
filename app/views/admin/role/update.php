@@ -1,6 +1,4 @@
 <?php
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use TriTan\Config;
 use TriTan\Functions\Dependency;
 use TriTan\Functions\User;
@@ -8,9 +6,9 @@ use TriTan\Functions\Core;
 
 /**
  * Update Role View
- *  
+ *
  * @license GPLv3
- * 
+ *
  * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
@@ -38,12 +36,12 @@ Config::set('screen_child', 'role');
                     <button type="button" class="btn btn-primary" onclick="window.location = '<?= Core\get_base_url(); ?>admin/role/'"><i class="fa fa-ban"></i> <?= Core\_t('Cancel', 'tritan-cms'); ?></button>
                 </div>
             </div>
-        </div> 
+        </div>
 
         <!-- Main content -->
         <section class="content">
 
-            <?= Dependency\_ttcms_flash()->showMessage(); ?> 
+            <?= Dependency\_ttcms_flash()->showMessage(); ?>
 
             <!-- SELECT2 EXAMPLE -->
             <div class="box box-default">

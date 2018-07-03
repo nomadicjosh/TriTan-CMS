@@ -1,17 +1,16 @@
 <?php
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use TriTan\Config;
 use TriTan\Functions\Dependency;
 use TriTan\Functions\Auth;
 use TriTan\Functions\User;
 use TriTan\Functions\Core;
 use TriTan\Functions\Hook;
+
 /**
  * User Update View
- *  
+ *
  * @license GPLv3
- * 
+ *
  * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
@@ -37,7 +36,7 @@ Config::set('screen_child', 'all-users');
                     <button type="button"<?=Auth\ae('create_users');?> class="btn btn-warning" onclick="window.location='<?=Core\get_base_url();?>admin/user/create/'"><i class="fa fa-plus"></i> <?= Core\_t('New User', 'tritan-cms'); ?></button>
                     <button type="submit"<?=Auth\ae('update_users');?> class="btn btn-success"><i class="fa fa-save"></i> <?= Core\_t('Update', 'tritan-cms'); ?></button>
                     <button type="button" class="btn btn-primary" onclick="window.location = '<?= Core\get_base_url(); ?>admin/user/'"><i class="fa fa-ban"></i> <?= Core\_t('Cancel', 'tritan-cms'); ?></button>
-                    <?php if((int) $this->user->user_id === (int) $this->current_user_id) : ?>
+                    <?php if ((int) $this->user->user_id === (int) $this->current_user_id) : ?>
                     <input type="hidden" name="user_role" value="<?= Auth\get_role_by_id(User\get_user_option('role', (int) $this->user->user_id))['role']['role_key']; ?>" />
                     <input type="hidden" name="user_status" value="<?= User\get_user_option('status', (int) $this->user->user_id); ?>" />
                     <?php endif; ?>
@@ -48,7 +47,7 @@ Config::set('screen_child', 'all-users');
         <!-- Main content -->
         <section class="content">
 
-            <?= Dependency\_ttcms_flash()->showMessage(); ?> 
+            <?= Dependency\_ttcms_flash()->showMessage(); ?>
 
             <div class="row">
                 <!-- left column -->
@@ -63,7 +62,7 @@ Config::set('screen_child', 'all-users');
                             <div class="form-group">
                                 <label><strong><?= Core\_t('Username', 'tritan-cms'); ?></strong></label>
                                 <input type="text" class="form-control" id="user_login" name="user_login" value="<?= User\get_user_option('username', (int) $this->user->user_id); ?>" readonly="readonly" required/>
-                                <?php if(Auth\current_user_can('update_users')) : ?>
+                                <?php if (Auth\current_user_can('update_users')) : ?>
                                 <button type="button" class="btn btn-primary" id="enable_button" style="display:none"><?= Core\_t('Change username', 'tritan-cms'); ?></button>
                                 <button type="button" class="btn btn-danger" id="disable_button" style="display:none"><?= Core\_t('Cancel', 'tritan-cms'); ?></button>
                                 <?php endif; ?>
@@ -78,11 +77,11 @@ Config::set('screen_child', 'all-users');
                                 <label><strong><font color="red">*</font> <?= Core\_t('Last Name', 'tritan-cms'); ?></strong></label>
                                 <input type="text" class="form-control" name="user_lname" value="<?= User\get_user_option('lname', (int) $this->user->user_id); ?>" required>
                             </div>
-                            
+
                             <?php
                             /**
                              * Fires at the end of the 'Name' section on the 'Update User' screen.
-                             * 
+                             *
                              * @since 0.9
                              * @param array $this->user User object.
                              */
@@ -90,7 +89,7 @@ Config::set('screen_child', 'all-users');
                             ?>
                         </div>
                     </div>
-                    
+
                     <div class="box box-primary">
                         <div class="box-header with-border">
                             <h3 class="box-title"><?= Core\_t('Contact info', 'tritan-cms'); ?></h3>
@@ -102,22 +101,22 @@ Config::set('screen_child', 'all-users');
                                 <label><strong><font color="red">*</font> <?= Core\_t('Email', 'tritan-cms'); ?></strong></label>
                                 <input type="email" class="form-control" name="user_email" value="<?= User\get_user_option('email', (int) $this->user->user_id); ?>" required>
                             </div>
-                            
+
                             <div class="form-group">
                                 <label><strong><?= Core\_t('URL', 'tritan-cms'); ?></strong></label>
                                 <input type="text" class="form-control" name="user_url" value="<?= Auth\get_userdata((int) $this->user->user_id)->user_url; ?>" />
                             </div>
-                            
+
                             <?php
                             /**
                              * Fires at the end of the 'Contact info' section on the 'Update User' screen.
-                             * 
+                             *
                              * @since 0.9
                              * @param array $this->user User object.
                              */
                             $this->app->hook->{'do_action'}('update_user_profile_contact', $this->user);
                             ?>
-                            
+
                         </div>
                     </div>
                     <div class="box box-primary">
@@ -131,25 +130,25 @@ Config::set('screen_child', 'all-users');
                                 <label><strong><?= Core\_t('Biography', 'tritan-cms'); ?></strong></label>
                                 <textarea class="form-control" name="user_bio" rows="5"><?= User\get_user_option('bio', (int) $this->user->user_id); ?></textarea>
                             </div>
-                            
+
                             <div class="form-group">
                                 <label><strong><?= Core\_t('Profile Picture', 'tritan-cms'); ?></strong></label>
                                 <div><?= Hook\get_user_avatar(User\get_user_option('email', (int) $this->user->user_id), 100);?></div>
                             </div>
-                            
+
                             <?php
                             /**
                              * Fires at the end of the 'About the user' section on the 'Update User' screen.
-                             * 
+                             *
                              * @since 0.9
                              * @param array $this->user User object.
                              */
                             $this->app->hook->{'do_action'}('update_user_profile_about', $this->user);
                             ?>
-                            
+
                         </div>
                     </div>
-                    <?php if((int) $this->user->user_id !== (int) $this->current_user_id) : ?>
+                    <?php if ((int) $this->user->user_id !== (int) $this->current_user_id) : ?>
                     <div class="box box-primary">
                         <div class="box-header with-border">
                             <h3 class="box-title"><?= Core\_t('User Status', 'tritan-cms'); ?></h3>
@@ -164,7 +163,7 @@ Config::set('screen_child', 'all-users');
                                     <?php User\get_user_roles(User\get_user_option('role', (int) $this->user->user_id)); ?>
                                 </select>
                             </div>
-                            
+
                             <div class="form-group">
                                 <label><strong><font color="red">*</font> <?= Core\_t('Status', 'tritan-cms'); ?></strong></label>
                                 <select class="form-control select2" name="user_status" style="width: 100%;" required>
@@ -176,11 +175,11 @@ Config::set('screen_child', 'all-users');
                                 </select>
                                 <p class="help-block"><?= Core\_t('If the account is Inactive, the user will be incapable of logging into the system.', 'tritan-cms'); ?></p>
                             </div>
-                            
+
                             <?php
                             /**
                              * Fires at the end of the 'Status' section on the 'Update User' screen.
-                             * 
+                             *
                              * @since 0.9
                              * @param array $this->user User object.
                              */
@@ -192,13 +191,13 @@ Config::set('screen_child', 'all-users');
                     <?php
                     /**
                      * Fires after the 'About the User' section on the 'Update User' screen.
-                     * 
+                     *
                      * @since 0.9
                      * @param array $this->user User object.
                      */
                     $this->app->hook->{'do_action'}('update_user_profile', $this->user);
                     ?>
-                    
+
                 </div>
                 <!-- /.box-body -->
             </div>

@@ -6,7 +6,6 @@ use ArrayAccess;
 
 class ArrayExtra implements ArrayAccess
 {
-
     protected $items = [];
 
     /**
@@ -127,7 +126,7 @@ class ArrayExtra implements ArrayAccess
 
         while (count($keys) > 1) {
             $key = array_shift($keys);
-            if (!isset($array[$key]) OR ! is_array($array[$key])) {
+            if (!isset($array[$key]) or ! is_array($array[$key])) {
                 $array[$key] = array();
             }
             $array = & $array[$key];
@@ -145,7 +144,7 @@ class ArrayExtra implements ArrayAccess
 
     protected function getArrayValue($value, $message)
     {
-        if (!is_array($value) AND false == $value instanceof ArrayExtra) {
+        if (!is_array($value) and false == $value instanceof ArrayExtra) {
             throw new \InvalidArgumentException($message);
         }
         return is_array($value) ? $value : $value->toArray();
@@ -175,5 +174,4 @@ class ArrayExtra implements ArrayAccess
     {
         return static::arrayGet($this->items, $key);
     }
-
 }

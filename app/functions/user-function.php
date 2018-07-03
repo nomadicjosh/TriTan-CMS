@@ -1,9 +1,6 @@
 <?php
-
 namespace TriTan\Functions\User;
 
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use TriTan\Config;
 use TriTan\Exception\Exception;
 use Cascade\Cascade;
@@ -21,7 +18,7 @@ use TriTan\Functions\Post;
  * TriTan CMS User Functions
  *
  * @license GPLv3
- *         
+ *
  * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
@@ -29,9 +26,9 @@ use TriTan\Functions\Post;
 
 /**
  * Used on the Role screen for permissions.
- * 
+ *
  * @file app/functions/user-function.php
- * 
+ *
  * @since 0.9
  * @param int $id Role id.
  */
@@ -114,9 +111,9 @@ function user_perm($id)
 
 /**
  * Print a dropdown list of users.
- * 
+ *
  * @file app/functions/user-function.php
- * 
+ *
  * @since 0.9
  * @param int $active If working with active record, it will be the user's id.
  * @return array Dropdown list of users.
@@ -149,7 +146,7 @@ function get_users_dropdown($active = null)
  * alphanumeric, _, space, ., -, @. After sanitizing, it passes the username,
  * raw username (the username in the parameter), and the value of $strict as
  * parameters for the `sanitize_user` filter.
- * 
+ *
  * @file app/functions/user-function.php
  *
  * @since 0.9
@@ -187,7 +184,7 @@ function sanitize_user($username, $strict = false)
 
 /**
  * Get the current user's ID
- * 
+ *
  * @file app/functions/user-function.php
  *
  * @since 0.9
@@ -204,9 +201,9 @@ function get_current_user_id()
 
 /**
  * Returns object of data for current user.
- * 
+ *
  * @file app/functions/user-function.php
- * 
+ *
  * @since 0.9
  * @return object
  */
@@ -218,9 +215,9 @@ function ttcms_get_current_user()
 
 /**
  * Returns the name of a particular user.
- * 
+ *
  * Uses `get_name` filter.
- * 
+ *
  * @file app/functions/user-function.php
  *
  * @since 0.9
@@ -256,9 +253,9 @@ function get_name($id, $reverse = false)
 /**
  * Shows selected user's initials instead of
  * his/her's full name.
- * 
+ *
  * Uses `get_initials` filter.
- * 
+ *
  * @file app/functions/user-function.php
  *
  * @since 0.9
@@ -296,7 +293,7 @@ function get_initials($id, $initials = 2)
 /**
  * Retrieve requested field from user table
  * based on user's id.
- * 
+ *
  * @file app/functions/user-function.php
  *
  * @since 0.9
@@ -315,7 +312,7 @@ function get_user_value($id, $field)
 
 /**
  * Retrieves a list of roles from the roles table.
- * 
+ *
  * @file app/functions/user-function.php
  *
  * @since 0.9
@@ -332,9 +329,9 @@ function get_perm_roles()
 
 /**
  * Checks whether the given username exists.
- * 
+ *
  * Uses `username_exists` filter.
- * 
+ *
  * @file app/functions/user-function.php
  *
  * @since 0.9
@@ -362,9 +359,9 @@ function username_exists($username)
 
 /**
  * Checks whether the given email exists.
- * 
+ *
  * Uses `email_exists` filter.
- * 
+ *
  * @file app/functions/user-function.php
  *
  * @since 0.9
@@ -392,15 +389,15 @@ function email_exists($email)
 
 /**
  * Checks whether the given username is valid.
- * 
+ *
  * Uses `validate_username` filter.
- * 
+ *
  * Example Usage:
- * 
+ *
  *      if(validate_username('batman')) {
  *          //do something;
  *      }
- * 
+ *
  * @file app/functions/user-function.php
  *
  * @since 0.9
@@ -425,17 +422,17 @@ function validate_username($username)
 
 /**
  * Validates an email address.
- * 
+ *
  * Uses `validate_email` filter.
- * 
+ *
  * Example Usage:
- * 
+ *
  *      if(validate_email('email@gmail.com')) {
  *          //do something;
  *      }
- * 
+ *
  * @file app/functions/user-function.php
- * 
+ *
  * @since 0.9
  * @param string $email Email address to validate.
  * @return bool True if valid, false otherwise.
@@ -456,9 +453,9 @@ function validate_email($email)
 
 /**
  * Adds label to user's status.
- * 
+ *
  * @file app/functions/user-function.php
- * 
+ *
  * @since 0.9
  * @param string $status
  * @return string
@@ -475,9 +472,9 @@ function ttcms_user_status_label($status)
 
 /**
  * Retrieve a list of available user roles.
- * 
+ *
  * @file app/functions/user-function.php
- * 
+ *
  * @since 0.9
  * @param int $active
  */
@@ -493,9 +490,9 @@ function get_user_roles($active = null)
 
 /**
  * Retrieve a list of all users.
- * 
+ *
  * @file app/functions/user-function.php
- * 
+ *
  * @since 0.9
  * @param type $active
  */
@@ -511,7 +508,7 @@ function get_users_list($active = null)
 
 /**
  * Retrieve user meta field for a user.
- * 
+ *
  * @file app/functions/user-function.php
  *
  * @since 0.9
@@ -527,7 +524,7 @@ function get_user_meta($user_id, $key = '', $single = false)
 
 /**
  * Get user meta data by meta ID.
- * 
+ *
  * @file app/functions/user-function.php
  *
  * @since 0.9
@@ -546,7 +543,7 @@ function get_user_meta_by_mid($mid)
  * same key and user ID.
  *
  * If the meta field for the user does not exist, it will be added.
- * 
+ *
  * @file app/functions/user-function.php
  *
  * @since 0.9
@@ -563,7 +560,7 @@ function update_user_meta($user_id, $meta_key, $meta_value, $prev_value = '')
 
 /**
  * Update user meta data by meta ID.
- * 
+ *
  * @file app/functions/user-function.php
  *
  * @since 0.9
@@ -581,7 +578,7 @@ function update_user_meta_by_mid($mid, $meta_key, $meta_value)
 
 /**
  * Adds meta data to a user.
- * 
+ *
  * @file app/functions/user-function.php
  *
  * @since 0.9
@@ -602,7 +599,7 @@ function add_user_meta($user_id, $meta_key, $meta_value, $unique = false)
  * You can match based on the key, or key and value. Removing based on key and
  * value, will keep from removing duplicate metadata with the same key. It also
  * allows removing all metadata matching key, if needed.
- * 
+ *
  * @file app/functions/user-function.php
  *
  * @since 0.9
@@ -618,7 +615,7 @@ function delete_user_meta($user_id, $meta_key, $meta_value = '')
 
 /**
  * Delete user meta data by meta ID.
- * 
+ *
  * @file app/functions/user-function.php
  *
  * @since 0.9
@@ -639,9 +636,9 @@ function delete_user_meta_by_mid($mid)
  * object as the third parameter.
  *
  * The option will first check for the per site name and then the global name.
- * 
+ *
  * Uses `get_user_option_$option` filter.
- * 
+ *
  * @file app/functions/user-function.php
  *
  * @since 0.9
@@ -690,7 +687,7 @@ function get_user_option($option, $user = 0)
  * it will prepend the TriTan CMS table prefix to the option name.
  *
  * Deletes the user option if $newvalue is empty.
- * 
+ *
  * @file app/functions/user-function.php
  *
  * @since 0.9
@@ -717,7 +714,7 @@ function update_user_option($user_id, $option_name, $newvalue, $global = false)
  * User options are just like user metadata except that they have support for
  * global site options. If the 'global' parameter is false, which it is by default
  * it will prepend the TriTan CMS table prefix to the option name.
- * 
+ *
  * @file app/functions/user-function.php
  *
  * @since 0.9
@@ -744,7 +741,7 @@ function delete_user_option($user_id, $option_name, $global = false)
  * 'user_registered' and 'user_modified'. The filters have the prefix 'pre_' followed by
  * the field name. An example using 'user_bio' would have the filter called, 'pre_user_bio' that
  * can be hooked into.
- * 
+ *
  * @file app/functions/user-function.php
  *
  * @since 0.9
@@ -857,7 +854,7 @@ function ttcms_insert_user($userdata)
      * check if current email and new email are the same, or not, and check `email_exists`
      * accordingly.
      */
-    if ((!$update || (!empty($old_user_data) && 0 !== strcasecmp($user_email, Core\_escape($old_user_data->user_email)) ) ) && email_exists($user_email)) {
+    if ((!$update || (!empty($old_user_data) && 0 !== strcasecmp($user_email, Core\_escape($old_user_data->user_email)))) && email_exists($user_email)) {
         throw new Exception(Core\_t('Sorry, that email address is already used.', 'tritan-cms'), 'existing_user_email');
     }
 
@@ -959,7 +956,6 @@ function ttcms_insert_user($userdata)
     }
 
     if ($update) {
-
         if ($user_email !== $old_user_data->user_email) {
             $data['user_activation_key'] = null;
         }
@@ -976,7 +972,6 @@ function ttcms_insert_user($userdata)
         }
         $user_id = (int) $user_id;
     } else {
-
         $insert = app()->db->table('user');
         $insert->begin();
         try {
@@ -1048,9 +1043,9 @@ function ttcms_insert_user($userdata)
  *
  * It is possible to update a user's password by specifying the 'user_pass'
  * value in the $userdata parameter array.
- * 
+ *
  * See {@see ttcms_insert_user()} For what fields can be set in $userdata.
- * 
+ *
  * @file app/functions/user-function.php
  *
  * @since 0.9
@@ -1091,7 +1086,7 @@ function ttcms_update_user($userdata)
 
         /**
          * Filters whether to send the password change email.
-         * 
+         *
          * @see ttcms_insert_user() For `$user` and `$userdata` fields.
          *
          * @since 0.9
@@ -1106,7 +1101,7 @@ function ttcms_update_user($userdata)
     if (isset($userdata['user_email']) && $user['user_email'] !== $userdata['user_email']) {
         /**
          * Filters whether to send the email change email.
-         * 
+         *
          * @see ttcms_insert_user() For `$user` and `$userdata` fields.
          *
          * @since 0.9
@@ -1125,7 +1120,6 @@ function ttcms_update_user($userdata)
     $user_id = ttcms_insert_user($userdata);
 
     if (!Core\is_ttcms_exception($user_id)) {
-
         if (!empty($send_password_change_email)) {
             app()->hook->{'do_action'}('password_change_email', $user, $plaintext_pass, $userdata);
         }
@@ -1141,9 +1135,9 @@ function ttcms_update_user($userdata)
 /**
  * Deletes a user from the usermeta document. To delete user entirely from the system,
  * see `ttcms_delete_site_user`.
- * 
+ *
  * @file app/functions/user-function.php
- * 
+ *
  * @since 0.9.9
  * @param int $user_id      ID of user being deleted.
  * @param into $assign_id   ID of user to whom posts will be assigned.
@@ -1171,9 +1165,9 @@ function ttcms_delete_user($user_id, $assign_id = null)
     if ((int) $assign_id !== null) {
         /**
          * Filter hook is triggered when assign_id is greater than zero.
-         * 
+         *
          * Posts will be reassigned before the user is deleted.
-         * 
+         *
          * @since 0.9.9
          * @param int $user_id     ID of user to be deleted.
          * @param int $assign_id    ID of user to reassign posts to.
@@ -1216,9 +1210,9 @@ function ttcms_delete_user($user_id, $assign_id = null)
 
 /**
  * Email sent to user with new generated password.
- * 
+ *
  * @file app/functions/user-function.php
- * 
+ *
  * @since 0.9
  * @param int $user
  *            User array.
@@ -1251,9 +1245,9 @@ function send_reset_password_email($user, $password)
 
 /**
  * Email sent to user with changed/updated password.
- * 
+ *
  * @file app/functions/user-function.php
- * 
+ *
  * @since 0.9
  * @param int $user
  *            User array.
@@ -1287,9 +1281,9 @@ function send_password_change_email($user, $password, $userdata)
 
 /**
  * Email sent to user with changed/updated email.
- * 
+ *
  * @file app/functions/user-function.php
- * 
+ *
  * @since 0.9
  * @param array $user       Original user array.
  * @param array $userdata   Updated user array.
@@ -1320,7 +1314,7 @@ function send_email_change_email($user, $userdata)
 
 /**
  * Update user caches.
- * 
+ *
  * @file app/functions/user-function.php
  *
  * @since 0.9
@@ -1344,9 +1338,9 @@ function update_user_caches($user)
 
 /**
  * Clean user caches.
- * 
+ *
  * Uses `clean_user_cache` action.
- * 
+ *
  * @file app/functions/user-function.php
  *
  * @since 0.9
@@ -1381,11 +1375,11 @@ function clean_user_cache($user)
 
 /**
  * An extensive list of blacklisted usernames.
- * 
+ *
  * Uses `blacklisted_usernames` filter.
- * 
+ *
  * @file app/functions/user-function.php
- * 
+ *
  * @since 0.9
  * @return array Array of blacklisted usernames.
  */
@@ -1480,9 +1474,9 @@ function blacklisted_usernames()
 
 /**
  * Recently published widget.
- * 
+ *
  * @file app/functions/user-function.php
- * 
+ *
  * @since 0.9.8
  * @return 5 recently published posts.
  */
@@ -1498,9 +1492,9 @@ function recently_published_widget()
 
 /**
  * TriTan CMS feed widget.
- * 
+ *
  * @file app/functions/user-function.php
- * 
+ *
  * @since 0.9.8
  */
 function tritan_cms_feed_widget()
@@ -1535,7 +1529,7 @@ function tritan_cms_feed_widget()
 
 /**
  * Resets a user's password.
- * 
+ *
  * @since 0.9.9
  * @param int $user_id ID of user who's password is to be reset. Default: 0.
  * @return int|Exception User id on success or Exception on failure.
@@ -1555,9 +1549,9 @@ function reset_password($user_id = 0)
 
 /**
  * Print a dropdown list of users.
- * 
+ *
  * @file app/functions/user-function.php
- * 
+ *
  * @since 0.9
  * @param int $user_id If working with active record, it will be the user's id.
  * @return array Dropdown list of users.
@@ -1586,7 +1580,7 @@ function get_users_reassign($user_id = 0)
 
 /**
  * Retrieves a list of users by site_id
- * 
+ *
  * @since 0.9.9
  * @param int $site_id Site id. Default: 0.
  * @return object User object.

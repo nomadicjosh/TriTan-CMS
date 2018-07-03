@@ -1,5 +1,4 @@
 <?php
-
 namespace TriTan\Command;
 
 use Symfony\Component\Console\Command\Command;
@@ -34,11 +33,13 @@ final class CheckUpdateCommand extends Command
         if ($update->checkUpdate() !== false) {
             if ($update->newVersionAvailable()) {
                 $output->writeln(sprintf(
-                                'Release %s is available', $update->getLatestVersion()
+                    'Release %s is available',
+                    $update->getLatestVersion()
                 ));
             } else {
                 $output->writeln(sprintf(
-                                'TriTan CMS %s is at the latest release.', file_get_contents('RELEASE')
+                    'TriTan CMS %s is at the latest release.',
+                    file_get_contents('RELEASE')
                 ));
             }
         }
@@ -48,5 +49,4 @@ final class CheckUpdateCommand extends Command
         // 0 = success, other values = fail
         return 0;
     }
-
 }

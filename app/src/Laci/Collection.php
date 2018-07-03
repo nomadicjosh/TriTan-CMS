@@ -9,7 +9,6 @@ use TriTan\Exception\UndefinedMethodException;
 
 class Collection
 {
-
     const KEY_ID = '_id';
     const KEY_OLD_ID = '_old';
     const UPDATING = 'updating';
@@ -107,7 +106,7 @@ class Collection
 
     public function loadData()
     {
-        if ($this->isModeTransaction() AND ! empty($this->transactionData)) {
+        if ($this->isModeTransaction() and ! empty($this->transactionData)) {
             return $this->transactionData;
         }
         if (!file_exists($this->filepath)) {
@@ -258,11 +257,16 @@ class Collection
             throw new \InvalidArgumentException("Cannot execute query. Query is for different collection");
         }
         switch ($type) {
-            case Query::TYPE_GET: return $this->executeGet($query);
-            case Query::TYPE_SAVE: return $this->executeSave($query);
-            case Query::TYPE_INSERT: return $this->executeInsert($query, $arg);
-            case Query::TYPE_UPDATE: return $this->executeUpdate($query, $arg);
-            case Query::TYPE_DELETE: return $this->executeDelete($query);
+            case Query::TYPE_GET:
+                return $this->executeGet($query);
+            case Query::TYPE_SAVE:
+                return $this->executeSave($query);
+            case Query::TYPE_INSERT:
+                return $this->executeInsert($query, $arg);
+            case Query::TYPE_UPDATE:
+                return $this->executeUpdate($query, $arg);
+            case Query::TYPE_DELETE:
+                return $this->executeDelete($query);
         }
     }
 
@@ -418,5 +422,4 @@ class Collection
             throw new UndefinedMethodException("Undefined method or macro '{$method}'.");
         }
     }
-
 }

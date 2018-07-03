@@ -1,9 +1,6 @@
 <?php
-
 namespace TriTan\Functions\Auth;
 
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use TriTan\Config;
 use TriTan\Exception\Exception;
 use TriTan\Exception\UnauthorizedException;
@@ -25,9 +22,9 @@ use TriTan\Functions\Logger;
 
 /**
  * Checks the permission of the logged in user.
- * 
+ *
  * @file app/functions/auth-function.php
- * 
+ *
  * @since 0.9.8
  * @param string $perm Permission to check for.
  * @return bool Return true if permission matches or false otherwise.
@@ -44,9 +41,9 @@ function current_user_can($perm)
 
 /**
  * Checks the main role of the user from the user document.
- * 
+ *
  * @file app/functions/auth-function.php
- * 
+ *
  * @since 0.9
  * @param int $role_id The id of the role to check for.
  * @return bool True if role id matches or false otherwise
@@ -62,9 +59,9 @@ function hasRole($role_id)
 
 /**
  * Returns the values of a requested role.
- * 
+ *
  * @file app/functions/auth-function.php
- * 
+ *
  * @since 0.9
  * @param int $role The id of the role to check for.
  * @return array Returned values of the role.
@@ -88,9 +85,9 @@ function get_role_by_id($role = 0)
 
 /**
  * Retrieve user info by user_id.
- * 
+ *
  * @file app/functions/auth-function.php
- * 
+ *
  * @since 0.9
  * @param mixed $user_id User's id.
  * @return User|false User array on success, false on failure.
@@ -102,9 +99,9 @@ function get_userdata($user_id)
 
 /**
  * Checks if a visitor is logged in or not.
- * 
+ *
  * @file app/functions/auth-function.php
- * 
+ *
  * @since 0.9
  * @return boolean
  */
@@ -121,9 +118,9 @@ function is_user_logged_in()
 
 /**
  * Checks if logged in user can access menu, tab, or page.
- * 
+ *
  * @file app/functions/auth-function.php
- * 
+ *
  * @since 0.9
  * @param string $perm Permission to check for.
  * @return string
@@ -139,7 +136,7 @@ function ae($perm)
  * Retrieve user info by a given field from the user's table.
  *
  * @file app/functions/auth-function.php
- * 
+ *
  * @since 0.9
  * @param string $field The field to retrieve the user with.
  * @param int|string $value A value for $field (id, uname or email).
@@ -162,7 +159,7 @@ function get_user_by($field, $value)
  * Logs a user in after the login information has checked out.
  *
  * @file app/functions/auth-function.php
- * 
+ *
  * @since 0.9
  * @param string $login User's username or email address.
  * @param string $password User's password.
@@ -199,7 +196,7 @@ function ttcms_authenticate($login, $password, $rememberme)
 
     /**
      * Filters the authentication cookie.
-     * 
+     *
      * @since 0.9
      * @param object $_user User data object.
      * @param string $rememberme Whether to remember the user.
@@ -221,7 +218,7 @@ function ttcms_authenticate($login, $password, $rememberme)
  * Checks a user's login information.
  *
  * @file app/functions/auth-function.php
- * 
+ *
  * @since 0.9
  * @param string $login User's username or email address.
  * @param string $password User's password.
@@ -230,7 +227,6 @@ function ttcms_authenticate($login, $password, $rememberme)
 function ttcms_authenticate_user($login, $password, $rememberme)
 {
     if (empty($login) || empty($password)) {
-
         if (empty($login)) {
             Dependency\_ttcms_flash()->{'error'}(Core\_t('<strong>ERROR</strong>: The username/email field is empty.', 'tritan-cms'), app()->req->server['HTTP_REFERER']);
         }
@@ -264,7 +260,7 @@ function ttcms_authenticate_user($login, $password, $rememberme)
 
     /**
      * Filters log in details.
-     * 
+     *
      * @since 0.9
      * @param string $login User's username or email address.
      * @param string $password User's password.
@@ -277,9 +273,9 @@ function ttcms_authenticate_user($login, $password, $rememberme)
 
 /**
  * Sets auth cookie.
- * 
+ *
  * @file app/functions/auth-function.php
- * 
+ *
  * @since 0.9
  * @param array $user           User data array.
  * @param string $rememberme    Should user be remembered for a length of time?
@@ -288,13 +284,13 @@ function ttcms_authenticate_user($login, $password, $rememberme)
 function ttcms_set_auth_cookie($user, $rememberme = '')
 {
     if (!is_array($user)) {
-        throw new UnauthorizedException(_t('"$user" should be an array.', 'tritan-cms'), 4011);
+        throw new UnauthorizedException(Core\_t('"$user" should be an array.', 'tritan-cms'), 4011);
     }
 
     if (isset($rememberme)) {
         /**
          * Ensure the browser will continue to send the cookie until it expires.
-         * 
+         *
          * @since 0.9
          */
         $expire = app()->hook->{'apply_filter'}('auth_cookie_expiration', (app()->hook->{'get_option'}('cookieexpire') !== '') ? app()->hook->{'get_option'}('cookieexpire') : app()->config('cookies.lifetime'));
@@ -311,7 +307,7 @@ function ttcms_set_auth_cookie($user, $rememberme = '')
         'key' => 'TTCMS_COOKIENAME',
         'user_id' => (int) Core\_escape($user['user_id']),
         'user_login' => (string) Core\_escape($user['user_login']),
-        'remember' => (isset($rememberme) ? $rememberme : _t('no', 'tritan-cms')),
+        'remember' => (isset($rememberme) ? $rememberme : Core\_t('no', 'tritan-cms')),
         'exp' => (int) $expire + time()
     ];
 
@@ -329,9 +325,9 @@ function ttcms_set_auth_cookie($user, $rememberme = '')
 
 /**
  * Removes all cookies associated with authentication.
- * 
+ *
  * @file app/functions/auth-function.php
- * 
+ *
  * @since 0.9
  */
 function ttcms_clear_auth_cookie()
@@ -380,9 +376,9 @@ function ttcms_clear_auth_cookie()
 
 /**
  * Shows error messages on login form.
- * 
+ *
  * @file app/functions/auth-function.php
- * 
+ *
  * @since 0.9
  */
 function ttcms_login_form_show_message()
@@ -392,9 +388,9 @@ function ttcms_login_form_show_message()
 
 /**
  * Retrieves data from a secure cookie.
- * 
+ *
  * @file app/functions/auth-function.php
- * 
+ *
  * @since 0.9
  * @param string $key COOKIE key.
  * @return mixed

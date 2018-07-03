@@ -1,9 +1,6 @@
 <?php
-
 namespace TriTan\Cache;
 
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use TriTan\Config;
 use TriTan\Exception\Exception;
 use TriTan\Exception\IOException;
@@ -14,7 +11,7 @@ use TriTan\Functions\Core;
  * TriTan CMS Filesystem Cache Class.
  *
  * @license GPLv3
- *         
+ *
  * @since 0.9
  * @package TriTan CMS
  * @subpackage Cache
@@ -229,7 +226,7 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
             $namespace = 'default';
         }
 
-        if (!$this->_exists($key, $namespace)) {
+        if (!$this->exists($key, $namespace)) {
             $this->cacheMisses();
             return false;
         }
@@ -338,7 +335,7 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
 
         unset($this->_cache[$namespace][$key]);
 
-        if (!$this->_exists($key, $namespace)) {
+        if (!$this->exists($key, $namespace)) {
             return false;
         }
 
@@ -439,7 +436,7 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
 
         $filename = $this->keyToPath($key, $namespace);
 
-        if ($this->_exists($key, $namespace)) {
+        if ($this->exists($key, $namespace)) {
             return false;
         }
         // Opening the file in read/write mode
@@ -509,7 +506,7 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
             $namespace = 'default';
         }
 
-        if (!$this->_exists($key, $namespace)) {
+        if (!$this->exists($key, $namespace)) {
             return false;
         }
 
@@ -550,7 +547,7 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
             $namespace = 'default';
         }
 
-        if (!$this->_exists($key, $namespace)) {
+        if (!$this->exists($key, $namespace)) {
             return false;
         }
 
@@ -597,7 +594,7 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
      *
      * {@inheritDoc}
      *
-     * @see TriTan\Cache\Abstract_Cache::_exists()
+     * @see TriTan\Cache\Abstract_Cache::exists()
      *
      * @since 0.9
      * @access protected
@@ -607,7 +604,7 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
      *            Cache namespace for the key existence check.
      * @return bool Whether the cache item exists in the cache for the given key and namespace.
      */
-    protected function _exists($key, $namespace)
+    protected function exists($key, $namespace)
     {
         if (empty($namespace)) {
             $namespace = 'default';
@@ -752,5 +749,4 @@ class Cache_Filesystem extends \TriTan\Cache\Abstract_Cache
         }
         return $this->_dir . urlencode($namespace) . DS . urlencode(md5($key));
     }
-
 }

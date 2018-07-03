@@ -1,6 +1,7 @@
-<?php if (!defined('BASE_PATH')) exit('No direct script access allowed');
+<?php
 use TriTan\Functions\Dependency;
 use TriTan\Functions\Core;
+
 $this->layout('main::_layouts/admin-layout');
 $this->section('backend');
 TriTan\Config::set('screen_parent', 'dashboard');
@@ -34,9 +35,9 @@ TriTan\Config::set('screen_child', 'ftp');
 
     <!-- Main content -->
     <section class="content">
-        
+
         <?= Dependency\_ttcms_flash()->showMessage(); ?>
-        
+
         <div class="box box-default">
             <div class="box-body">
                 <div id="elfinder"></div>

@@ -1,9 +1,6 @@
 <?php
-
 namespace TriTan\Functions\NodeQ;
 
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use TriTan\Exception\Exception;
 use Cascade\Cascade;
 use TriTan\Functions\Core;
@@ -14,7 +11,7 @@ use TriTan\Functions\Dependency;
  * TriTan CMS NodeQ Functions
  *
  * @license GPLv3
- *         
+ *
  * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
@@ -22,12 +19,12 @@ use TriTan\Functions\Dependency;
 
 /**
  * Login Details Email
- * 
+ *
  * Function used to send login details to new
  * user.
- * 
+ *
  * @file app/functions/nodeq-function.php
- * 
+ *
  * @since 0.9
  */
 function ttcms_nodeq_login_details()

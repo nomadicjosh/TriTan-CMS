@@ -1,7 +1,6 @@
 <?php
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use TriTan\Functions\Core;
+
 $this->layout('main::_layouts/login-layout');
 $this->section('login');
 ?>
@@ -24,9 +23,9 @@ $this->section('login');
                                 </div>
                                 <div class="col-xs-6 form-group pull-left checkbox">
                                     <input id="checkbox1" type="checkbox" name="rememberme" value="yes" />
-                                    <label for="checkbox1"><?= Core\_t('Remember Me', 'tritan-cms'); ?></label>   
+                                    <label for="checkbox1"><?= Core\_t('Remember Me', 'tritan-cms'); ?></label>
                                 </div>
-                                <div class="col-xs-6 form-group pull-right">     
+                                <div class="col-xs-6 form-group pull-right">
                                     <input type="submit" name="login-submit" id="login-submit" tabindex="4" class="form-control btn btn-login" value="<?= Core\_t('Log In', 'tritan-cms'); ?>">
                                 </div>
                             </form>
@@ -68,7 +67,7 @@ $this->section('login');
     <div class="container">
         <div class="col-md-10 col-md-offset-1 text-center">
             <h6 style="font-size:14px;font-weight:100;color: #fff;"><?= Core\_t('Powered by', 'tritan-cms'); ?> <a href="//www.tritancms.com" style="color: #fff;"><?= Core\_t('TriTan CMS', 'tritan-cms'); ?></a> r<?= CURRENT_RELEASE; ?></h6>
-        </div>   
+        </div>
     </div>
 </footer>
 <?php $this->stop(); ?>

@@ -1,10 +1,11 @@
-<?php if (!defined('BASE_PATH')) exit('No direct script access allowed');
+<?php
 use TriTan\Functions\Db;
 use TriTan\Functions\Dependency;
 use TriTan\Functions\Auth;
 use TriTan\Functions\User;
 use TriTan\Functions\Core;
 use TriTan\Functions\Hook;
+
 $this->layout('main::_layouts/admin-layout');
 $this->section('backend');
 TriTan\Config::set('screen_parent', $this->posttype);
@@ -41,9 +42,9 @@ $(function(){
 
             <!-- Main content -->
             <section class="content">
-                
+
                 <?= Dependency\_ttcms_flash()->showMessage(); ?>
-                
+
                 <div class="row">
                     <!-- left column -->
                     <div class="col-md-9">
@@ -73,7 +74,7 @@ $(function(){
                         <!-- /.box-body -->
                     </div>
                     <!-- /.left column -->
-                    
+
                     <?php $this->app->hook->{'do_action'}('create_post_metabox', $this->posttype, 'normal', 'middle'); ?>
 
                     <div class="col-md-3">
@@ -119,7 +120,7 @@ $(function(){
                                     <label><strong><font color="red">*</font> <?= Core\_t('Status', 'tritan-cms'); ?></strong></label>
                                     <select class="form-control select2" name="post_status" style="width: 100%;" required>
                                         <option>&nbsp;</option>
-                                        <?php if(Auth\current_user_can('publish_posts')) : ?>
+                                        <?php if (Auth\current_user_can('publish_posts')) : ?>
                                         <option value="published"<?= selected('published', __return_post('post_status'), false); ?>><?= Core\_t('Publish', 'tritan-cms'); ?></option>
                                         <?php endif; ?>
                                         <option value="draft"<?= selected('draft', __return_post('post_status'), false); ?>><?= Core\_t('Draft', 'tritan-cms'); ?></option>
@@ -150,7 +151,7 @@ $(function(){
                                     <label><strong><?= Core\_t('Parent', 'tritan-cms'); ?></strong></label>
                                     <select class="form-control select2" name="post_parent" style="width: 100%;">
                                         <option value="">&nbsp;</option>
-                                        <?php if($this->post_count > 0) : ?>
+                                        <?php if ($this->post_count > 0) : ?>
                                         <?php Db\get_post_dropdown_list(); ?>
                                         <?php endif; ?>
                                     </select>
@@ -209,7 +210,7 @@ $(function(){
 <?php
 /**
  * Fires before the create post screen is fully loaded.
- * 
+ *
  * @since 0.9
  */
 $this->app->hook->{'do_action'}('enqueue_ttcms_editor');

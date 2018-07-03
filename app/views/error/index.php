@@ -6,9 +6,9 @@ use TriTan\Functions\Dependency;
 use TriTan\Functions\Core;
 /**
  * Error Log View
- *  
+ *
  * @license GPLv3
- * 
+ *
  * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
@@ -19,7 +19,7 @@ $logger = new TriTan\Logger();
 Config::set('screen_parent', 'dashboard');
 Config::set('screen_child', 'error');
 
-?>        
+?>
 
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
@@ -34,7 +34,7 @@ Config::set('screen_child', 'error');
     <!-- Main content -->
     <section class="content">
 
-        <?= Dependency\_ttcms_flash()->showMessage(); ?> 
+        <?= Dependency\_ttcms_flash()->showMessage(); ?>
 
         <!-- SELECT2 EXAMPLE -->
         <div class="box box-default">
@@ -52,7 +52,7 @@ Config::set('screen_child', 'error');
                     <tbody>
                         <?php foreach ($this->errors as $error) : ?>
                             <tr class="gradeX">
-                                <td class="text-center"><?= $logger->error_constant_to_name($error['type']); ?></td>
+                                <td class="text-center"><?= $logger->errorConstantToName($error['type']); ?></td>
                                 <td class="text-center"><?= $error['string']; ?></td>
                                 <td class="text-center"><?= $error['file']; ?></td>
                                 <td class="text-center"><?= $error['line']; ?></td>

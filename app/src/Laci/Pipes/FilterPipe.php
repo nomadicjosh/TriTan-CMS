@@ -6,22 +6,21 @@ use Closure;
 
 class FilterPipe implements PipeInterface
 {
-
     protected $filters = [];
 
     public function process(array $data)
     {
         $filters = $this->filters;
-        return array_filter($data, function($row) use ($filters) {
+        return array_filter($data, function ($row) use ($filters) {
             $result = true;
             foreach ($filters as $i => $filter) {
                 list($filter, $type) = $filter;
                 switch ($type) {
                     case 'and':
-                        $result = ($result AND $filter($row));
+                        $result = ($result and $filter($row));
                         break;
                     case 'or':
-                        $result = ($result OR $filter($row));
+                        $result = ($result or $filter($row));
                         break;
                     default:
                         throw new \InvalidArgumentException("Filter type must be 'AND' or 'OR'.", 1);
@@ -35,5 +34,4 @@ class FilterPipe implements PipeInterface
     {
         $this->filters[] = [$filter, strtolower($type)];
     }
-
 }

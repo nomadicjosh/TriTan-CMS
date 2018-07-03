@@ -211,7 +211,7 @@ $app->hook->{'do_action'}('admin_init');
                                 <?php $app->hook->{'do_action'}('plugins_submenu'); ?>
                             </ul>
                         </li>
-                        <?php if(Auth\current_user_can('manage_users')) : ?>
+                        <?php if (Auth\current_user_can('manage_users')) : ?>
                         <li class="treeview<?= (Config::get('screen_parent') === 'users' ? ' active' : ''); ?>">
                             <a href="#">
                                 <i class="fa fa-user"></i>

@@ -1,16 +1,15 @@
 <?php
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use TriTan\Config;
 use TriTan\Functions\Auth;
 use TriTan\Functions\User;
 use TriTan\Functions\Core;
 use TriTan\Functions\Dependency;
+
 /**
  * User's List View
- *  
+ *
  * @license GPLv3
- * 
+ *
  * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
@@ -20,7 +19,7 @@ $this->section('backend');
 Config::set('screen_parent', 'users');
 Config::set('screen_child', 'all-users');
 
-?>        
+?>
 
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
@@ -29,7 +28,7 @@ Config::set('screen_child', 'all-users');
         <div class="box-header with-border">
             <i class="fa fa-user"></i>
             <h3 class="box-title"><?= Core\_t('Users', 'tritan-cms'); ?></h3>
-            
+
             <div class="pull-right">
                 <button type="button"<?=Auth\ae('create_users');?> class="btn btn-warning" onclick="window.location='<?=Core\get_base_url();?>admin/user/create/'"><i class="fa fa-plus"></i> <?= Core\_t('New User', 'tritan-cms'); ?></button>
             </div>
@@ -39,7 +38,7 @@ Config::set('screen_child', 'all-users');
     <!-- Main content -->
     <section class="content">
 
-        <?= Dependency\_ttcms_flash()->showMessage(); ?> 
+        <?= Dependency\_ttcms_flash()->showMessage(); ?>
 
         <!-- SELECT2 EXAMPLE -->
         <div class="box box-default">

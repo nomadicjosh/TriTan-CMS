@@ -1,5 +1,4 @@
 <?php
-
 use TriTan\Functions\Core;
 
 ob_start();

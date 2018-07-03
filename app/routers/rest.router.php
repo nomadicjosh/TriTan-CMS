@@ -1,21 +1,19 @@
 <?php
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 
 // RESTful API
-$app->group('/rest', function() use ($app, $orm) {
+$app->group('/rest', function () use ($app, $orm) {
 
     /**
      * Will result in /rest/.
      */
-    $app->get('/', function () use($app) {
+    $app->get('/', function () use ($app) {
         $app->res->_format('json', 404);
     });
 
     /**
      * Will result in /rest/v1/.
      */
-    $app->get('/v1/', function () use($app) {
+    $app->get('/v1/', function () use ($app) {
         $app->res->_format('json', 404);
     });
 
@@ -23,12 +21,12 @@ $app->group('/rest', function() use ($app, $orm) {
      * @apiDescription Retrieve all records from a requested document.
      * @api {get} /rest/v1/:api_key/:document/
      * @apiVersion 1.0.0
-     * 
+     *
      * @apiGroup REST API
-     * 
+     *
      * @apiExample {curl} Example usage:
      *     curl -i http://localhost:8888/rest/v1/UJHUPtxpEgezl45gjazX/user/
-     * 
+     *
      * @apiSuccessExample {json} Success-Response:
      *     HTTP/1.1 200 OK
      *     {
@@ -44,7 +42,7 @@ $app->group('/rest', function() use ($app, $orm) {
      *          "user_modified": "2017-08-29 23:55:30"
      *      }
      */
-    $app->get('/v1/(\w+)/(\w+)', function ($key, $table) use($app) {
+    $app->get('/v1/(\w+)/(\w+)', function ($key, $table) use ($app) {
         if ($key !== $app->hook->{'get_option'}('api_key') || $app->hook->{'get_option'}('api_key') === null) {
             $app->res->_format('json', 401);
             exit();
@@ -79,13 +77,13 @@ $app->group('/rest', function() use ($app, $orm) {
      * @apiDescription Retrieve all records from a requested document sorted by a particular field.
      * @api {get} /rest/v1/:api_key/:document/sort/:field/
      * @apiVersion 1.0.0
-     * 
+     *
      * @apiGroup REST API
-     * 
+     *
      * @apiExample {curl} Example usage:
      *     curl -i http://localhost:8888/rest/v1/UJHUPtxpEgezl45gjazX/user/sort/user_login/
      */
-    $app->get('/v1/(\w+)/(\w+)/sort/(\w+)/', function ($key, $table, $sort) use($app) {
+    $app->get('/v1/(\w+)/(\w+)/sort/(\w+)/', function ($key, $table, $sort) use ($app) {
         if ($key !== $app->hook->{'get_option'}('api_key') || $app->hook->{'get_option'}('api_key') === null) {
             $app->res->_format('json', 401);
             exit();
@@ -122,13 +120,13 @@ $app->group('/rest', function() use ($app, $orm) {
      * @apiDescription Retrieve all records from a requested document sorted by a particular field in descending order.
      * @api {get} /rest/v1/:api_key/:document/sort/:field/desc/
      * @apiVersion 1.0.0
-     * 
+     *
      * @apiGroup REST API
-     * 
+     *
      * @apiExample {curl} Example usage:
      *     curl -i http://localhost:8888/rest/v1/UJHUPtxpEgezl45gjazX/user/sort/user_login/desc/
      */
-    $app->get('/v1/(\w+)/(\w+)/sort/(\w+)/desc/', function ($key, $table, $sort) use($app) {
+    $app->get('/v1/(\w+)/(\w+)/sort/(\w+)/desc/', function ($key, $table, $sort) use ($app) {
         if ($key !== $app->hook->{'get_option'}('api_key') || $app->hook->{'get_option'}('api_key') === null) {
             $app->res->_format('json', 401);
             exit();
@@ -165,13 +163,13 @@ $app->group('/rest', function() use ($app, $orm) {
      * @apiDescription Retrieve all records from a requested document sorted by a particular field in descending order.
      * @api {get} /rest/v1/:api_key/:document1/many/:document2/:field2/:field1/
      * @apiVersion 1.0.0
-     * 
+     *
      * @apiGroup REST API
-     * 
+     *
      * @apiExample {curl} Example usage:
      *     curl -i http://localhost:8888/rest/v1/UJHUPtxpEgezl45gjazX/user/many/ttcms_1_post/post_author/user_id/
      */
-    $app->get('/v1/(\w+)/(\w+)/many/(\w+)/(\w+)/(\w+)/', function ($key, $table1, $table2, $field1, $field2) use($app) {
+    $app->get('/v1/(\w+)/(\w+)/many/(\w+)/(\w+)/(\w+)/', function ($key, $table1, $table2, $field1, $field2) use ($app) {
         if ($key !== $app->hook->{'get_option'}('api_key') || $app->hook->{'get_option'}('api_key') === null) {
             $app->res->_format('json', 401);
             exit();
@@ -208,13 +206,13 @@ $app->group('/rest', function() use ($app, $orm) {
      * @apiDescription Retrieve all records from a requested document sorted by a particular field in descending order.
      * @api {get} /rest/v1/:api_key/:document1/one/:document2/:field2/:field1/
      * @apiVersion 1.0.0
-     * 
+     *
      * @apiGroup REST API
-     * 
+     *
      * @apiExample {curl} Example usage:
      *     curl -i http://localhost:8888/rest/v1/UJHUPtxpEgezl45gjazX/ttcms_1_post/one/user/user_id/post_author/
      */
-    $app->get('/v1/(\w+)/(\w+)/one/(\w+)/(\w+)/(\w+)/', function ($key, $table1, $table2, $field1, $field2) use($app) {
+    $app->get('/v1/(\w+)/(\w+)/one/(\w+)/(\w+)/(\w+)/', function ($key, $table1, $table2, $field1, $field2) use ($app) {
         if ($key !== $app->hook->{'get_option'}('api_key') || $app->hook->{'get_option'}('api_key') === null) {
             $app->res->_format('json', 401);
             exit();
@@ -251,12 +249,12 @@ $app->group('/rest', function() use ($app, $orm) {
      * @apiDescription Retrieve a record based on field|value from a requested document.
      * @api {get} /rest/v1/:api_key/:document/:field/:value/
      * @apiVersion 1.0.0
-     * 
+     *
      * @apiGroup REST API
-     * 
+     *
      * @apiExample {curl} Example usage:
      *     curl -i http://localhost:8888/rest/v1/UJHUPtxpEgezl45gjazX/user/user_login/tritan/
-     * 
+     *
      * @apiSuccessExample {json} Success-Response:
      *     HTTP/1.1 200 OK
      *     {
@@ -272,7 +270,7 @@ $app->group('/rest', function() use ($app, $orm) {
      *          "user_modified": "2017-08-29 23:55:30"
      *      }
      */
-    $app->get('/v1/(\w+)/(\w+)/(\w+)/(.+)', function ($key, $table, $field, $any) use($app) {
+    $app->get('/v1/(\w+)/(\w+)/(\w+)/(.+)', function ($key, $table, $field, $any) use ($app) {
         if ($key !== $app->hook->{'get_option'}('api_key') || $app->hook->{'get_option'}('api_key') === null) {
             $app->res->_format('json', 401);
             exit();

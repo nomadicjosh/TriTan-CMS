@@ -1,17 +1,15 @@
-<?php namespace TriTan;
-
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
+<?php
+namespace TriTan;
 
 /**
  * Error API: Error Class
- * 
+ *
  * Based on WordPress error API. Container for checking for TriTan CMS
  * errors and error messages. Return Error and use {@link is_ttcms_error()} to
  * check if this class is returned. Many core TriTan CMS functions pass this
  * class in the event of an error and if not handled properly will result in
  * code errors.
- *  
+ *
  * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
@@ -70,7 +68,7 @@ class Error
      * @since 0.9
      * @return array List of error codes, if available.
      */
-    public function get_error_codes()
+    public function getErrorCodes()
     {
         if (empty($this->errors)) {
             return [];
@@ -85,9 +83,9 @@ class Error
      * @since 0.9
      * @return string|int Empty string, if no error codes.
      */
-    public function get_error_code()
+    public function getErrorCode()
     {
-        $codes = $this->get_error_codes();
+        $codes = $this->getErrorCodes();
 
         if (empty($codes)) {
             return '';
@@ -103,7 +101,7 @@ class Error
      * @param string|int $code Optional. Retrieve messages matching code, if exists.
      * @return array Error strings on success, or empty array on failure (if using code parameter).
      */
-    public function get_error_messages($code = '')
+    public function getErrorMessages($code = '')
     {
         // Return all messages if no code specified.
         if (empty($code)) {
@@ -131,12 +129,12 @@ class Error
      * @param string|int $code Optional. Error code to retrieve message.
      * @return string
      */
-    public function get_error_message($code = '')
+    public function getErrorMessage($code = '')
     {
         if (empty($code)) {
-            $code = $this->get_error_code();
+            $code = $this->getErrorCode();
         }
-        $messages = $this->get_error_messages($code);
+        $messages = $this->getErrorMessages($code);
         if (empty($messages)) {
             return '';
         }
@@ -150,10 +148,10 @@ class Error
      * @param string|int $code Optional. Error code.
      * @return mixed Error data, if it exists.
      */
-    public function get_error_data($code = '')
+    public function getErrorData($code = '')
     {
         if (empty($code)) {
-            $code = $this->get_error_code();
+            $code = $this->getErrorCode();
         }
         if (isset($this->error_data[$code])) {
             return $this->error_data[$code];
@@ -185,10 +183,10 @@ class Error
      * @param mixed $data Error data.
      * @param string|int $code Error code.
      */
-    public function add_data($data, $code = '')
+    public function addData($data, $code = '')
     {
         if (empty($code)) {
-            $code = $this->get_error_code();
+            $code = $this->getErrorCode();
         }
 
         $this->error_data[$code] = $data;

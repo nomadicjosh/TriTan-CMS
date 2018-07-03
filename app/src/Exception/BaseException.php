@@ -1,8 +1,5 @@
 <?php namespace TriTan\Exception;
 
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
-
 /**
  * TriTan CMS Exception Class
  * 
@@ -49,16 +46,16 @@ class BaseException extends \Liten\Exception\LitenException {
 	 * @param `\Liten\Exception\LitenException` | `TriTan\Error` $previous Previous exception or error (optional).
 	 *
 	 * @uses TriTan\Error
-	 * @uses TriTan\Error::get_error_code()
-	 * @uses TriTan\Error::get_error_message()
+	 * @uses TriTan\Error::getErrorCode()
+	 * @uses TriTan\Error::getErrorMessage()
 	 */
 	public function __construct( $message = '', $code = '', $previous = null ) {
 		$exception = $previous;
 		$ttcms_error  = null;
 
 		if ( $previous instanceof \TriTan\Error ) {
-			$code      = $previous->get_error_code();
-			$message   = $previous->get_error_message( $code );
+			$code      = $previous->getErrorCode();
+			$message   = $previous->getErrorMessage( $code );
 			$ttcms_error  = $previous;
 			$exception = null;
 		}

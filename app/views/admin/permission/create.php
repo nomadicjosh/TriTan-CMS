@@ -1,14 +1,13 @@
 <?php
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use TriTan\Config;
 use TriTan\Functions\Dependency;
 use TriTan\Functions\Core;
+
 /**
  * Create Permission View
- *  
+ *
  * @license GPLv3
- * 
+ *
  * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
@@ -18,7 +17,7 @@ $this->section('backend');
 Config::set('screen_parent', 'roles');
 Config::set('screen_child', 'cperm');
 
-?>           
+?>
 
 <!-- form start -->
 <form method="post" action="<?= Core\get_base_url(); ?>admin/permission/create/" data-toggle="validator" autocomplete="off">
@@ -41,7 +40,7 @@ Config::set('screen_child', 'cperm');
         <section class="content">
 
             <?= Dependency\_ttcms_flash()->showMessage(); ?>
-            
+
             <div class="box box-default">
 
                 <div class="box-body">

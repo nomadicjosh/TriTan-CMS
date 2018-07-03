@@ -1,9 +1,6 @@
 <?php
-
 namespace TriTan\Functions\Post;
 
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use TriTan\Config;
 use TriTan\Exception\Exception;
 use TriTan\Functions\Posttype;
@@ -18,7 +15,7 @@ use TriTan\Functions\User;
  * TriTan CMS Post Functions
  *
  * @license GPLv3
- *         
+ *
  * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
@@ -27,9 +24,9 @@ use TriTan\Functions\User;
 /**
  * This function checks to see if the current TriTan CMS query has any
  * results to loop over.
- * 
+ *
  * @file app/functions/post-function.php
- * 
+ *
  * @since 0.9
  * @return int|null
  */
@@ -42,9 +39,9 @@ function has_posts()
 }
 
 /**
- * 
+ *
  * @file app/functions/post-function.php
- * 
+ *
  * @since 0.9
  * @return object
  */
@@ -58,7 +55,7 @@ function the_post()
 
 /**
  * Retrieves post data given a post ID or post array.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9
@@ -104,10 +101,10 @@ function get_post($post, $object = false)
 
 /**
  * A function which retrieves TriTan CMS post datetime.
- * 
+ *
  * Purpose of this function is for the `post_datetime`
  * filter.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9
@@ -130,10 +127,10 @@ function get_post_datetime($post_id = 0)
 
 /**
  * A function which retrieves TriTan CMS post modified datetime.
- * 
+ *
  * Purpose of this function is for the `post_modified`
  * filter.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9
@@ -158,10 +155,10 @@ function get_post_modified($post_id = 0)
 
 /**
  * A function which retrieves a TriTan CMS post content.
- * 
+ *
  * Purpose of this function is for the `post_content`
  * filter.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9
@@ -185,10 +182,10 @@ function get_post_content($post_id = 0)
 
 /**
  * A function which retrieves a TriTan CMS post posttype name.
- * 
+ *
  * Purpose of this function is for the `post_posttype_name`
  * filter.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9
@@ -213,10 +210,10 @@ function get_post_type_name($post_id = 0)
 
 /**
  * A function which retrieves a TriTan CMS post posttype link.
- * 
+ *
  * Purpose of this function is for the `post_posttype_link`
  * filter.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9
@@ -239,10 +236,10 @@ function get_post_posttype_link($post_id = 0)
 
 /**
  * A function which retrieves a TriTan CMS post title.
- * 
+ *
  * Purpose of this function is for the `post_title`
  * filter.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9
@@ -266,10 +263,10 @@ function get_post_title($post_id = 0)
 
 /**
  * A function which retrieves a TriTan CMS post slug.
- * 
+ *
  * Purpose of this function is for the `post_slug`
  * filter.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9
@@ -293,10 +290,10 @@ function get_post_slug($post_id = 0)
 
 /**
  * A function which retrieves a TriTan CMS post's relative url.
- * 
+ *
  * Purpose of this function is for the `post_relative_url`
  * filter.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9.5
@@ -329,10 +326,10 @@ function get_relative_url($post = 0)
 
 /**
  * A function which retrieves a TriTan CMS post's permalink.
- * 
+ *
  * Purpose of this function is for the `permalink`
  * filter.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9
@@ -365,9 +362,9 @@ function get_permalink($post = 0)
 
 /**
  * The TriTan CMS post filter.
- * 
+ *
  * Uses `the_content` filter.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9
@@ -384,9 +381,9 @@ function the_content($post_id = 0)
 
 /**
  * Wrapper function for get_all_posts.
- * 
+ *
  * @file app/functions/post-function.php
- * 
+ *
  * @since 0.9
  * @param string $post_type The post type.
  * @param int $limit        Number of posts to show.
@@ -401,10 +398,10 @@ function the_posts($post_type = null, $limit = 0, $offset = null, $status = 'all
 
 /**
  * A function which retrieves TriTan CMS post css.
- * 
+ *
  * Purpose of this function is for the `post_css`
  * filter.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9
@@ -428,10 +425,10 @@ function post_css($post_id = 0)
 
 /**
  * A function which retrieves TriTan CMS post javascript.
- * 
+ *
  * Purpose of this function is for the `post_js`
  * filter.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9
@@ -455,9 +452,9 @@ function post_js($post_id = 0)
 
 /**
  * Adds label to post's status.
- * 
+ *
  * @file app/functions/post-function.php
- * 
+ *
  * @since 0.9
  * @param string $status
  * @return string
@@ -475,7 +472,7 @@ function ttcms_post_status_label($status)
 
 /**
  * Retrieve post meta field for a post.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9
@@ -493,7 +490,7 @@ function get_post_meta($post_id, $key = '', $single = false)
 
 /**
  * Get post meta data by meta ID.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9
@@ -512,7 +509,7 @@ function get_post_meta_by_mid($mid)
  * same key and post ID.
  *
  * If the meta field for the post does not exist, it will be added.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9
@@ -531,7 +528,7 @@ function update_post_meta($post_id, $meta_key, $meta_value, $prev_value = '')
 
 /**
  * Update post meta data by meta ID.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9
@@ -549,7 +546,7 @@ function update_post_meta_by_mid($mid, $meta_key, $meta_value)
 
 /**
  * Add meta data field to a post.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9
@@ -571,7 +568,7 @@ function add_post_meta($post_id, $meta_key, $meta_value, $unique = false)
  * You can match based on the key, or key and value. Removing based on key and
  * value, will keep from removing duplicate metadata with the same key. It also
  * allows removing all metadata matching key, if needed.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9
@@ -588,7 +585,7 @@ function delete_post_meta($post_id, $meta_key, $meta_value = '')
 
 /**
  * Delete post meta data by meta ID.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9
@@ -605,7 +602,7 @@ function delete_post_meta_by_mid($mid)
  *
  * The post meta fields are retrieved from the cache where possible,
  * so the function is optimized to be called more than once.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9
@@ -622,7 +619,7 @@ function get_post_custom($post_id = 0)
  * Retrieve meta field names for a post.
  *
  * If there are no meta fields, then nothing (null) will be returned.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9
@@ -645,7 +642,7 @@ function get_post_custom_keys($post_id = 0)
  *
  * The parameters must not be considered optional. All of the post meta fields
  * will be retrieved and only the meta field key values returned.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9
@@ -664,11 +661,11 @@ function get_post_custom_values($key = '', $post_id = 0)
 
 /**
  * Displays the permalink for the current post.
- * 
+ *
  * Uses `the_permalink` filter.
- * 
+ *
  * @file app/functions/post-function.php
- * 
+ *
  * @since 0.9
  * @param int|array $post Post ID or post array.
  */
@@ -686,10 +683,10 @@ function the_permalink($post = 0)
 
 /**
  * A function which retrieves a TriTan CMS post author id.
- * 
+ *
  * Purpose of this function is for the `post_author_id`
  * filter.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9.9
@@ -713,10 +710,10 @@ function get_post_author_id($post_id = 0)
 
 /**
  * A function which retrieves a TriTan CMS post author.
- * 
+ *
  * Purpose of this function is for the `post_author`
  * filter.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9.9
@@ -741,10 +738,10 @@ function get_post_author($post_id = 0, $reverse = false)
 
 /**
  * A function which retrieves a TriTan CMS post status.
- * 
+ *
  * Purpose of this function is for the `post_status`
  * filter.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9.9
@@ -768,10 +765,10 @@ function get_post_status($post_id = 0)
 
 /**
  * A function which retrieves TriTan CMS post date.
- * 
+ *
  * Uses `call_user_func_array()` function to return appropriate post date function.
  * Dynamic part is the variable $type, which calls the date function you need.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9
@@ -786,10 +783,10 @@ function get_post_date($post_id = 0, $type = 'published')
 
 /**
  * A function which retrieves TriTan CMS post time.
- * 
+ *
  * Uses `call_user_func_array()` function to return appropriate post time function.
  * Dynamic part is the variable $type, which calls the date function you need.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9
@@ -803,173 +800,459 @@ function get_post_time($post_id = 0, $type = 'published')
 }
 
 /**
- * A function which retrieves TriTan CMS post created date.
- * 
- * Purpose of this function is for the `post_created_date`
- * filter.
- * 
+ * Retrieves TriTan CMS post created date.
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9.9
- * @param int $post_id The unique id of a post.
+ * @param string $format
+ * @param int $post The unique id of a post.
  * @return string
  */
-function get_post_created_date($post_id = 0)
+function get_post_created_date(string $format = 'U', bool $gmt = false, $post = null, bool $translate = false)
 {
-    $post = get_post($post_id);
-    $date = format_date(Core\_escape($post['post_created']), app()->hook->{'get_option'}('date_format'));
+    $post = get_post($post);
+
+    if (!$post) {
+        return false;
+    }
+
+    if ($gmt) {
+        $date = gmt_date(Core\_escape($post['post_created']));
+    } else {
+        $date = Core\_escape($post['post_created']);
+    }
+
+    $date = laci2date($format, $date, $translate);
     /**
      * Filters the post created date.
      *
      * @since 0.9.9
      *
-     * @param string $date The post's created date.
-     * @param int  $post_id The post ID.
+     * @param string $date The post's formatted date.
+     * @param bool $format Format to use for retrieving the date the post was written.
+     *                     Accepts 'G', 'U', or php date format. Default 'U'.
+     * @param bool   $gmt  Whether to retrieve the GMT date. Default false.
      */
-    return app()->hook->{'apply_filter'}('post_created_date', $date, $post_id);
+    return app()->hook->{'apply_filter'}('get_post_created_date', $date, $format, $gmt);
+}
+
+/**
+ * Retrieves TriTan CMS post created date.
+ *
+ * @since 0.9.9
+ * @param string $format Format to use for retrieving the date the post was written.
+     *                   Accepts 'G', 'U', or php date format value specified
+     *                   in 'date_format' option. Default empty.
+ * @param int|Post $post Post array or post id.
+ * @return string|int|false Formatted date string or Unix timestamp if $format is 'U' or 'G'. False on failure.
+ */
+function the_created_date(string $format = '', $post = null)
+{
+    $post = get_post($post);
+
+    if (!$post) {
+        return false;
+    }
+
+    if ('' == $format) {
+        $the_date = get_post_created_date(app()->hook->{'get_option'}('date_format'), false, $post, true);
+    } else {
+        $the_date = get_post_created_date($format, false, $post, true);
+    }
+
+    /**
+     * Filters the date the post was written.
+     *
+     * @since 0.9.9
+     * @param string    $the_date The formatted date.
+     * @param string    $format   Format to use for retrieving the date the post was written.
+     *                            Accepts 'G', 'U', or php date format value specified
+     *                            in 'date_format' option. Default empty.
+     * @param int|Post  $post     Post array or post id.
+     */
+    return app()->hook->{'apply_filter'}('the_created_date', $the_date, $format, $post);
 }
 
 /**
  * A function which retrieves TriTan CMS post created time.
- * 
+ *
  * Purpose of this function is for the `post_created_time`
  * filter.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9.9
  * @param int $post_id The unique id of a post.
  * @return string
  */
-function get_post_created_time($post_id = 0)
+function get_post_created_time(string $format = 'U', bool $gmt = false, $post = null, bool $translate = false)
 {
-    $post = get_post($post_id);
-    $time = format_date(Core\_escape($post['post_created']), app()->hook->{'get_option'}('time_format'));
+    $post = get_post($post);
+
+    if (!$post) {
+        return false;
+    }
+
+    if ($gmt) {
+        $time = gmt_date(Core\_escape($post['post_created']));
+    } else {
+        $time = Core\_escape($post['post_created']);
+    }
+
+    $time = laci2date($format, $time, $translate);
     /**
      * Filters the post created time.
      *
      * @since 0.9.9
      *
-     * @param string $time The post's created time.
-     * @param int  $post_id The post ID.
+     * @param string $time The post's formatted time.
+     * @param bool $format Format to use for retrieving the time the post was written.
+     *                     Accepts 'G', 'U', or php date format. Default 'U'.
+     * @param bool   $gmt  Whether to retrieve the GMT time. Default false.
      */
-    return app()->hook->{'apply_filter'}('post_created_time', $time, $post_id);
+    return app()->hook->{'apply_filter'}('get_post_created_time', $time, $format, $gmt);
+}
+
+/**
+ * Retrieves TriTan CMS post created time.
+ *
+ * @since 0.9.9
+ * @param string $format Format to use for retrieving the time the post was written.
+     *                   Accepts 'G', 'U', or php date format value specified
+     *                   in 'time_format' option. Default empty.
+ * @param int|Post $post Post array or post id.
+ * @return string|int|false Formatted date string or Unix timestamp if $format is 'U' or 'G'. False on failure.
+ */
+function the_created_time(string $format = '', $post = null)
+{
+    $post = get_post($post);
+
+    if (!$post) {
+        return false;
+    }
+
+    if ('' == $format) {
+        $the_time = get_post_created_time(app()->hook->{'get_option'}('time_format'), false, $post, true);
+    } else {
+        $the_time = get_post_created_time($format, false, $post, true);
+    }
+
+    /**
+     * Filters the time the post was written.
+     *
+     * @since 0.9.9
+     * @param string    $the_time The formatted time.
+     * @param string    $format   Format to use for retrieving the time the post was written.
+     *                            Accepts 'G', 'U', or php date format value specified
+     *                            in 'time_format' option. Default empty.
+     * @param int|Post  $post     Post array or post id.
+     */
+    return app()->hook->{'apply_filter'}('the_created_date', $the_time, $format, $post);
 }
 
 /**
  * A function which retrieves TriTan CMS post published date.
- * 
- * Purpose of this function is for the `post_published_date`
- * filter.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9.9
  * @param int $post_id The unique id of a post.
  * @return string
  */
-function get_post_published_date($post_id = 0)
+function get_post_published_date(string $format = 'U', bool $gmt = false, $post = null, bool $translate = false)
 {
-    $post = get_post($post_id);
-    $date = format_date(Core\_escape($post['post_published']), app()->hook->{'get_option'}('date_format'));
+    $post = get_post($post);
+
+    if (!$post) {
+        return false;
+    }
+
+    if ($gmt) {
+        $date = gmt_date(Core\_escape($post['post_published']));
+    } else {
+        $date = Core\_escape($post['post_published']);
+    }
+
+    $date = laci2date($format, $date, $translate);
     /**
      * Filters the post published date.
      *
      * @since 0.9.9
      *
-     * @param string $date The post's published date.
-     * @param int  $post_id The post ID.
+     * @param string $date The post's formatted date.
+     * @param bool $format Format to use for retrieving the date the post was published.
+     *                     Accepts 'G', 'U', or php date format. Default 'U'.
+     * @param bool   $gmt  Whether to retrieve the GMT date. Default false.
      */
-    return app()->hook->{'apply_filter'}('post_published_date', $date, $post_id);
+    return app()->hook->{'apply_filter'}('get_post_published_date', $date, $format, $gmt);
+}
+
+/**
+ * Retrieves TriTan CMS post published date.
+ *
+ * @since 0.9.9
+ * @param string $format Format to use for retrieving the date the post was published.
+     *                   Accepts 'G', 'U', or php date format value specified
+     *                   in 'date_format' option. Default empty.
+ * @param int|Post $post Post array or post id.
+ * @return string|int|false Formatted date string or Unix timestamp if $format is 'U' or 'G'. False on failure.
+ */
+function the_published_date(string $format = '', $post = null)
+{
+    $post = get_post($post);
+
+    if (!$post) {
+        return false;
+    }
+
+    if ('' == $format) {
+        $the_date = get_post_published_date(app()->hook->{'get_option'}('date_format'), false, $post, true);
+    } else {
+        $the_date = get_post_published_date($format, false, $post, true);
+    }
+
+    /**
+     * Filters the time the post was written.
+     *
+     * @since 0.9.9
+     * @param string    $the_date The formatted date.
+     * @param string    $format   Format to use for retrieving the date the post was published.
+     *                            Accepts 'G', 'U', or php date format value specified
+     *                            in 'date_format' option. Default empty.
+     * @param int|Post  $post     Post array or post id.
+     */
+    return app()->hook->{'apply_filter'}('the_published_date', $the_date, $format, $post);
 }
 
 /**
  * A function which retrieves TriTan CMS post published time.
- * 
- * Purpose of this function is for the `post_published_time`
- * filter.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9.9
  * @param int $post_id The unique id of a post.
  * @return string
  */
-function get_post_published_time($post_id = 0)
+function get_post_published_time(string $format = 'U', bool $gmt = false, $post = null, bool $translate = false)
 {
     $post = get_post($post_id);
-    $time = format_date(Core\_escape($post['post_published']), app()->hook->{'get_option'}('time_format'));
+
+    if (!$post) {
+        return false;
+    }
+
+    if ($gmt) {
+        $time = gmt_date(Core\_escape($post['post_published']));
+    } else {
+        $time = Core\_escape($post['post_published']);
+    }
+
+    $time = laci2date($format, $time, $translate);
     /**
      * Filters the post published time.
      *
      * @since 0.9.9
      *
-     * @param string $time The post's published time.
-     * @param int  $post_id The post ID.
+     * @param string $time The post's formatted time.
+     * @param bool $format Format to use for retrieving the time the post was written.
+     *                     Accepts 'G', 'U', or php date format. Default 'U'.
+     * @param bool   $gmt  Whether to retrieve the GMT time. Default false.
      */
-    return app()->hook->{'apply_filter'}('post_published_time', $time, $post_id);
+    return app()->hook->{'apply_filter'}('get_post_published_time', $time, $format, $gmt);
+}
+
+/**
+ * Retrieves TriTan CMS post published time.
+ *
+ * @since 0.9.9
+ * @param string $format Format to use for retrieving the time the post was published.
+     *                   Accepts 'G', 'U', or php date format value specified
+     *                   in 'time_format' option. Default empty.
+ * @param int|Post $post Post array or post id.
+ * @return string|int|false Formatted date string or Unix timestamp if $format is 'U' or 'G'. False on failure.
+ */
+function the_published_time(string $format = '', $post = null)
+{
+    $post = get_post($post);
+
+    if (!$post) {
+        return false;
+    }
+
+    if ('' == $format) {
+        $the_time = get_post_published_time(app()->hook->{'get_option'}('time_format'), false, $post, true);
+    } else {
+        $the_time = get_post_published_time($format, false, $post, true);
+    }
+
+    /**
+     * Filters the time the post was published.
+     *
+     * @since 0.9.9
+     * @param string    $the_time The formatted time.
+     * @param string    $format   Format to use for retrieving the time the post was published.
+     *                            Accepts 'G', 'U', or php date format value specified
+     *                            in 'time_format' option. Default empty.
+     * @param int|Post  $post     Post array or post id.
+     */
+    return app()->hook->{'apply_filter'}('the_published_time', $the_time, $format, $post);
 }
 
 /**
  * A function which retrieves TriTan CMS post modified date.
- * 
- * Purpose of this function is for the `post_modified_date`
- * filter.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9.9
  * @param int $post_id The unique id of a post.
  * @return string
  */
-function get_post_modified_date($post_id = 0)
+function get_post_modified_date(string $format = 'U', bool $gmt = false, $post = null, bool $translate = false)
 {
-    $post = get_post($post_id);
-    $date = format_date(Core\_escape($post['post_modified']), app()->hook->{'get_option'}('date_format'));
+    $post = get_post($post);
+
+    if (!$post) {
+        return false;
+    }
+
+    if ($gmt) {
+        $date = gmt_date(Core\_escape($post['post_modified']));
+    } else {
+        $date = Core\_escape($post['post_modified']);
+    }
+
+    $date = laci2date($format, $date, $translate);
     /**
      * Filters the post modified date.
      *
      * @since 0.9.9
      *
-     * @param string $date The post's modified date.
-     * @param int  $post_id The post ID.
+     * @param string $date The post's formatted date.
+     * @param bool $format Format to use for retrieving the date the post was published.
+     *                     Accepts 'G', 'U', or php date format. Default 'U'.
+     * @param bool   $gmt  Whether to retrieve the GMT date. Default false.
      */
-    return app()->hook->{'apply_filter'}('post_modified_date', $date, $post_id);
+    return app()->hook->{'apply_filter'}('get_post_modified_date', $date, $format, $gmt);
+}
+
+/**
+ * Retrieves TriTan CMS post published date.
+ *
+ * @since 0.9.9
+ * @param string $format Format to use for retrieving the date the post was published.
+     *                   Accepts 'G', 'U', or php date format value specified
+     *                   in 'date_format' option. Default empty.
+ * @param int|Post $post Post array or post id.
+ * @return string|int|false Formatted date string or Unix timestamp if $format is 'U' or 'G'. False on failure.
+ */
+function the_modified_date(string $format = '', $post = null)
+{
+    $post = get_post($post);
+
+    if (!$post) {
+        return false;
+    }
+
+    if ('' == $format) {
+        $the_date = get_post_modified_date(app()->hook->{'get_option'}('date_format'), false, $post, true);
+    } else {
+        $the_date = get_post_modified_date($format, false, $post, true);
+    }
+
+    /**
+     * Filters the date the post was modified.
+     *
+     * @since 0.9.9
+     * @param string    $the_date The formatted date.
+     * @param string    $format   Format to use for retrieving the date the post was modified.
+     *                            Accepts 'G', 'U', or php date format value specified
+     *                            in 'date_format' option. Default empty.
+     * @param int|Post  $post     Post array or post id.
+     */
+    return app()->hook->{'apply_filter'}('the_modified_date', $the_date, $format, $post);
 }
 
 /**
  * A function which retrieves TriTan CMS post modified time.
- * 
- * Purpose of this function is for the `post_modified_time`
- * filter.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9.9
  * @param int $post_id The unique id of a post.
  * @return string
  */
-function get_post_modified_time($post_id = 0)
+function get_post_modified_time(string $format = 'U', bool $gmt = false, $post = null, bool $translate = false)
 {
-    $post = get_post($post_id);
-    $time = format_date(Core\_escape($post['post_modified']), app()->hook->{'get_option'}('time_format'));
+    $post = get_post($post);
+
+    if (!$post) {
+        return false;
+    }
+
+    if ($gmt) {
+        $time = gmt_date(Core\_escape($post['post_modified']));
+    } else {
+        $time = Core\_escape($post['post_modified']);
+    }
+
+    $time = laci2date($format, $time, $translate);
     /**
      * Filters the post modified time.
      *
      * @since 0.9.9
      *
-     * @param string $time The post's modified time.
-     * @param int  $post_id The post ID.
+     * @param string $time The post's formatted time.
+     * @param bool $format Format to use for retrieving the time the post was modified.
+     *                     Accepts 'G', 'U', or php date format. Default 'U'.
+     * @param bool   $gmt  Whether to retrieve the GMT time. Default false.
      */
-    return app()->hook->{'apply_filter'}('post_modified_time', $time, $post_id);
+    return app()->hook->{'apply_filter'}('get_post_modified_time', $time, $format, $gmt);
+}
+
+/**
+ * Retrieves TriTan CMS post modified time.
+ *
+ * @since 0.9.9
+ * @param string $format Format to use for retrieving the time the post was modified.
+     *                   Accepts 'G', 'U', or php date format value specified
+     *                   in 'time_format' option. Default empty.
+ * @param int|Post $post Post array or post id.
+ * @return string|int|false Formatted date string or Unix timestamp if $format is 'U' or 'G'. False on failure.
+ */
+function the_modified_time(string $format = '', $post = null)
+{
+    $post = get_post($post);
+
+    if (!$post) {
+        return false;
+    }
+
+    if ('' == $format) {
+        $the_time = get_post_modified_time(app()->hook->{'get_option'}('time_format'), false, $post, true);
+    } else {
+        $the_time = get_post_modified_time($format, false, $post, true);
+    }
+
+    /**
+     * Filters the time the post was modified.
+     *
+     * @since 0.9.9
+     * @param string    $the_time The formatted time.
+     * @param string    $format   Format to use for retrieving the time the post was modified.
+     *                            Accepts 'G', 'U', or php date format value specified
+     *                            in 'time_format' option. Default empty.
+     * @param int|Post  $post     Post array or post id.
+     */
+    return app()->hook->{'apply_filter'}('the_modified_time', $the_time, $format, $post);
 }
 
 /**
  * A function which retrieves TriTan CMS post posttype id.
- * 
+ *
  * Purpose of this function is for the `post_posttype_id`
  * filter.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9.9
@@ -993,10 +1276,10 @@ function get_post_posttype_id($post_id = 0)
 
 /**
  * A function which retrieves TriTan CMS post posttype.
- * 
+ *
  * Purpose of this function is for the `post_posttype`
  * filter.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9.9
@@ -1020,10 +1303,10 @@ function get_post_posttype($post_id = 0)
 
 /**
  * A function which retrieves TriTan CMS post parent id.
- * 
+ *
  * Purpose of this function is for the `post_parent_id`
  * filter.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9.9
@@ -1047,10 +1330,10 @@ function get_post_parent_id($post_id = 0)
 
 /**
  * A function which retrieves TriTan CMS post parent.
- * 
+ *
  * Purpose of this function is for the `post_parent`
  * filter.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9.9
@@ -1074,10 +1357,10 @@ function get_post_parent($post_id = 0)
 
 /**
  * A function which retrieves TriTan CMS post sidebar.
- * 
+ *
  * Purpose of this function is for the `post_sidebar`
  * filter.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9.9
@@ -1101,10 +1384,10 @@ function get_post_sidebar($post_id = 0)
 
 /**
  * A function which retrieves TriTan CMS post show in menu.
- * 
+ *
  * Purpose of this function is for the `post_show_in_menu`
  * filter.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9.9
@@ -1128,10 +1411,10 @@ function get_post_show_in_menu($post_id = 0)
 
 /**
  * A function which retrieves TriTan CMS post show in search.
- * 
+ *
  * Purpose of this function is for the `post_show_in_search`
  * filter.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9.9
@@ -1155,9 +1438,9 @@ function get_post_show_in_search($post_id = 0)
 
 /**
  * Creates a unique post slug.
- * 
+ *
  * @file app/functions/post-function.php
- * 
+ *
  * @since 0.9.8
  * @param string $original_slug     Original slug of post.
  * @param string $original_title    Original title of post.
@@ -1174,7 +1457,7 @@ function ttcms_unique_post_slug($original_slug, $original_title, $post_id, $post
     }
     /**
      * Filters the unique post slug before returned.
-     * 
+     *
      * @since 0.9.9
      * @param string    $post_slug      Unique post slug.
      * @param string    $original_slug  The post's original slug.
@@ -1191,7 +1474,7 @@ function ttcms_unique_post_slug($original_slug, $original_title, $post_id, $post
  * All of the `$postdata` array fields have filters associated with the values. The filters
  * have the prefix 'pre_' followed by the field name. An example using 'post_status' would have
  * the filter called, 'pre_post_status' that can be hooked into.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9.9
@@ -1210,7 +1493,7 @@ function ttcms_unique_post_slug($original_slug, $original_title, $post_id, $post
  *      @type string $post_status           THe post's status.
  *      @type string $post_published        Timestamp describing the moment when the post
  *                                          was published. Defaults to Y-m-d h:i A.
- * 
+ *
  * @param bool $exception Whether or not to throw an exception.
  * @return int|Exception|null   The newly created post's post_id or throws an exception or returns null
  *                              if the post could not be created or updated.
@@ -1419,7 +1702,7 @@ function ttcms_insert_post($postdata, $exception = false)
 
     /*
      * Filters whether the post is null.
-     * 
+     *
      * @since 0.9.9
      * @param bool  $maybe_empty Whether the post should be considered "null".
      * @param array $_postdata   Array of post data.
@@ -1468,7 +1751,7 @@ function ttcms_insert_post($postdata, $exception = false)
      *      @type string $post_status           The post's status.
      *      @type string $post_published        Timestamp describing the moment when the post
      *                                          was published. Defaults to Y-m-d h:i A.
-     * 
+     *
      * @param bool     $update Whether the post is being updated rather than created.
      * @param int|null $id     ID of the post to be updated, or NULL if the post is being created.
      */
@@ -1542,11 +1825,11 @@ function ttcms_insert_post($postdata, $exception = false)
     }
 
     /**
-     * Action hook triggered after post has been saved. 
-     * 
+     * Action hook triggered after post has been saved.
+     *
      * TThe dynamic portion of this hook, `$post_posttype`, is the post's
      * post type.
-     * 
+     *
      * @since 0.9.9
      * @param int   $post_id    The post's id.
      * @param array $post       Post object.
@@ -1555,11 +1838,11 @@ function ttcms_insert_post($postdata, $exception = false)
     app()->hook->{'do_action'}("save_post_{$post_posttype}", (int) $post_id, $post, $update);
 
     /**
-     * Action hook triggered after post has been saved. 
-     * 
+     * Action hook triggered after post has been saved.
+     *
      * The dynamic portions of this hook, `$post_posttype` and `$post_status`,
      * are the post's post type and status.
-     * 
+     *
      * @since 0.9.9
      * @param int   $post_id    The post's id.
      * @param array $post       Post object.
@@ -1582,9 +1865,9 @@ function ttcms_insert_post($postdata, $exception = false)
 
 /**
  * Update a post in the post document.
- * 
+ *
  * See {@see ttcms_insert_post()} For what fields can be set in $postdata.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9.9
@@ -1615,9 +1898,9 @@ function ttcms_update_post($postdata = [], $exception = false)
 
 /**
  * Deletes a post from the post document.
- * 
+ *
  * @file app/functions/post-function.php
- * 
+ *
  * @since 0.9.9
  * @param int $post_id The id of the post to delete.
  * @return boolean
@@ -1648,7 +1931,7 @@ function ttcms_delete_post($post_id = 0)
                         ->update([
                             'post_attributes.parent.parent_id' => null,
                             'post_attributes.parent.post_parent' => null
-                ]);
+                        ]);
                 $update_children->commit();
             } catch (Exception $ex) {
                 $update_children->rollback();
@@ -1714,9 +1997,9 @@ function ttcms_delete_post($post_id = 0)
 
 /**
  * Clean post caches.
- * 
+ *
  * Uses `clean_post_cache` action.
- * 
+ *
  * @file app/functions/post-function.php
  *
  * @since 0.9.9

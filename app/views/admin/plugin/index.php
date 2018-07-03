@@ -1,11 +1,13 @@
-<?php if (!defined('BASE_PATH')) exit('No direct script access allowed');
+<?php
+
 use TriTan\Functions\Dependency;
 use TriTan\Functions\Core;
+
 $this->layout('main::_layouts/admin-layout');
 $this->section('backend');
 TriTan\Config::set('screen_parent', 'plugins');
 TriTan\Config::set('screen_child', 'installed-plugins');
-$plugins_header = $this->app->hook->{'get_plugins_header'}(BASE_PATH . 'plugins' . DS);
+$plugins_header = $this->app->hook->{'getPluginsHeader'}(BASE_PATH . 'plugins' . DS);
 ?>
 
 <!-- Content Wrapper. Contains page content -->
@@ -21,12 +23,12 @@ $plugins_header = $this->app->hook->{'get_plugins_header'}(BASE_PATH . 'plugins'
             </div>
         </div>
     </div>
-        
+
     <!-- Main content -->
     <section class="content">
-    
+
     <?= Dependency\_ttcms_flash()->showMessage(); ?>
-        
+
       <div class="row">
 
         <!-- left column -->
@@ -48,14 +50,14 @@ $plugins_header = $this->app->hook->{'get_plugins_header'}(BASE_PATH . 'plugins'
                     </thead>
                     <tbody>
                         <?php foreach ($plugins_header as $plugin) : ?>
-                        <?php if ($this->app->hook->{'is_plugin_activated'}($plugin['filename']) == true) : ?>
+                            <?php if ($this->app->hook->{'isPluginActivated'}($plugin['filename']) == true) : ?>
                             <tr class="gradeX" style="background-color:#B0E0E6 !important;">
-                        <?php else : ?>
+                            <?php else : ?>
                             <tr class="gradeX">
-                        <?php endif; ?>
+                            <?php endif; ?>
                                 <td class="text-center"><?= $plugin['Name']; ?></td>
                                 <td class="text-center"><?= $plugin['Description']; ?></td>
-                                <?php if ($this->app->hook->{'is_plugin_activated'}($plugin['filename']) == true) : ?>
+                                <?php if ($this->app->hook->{'isPluginActivated'}($plugin['filename']) == true) : ?>
                                 <td class="text-center"><a class="btn btn-danger" href="<?= Core\sanitize_url(Core\get_base_url() . 'admin/plugin/deactivate/?id=' . $plugin['filename'], true);?>"><i class="fa fa-minus-circle"></i></a></td>
                                 <?php else : ?>
                                 <td class="text-center"><a class="btn btn-success" href="<?= Core\sanitize_url(Core\get_base_url() . 'admin/plugin/activate/?id=' . $plugin['filename'], true);?>"><i class="fa fa-plus-circle"></i></a></td>
@@ -81,7 +83,7 @@ $plugins_header = $this->app->hook->{'get_plugins_header'}(BASE_PATH . 'plugins'
         <!--/.row -->
     </section>
     <!-- /.Main content -->
-    
+
 </div>
 <!-- /.Content Wrapper. Contains page content -->
 <?php $this->stop(); ?>

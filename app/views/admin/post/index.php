@@ -1,9 +1,10 @@
-<?php if (!defined('BASE_PATH')) exit('No direct script access allowed');
+<?php
 use TriTan\Functions\Dependency;
 use TriTan\Functions\Auth;
 use TriTan\Functions\Core;
 use TriTan\Functions\Post;
 use TriTan\Functions\User;
+
 $this->layout('main::_layouts/admin-layout');
 $this->section('backend');
 TriTan\Config::set('screen_parent', $this->posttype);
@@ -17,7 +18,7 @@ TriTan\Config::set('screen_child', $this->posttype);
         <div class="box-header with-border">
             <i class="fa fa-text-width"></i>
             <h3 class="box-title"><?=$this->title;?></h3>
-            
+
             <div class="pull-right">
                 <button type="button"<?= Auth\ae('create_posts');?> class="btn btn-warning" onclick="window.location = '<?= Core\get_base_url(); ?>admin/<?=$this->posttype;?>/create/'"><i class="fa fa-plus"></i> <?= Core\_t('New', 'tritan-cms'); ?> <?=$this->posttype;?></button>
             </div>
@@ -27,7 +28,7 @@ TriTan\Config::set('screen_child', $this->posttype);
     <!-- Main content -->
     <section class="content">
 
-        <?= Dependency\_ttcms_flash()->showMessage(); ?> 
+        <?= Dependency\_ttcms_flash()->showMessage(); ?>
 
         <!-- SELECT2 EXAMPLE -->
         <div class="box box-default">
@@ -47,13 +48,13 @@ TriTan\Config::set('screen_child', $this->posttype);
                             <tr class="gradeX">
                                 <td>
                                     <div class="post_title">
-                                        <strong><a href="<?= Core\get_base_url(); ?>admin/<?=$this->posttype;?>/<?= $post['post_id']; ?>/"><?= $post['post_title']; ?></a></strong> -- 
+                                        <strong><a href="<?= Core\get_base_url(); ?>admin/<?=$this->posttype;?>/<?= $post['post_id']; ?>/"><?= $post['post_title']; ?></a></strong> --
                                         <span class="label <?= Post\ttcms_post_status_label($post['post_status']);?>" style="font-size:1em;font-weight: bold;">
                                             <?= ucfirst($post['post_status']); ?>
                                         </span>
                                     </div>
                                     <div class="row-actions">
-                                        <span class="edit"><a href="<?= Core\get_base_url(); ?>admin/<?=$this->posttype;?>/<?= $post['post_id']; ?>/"><?=Core\_t('Edit', 'tritan-cms');?></a></span> | 
+                                        <span class="edit"><a href="<?= Core\get_base_url(); ?>admin/<?=$this->posttype;?>/<?= $post['post_id']; ?>/"><?=Core\_t('Edit', 'tritan-cms');?></a></span> |
                                         <span class="delete"><a<?= Auth\ae('delete_posts');?> href="#" data-toggle="modal" data-target="#delete-<?= $post['post_id']; ?>"><?=Core\_t('Delete', 'tritan-cms');?></a></span>
                                     </div>
                                     <div class="modal" id="delete-<?= $post['post_id']; ?>">

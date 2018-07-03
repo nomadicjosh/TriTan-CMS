@@ -1,6 +1,7 @@
-<?php if (!defined('BASE_PATH')) exit('No direct script access allowed');
+<?php
 use TriTan\Functions\Dependency;
 use TriTan\Functions\Core;
+
 $this->layout('main::_layouts/admin-layout');
 $this->section('backend');
 TriTan\Config::set('screen_parent', 'options');
@@ -24,9 +25,9 @@ TriTan\Config::set('screen_child', 'options-general');
 
             <!-- Main content -->
             <section class="content">
-                
+
                 <?= Dependency\_ttcms_flash()->showMessage(); ?>
-                
+
                 <div class="row">
                     <!-- left column -->
                     <div class="col-md-9">
@@ -50,10 +51,10 @@ TriTan\Config::set('screen_child', 'options-general');
                                     <input type="text" class="form-control" name="admin_email" value="<?= $this->app->hook->{'get_option'}('admin_email'); ?>" required/>
                                 </div>
                                 <div class="form-group">
-                                    <label><strong><font color="red">*</font> <?= Core\_t('Local', 'tritan-cms'); ?></strong></label>
+                                    <label><strong><font color="red">*</font> <?= Core\_t('Locale', 'tritan-cms'); ?></strong></label>
                                     <select class="form-control select2" name="ttcms_core_locale" style="width: 100%;" required>
                                         <option>&nbsp;</option>
-                                        <?php TriTan\Functions\Domain\ttcms_dropdown_languages($this->app->hook->{'get_option'}( 'ttcms_core_locale' )); ?>
+                                        <?php TriTan\Functions\Domain\ttcms_dropdown_languages($this->app->hook->{'get_option'}('ttcms_core_locale')); ?>
                                     </select>
                                 </div>
                                 <div class="form-group">
@@ -66,26 +67,31 @@ TriTan\Config::set('screen_child', 'options-general');
                                 </div>
                                 <div class="form-group">
                                     <label><strong><font color="red">*</font> <?= Core\_t('Cronjobs', 'tritan-cms'); ?></strong></label>
-                                    <select class="form-control select2" name="enable_cron_jobs" style="width: 100%;" required>
-                                        <option value=""> ------------------------- </option>
-                                        <option value="1"<?=selected( $this->app->hook->{'get_option'}( 'enable_cron_jobs' ), '1', false ); ?>><?=Core\_t( "On" , 'tritan-cms');?></option>
-                                        <option value="0"<?=selected( $this->app->hook->{'get_option'}( 'enable_cron_jobs' ), '0', false ); ?>><?=Core\_t( "Off" , 'tritan-cms');?></option>
-                                    </select>
+                                    <div class="ios-switch switch-md">
+                                        <input type="hidden" class="js-switch" name="cron_jobs" value="0" />
+                                        <input type="checkbox" class="js-switch" name="cron_jobs"<?= checked(1, (int) $this->app->hook->{'get_option'}('cron_jobs'), false); ?>  value="1" />
+                                    </div>
                                 </div>
                                 <div class="form-group">
                                     <label><strong><font color="red">*</font> <?= Core\_t('Site Cache', 'tritan-cms'); ?></strong></label>
-                                    <select class="form-control select2" name="site_cache" style="width: 100%;" required>
-                                        <option value=""> ------------------------- </option>
-                                        <option value="1"<?=selected( $this->app->hook->{'get_option'}( 'site_cache' ), '1', false ); ?>><?=Core\_t( "On" , 'tritan-cms');?></option>
-                                        <option value="0"<?=selected( $this->app->hook->{'get_option'}( 'site_cache' ), '0', false ); ?>><?=Core\_t( "Off" , 'tritan-cms');?></option>
-                                    </select>
+                                    <div class="ios-switch switch-md">
+                                        <input type="hidden" class="js-switch" name="site_cache" value="0" />
+                                        <input type="checkbox" class="js-switch" name="site_cache"<?= checked(1, (int) $this->app->hook->{'get_option'}('site_cache'), false); ?>  value="1" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label><strong><font color="red">*</font> <?= Core\_t('Maintenance Mode', 'tritan-cms'); ?></strong></label>
+                                    <div class="ios-switch switch-md">
+                                        <input type="hidden" class="js-switch" name="maintenance_mode" value="0" />
+                                        <input type="checkbox" class="js-switch" name="maintenance_mode"<?= checked(1, (int) $this->app->hook->{'get_option'}('maintenance_mode'), false); ?>  value="1" />
+                                    </div>
                                 </div>
                                 <div class="form-group">
                                     <label><strong><font color="red">*</font> <?= Core\_t('System Timezone', 'tritan-cms'); ?></strong></label>
                                     <select class="form-control select2" name="system_timezone" style="width: 100%;" required>
                                         <option value=""> ------------------------- </option>
-                                        <?php foreach(Core\generate_timezone_list() as $k => $v) : ?>
-                                            <option value="<?=$k;?>"<?=selected( $this->app->hook->{'get_option'}( 'system_timezone' ), $k, false ); ?>><?=$v;?></option>
+                                        <?php foreach (Core\generate_timezone_list() as $k => $v) : ?>
+                                            <option value="<?=$k;?>"<?=selected($this->app->hook->{'get_option'}('system_timezone'), $k, false); ?>><?=$v;?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>

@@ -9,14 +9,11 @@ use TriTan\Functions\Core;
 use TriTan\Functions\Site;
 use TriTan\Functions\Hook;
 
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
-
 /**
  * User API: User Class
  *
  * @license GPLv3
- *         
+ *
  * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
@@ -34,7 +31,7 @@ class User
 
     /**
      * ACL data container.
-     * 
+     *
      * @since 0.9.8
      * @var object
      */
@@ -307,7 +304,6 @@ class User
      */
     public function for_site($site_id = '')
     {
-
         if (!empty($site_id)) {
             $this->site_id = Core\absint($site_id);
         } else {
@@ -317,7 +313,7 @@ class User
 
     /**
      * Set the user's role.
-     * 
+     *
      * @since 0.9.8
      * @param string $role Role key.
      */
@@ -345,5 +341,4 @@ class User
          */
         app()->hook->{'do_action'}('set_user_role', $this->user_id, $new_role, $old_role);
     }
-
 }

@@ -1,9 +1,6 @@
 <?php
-
 namespace TriTan\Cache;
 
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use TriTan\Exception\Exception;
 use TriTan\Functions\Core;
 
@@ -11,7 +8,7 @@ use TriTan\Functions\Core;
  * TriTan CMS \Memcache|\Memcached Class.
  *
  * @license GPLv3
- *         
+ *
  * @since 0.9
  * @package TriTan CMS
  * @subpackage Cache
@@ -174,7 +171,7 @@ class Cache_Memcache extends \TriTan\Cache\Abstract_Cache
 
         $unique_key = $this->uniqueKey($key, $namespace);
 
-        if ($this->_exists($unique_key, $namespace)) {
+        if ($this->exists($unique_key, $namespace)) {
             return false;
         }
 
@@ -268,7 +265,7 @@ class Cache_Memcache extends \TriTan\Cache\Abstract_Cache
 
         $unique_key = $this->uniqueKey($key, $namespace);
 
-        if ($this->_exists($unique_key, $namespace)) {
+        if ($this->exists($unique_key, $namespace)) {
             return false;
         }
 
@@ -418,7 +415,7 @@ class Cache_Memcache extends \TriTan\Cache\Abstract_Cache
      *
      * {@inheritDoc}
      *
-     * @see TriTan\Cache\Abstract_Cache::_exists()
+     * @see TriTan\Cache\Abstract_Cache::exists()
      *
      * @since 0.9
      * @access protected
@@ -428,7 +425,7 @@ class Cache_Memcache extends \TriTan\Cache\Abstract_Cache
      *            Cache namespace for the key existence check.
      * @return bool Whether the key exists in the cache for the given namespace.
      */
-    protected function _exists($key, $namespace)
+    protected function exists($key, $namespace)
     {
         return isset($this->_cache[$namespace]) && (isset($this->_cache[$namespace][$key]) || array_key_exists($key, $this->_cache[$namespace]));
     }
@@ -449,5 +446,4 @@ class Cache_Memcache extends \TriTan\Cache\Abstract_Cache
         $namespace = explode(':', $value);
         return $namespace[0] . ':';
     }
-
 }

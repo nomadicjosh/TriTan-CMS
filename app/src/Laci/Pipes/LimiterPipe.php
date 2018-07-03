@@ -6,7 +6,6 @@ use Closure;
 
 class LimiterPipe implements PipeInterface
 {
-
     protected $limit;
     protected $offset;
 
@@ -30,5 +29,4 @@ class LimiterPipe implements PipeInterface
         $offset = (int) $this->offset;
         return array_slice($data, $offset, $limit);
     }
-
 }

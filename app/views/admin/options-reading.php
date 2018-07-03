@@ -1,6 +1,7 @@
-<?php if (!defined('BASE_PATH')) exit('No direct script access allowed');
+<?php
 use TriTan\Functions\Dependency;
 use TriTan\Functions\Core;
+
 $this->layout('main::_layouts/admin-layout');
 $this->section('backend');
 TriTan\Config::set('screen_parent', 'options');
@@ -24,9 +25,9 @@ TriTan\Config::set('screen_child', 'options-reading');
 
             <!-- Main content -->
             <section class="content">
-                
+
                 <?= Dependency\_ttcms_flash()->showMessage(); ?>
-                
+
                 <div class="row">
                     <!-- left column -->
                     <div class="col-md-9">
@@ -41,7 +42,7 @@ TriTan\Config::set('screen_child', 'options-reading');
                                     <label><strong><?= Core\_t('Site Theme', 'tritan-cms'); ?></strong></label>
                                     <select class="form-control select2" name="current_site_theme" style="width: 100%;">
                                         <option value=""> ------------------------- </option>
-                                        <?php Core\get_site_themes($this->app->hook->{'get_option'}( 'current_site_theme' )); ?>
+                                        <?php Core\get_site_themes($this->app->hook->{'get_option'}('current_site_theme')); ?>
                                     </select>
                                 </div>
                                 <div class="form-group">

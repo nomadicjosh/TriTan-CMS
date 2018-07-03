@@ -1,5 +1,4 @@
 <?php
-
 namespace TriTan;
 
 use TriTan\Config;
@@ -16,13 +15,11 @@ use TriTan\Functions\Hook;
  * Hooks API: Hook Class
  *
  * @license GPLv3
- *         
+ *
  * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
  */
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 
 class Hooks
 {
@@ -128,10 +125,9 @@ class Hooks
      *            string (optional) $plugins_dir Loads plugins from specified folder
      * @return mixed
      */
-    public function get_plugins_header($plugins_dir = '')
+    public function getPluginsHeader($plugins_dir = '')
     {
         if ($handle = opendir($plugins_dir)) {
-
             while ($file = readdir($handle)) {
                 if (is_file($plugins_dir . $file)) {
                     if (strpos($plugins_dir . $file, '.plugin.php')) {
@@ -149,13 +145,13 @@ class Hooks
                         preg_match('|Plugin Slug:(.*)$|mi', $plugin_data, $plugin_slug);
 
                         foreach ([
-                    'name',
-                    'uri',
-                    'version',
-                    'description',
-                    'author_name',
-                    'author_uri',
-                    'plugin_slug'
+                          'name',
+                          'uri',
+                          'version',
+                          'description',
+                          'author_name',
+                          'author_uri',
+                          'plugin_slug'
                         ] as $field) {
                             if (!empty(${$field})) {
                                 ${$field} = trim(${$field}[1]);
@@ -175,9 +171,8 @@ class Hooks
                         ];
                         $this->plugins_header[] = $plugin_data;
                     }
-                } else
-                if ((is_dir($plugins_dir . $file)) && ($file != '.') && ($file != '..')) {
-                    $this->get_plugins_header($plugins_dir . $file . '/');
+                } elseif ((is_dir($plugins_dir . $file)) && ($file != '.') && ($file != '..')) {
+                    $this->getPluginsHeader($plugins_dir . $file . '/');
                 }
             }
 
@@ -195,7 +190,7 @@ class Hooks
      *            ID of the plugin to activate
      * @return mixed
      */
-    public function activate_plugin($plugin)
+    public function activatePlugin($plugin)
     {
         $this->app->db->table(Config::get('tbl_prefix') . 'plugin')->insert([
             'plugin_id' => Db\auto_increment(Config::get('tbl_prefix') . 'plugin', 'plugin_id'),
@@ -209,9 +204,9 @@ class Hooks
      * @access public
      * @since 0.9
      * @param string $plugin
-     *            ID of the plugin to deactivate.         
+     *            ID of the plugin to deactivate.
      */
-    public function deactivate_plugin($plugin)
+    public function deactivatePlugin($plugin)
     {
         $this->app->db->table(Config::get('tbl_prefix') . 'plugin')
                 ->where('plugin_location', $plugin)
@@ -227,7 +222,7 @@ class Hooks
      *            string (optional) $plugins_dir Loads plugins from specified folder
      * @return mixed
      */
-    public function load_activated_plugins($plugins_dir)
+    public function loadActivatedPlugins($plugins_dir)
     {
         $plugin = $this->app->db->table(Config::get('tbl_prefix') . 'plugin');
         $q = $plugin->all();
@@ -244,15 +239,15 @@ class Hooks
 
             $error = Core\ttcms_php_check_syntax($file);
             if (Core\is_ttcms_exception($error)) {
-                $this->deactivate_plugin(Core\_escape($v['plugin_location']));
+                $this->deactivatePlugin(Core\_escape($v['plugin_location']));
                 Dependency\_ttcms_flash()->error(sprintf(Core\_t('The plugin <strong>%s</strong> has been deactivated because your changes resulted in a <strong>fatal error</strong>. <br /><br />', 'tritan-cms') . $error->getMessage(), Core\_escape($v['plugin_location'])));
                 return false;
             }
 
             if (Core\ttcms_file_exists($file, false)) {
-                require_once ($file);
+                require_once($file);
             } else {
-                $this->deactivate_plugin(Core\_escape($v['plugin_location']));
+                $this->deactivatePlugin(Core\_escape($v['plugin_location']));
             }
         }
     }
@@ -263,7 +258,7 @@ class Hooks
      * @since 0.9
      * @return mixed
      */
-    public function is_plugin_activated($plugin)
+    public function isPluginActivated($plugin)
     {
         $active = $this->app->db->table(Config::get('tbl_prefix') . 'plugin')->where('plugin_location', $plugin)->first();
 
@@ -310,12 +305,12 @@ class Hooks
      *
      * @access public
      * @since 0.9
-     * @param string $hook            
-     * @param string $function_to_add            
+     * @param string $hook
+     * @param string $function_to_add
      * @param integer $priority
      *            (optional)
      * @param integer $accepted_args
-     *            (optional)         
+     *            (optional)
      */
     public function add_action($hook, $function_to_add, $priority = self::PRIORITY_NEUTRAL, $accepted_args = self::ARGUMENT_NEUTRAL)
     {
@@ -363,7 +358,7 @@ class Hooks
      *
      * @access public
      * @since 0.9
-     * @param string $hook            
+     * @param string $hook
      * @param string|array $function
      *            used for creating unique id
      * @param int|bool $priority
@@ -375,8 +370,9 @@ class Hooks
         static $filter_id_count = 0;
 
         // If function then just skip all of the tests and not overwrite the following.
-        if (is_string($function))
+        if (is_string($function)) {
             return $function;
+        }
         if (is_object($function)) {
             // Closures are currently implemented as objects
             $function = [
@@ -394,8 +390,9 @@ class Hooks
             } else {
                 $obj_idx = get_class($function[0]) . $function[1];
                 if (!isset($function[0]->filters_id)) {
-                    if (false === $priority)
+                    if (false === $priority) {
                         return false;
+                    }
                     $obj_idx .= isset($this->filters[$hook][$priority]) ? count((array) $this->filters[$hook][$priority]) : $filter_id_count;
                     $function[0]->filters_id = $filter_id_count;
                     ++$filter_id_count;
@@ -405,8 +402,7 @@ class Hooks
 
                 return $obj_idx;
             }
-        } else
-        if (is_string($function[0])) {
+        } elseif (is_string($function[0])) {
             // Static Calling
             return $function[0] . '::' . $function[1];
         }
@@ -447,8 +443,9 @@ class Hooks
         }
 
         if (!isset($this->filters[$hook])) {
-            if (isset($this->filters['all']))
+            if (isset($this->filters['all'])) {
                 array_pop($this->current_filter);
+            }
             return $value;
         }
 
@@ -531,13 +528,15 @@ class Hooks
 
     public function do_action($hook, $arg = '')
     {
-        if (!isset($this->actions))
+        if (!isset($this->actions)) {
             $this->actions = [];
+        }
 
-        if (!isset($this->actions[$hook]))
+        if (!isset($this->actions[$hook])) {
             $this->actions[$hook] = 1;
-        else
+        } else {
             ++$this->actions[$hook];
+        }
 
         // Do 'all' actions first
         if (isset($this->filters['all'])) {
@@ -547,21 +546,25 @@ class Hooks
         }
 
         if (!isset($this->filters[$hook])) {
-            if (isset($this->filters['all']))
+            if (isset($this->filters['all'])) {
                 array_pop($this->current_filter);
+            }
             return;
         }
 
-        if (!isset($this->filters['all']))
+        if (!isset($this->filters['all'])) {
             $this->current_filter[] = $hook;
+        }
 
         $args = [];
-        if (is_array($arg) && 1 == count($arg) && isset($arg[0]) && is_object($arg[0])) // array(&$this)
+        if (is_array($arg) && 1 == count($arg) && isset($arg[0]) && is_object($arg[0])) { // array(&$this)
             $args[] = & $arg[0];
-        else
+        } else {
             $args[] = $arg;
-        for ($a = 2; $a < func_num_args(); $a ++)
+        }
+        for ($a = 2; $a < func_num_args(); $a ++) {
             $args[] = func_get_arg($a);
+        }
 
         // Sort
         if (!isset($this->mergedfilters[$hook])) {
@@ -596,10 +599,11 @@ class Hooks
 
     public function clean_pre($matches)
     {
-        if (is_array($matches))
+        if (is_array($matches)) {
             $text = $matches[1] . $matches[2] . "</pre>";
-        else
+        } else {
             $text = $matches;
+        }
 
         $text = str_replace('<br />', '', $text);
         $text = str_replace('<p>', "\n", $text);
@@ -872,7 +876,7 @@ class Hooks
             return $m[1] . call_user_func(self::$parsecode_tags[$tag], $attr, $m[5], $tag) . $m[6];
         } else {
             // self-closing tag
-            return $m[1] . call_user_func(self::$parsecode_tags[$tag], $attr, NULL, $tag) . $m[6];
+            return $m[1] . call_user_func(self::$parsecode_tags[$tag], $attr, null, $tag) . $m[6];
         }
     }
 
@@ -959,14 +963,16 @@ class Hooks
         $pattern = $this->get_parsecode_regex();
 
         return preg_replace_callback(
-                "/$pattern/s", [
+                "/$pattern/s",
+            [
             $this,
             '_strip_parsecode_tag',
-                ], $content
+                ],
+            $content
         );
     }
 
-    function _strip_parsecode_tag($m)
+    public function _strip_parsecode_tag($m)
     {
         // allow [[foo]] syntax for escaping a tag
         if ($m[1] == '[' && $m[6] == ']') {
@@ -984,7 +990,6 @@ class Hooks
      */
     public function parsecode_autop($pee, $br = true)
     {
-
         if (trim($pee) === '') {
             return '';
         }
@@ -1274,9 +1279,9 @@ class Hooks
     /**
      * Register a plugin administration page
      *
-     * @param string $slug            
-     * @param string $title            
-     * @param string $function            
+     * @param string $slug
+     * @param string $title
+     * @param string $function
      */
     public function register_admin_page($slug, $title, $function)
     {
@@ -1294,7 +1299,7 @@ class Hooks
     /**
      * Handle plugin administration page
      *
-     * @param string $plugin_page            
+     * @param string $plugin_page
      */
     public function plugin_admin_page($plugin_page)
     {
@@ -1330,7 +1335,7 @@ class Hooks
          * the option value, returning the passed value instead.
          *
          * @since 0.9
-         *       
+         *
          * @param bool|mixed $pre_option
          *            Value to return instead of the option value.
          *            Default false to skip it.
@@ -1354,7 +1359,7 @@ class Hooks
 
             if (is_object($meta)) {
                 $value = Core\_escape($result['option_value']);
-                //return Core\_escape($value);
+            //return Core\_escape($value);
             } else { // option does not exist, so we must cache its non-existence
                 $value = Core\_escape($default);
                 //return Core\_escape($value);
@@ -1367,7 +1372,7 @@ class Hooks
          * The dynamic portion of the hook name, `$option_key`, refers to the option name.
          *
          * @since 0.9 As 'get_option_' . $setting
-         *       
+         *
          * @param mixed $value
          *            Value of the option. If stored serialized, it will be
          *            unserialized prior to being returned.
@@ -1833,11 +1838,13 @@ class Hooks
     // Serialize data if needed. Stolen from WordPress
     public function maybe_serialize($data)
     {
-        if (is_array($data) || is_object($data))
+        if (is_array($data) || is_object($data)) {
             return serialize($data);
+        }
 
-        if ($this->is_serialized($data))
+        if ($this->is_serialized($data)) {
             return serialize($data);
+        }
 
         return $data;
     }
@@ -1846,25 +1853,30 @@ class Hooks
     public function is_serialized($data)
     {
         // if it isn't a string, it isn't serialized
-        if (!is_string($data))
+        if (!is_string($data)) {
             return false;
+        }
         $data = _trim($data);
-        if ('N;' == $data)
+        if ('N;' == $data) {
             return true;
-        if (!preg_match('/^([adObis]):/', $data, $badions))
+        }
+        if (!preg_match('/^([adObis]):/', $data, $badions)) {
             return false;
+        }
         switch ($badions[1]) {
             case 'a':
             case 'O':
             case 's':
-                if (preg_match("/^{$badions[1]}:[0-9]+:.*[;}]\$/s", $data))
+                if (preg_match("/^{$badions[1]}:[0-9]+:.*[;}]\$/s", $data)) {
                     return true;
+                }
                 break;
             case 'b':
             case 'i':
             case 'd':
-                if (preg_match("/^{$badions[1]}:[0-9.E-]+;\$/", $data))
+                if (preg_match("/^{$badions[1]}:[0-9.E-]+;\$/", $data)) {
                     return true;
+                }
                 break;
         }
         return false;
@@ -1873,9 +1885,9 @@ class Hooks
     // Unserialize value only if it was serialized. Stolen from WP
     public function maybe_unserialize($original)
     {
-        if ($this->is_serialized($original)) // don't attempt to unserialize data that wasn't serialized going in
+        if ($this->is_serialized($original)) { // don't attempt to unserialize data that wasn't serialized going in
             return unserialize($original);
+        }
         return $original;
     }
-
 }

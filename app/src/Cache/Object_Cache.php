@@ -1,16 +1,13 @@
 <?php
-
 namespace TriTan\Cache;
 
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use TriTan\Functions\Core;
 
 /**
  * TriTan CMS Object Cache Class
  *
  * @license GPLv3
- *         
+ *
  * @since 0.9
  * @package TriTan CMS
  * @subpackage Cache
@@ -30,7 +27,7 @@ class Object_Cache
 
     /**
      * Application global scope.
-     * 
+     *
      * @since 0.9
      * @access public
      * @var object
@@ -288,5 +285,4 @@ class Object_Cache
 
         return $this->_cache->dec($key, (int) $offset, $namespace);
     }
-
 }

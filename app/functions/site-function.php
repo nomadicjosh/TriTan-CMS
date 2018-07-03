@@ -1,14 +1,11 @@
 <?php
-
 namespace TriTan\Functions\Site;
 
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 /**
  * TriTan CMS Site Functions
  *
  * @license GPLv3
- *         
+ *
  * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
@@ -29,7 +26,7 @@ use TriTan\Functions\Meta;
  * Retrieves site data given a site ID or post array.
  *
  * @file app/functions/site-function.php
- * 
+ *
  * @since 0.9
  * @param int|object|array $site
  *            Site ID, object or array.
@@ -74,7 +71,7 @@ function get_site($site, $object = false)
  * Checks whether the given site domain exists.
  *
  * @file app/functions/site-function.php
- * 
+ *
  * @since 0.9
  * @param string $sitedomain Site domain to check against.
  * @return bool If site domain exists, return true otherwise return false.
@@ -99,7 +96,7 @@ function site_domain_exists($sitedomain)
  * Checks whether the given site exists.
  *
  * @file app/functions/site-function.php
- * 
+ *
  * @since 0.9
  * @param string $site_domain   Site domain to check against.
  * @param string $site_path     Site path to check against.
@@ -127,9 +124,9 @@ function site_exists($site_domain, $site_path)
 
 /**
  * Adds user meta data for specified site.
- * 
+ *
  * @file app/functions/site-function.php
- * 
+ *
  * @since 0.9.9
  * @param int $site_id  Site ID.
  * @param array $params Parameters to set (assign_id or role).
@@ -159,9 +156,9 @@ function add_site_user_meta($site_id, $params = [])
 
 /**
  * Create the needed directories when a new site is created.
- * 
+ *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @param int $site_id Site ID.
  * @param object $site Site object.
@@ -195,9 +192,9 @@ function create_site_directories($site_id, $site, $update)
 
 /**
  * Deletes user meta data when site/user is deleted.
- * 
+ *
  * @file app/functions/site-function.php
- * 
+ *
  * @access private
  * @since 0.9
  * @param int $site_id Site ID.
@@ -232,9 +229,9 @@ function delete_site_user_meta($site_id, $old_site)
 
 /**
  * Deletes site tables when site is deleted.
- * 
+ *
  * @file app/functions/site-function.php
- * 
+ *
  * @since 0.9
  * @param int    $site_id  Site ID.
  * @param object $old_site Site object.
@@ -261,9 +258,9 @@ function delete_site_tables($site_id, $old_site)
 
 /**
  * Deletes the site directory when the site is deleted.
- * 
+ *
  * @file app/functions/site-function.php
- * 
+ *
  * @since 0.9
  * @param int $_site_id Site ID.
  * @return bool Returns true on success and false otherwise.
@@ -283,9 +280,9 @@ function delete_site_directories($site_id, $old_site)
 
 /**
  * Retrieve the current site id.
- * 
+ *
  * @file app/functions/site-function.php
- * 
+ *
  * @since 0.9
  * @global int $site_id
  * @return int Site ID.
@@ -297,9 +294,9 @@ function get_current_site_id()
 
 /**
  * Update main site based Constants in config file.
- * 
+ *
  * @file app/functions/site-function.php
- * 
+ *
  * @since 0.9
  * @return boolean
  */
@@ -318,7 +315,7 @@ function update_main_site()
                     'site_domain' => (string) TTCMS_MAINSITE,
                     'site_path' => (string) TTCMS_MAINSITE_PATH,
                     'site_registered' => (string) format_date()
-        ]);
+                ]);
         $site->commit();
     } catch (Exception $ex) {
         $site->rollback();
@@ -328,9 +325,9 @@ function update_main_site()
 
 /**
  * Retrieve a list of users based on site.
- * 
+ *
  * @file app/functions/site-function.php
- * 
+ *
  * @since 0.9
  * @return array Users data.
  */
@@ -355,9 +352,9 @@ function get_multisite_users()
 
 /**
  * Add user to a site.
- * 
+ *
  * @file app/functions/site-function.php
- * 
+ *
  * @since 0.9
  * @param object|int $user  User to add to a site.
  * @param object|int $site  Site to add user to.
@@ -456,7 +453,7 @@ function add_user_to_site($user, $site, $role)
  * 'pre_site_name' that can be hooked into.
  *
  * @file app/functions/site-function.php
- * 
+ *
  * @since 0.9
  * @param array|User $sitedata {
  *     An array or User array of user data arguments.
@@ -596,7 +593,7 @@ function ttcms_insert_site($sitedata, $exception = false)
      * check if current email and new email are the same, or not, and check `email_exists`
      * accordingly.
      */
-    if ((!$update || (!empty($site_before) && 0 !== strcasecmp($site_domain . $site_path, Core\_escape($site_before->site_domain) . Core\_escape($site_before->site_path)) ) ) && site_exists($site_domain, $site_path)
+    if ((!$update || (!empty($site_before) && 0 !== strcasecmp($site_domain . $site_path, Core\_escape($site_before->site_domain) . Core\_escape($site_before->site_path)))) && site_exists($site_domain, $site_path)
     ) {
         if ($exception) {
             throw new Exception(Core\_t('Sorry, that site domain and path is already used.', 'tritan-cms'), 'existing_site_domainpath');
@@ -696,11 +693,11 @@ function ttcms_insert_site($sitedata, $exception = false)
     app()->hook->{'do_action'}('save_site', $site_id, $site, $update);
 
     /**
-     * Action hook triggered after site has been saved. 
-     * 
+     * Action hook triggered after site has been saved.
+     *
      * The dynamic portion of this hook, `$site_status`,
      * is the site's status.
-     * 
+     *
      * @since 0.9.9
      * @param int   $site_id    The site's id.
      * @param array $site       Site object.
@@ -723,11 +720,11 @@ function ttcms_insert_site($sitedata, $exception = false)
 
 /**
  * Update a site in the database.
- * 
+ *
  * See ttcms_insert_site() For what fields can be set in $sitedata.
  *
  * @file app/functions/site-function.php
- * 
+ *
  * @since 0.9
  * @param int|object|Site $sitedata An array of site data or a site object or site id.
  * @return int|Exception|Error      The updated site's id or throw an Exception or Error if the site could not be updated.
@@ -770,7 +767,7 @@ function ttcms_update_site($sitedata, $exception = false)
         }
         add_user_to_site((int) $sitedata['site_owner'], (int) $sitedata['site_id'], 'admin');
     }
-    
+
     clean_site_cache($site_id);
 
     return $site_id;
@@ -778,7 +775,7 @@ function ttcms_update_site($sitedata, $exception = false)
 
 /**
  * Deletes a site.
- * 
+ *
  * @since 0.9.9
  * @param int $site_id ID of site to delete.
  * @param bool $exception Whether to throw an exception.
@@ -804,7 +801,7 @@ function ttcms_delete_site($site_id, $exception = false)
 
     /**
      * Action hook triggered before the site is deleted.
-     * 
+     *
      * @since 0.9
      * @param int $id Site ID.
      * @param array $old_site Data array of site to be deleted.
@@ -819,7 +816,7 @@ function ttcms_delete_site($site_id, $exception = false)
         $site->commit();
         /**
          * Action hook triggered after the site is deleted.
-         * 
+         *
          * @since 0.9.9
          * @param int $id           Site ID.
          * @param array $old_site   Data array of site that was deleted.
@@ -841,7 +838,7 @@ function ttcms_delete_site($site_id, $exception = false)
 
 /**
  * Delete site user.
- * 
+ *
  * @since 0.9.9
  * @param int $user_id      The id of user to be deleted.
  * @param array $params     User parameters (assign_id and role).
@@ -883,9 +880,9 @@ function ttcms_delete_site_user($user_id, $params = [], $exception = false)
             }
             /**
              * Filter hook is triggered when assign_id is greater than zero.
-             * 
+             *
              * Sites will be reassigned before the user is deleted.
-             * 
+             *
              * @since 0.9.9
              * @param int $user_id    ID of user to be deleted.
              * @param array $params   User parameters (assign_id and role).
@@ -908,12 +905,12 @@ function ttcms_delete_site_user($user_id, $params = [], $exception = false)
                         return new Error($ex->getCode(), $ex->getMessage());
                     }
                 }
-                
+
                 clean_site_cache((int) $old_site['site_id']);
-                
+
                 /**
                  * Action hook triggered after the site is deleted.
-                 * 
+                 *
                  * @since 0.9.9
                  * @param int $id           Site ID.
                  * @param array $old_site   Data array of site that was deleted.
@@ -977,9 +974,9 @@ function ttcms_delete_site_user($user_id, $params = [], $exception = false)
 /**
  * Populates site options and user meta for site admin after new site
  * is created.
- * 
+ *
  * @file app/functions/site-function.php
- * 
+ *
  * @since 0.9
  * @access private Used when the action hook `site_register` is called.
  * @param int $site_id  Site id of the newly created site.
@@ -1038,7 +1035,7 @@ function new_site_data($site_id, $site, $update)
     ]);
     $option->insert([
         'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
-        'option_key' => 'enable_cron_jobs',
+        'option_key' => 'cron_jobs',
         'option_value' => (int) 0
     ]);
     $option->insert([
@@ -1080,6 +1077,11 @@ function new_site_data($site_id, $site, $update)
         'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'posts_per_page',
         'option_value' => (int) 6
+    ]);
+    $option->insert([
+        'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
+        'option_key' => 'maintenance_mode',
+        'option_value' => (int) 0
     ]);
 
     // Store values to save in user meta.
@@ -1138,9 +1140,9 @@ function new_site_data($site_id, $site, $update)
 
 /**
  * Adds status label for site's table.
- * 
+ *
  * @file app/functions/site-function.php
- * 
+ *
  * @since 0.9
  * @param string $status Status to check for.
  * @return string Sites status.
@@ -1154,7 +1156,7 @@ function ttcms_site_status_label($status)
 
     /**
      * Filters the label result.
-     * 
+     *
      * @since 0.9
      * @param
      */
@@ -1163,9 +1165,9 @@ function ttcms_site_status_label($status)
 
 /**
  * Checks if site exists or is archived.
- * 
+ *
  * @file app/functions/site-function.php
- * 
+ *
  * @since 0.9
  */
 function does_site_exist()
@@ -1192,10 +1194,10 @@ function does_site_exist()
 
 /**
  * A function which retrieves TriTan CMS site name.
- * 
+ *
  * Purpose of this function is for the `site_name`
  * filter.
- * 
+ *
  * @file app/functions/site-function.php
  *
  * @since 0.9.9
@@ -1219,10 +1221,10 @@ function get_site_name($site_id = 0)
 
 /**
  * A function which retrieves TriTan CMS site domain.
- * 
+ *
  * Purpose of this function is for the `site_domain`
  * filter.
- * 
+ *
  * @file app/functions/site-function.php
  *
  * @since 0.9.9
@@ -1246,10 +1248,10 @@ function get_site_domain($site_id = 0)
 
 /**
  * A function which retrieves TriTan CMS site path.
- * 
+ *
  * Purpose of this function is for the `site_path`
  * filter.
- * 
+ *
  * @file app/functions/site-function.php
  *
  * @since 0.9.9
@@ -1273,10 +1275,10 @@ function get_site_path($site_id = 0)
 
 /**
  * A function which retrieves TriTan CMS site owner.
- * 
+ *
  * Purpose of this function is for the `site_owner`
  * filter.
- * 
+ *
  * @file app/functions/site-function.php
  *
  * @since 0.9.9
@@ -1300,10 +1302,10 @@ function get_site_owner($site_id = 0)
 
 /**
  * A function which retrieves TriTan CMS site status.
- * 
+ *
  * Purpose of this function is for the `site_status`
  * filter.
- * 
+ *
  * @file app/functions/site-function.php
  *
  * @since 0.9.9
@@ -1327,9 +1329,9 @@ function get_site_status($site_id = 0)
 
 /**
  * Clean site caches.
- * 
+ *
  * Uses `clean_site_cache` action.
- * 
+ *
  * @file app/functions/site-function.php
  *
  * @since 0.9.9
@@ -1378,7 +1380,7 @@ function clean_site_cache($site)
 
 /**
  * Retieve site data from the site document and site options.
- * 
+ *
  * @since 0.9.9
  * @param in|string|array $fields A site's id or an array of site data.
  * @param bool $get_all Whether to retrieve all data or only data from site document.
@@ -1531,9 +1533,9 @@ function get_sitedata($fields = null, $get_all = true)
 
 /**
  * Creates a unique site slug.
- * 
+ *
  * @file app/functions/site-function.php
- * 
+ *
  * @since 0.9.8
  * @param string $original_slug     Original slug of site.
  * @param string $original_title    Original title of site.
@@ -1549,7 +1551,7 @@ function ttcms_unique_site_slug($original_slug, $original_title, $site_id)
     }
     /**
      * Filters the unique site slug before returned.
-     * 
+     *
      * @since 0.9.9
      * @param string    $site_slug      Unique site slug.
      * @param string    $original_slug  The site's original slug.
@@ -1557,4 +1559,30 @@ function ttcms_unique_site_slug($original_slug, $original_title, $site_id)
      * @param int       $post_id        The site's unique id.
      */
     return app()->hook->{'apply_filter'}('ttcms_unique_site_slug', $site_slug, $original_slug, $original_title, $site_id);
+}
+
+/**
+ * Returns the current time based on specified type.
+ *
+ * The 'laci' type will return the time in the format for LaciDb date field(s).
+ * The 'timestamp' type will return the current timestamp.
+ * Other strings will be interpreted as PHP date formats (e.g. 'Y-m-d h:i:s').
+ *
+ * If $gmt is set to either '1' or 'true', then both types will use GMT time.
+ * if $gmt is false, the output is adjusted with the GMT offset based on General Settings.
+ *
+ * @param string $type Type of time to return. Accepts 'laci', 'timestamp', or PHP date
+ *                     format string (e.g. 'Y-m-d').
+ * @param bool $gmt    Optional. Whether to use GMT timezone. Default false.
+ * @return int|string Integer if $type is 'timestamp', string otherwise.
+ */
+function site_time($type, bool $gmt = false)
+{
+    $time = [
+        'laci' => ($gmt) ? gmt_date() : gmt_date((time() + (date_locale()->offsetHours * 60 * 60))),
+        'timestamp' => ($gmt) ? time() : time() + (date_locale()->offsetHours * 60 * 60),
+        'default' => ($gmt) ? date($type) : date($type, time() + (date_locale()->offsetHours * 60 * 60))
+    ];
+
+    return $type <> 'laci' && $type <> 'timestamp' ? $time['default'] : $time[$type];
 }

@@ -1,10 +1,6 @@
 <?php
-
 namespace TriTan;
 
-if (!defined('BASE_PATH')) {
-    exit('No direct script access allowed');
-}
 use TriTan\Config;
 use TriTan\Functions\Cache;
 use TriTan\Functions\Post;
@@ -20,7 +16,7 @@ use TriTan\Functions\Post;
  */
 final class PostType
 {
-    
+
     /**
      * Posttype ID.
      *

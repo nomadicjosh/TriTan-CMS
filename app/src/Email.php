@@ -1,5 +1,4 @@
 <?php
-
 namespace TriTan;
 
 use Cascade\Cascade;
@@ -8,14 +7,11 @@ use TriTan\Functions\Dependency;
 use TriTan\Functions\Auth;
 use TriTan\Functions\Core;
 
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
-
 /**
  * Email Class
  *
  * @license GPLv3
- *         
+ *
  * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
@@ -60,7 +56,7 @@ class Email
         /**
          * Filter the ttcmsMail() arguments.
          *
-         * @since 0.9      
+         * @since 0.9
          * @param array $args
          *            A compacted array of ttcmsMail() arguments, including the "to" email,
          *            subject, message, headers, and attachments values.
@@ -204,7 +200,7 @@ class Email
         /**
          * Filter the email address to send from.
          *
-         * @since 0.9       
+         * @since 0.9
          * @param string $from_email
          *            Email address to send from.
          */
@@ -213,7 +209,7 @@ class Email
         /**
          * Filter the name to associate with the "from" email address.
          *
-         * @since 0.9       
+         * @since 0.9
          * @param string $from_name
          *            Name associated with the "from" email address.
          */
@@ -298,7 +294,7 @@ class Email
         /**
          * Filter the ttcmsMail() content type.
          *
-         * @since 0.9       
+         * @since 0.9
          * @param string $content_type
          *            Default ttcmsMail() content type.
          */
@@ -321,7 +317,7 @@ class Email
         /**
          * Filter the default ttcmsMail() charset.
          *
-         * @since 0.9      
+         * @since 0.9
          * @param string $charset
          *            Default email charset.
          */
@@ -352,7 +348,7 @@ class Email
         /**
          * Fires after PHPMailer is initialized.
          *
-         * @since 0.9    
+         * @since 0.9
          * @param PHPMailer $this->mailer
          *            The PHPMailer instance, passed by reference.
          */
@@ -364,7 +360,6 @@ class Email
         try {
             return $this->mailer->send();
         } catch (\PHPMailer\PHPMailer\Exception $e) {
-
             $mail_error_data = compact($to, $subject, $message, $headers, $attachments);
             $mail_error_data['phpmailer_exception_code'] = $e->getCode();
             /**
@@ -383,7 +378,7 @@ class Email
 
     /**
      * Email sent to new user when account is created.
-     * 
+     *
      * @since 0.9
      *
      * @param int $user_id
@@ -415,5 +410,4 @@ class Email
             Dependency\_ttcms_flash()->error($e->getMessage());
         }
     }
-
 }

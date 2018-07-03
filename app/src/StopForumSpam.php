@@ -1,7 +1,5 @@
-<?php namespace TriTan;
-
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
+<?php
+namespace TriTan;
 
 /**
  * Stop Forum Spam
@@ -9,7 +7,7 @@ if (!defined('BASE_PATH'))
  * By sending GET request to:
  * http://www.stopforumspam.com/api?email=g2fsehis5e@mail.ru&username=MariFoogwoogy&f=json
  * you get the return i.e.:
- * 
+ *
  *      {
  *          "success":true,
  *          "email":
@@ -26,15 +24,15 @@ if (!defined('BASE_PATH'))
  *      }
  *
  * In order to use:
- * 
+ *
  *      1. Require this file using i.e.: use TriTan\StopForumSpam;
  *      2. Set spamTolerance by directly accessing the property i.e.: TriTan\StopForumSpam::spamTolerance = 10;
  *      3. Verify if a user is classified as spam with the is-functions i.e.:
- * 
+ *
  *          if (!TriTan\StopForumSpam::isSpamBotByIpOrEmailOrUsername($ip, $email, $alias) {
  *              //do something.
  *          }
- * 
+ *
  * @author Christian Johansson <christian@cvj.se>
  * @link http://www.stopforumspam.com
  */
@@ -220,12 +218,10 @@ class StopForumSpam
     {
         if (!empty($ip) || !empty($username) || !empty($email)
         ) {
-
             $debug = !empty($debug);
             $return = false;
 
             if ($curl = curl_init()) {
-
                 $url = self::_buildUri($ip, $username, $email, $format);
 
                 self::_debug('url: "' . $url . '"', $debug);
@@ -236,7 +232,6 @@ class StopForumSpam
                 curl_setopt($curl, CURLOPT_FAILONERROR, 1);
 
                 if ($response = curl_exec($curl)) {
-
                     self::_debug('response: <br />'
                         . $response, $debug);
 
@@ -245,14 +240,12 @@ class StopForumSpam
                     }
 
                     if (!empty($decodedResponse)) {
-
                         self::_debug('decoded response: <br />'
                             . '<pre>'
                             . print_r($decodedResponse, true)
                             . '</pre>', $debug);
 
                         if (!empty($decodedResponse['success'])) {
-
                             if ($operator == 'AND') {
                                 $accBool = true;
                             } else {
@@ -260,22 +253,17 @@ class StopForumSpam
                             }
 
                             foreach ($decodedResponse as $key => $array) {
-
                                 if ($key != 'success' && isset($array['appears'])
                                 ) {
-
                                     if ($operator == 'AND') {
-
                                         $accBool = ($accBool && self::_isSpamEntry($array));
-                                    } else if ($operator == 'OR') {
-
+                                    } elseif ($operator == 'OR') {
                                         $accBool = (self::_isSpamEntry($array) ? true : $accBool);
                                     }
                                 }
                             }
 
                             if ($accBool) {
-
                                 $return = true;
                             }
                         }
@@ -286,8 +274,7 @@ class StopForumSpam
             }
 
             self::_debug(
-                'return: "' . (!empty($return) ? 'TRUE' : 'FALSE') . '"', $debug);
-
+            'return: "' . (!empty($return) ? 'TRUE' : 'FALSE') . '"', $debug);
             return $return;
         } else {
             throw new Exception('Invalid parameters for '

@@ -1,6 +1,4 @@
 <?php
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use TriTan\Exception\IOException;
 use Cascade\Cascade;
 use TriTan\Functions\Core;
@@ -8,9 +6,9 @@ use TriTan\Functions\Logger;
 
 /**
  * Bootstrap for the application
- *  
+ *
  * @license GPLv3
- * 
+ *
  * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
@@ -40,7 +38,7 @@ Logger\ttcms_set_environment();
 
 /**
  * Loads the default textdomain.
- * 
+ *
  * @since 0.9
  */
 TriTan\Functions\Domain\load_default_textdomain('tritan-cms', BASE_PATH . 'languages' . DS);

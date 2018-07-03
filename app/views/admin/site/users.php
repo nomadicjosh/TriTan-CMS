@@ -1,17 +1,16 @@
 <?php
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use TriTan\Config;
 use TriTan\Functions\Db;
 use TriTan\Functions\Auth;
 use TriTan\Functions\User;
 use TriTan\Functions\Core;
 use TriTan\Functions\Dependency;
+
 /**
  * Site Users View
- *  
+ *
  * @license GPLv3
- * 
+ *
  * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
@@ -21,7 +20,7 @@ $this->section('backend');
 Config::set('screen_parent', 'sites');
 Config::set('screen_child', 'sites-user');
 
-?>        
+?>
 
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
@@ -36,7 +35,7 @@ Config::set('screen_child', 'sites-user');
     <!-- Main content -->
     <section class="content">
 
-        <?= Dependency\_ttcms_flash()->showMessage(); ?> 
+        <?= Dependency\_ttcms_flash()->showMessage(); ?>
 
         <!-- SELECT2 EXAMPLE -->
         <div class="box box-default">
@@ -63,7 +62,7 @@ Config::set('screen_child', 'sites-user');
                                     <?php if ((int) $user['user_id'] !== 1) : ?>
                                         <a<?= Auth\ae('delete_users'); ?> href="#" data-toggle="modal" data-target="#delete-<?= (int) $user['user_id']; ?>"><button type="button" class="btn bg-red"><i class="fa fa-trash-o"></i></button></a>
                                     <?php endif; ?>
-                                    <?php if(Db\does_user_have_sites($user['user_id'])) : ?>
+                                    <?php if (Db\does_user_have_sites($user['user_id'])) : ?>
                                     <div class="modal" id="delete-<?= $user['user_id']; ?>">
                                         <form method="post" action="<?=Core\get_base_url();?>admin/site/users/<?= (int) $user['user_id']; ?>/d/">
                                         <div class="modal-dialog">

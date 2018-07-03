@@ -1,5 +1,4 @@
 <?php
-
 namespace TriTan;
 
 use TriTan\Config;
@@ -8,14 +7,11 @@ use Cascade\Cascade;
 use TriTan\Functions\Db;
 use TriTan\Functions\Dependency;
 
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
-
 /**
  * Event Logger for Errors and Activity.
  *
  * @license GPLv3
- *         
+ *
  * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
@@ -25,7 +21,7 @@ class Logger
 
     /**
      * Application object.
-     * @var type 
+     * @var type
      */
     public $app;
 
@@ -36,7 +32,7 @@ class Logger
 
     /**
      * Writes a log to the log table in the database.
-     * 
+     *
      * @since 0.9
      */
     public function writeLog($action, $process, $record, $uname)
@@ -70,7 +66,7 @@ class Logger
 
     /**
      * Purges audit trail logs that are older than 30 days old.
-     * 
+     *
      * @since 0.9
      */
     public function purgeActivityLog()
@@ -96,7 +92,7 @@ class Logger
 
     /**
      * Purges system error logs that are older than 30 days old.
-     * 
+     *
      * @since 0.9
      */
     public function purgeErrorLog()
@@ -135,7 +131,7 @@ class Logger
         }
     }
 
-    public function error_constant_to_name($value)
+    public function errorConstantToName($value)
     {
         $values = array(
             E_ERROR => 'E_ERROR',
@@ -158,5 +154,4 @@ class Logger
 
         return $values[$value];
     }
-
 }

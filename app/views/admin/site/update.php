@@ -1,9 +1,8 @@
 <?php
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use TriTan\Functions\User;
 use TriTan\Functions\Core;
 use TriTan\Functions\Dependency;
+
 $this->layout('main::_layouts/admin-layout');
 $this->section('backend');
 TriTan\Config::set('screen_parent', 'sites');
@@ -52,7 +51,7 @@ $(function(){
                                 <label><font color="red">*</font> <?= Core\_t('Site Domain', 'tritan-cms'); ?></label>
                                 <input type="text" class="form-control" name="site_domain" value="<?= $this->site['site_domain']; ?>" required/>
                             </div>
-                            
+
                             <div class="form-group">
                                 <label><font color="red">*</font> <?= Core\_t('Site Name', 'tritan-cms'); ?></label>
                                 <input type="text" id="site_name" class="form-control" name="site_name" value="<?= $this->site['site_name']; ?>" required/>

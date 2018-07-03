@@ -1,14 +1,13 @@
 <?php
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use TriTan\Config;
 use TriTan\Functions\Dependency;
 use TriTan\Functions\Core;
+
 /**
  * Manage Permissions View
- *  
+ *
  * @license GPLv3
- * 
+ *
  * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
@@ -19,7 +18,7 @@ $perms = new \TriTan\ACL();
 Config::set('screen_parent', 'roles');
 Config::set('screen_child', 'perm');
 
-?>        
+?>
 
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
@@ -38,7 +37,7 @@ Config::set('screen_child', 'perm');
     <!-- Main content -->
     <section class="content">
 
-        <?= Dependency\_ttcms_flash()->showMessage(); ?> 
+        <?= Dependency\_ttcms_flash()->showMessage(); ?>
 
         <!-- SELECT2 EXAMPLE -->
         <div class="box box-default">

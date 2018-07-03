@@ -1,9 +1,6 @@
 <?php
-
 namespace TriTan;
 
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use TriTan\Config;
 use TriTan\Functions\User;
 use TriTan\Functions\Core;
@@ -12,7 +9,7 @@ use TriTan\Functions\Core;
  * Access Control Level Class
  *
  * @license GPLv3
- *         
+ *
  * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
@@ -26,7 +23,7 @@ class ACL
      * @access public
      * @var array
      */
-    protected $_perms = [];
+    protected $perms = [];
 
     /**
      * Stores the ID of the current user
@@ -34,7 +31,7 @@ class ACL
      * @access public
      * @var integer
      */
-    protected $_userID = 0;
+    protected $user_id = 0;
 
     /**
      * Stores the roles of the current user
@@ -42,35 +39,35 @@ class ACL
      * @access public
      * @var array
      */
-    protected $_userRoles = [];
+    protected $userRoles = [];
     public $app;
 
-    public function __construct($userID = '')
+    public function __construct($user_id = '')
     {
         $this->app = \Liten\Liten::getInstance();
 
-        if ($userID != '') {
-            $this->_userID = floatval($userID);
+        if ($user_id != '') {
+            $this->user_id = floatval($user_id);
         } else {
-            $this->_userID = floatval(User\get_current_user_id());
+            $this->user_id = floatval(User\get_current_user_id());
         }
-        $this->_userRoles = $this->getUserRoles('ids');
+        $this->userRoles = $this->getUserRoles('ids');
         $this->buildACL();
     }
 
-    public function ACL($userID = '')
+    public function ACL($user_id = '')
     {
-        $this->__construct($userID);
+        $this->__construct($user_id);
     }
 
     public function buildACL()
     {
         //first, get the rules for the user's role
-        if (count($this->_userRoles) > 0) {
-            $this->_perms = array_merge($this->_perms, $this->getRolePerms($this->_userRoles));
+        if (count($this->userRoles) > 0) {
+            $this->perms = array_merge($this->perms, $this->getRolePerms($this->userRoles));
         }
         //then, get the individual user permissions
-        $this->_perms = array_merge($this->_perms, $this->getUserPerms($this->_userID));
+        $this->perms = array_merge($this->perms, $this->getUserPerms($this->user_id));
     }
 
     public function getPermKeyFromID($permID)
@@ -99,7 +96,7 @@ class ACL
 
         return Core\_escape($role['role_name']);
     }
-    
+
     public function getRoleIDFromKey($roleKey)
     {
         $role = $this->app->db->table('role')
@@ -112,7 +109,7 @@ class ACL
     public function getUserRoles()
     {
         $strSQL = $this->app->db->table('user_roles')
-                ->where('user_id', floatval($this->_userID))
+                ->where('user_id', floatval($this->user_id))
                 ->sortBy('add_date', 'ASC')
                 ->get();
 
@@ -192,10 +189,10 @@ class ACL
         return $perms;
     }
 
-    public function getUserPerms($userID)
+    public function getUserPerms($user_id)
     {
         $strSQL = $this->app->db->table('user_perms')
-                ->where('user_id', floatval($userID))
+                ->where('user_id', floatval($user_id))
                 ->sortBy('modified', 'ASC')
                 ->get();
 
@@ -217,7 +214,7 @@ class ACL
 
     public function userHasRole($roleID)
     {
-        foreach ($this->_userRoles as $v) {
+        foreach ($this->userRoles as $v) {
             if (floatval($v) === floatval($roleID)) {
                 return true;
             }
@@ -251,5 +248,4 @@ class ACL
                 ->first();
         return Core\_escape($strSQL['user_login']);
     }
-
 }

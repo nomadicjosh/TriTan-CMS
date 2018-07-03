@@ -1,9 +1,6 @@
 <?php
-
 namespace TriTan\Functions\Db;
 
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use TriTan\Config;
 use TriTan\Exception\Exception;
 use Cocur\Slugify\Slugify;
@@ -21,7 +18,7 @@ use TriTan\Functions\Cache;
  * that use the database to retrieve information.
  *
  * @license GPLv3
- *         
+ *
  * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
@@ -29,9 +26,9 @@ use TriTan\Functions\Cache;
 
 /**
  * Auto increments the table's primary key.
- * 
+ *
  * @file app/functions/db-function.php
- * 
+ *
  * @since 0.9
  * @param string $table Table in the document.
  * @param int $pk Primary key field name.
@@ -55,7 +52,7 @@ function auto_increment($table, $pk)
  * an old password that was hashed using MD5 function.
  *
  * @file app/functions/db-function.php
- * 
+ *
  * @since 0.9
  * @param string $password
  *            User password.
@@ -84,7 +81,7 @@ function ttcms_set_password($password, $user_id)
  * Retrieve post type by a given field from the post type table.
  *
  * @file app/functions/db-function.php
- * 
+ *
  * @since 0.9
  * @param string $field The field to retrieve the post type with.
  * @param string $value A value for $field (_id, post_id, posttype_slug).
@@ -102,7 +99,7 @@ function get_posttype_by($field, $value)
  * Retrieve post by a given field from the post table.
  *
  * @file app/functions/db-function.php
- * 
+ *
  * @since 0.9
  * @param string $field The field to retrieve the post with.
  * @param string|int|string $value A value for $field (_id, post_id, post_slug).
@@ -120,7 +117,7 @@ function get_post_by($field, $value)
  * A function which retrieves a TriTan CMS post id.
  *
  * @file app/functions/db-function.php
- * 
+ *
  * @since 0.9
  * @param string $post_slug The unique slug of a post.
  * @return integer
@@ -136,9 +133,9 @@ function get_post_id($post_slug = null)
 
 /**
  * Creates unique slug based on title
- * 
+ *
  * @file app/functions/db-function.php
- * 
+ *
  * @since 0.9
  * @param string $title Text to be slugified.
  * @param string $table Table the text is saved to (i.e. post, posttype)
@@ -182,8 +179,9 @@ function ttcms_slugify($title, $table = null)
     /**
      * No equal results, return $slug
      */
-    if ($total == 0)
+    if ($total == 0) {
         return $slug;
+    }
 
     /**
      * If we have only one result, we look if it has a number at the end
@@ -203,8 +201,9 @@ function ttcms_slugify($title, $table = null)
          * If there is no light about, there was no number at the end.
          * We added it now
          */
-        if ("" == trim($exists))
+        if ("" == trim($exists)) {
             return $slug . "-1";
+        }
 
         /**
          * If not..........
@@ -254,9 +253,9 @@ function ttcms_slugify($title, $table = null)
 /**
  * Function used to dynamically generate post screens
  * based on post type.
- * 
+ *
  * @file app/functions/db-function.php
- * 
+ *
  * @since 0.9
  * @access private
  * @return array
@@ -269,9 +268,9 @@ function get_all_post_types()
 
 /**
  * Retrieves all posts
- * 
+ *
  * @file app/functions/db-function.php
- * 
+ *
  * @since 0.9
  * @access private
  * @param string $slug  Post slug.
@@ -291,9 +290,9 @@ function get_post_dropdown_list($slug = null, $post_id = 0)
 
 /**
  * Returns the number of posts within a given post type.
- * 
+ *
  * @file app/functions/db-function.php
- * 
+ *
  * @since 0.9
  * @param int $slug Post type slug.
  * @return int
@@ -308,9 +307,9 @@ function number_posts_per_type($slug)
 
 /**
  * Retrieve all published posts or all published posts by post type.
- * 
+ *
  * @file app/functions/db-function.php
- * 
+ *
  * @since 0.9
  * @param string $post_type Post type.
  * @param int $limit        Number of posts to show.
@@ -363,9 +362,9 @@ function get_all_posts($post_type = null, $limit = 0, $offset = null, $status = 
 
 /**
  * Returns a list of internal links for TinyMCE.
- * 
+ *
  * @file app/functions/db-function.php
- * 
+ *
  * @since 0.9
  * @return array
  */
@@ -381,7 +380,7 @@ function tinymce_link_list()
  * Update the metadata cache for the specified arrays.
  *
  * @file app/functions/db-function.php
- * 
+ *
  * @since 0.9
  * @param string    $meta_type  Type of array metadata is for (e.g., post or user)
  * @param int|array $array_ids Array or comma delimited list of array IDs to update cache for
@@ -457,9 +456,9 @@ function update_meta_cache($meta_type, $array_ids)
 
 /**
  * Generates the encryption table if it does not exist.
- * 
+ *
  * @file app/functions/db-function.php
- * 
+ *
  * @since 0.9
  * @access private
  * @return bool
@@ -489,9 +488,9 @@ function generate_php_encryption()
 
 /**
  * Checks if a key exists in the option table.
- * 
+ *
  * @file app/functions/db-function.php
- * 
+ *
  * @since 0.9.4
  * @param string $option_key Key to check against.
  * @return bool
@@ -511,9 +510,9 @@ function does_option_exist($option_key)
 
 /**
  * Update post's relative url if posttype slug has been updated.
- * 
+ *
  * @file app/functions/db-function.php
- * 
+ *
  * @since 0.9.6
  * @access private
  * @param int $id           Unique Posttype id.
@@ -528,7 +527,7 @@ function update_post_relative_url_posttype($id, $old_slug, $new_slug)
         $post->where('post_type.posttype_id', (int) $id)
                 ->update([
                     'post_type.post_posttype' => (string) $new_slug
-        ]);
+                ]);
         $post->commit();
     } catch (Exception $ex) {
         $post->rollback();
@@ -537,7 +536,7 @@ function update_post_relative_url_posttype($id, $old_slug, $new_slug)
     }
 
     $collection = app()->db->table(Config::get('tbl_prefix') . 'post');
-    $query = $collection->where('post_type.posttype_id', (int) $id)->map(function($data) use($old_slug, $new_slug) {
+    $query = $collection->where('post_type.posttype_id', (int) $id)->map(function ($data) use ($old_slug, $new_slug) {
         $data['post_relative_url'] = str_replace((string) $old_slug, (string) $new_slug, (string) $data['post_relative_url']);
         return $data;
     });
@@ -546,11 +545,11 @@ function update_post_relative_url_posttype($id, $old_slug, $new_slug)
 
 /**
  * Insert new post into the post document.
- * 
+ *
  * To be only used by `ttcms_insert_post`.
- * 
+ *
  * @file app/functions/db-function.php
- * 
+ *
  * @access private
  * @since 0.9.9
  * @param array $data   Array of post data.
@@ -596,11 +595,11 @@ function ttcms_post_insert_document($data)
 
 /**
  * Updates the post.
- * 
+ *
  * To be only used by `ttcms_insert_post`.
- * 
+ *
  * @file app/functions/db-function.php
- * 
+ *
  * @access private
  * @since 0.9.9
  * @param array $data   Array of post data.
@@ -641,7 +640,7 @@ function ttcms_post_update_document($data)
         $parent->where('post_attributes.parent.parent_id', (int) $data['post_id'])
                 ->update([
                     'post_attributes.parent.post_parent' => $data['post_slug']
-        ]);
+                ]);
     } catch (Exception $ex) {
         $post->rollback();
         Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
@@ -651,9 +650,9 @@ function ttcms_post_update_document($data)
 
 /**
  * Checks if a slug exists among records from the posttype document.
- * 
+ *
  * @file app/functions/db-function.php
- * 
+ *
  * @since 0.9.9
  * @param int       $posttype_id    Posttype id to check against.
  * @param string    $slug           Slug to search for.
@@ -673,9 +672,9 @@ function ttcms_posttype_slug_exist($posttype_id, $slug)
 
 /**
  * Checks if a slug exists among records from the post document.
- * 
+ *
  * @file app/functions/db-function.php
- * 
+ *
  * @since 0.9.9
  * @param int       $post_id    Post id to check against.
  * @param string    $slug       Slug to search for.
@@ -697,9 +696,9 @@ function ttcms_post_slug_exist($post_id, $slug, $post_type)
 
 /**
  * Checks if a slug exists among records from the site document.
- * 
+ *
  * @file app/functions/db-function.php
- * 
+ *
  * @since 0.9.9
  * @param int       $site_id    Site id to check against.
  * @param string    $slug       Slug to search for.
@@ -719,9 +718,9 @@ function ttcms_site_slug_exist($site_id, $slug)
 
 /**
  * Checks if a post has any children.
- * 
+ *
  * @file app/functions/db-function.php
- * 
+ *
  * @since 0.9.9
  * @param int $post_id Post id to check.
  * @return bool|array False if not, array of children if true.
@@ -738,9 +737,9 @@ function is_post_parent($post_id)
 
 /**
  * Reassigns posts to a different user.
- * 
+ *
  * @file app/functions/db-function.php
- * 
+ *
  * @since 0.9.9
  * @param int   $user_id    ID of user being removed.
  * @param type  $assign_id  ID of user to whom posts will be assigned.
@@ -753,7 +752,7 @@ function reassign_posts($user_id, $assign_id)
         $reassign->where('post_author', (int) $user_id)
                 ->update([
                     'post_author' => (int) $assign_id
-        ]);
+                ]);
         $reassign->commit();
     } catch (Exception $ex) {
         $reassign->rollback();
@@ -763,30 +762,30 @@ function reassign_posts($user_id, $assign_id)
 
 /**
  * Reassigns sites to a different user.
- * 
+ *
  * @file app/functions/db-function.php
- * 
+ *
  * @since 0.9.9
  * @param int   $user_id    ID of user being removed.
  * @param array $params     User parameters (assign_id and role).
  */
 function reassign_sites($user_id, $params = [])
 {
-    if(!is_numeric($user_id)) {
+    if (!is_numeric($user_id)) {
         return false;
     }
-    
-    if((int) $user_id <= 0) {
+
+    if ((int) $user_id <= 0) {
         return false;
     }
-    
+
     $reassign = app()->db->table('site');
     $reassign->begin();
     try {
         $reassign->where('site_owner', (int) $user_id)
                 ->update([
                     'site_owner' => (int) $params['assign_id']
-        ]);
+                ]);
         $reassign->commit();
     } catch (Exception $ex) {
         $reassign->rollback();
@@ -796,9 +795,9 @@ function reassign_sites($user_id, $params = [])
 
 /**
  * Checks if the requested user is an admin of any sites or has any admin roles.
- * 
+ *
  * @file app/functions/db-function.php
- * 
+ *
  * @since 0.9.9
  * @param int $user_id ID of user to check.
  * @return bool Returns true if user has sites and false otherwise.
@@ -821,7 +820,7 @@ function does_user_have_sites($user_id = 0)
 
 /**
  * Get an array of sites by user.
- * 
+ *
  * @since 0.9.9
  * @param int $user_id The user's id.
  * @return array
@@ -836,11 +835,11 @@ function get_users_sites($user_id)
 
 /**
  * Insert new site into site document.
- * 
+ *
  * To be only used by `ttcms_insert_site`.
- * 
+ *
  * @file app/functions/db-function.php
- * 
+ *
  * @access private
  * @since 0.9.9
  * @param array $data   Array of site data.
@@ -870,11 +869,11 @@ function ttcms_site_insert_document($data)
 
 /**
  * Updates the site.
- * 
+ *
  * To be only used by `ttcms_update_site`.
- * 
+ *
  * @file app/functions/db-function.php
- * 
+ *
  * @access private
  * @since 0.9.9
  * @param array $data   Array of site data.

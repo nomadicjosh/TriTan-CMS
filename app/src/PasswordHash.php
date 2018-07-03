@@ -1,7 +1,5 @@
-<?php namespace TriTan;
-
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
+<?php
+namespace TriTan;
 
 #
 # Written by Solar Designer <solar at openwall.com> in 2004-2006 and placed in
@@ -23,7 +21,6 @@ if (!defined('BASE_PATH'))
 
 class PasswordHash
 {
-
     private $itoa64;
     private $iteration_count_log2;
     private $portable_hashes;
@@ -161,9 +158,9 @@ class PasswordHash
         // consequently in lower iteration counts and hashes that are
         // quicker to crack (by non-PHP code).
         if (PHP_VERSION >= '5') {
-            $hash = md5($salt . $password, TRUE);
+            $hash = md5($salt . $password, true);
             do {
-                $hash = md5($hash . $password, TRUE);
+                $hash = md5($hash . $password, true);
             } while (--$count);
         } else {
             $hash = pack('H*', md5($salt . $password));

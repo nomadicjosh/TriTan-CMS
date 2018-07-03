@@ -1,8 +1,9 @@
-<?php if (!defined('BASE_PATH')) exit('No direct script access allowed');
+<?php
 use TriTan\Functions\Db;
 use TriTan\Functions\Dependency;
 use TriTan\Functions\Auth;
 use TriTan\Functions\Core;
+
 $this->layout('main::_layouts/admin-layout');
 $this->section('backend');
 TriTan\Config::set('screen_parent', 'post_types');
@@ -32,12 +33,12 @@ $(function(){
             </div>
         </div>
     </div>
-        
+
     <!-- Main content -->
     <section class="content">
-    
+
     <?= Dependency\_ttcms_flash()->showMessage(); ?>
-        
+
       <div class="row">
         <!-- left column -->
         <div class="col-md-4">
@@ -142,7 +143,7 @@ $(function(){
         <!--/.row -->
     </section>
     <!-- /.Main content -->
-    
+
     <!-- modal -->
     <div class="modal" id="slug">
         <div class="modal-dialog">
@@ -150,10 +151,10 @@ $(function(){
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title"><?=Core\_t( 'Post Type Slug', 'tritan-cms' );?></h4>
+                    <h4 class="modal-title"><?=Core\_t('Post Type Slug', 'tritan-cms');?></h4>
                 </div>
                 <div class="modal-body">
-                    <p><?=Core\_t( "If left blank, the system will auto generate the post type slug.", 'tritan-cms' );?></p>
+                    <p><?=Core\_t("If left blank, the system will auto generate the post type slug.", 'tritan-cms');?></p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><?= Core\_t('Close', 'tritan-cms'); ?></button>
@@ -164,7 +165,7 @@ $(function(){
         <!-- /.modal-dialog -->
     </div>
     <!-- /.modal -->
-    
+
 </div>
 </form>
 <!-- /.Content Wrapper. Contains page content -->

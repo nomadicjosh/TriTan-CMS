@@ -1,14 +1,13 @@
 <?php
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use TriTan\Config;
 use TriTan\Functions\Dependency;
 use TriTan\Functions\Core;
+
 /**
  * Manage Roles View
- *  
+ *
  * @license GPLv3
- * 
+ *
  * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
@@ -19,7 +18,7 @@ $roles = new \TriTan\ACL();
 Config::set('screen_parent', 'roles');
 Config::set('screen_child', 'role');
 
-?>            
+?>
 
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
@@ -28,7 +27,7 @@ Config::set('screen_child', 'role');
         <div class="box-header with-border">
             <i class="fa fa-text-width"></i>
             <h3 class="box-title"><?= Core\_t('Roles', 'tritan-cms'); ?></h3>
-            
+
             <div class="pull-right">
                 <button type="button" class="btn btn-success" onclick="window.location = '<?= Core\get_base_url(); ?>admin/role/create/'"><i class="fa fa-plus-circle"></i> <?= Core\_t('Create a Role', 'tritan-cms'); ?></button>
             </div>

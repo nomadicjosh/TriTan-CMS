@@ -1,14 +1,12 @@
-<?php namespace TriTan\Queue;
-
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
+<?php
+namespace TriTan\Queue;
 
 /**
  * Interface for a garbage collection.
- * 
+ *
  * If the TriTan CMS 'queue' service implements this interface, the
  * garbageCollection() method will be called during master cron.
- * 
+ *
  * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>

@@ -1,15 +1,14 @@
 <?php
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use TriTan\Functions\Core;
+
 /**
  * File Manager Window
- * 
+ *
  * This file will be called when the image button is invoked on
  * tinyMCE
- *  
+ *
  * @license GPLv3
- * 
+ *
  * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>

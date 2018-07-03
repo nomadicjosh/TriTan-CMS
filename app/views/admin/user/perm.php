@@ -1,16 +1,15 @@
 <?php
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use TriTan\Config;
 use TriTan\Functions\Dependency;
 use TriTan\Functions\Auth;
 use TriTan\Functions\User;
 use TriTan\Functions\Core;
+
 /**
  * User Permission View
- *  
+ *
  * @license GPLv3
- * 
+ *
  * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
@@ -21,7 +20,7 @@ $app->view->block('admin');
 Config::set('screen_parent', 'users');
 Config::set('screen_child', 'user');
 
-?>        
+?>
 
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
@@ -38,7 +37,7 @@ Config::set('screen_child', 'user');
     <!-- Main content -->
     <section class="content">
 
-        <?= Dependency\_ttcms_flash()->showMessage(); ?> 
+        <?= Dependency\_ttcms_flash()->showMessage(); ?>
 
         <!-- SELECT2 EXAMPLE -->
         <div class="box box-default">
@@ -48,8 +47,8 @@ Config::set('screen_child', 'user');
                     <table id="example2" class="table table-bordered table-hover">
                         <thead>
                             <tr>
-                                <th><?=Core\_t( 'Permission', 'tritan-cms');?></th>
-                                <th class="text-center"><?=Core\_t( 'Allow', 'tritan-cms');?></th>
+                                <th><?=Core\_t('Permission', 'tritan-cms');?></th>
+                                <th class="text-center"><?=Core\_t('Allow', 'tritan-cms');?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -57,8 +56,8 @@ Config::set('screen_child', 'user');
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th><?=Core\_t( 'Permission', 'tritan-cms');?></th>
-                                <th class="text-center"><?=Core\_t( 'Allow', 'tritan-cms');?></th>
+                                <th><?=Core\_t('Permission', 'tritan-cms');?></th>
+                                <th class="text-center"><?=Core\_t('Allow', 'tritan-cms');?></th>
                             </tr>
                         </tfoot>
                     </table>
@@ -66,7 +65,7 @@ Config::set('screen_child', 'user');
                 <!-- /.box-body -->
                 <div class="box-footer">
                     <button<?= Auth\ae('user_inquiry_only');?> type="submit" class="btn btn-primary"><?=Core\_t('Save', 'tritan-cms');?></button>
-                    <button type="button" class="btn btn-primary" onclick="window.location='<?=Core\get_base_url();?>user/'"><?=Core\_t( 'Cancel', 'tritan-cms');?></button>
+                    <button type="button" class="btn btn-primary" onclick="window.location='<?=Core\get_base_url();?>user/'"><?=Core\_t('Cancel', 'tritan-cms');?></button>
                 </div>
             </form>
         </div>

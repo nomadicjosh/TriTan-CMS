@@ -4,7 +4,6 @@ namespace TriTan\Laci;
 
 class DB
 {
-
     protected static $collections = [];
     protected static $macros = [];
 
@@ -25,5 +24,4 @@ class DB
     {
         static::$macros[$name] = $callback;
     }
-
 }

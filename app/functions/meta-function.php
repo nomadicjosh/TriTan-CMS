@@ -2,13 +2,11 @@
 
 namespace TriTan\Functions\Meta;
 
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 /**
  * TriTan CMS Meta Functions
  *
  * @license GPLv3
- *         
+ *
  * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
@@ -21,12 +19,12 @@ use TriTan\Functions\Cache;
 
 /**
  * Retrieve the name of the metadata table for the specified object type.
- * 
+ *
  * This function is not to be used by developers. It's use is only for _metadata
  * functions.
  *
  * @file app/functions/meta-function.php
- * 
+ *
  * @access private
  * @since 0.9
  * @param string $type Type of object to get metadata table for (e.g. post or user)
@@ -43,12 +41,12 @@ function _get_meta_table($type)
  * Retrieve metadata for the specified array.
  *
  * @file app/functions/meta-function.php
- * 
+ *
  * @since 0.9
  * @param string $meta_type Type of array metadata is for (e.g. post or user)
  * @param int    $array_id ID of the array metadata is for
  * @param string $meta_key  Optional. Metadata key. If not specified, retrieve all metadata for
- * 		                    the specified array.
+ *                                    the specified array.
  * @return mixed Array of values
  */
 function get_metadata($meta_type, $array_id, $meta_key = '', $single = false)
@@ -115,14 +113,14 @@ function get_metadata($meta_type, $array_id, $meta_key = '', $single = false)
  * ID and metadata key, the metadata will be added.
  *
  * @file app/functions/meta-function.php
- * 
+ *
  * @since 0.9
  * @param string $meta_type  Type of array metadata is for (e.g. post or user)
- * @param int    $array_id  ID of the array metadata is for
+ * @param int    $array_id   ID of the array metadata is for
  * @param string $meta_key   Metadata key
  * @param mixed  $meta_value Metadata value. Must be serializable if non-scalar.
  * @param mixed  $prev_value Optional. If specified, only update existing metadata entries with
- * 		                     the specified value. Otherwise, update all entries.
+ *                                     the specified value. Otherwise, update all entries.
  * @return int|bool Meta ID if the key didn't exist, true on successful update, false on failure.
  */
 function update_metadata($meta_type, $array_id, $meta_key, $meta_value, $prev_value = '')
@@ -208,7 +206,7 @@ function update_metadata($meta_type, $array_id, $meta_key, $meta_value, $prev_va
                 ->where('meta_key', $meta_key)
                 ->update([
                     'meta_value' => Core\if_null($_newvalue)
-        ]);
+                ]);
         $result->commit();
     } catch (Exception $ex) {
         $result->rollback();
@@ -245,7 +243,7 @@ function update_metadata($meta_type, $array_id, $meta_key, $meta_value, $prev_va
  * Add metadata for the specified array.
  *
  * @file app/functions/meta-function.php
- * 
+ *
  * @since 0.9
  * @param string $meta_type  Type of array metadata is for (e.g. post or user)
  * @param int    $array_id  ID of the array metadata is for
@@ -374,7 +372,7 @@ function add_metadata($meta_type, $array_id, $meta_key, $meta_value, $unique = f
  * Delete metadata for the specified array.
  *
  * @file app/functions/meta-function.php
- * 
+ *
  * @since 0.9
  * @param string $meta_type  Type of array metadata is for (e.g. post or user)
  * @param int    $array_id  ID of the array metadata is for
@@ -535,7 +533,7 @@ function delete_metadata($meta_type, $array_id, $meta_key, $meta_value = '', $de
  * Determine if a meta key is set for a given array
  *
  * @file app/functions/meta-function.php
- * 
+ *
  * @since 0.9
  * @param string $meta_type Type of array metadata is for (e.g. post or user)
  * @param int    $array_id ID of the array metadata is for
@@ -577,7 +575,7 @@ function metadata_exists($meta_type, $array_id, $meta_key)
  * Get meta data by meta ID
  *
  * @file app/functions/meta-function.php
- * 
+ *
  * @since 0.9
  * @param string $meta_type Type of array metadata is for (e.g. post or user).
  * @param int    $meta_id   ID for a specific meta row
@@ -585,7 +583,6 @@ function metadata_exists($meta_type, $array_id, $meta_key)
  */
 function get_metadata_by_mid($meta_type, $meta_id)
 {
-
     if (!$meta_type || !is_numeric($meta_id)) {
         return false;
     }
@@ -619,7 +616,7 @@ function get_metadata_by_mid($meta_type, $meta_id)
  * Update meta data by meta ID
  *
  * @file app/functions/meta-function.php
- * 
+ *
  * @since 0.9
  * @param string $meta_type  Type of array metadata is for (e.g. post or user)
  * @param int    $meta_id    ID for a specific meta row
@@ -671,7 +668,7 @@ function update_metadata_by_mid($meta_type, $meta_id, $meta_value, $meta_key = f
                     ->update([
                         'meta_key' => Core\if_null($meta_key),
                         'meta_value' => Core\if_null($meta_value)
-            ]);
+                    ]);
             $result->commit();
         } catch (Exception $ex) {
             $result->rollback();
@@ -698,7 +695,7 @@ function update_metadata_by_mid($meta_type, $meta_id, $meta_value, $meta_key = f
  * Delete meta data by meta ID
  *
  * @file app/functions/meta-function.php
- * 
+ *
  * @since 0.9
  * @param string $meta_type Type of array metadata is for (e.g. post or user).
  * @param int    $meta_id   ID for a specific meta row

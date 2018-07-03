@@ -1,11 +1,10 @@
 <?php
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use TriTan\Functions\Dependency;
 use TriTan\Functions\Auth;
 use TriTan\Functions\User;
 use TriTan\Functions\Core;
 use TriTan\Functions\Site;
+
 $this->layout('main::_layouts/admin-layout');
 $this->section('backend');
 TriTan\Config::set('screen_parent', 'sites');
@@ -111,7 +110,7 @@ $(function(){
                                             </td>
                                             <td class="text-center">
                                                 <button type="button"<?= Auth\ae('update_sites');?> class="btn btn-success" onclick="window.location = '<?= Core\get_base_url(); ?>admin/site/<?= (int) $site['site_id']; ?>/'"><i class="fa fa-pencil"></i></button>
-                                                <?php if((int) $site['site_id'] <> 1) : ?>
+                                                <?php if ((int) $site['site_id'] <> 1) : ?>
                                                 <button type="button"<?= Auth\ae('delete_sites'); ?> class="btn bg-red" data-toggle="modal" data-target="#delete-<?= $site['site_id']; ?>"><i class="fa fa-trash-o"></i></button>
                                                 <?php endif; ?>
                                                 <div class="modal" id="delete-<?= $site['site_id']; ?>">

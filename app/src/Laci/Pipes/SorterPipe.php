@@ -6,7 +6,6 @@ use Closure;
 
 class SorterPipe implements PipeInterface
 {
-
     protected $value;
     protected $ascending;
 
@@ -23,7 +22,7 @@ class SorterPipe implements PipeInterface
 
     public function sort($array, $value, $ascending)
     {
-        $values = array_map(function($row) use ($value) {
+        $values = array_map(function ($row) use ($value) {
             return $value($row);
         }, $array);
         switch ($ascending) {
@@ -39,5 +38,4 @@ class SorterPipe implements PipeInterface
         }
         return $result;
     }
-
 }

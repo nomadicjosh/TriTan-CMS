@@ -1,7 +1,5 @@
-<?php namespace TriTan\Exception;
-
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
+<?php
+namespace TriTan\Exception;
 
 use TriTan\Exception\Exception;
 
