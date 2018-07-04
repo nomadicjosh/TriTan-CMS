@@ -50,7 +50,7 @@ function current_user_can($perm)
  */
 function hasRole($role_id)
 {
-    $user = get_userdata(User\get_current_user_id());
+    $user = new \TriTan\User(User\get_current_user_id());
     if ((int) $role_id === (int) Core\_escape($user->user_role)) {
         return true;
     }
