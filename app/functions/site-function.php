@@ -775,6 +775,8 @@ function ttcms_update_site($sitedata, $exception = false)
 
 /**
  * Deletes a site.
+ * 
+ * @file app/functions/site-function.php
  *
  * @since 0.9.9
  * @param int $site_id ID of site to delete.
@@ -838,6 +840,8 @@ function ttcms_delete_site($site_id, $exception = false)
 
 /**
  * Delete site user.
+ * 
+ * @file app/functions/site-function.php
  *
  * @since 0.9.9
  * @param int $user_id      The id of user to be deleted.
@@ -1380,6 +1384,8 @@ function clean_site_cache($site)
 
 /**
  * Retieve site data from the site document and site options.
+ * 
+ * @file app/functions/site-function.php
  *
  * @since 0.9.9
  * @param in|string|array $fields A site's id or an array of site data.
@@ -1452,7 +1458,7 @@ function get_sitedata($fields = null, $get_all = true)
         if (null === $fields) {
             $site_id = get_current_site_id();
         } elseif (!is_numeric($fields)) {
-            $site_id = call_user_func_array("TriTan\Functions\get_{$fields}", [$site->site_id]);
+            $site_id = call_user_func_array("TriTan\\Functions\\get_{$fields}", [$site->site_id]);
         } else {
             $site_id = $fields;
         }
