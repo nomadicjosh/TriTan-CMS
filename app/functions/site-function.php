@@ -314,7 +314,7 @@ function update_main_site()
                 ->update([
                     'site_domain' => (string) TTCMS_MAINSITE,
                     'site_path' => (string) TTCMS_MAINSITE_PATH,
-                    'site_registered' => (string) format_date()
+                    'site_registered' => (string) current_time( 'Y-m-d H:i:s')
                 ]);
         $site->commit();
     } catch (Exception $ex) {
@@ -613,9 +613,9 @@ function ttcms_insert_site($sitedata, $exception = false)
      */
     $site_status = app()->hook->{'apply_filter'}('pre_site_status', $raw_site_status);
 
-    $site_registered = (string) format_date();
+    $site_registered = (string) current_time( 'laci');
 
-    $site_modified = (string) format_date();
+    $site_modified = (string) current_time( 'laci');
 
     $compacted = compact('site_id', 'site_name', 'site_slug', 'site_domain', 'site_path', 'site_owner', 'site_status', 'site_registered', 'site_modified');
     $data = Core\ttcms_unslash($compacted);

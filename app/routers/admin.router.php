@@ -102,7 +102,7 @@ $app->group('/admin', function () use ($app, $current_user) {
                 $site->where('site_id', (int) Config::get('site_id'))
                         ->update([
                             'site_name' => $app->req->post['sitename'],
-                            'site_modified' => (string) format_date()
+                            'site_modified' => (string) current_time( 'laci')
                         ]);
                 $site->commit();
             } catch (Exception $ex) {

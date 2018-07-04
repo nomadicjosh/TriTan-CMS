@@ -350,7 +350,7 @@ class Queue
                 $upd->where('pid', (int) $config['pid'])
                         ->update([
                             'executions' => +1,
-                            'lastrun' => (string) format_date(),
+                            'lastrun' => (string) current_time( 'laci'),
                             'last_runtime' => (double) $time_end
                         ]);
                 $upd->commit();

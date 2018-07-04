@@ -915,9 +915,9 @@ function ttcms_insert_user($userdata)
 
     $user_addedby = (int) get_current_user_id() <= (int) 0 ? (int) 1 : (int) get_current_user_id();
 
-    $user_registered = (string) format_date();
+    $user_registered = (string) current_time( 'laci');
 
-    $user_modified = (string) format_date();
+    $user_modified = (string) current_time( 'laci');
 
     $compacted = compact('user_login', 'user_fname', 'user_lname', 'user_pass', 'user_email', 'user_url');
     $data = Core\ttcms_unslash($compacted);

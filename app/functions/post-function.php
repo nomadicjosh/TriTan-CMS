@@ -1718,7 +1718,7 @@ function ttcms_insert_post($postdata, $exception = false)
 
     if (!$update) {
         if (empty($_postdata['post_published']) || Core\php_like('%0000-00-00 00:00', $_postdata['post_published'])) {
-            $post_published = format_date('now', 'Y-m-d h:i A');
+            $post_published = (string) current_time( 'Y-m-d h:i A');
         } else {
             $post_published = format_date($_postdata['post_published'], 'Y-m-d h:i A');
         }

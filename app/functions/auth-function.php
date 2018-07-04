@@ -185,7 +185,7 @@ function ttcms_authenticate($login, $password, $rememberme)
             'site_id' => (int) Config::get('site_id'),
             'user_id' => (int) Core\_escape($user['user_id']),
             'user_ip' => (string) app()->req->server['REMOTE_ADDR'],
-            'login_timestamp' => (string) format_date()
+            'login_timestamp' => (string) current_time( 'laci')
         ]);
         $ll->commit();
     } catch (Exception $ex) {

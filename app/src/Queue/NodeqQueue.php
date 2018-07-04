@@ -394,7 +394,7 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
             $task->where('pid', (int) $data['pid'])
                     ->update([
                         'executions' => Core\if_null(Core\_escape($runs['executions']) + 1),
-                        'lastrun' => (string) format_date(),
+                        'lastrun' => (string) current_time( 'laci'),
                         'last_runtime' => (double) $time_end
                     ]);
             $task->commit();

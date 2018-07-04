@@ -477,7 +477,7 @@ function generate_php_encryption()
         $encrypt->insert([
             'encryption_id' => (int) 1,
             'key' => $key->saveToAsciiSafeString(),
-            'created_at' => (string) format_date()
+            'created_at' => (string) current_time( 'laci')
         ]);
         $encrypt->commit();
     } catch (Exception $ex) {
@@ -582,7 +582,7 @@ function ttcms_post_insert_document($data)
             'post_relative_url' => Core\if_null($data['post_relative_url']),
             'post_featured_image' => Core\if_null($data['post_featured_image']),
             'post_status' => Core\if_null($data['post_status']),
-            'post_created' => (string) format_date(),
+            'post_created' => (string) current_time( 'laci'),
             'post_published' => Core\if_null($data['post_published'])
         ]);
         $post->commit();
@@ -632,7 +632,7 @@ function ttcms_post_update_document($data)
             'post_featured_image' => Core\if_null($data['post_featured_image']),
             'post_status' => Core\if_null($data['post_status']),
             'post_published' => Core\if_null($data['post_published']),
-            'post_modified' => (string) format_date()
+            'post_modified' => (string) current_time( 'laci')
         ]);
         $post->commit();
 
@@ -890,7 +890,7 @@ function ttcms_site_update_document($data)
             'site_path' => (string) $data['site_path'],
             'site_owner' => (int) $data['site_owner'],
             'site_status' => (string) $data['site_status'],
-            'site_modified' => (string) format_date()
+            'site_modified' => (string) current_time( 'laci')
         ]);
         $update->commit();
     } catch (Exception $ex) {
