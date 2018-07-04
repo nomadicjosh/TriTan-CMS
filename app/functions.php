@@ -49,7 +49,7 @@ app()->inst->singleton('form', function () {
  */
 function ttcms_error_log($value)
 {
-    if (is_array($value)) {
+    if (is_array($value) || is_object($value)) {
         error_log(var_export($value, true));
     } else {
         error_log($value);
@@ -1970,12 +1970,12 @@ function ttcms_get_theme_routers()
  */
 function gmt_date($date = 'now', $format = 'Y-m-d H:i:s')
 {
-    return $date === 'now' ? (string) Jenssegers\Date\Date::now()->format($format) : (string) Jenssegers\Date\Date::parse($date)->format($format);
+    return $date === 'now' ? (string) Jenssegers\Date\Date::now('GMT')->format($format) : (string) Jenssegers\Date\Date::parse($date, 'GMT')->format($format);
 }
 
 /**
  * Returns the date in localized format.
- * 
+ *
  * @file app/functions.php
  *
  * @since 0.9.9
@@ -2010,7 +2010,7 @@ function date_locale()
  *
  * If $translate is true, then the given date and format string will
  * be passed to date_locale() for translation.
- * 
+ *
  * @file app/functions.php
  *
  * @since 0.9.9
@@ -2046,8 +2046,8 @@ function laci2date($format, $date, $translate = true)
  * Other strings will be interpreted as PHP date formats (e.g. 'Y-m-d h:i:s').
  *
  * If $gmt is set to either '1' or 'true', then both types will use GMT time.
- * if $gmt is false, the output is adjusted with the GMT offset based on General Settings.
- * 
+ * If $gmt is false, the output is adjusted with the GMT offset based on General Settings.
+ *
  * @file app/functions.php
  *
  * @param string $type Type of time to return. Accepts 'laci', 'timestamp', or PHP date
@@ -2055,15 +2055,31 @@ function laci2date($format, $date, $translate = true)
  * @param bool $gmt    Optional. Whether to use GMT timezone. Default false.
  * @return int|string Integer if $type is 'timestamp', string otherwise.
  */
-function cuurent_time($type, bool $gmt = false)
+function current_time($type, bool $gmt = false)
 {
     $time = [
-        'laci' => ($gmt) ? gmt_date() : gmt_date((time() + (date_locale()->offsetHours * 60 * 60))),
-        'timestamp' => ($gmt) ? time() : time() + (date_locale()->offsetHours * 60 * 60),
-        'default' => ($gmt) ? date($type) : date($type, time() + (date_locale()->offsetHours * 60 * 60))
+        'laci' => ($gmt) ? gmt_date() : gmt_date((time() + (date_locale()->offsetHours * 3600))),
+        'timestamp' => ($gmt) ? time() : time() + (date_locale()->offsetHours * 3600),
     ];
 
-    return $type <> 'laci' && $type <> 'timestamp' ? $time['default'] : $time[$type];
+    $default = ($gmt) ? gmt_date('now', $type) : gmt_date(time() + (date_locale()->offsetHours * 3600), $type);
+
+    return $type <> 'laci' && $type <> 'timestamp' ? $default : $time[$type];
+}
+
+/**
+ * Converts timestamp to localized human readable date.
+ *
+ * @file app/functions.php
+ *
+ * @since 0.9.9
+ * @param int $timestamp Timestamp to convert.
+ * @param string $format PHP date format string (e.g. 'Y-m-d').
+ * @return string Localized human readable date.
+ */
+function timestamp_to_date(int $timestamp, string $format = 'Y-m-d H:i:s')
+{
+    return (string) date_locale()->createFromTimestamp($timestamp)->format($format);
 }
 
 require(APP_PATH . 'functions' . DS . 'hook-function.php');
