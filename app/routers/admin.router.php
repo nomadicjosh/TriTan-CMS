@@ -860,7 +860,7 @@ $app->group('/admin', function () use ($app, $current_user) {
     });
 
     $app->get('/system-snapshot/', function () use ($app) {
-        $user = $app->db->table('user')->where('user_status', 'A');
+        $user = $app->db->table('usermeta')->where('meta_key', Config::get('tbl_prefix') . 'status')->where('meta_value', 'A');
         $error = $app->db->table(Config::get('tbl_prefix') . 'error');
         $app->foil->render('main::admin/system-snapshot', [
             'title' => Core\_t('System Snapshot Report', 'tritan-cms'),
