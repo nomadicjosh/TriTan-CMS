@@ -1975,6 +1975,8 @@ function gmt_date($date = 'now', $format = 'Y-m-d H:i:s')
 
 /**
  * Returns the date in localized format.
+ * 
+ * @file app/functions.php
  *
  * @since 0.9.9
  * @return \Jenssegers\Date\Date Default returns current datetime.
@@ -2008,6 +2010,8 @@ function date_locale()
  *
  * If $translate is true, then the given date and format string will
  * be passed to date_locale() for translation.
+ * 
+ * @file app/functions.php
  *
  * @since 0.9.9
  * @param string $format  Format of the date to return.
@@ -2032,6 +2036,34 @@ function laci2date($format, $date, $translate = true)
     } else {
         return format_date($i, $format);
     }
+}
+
+/**
+ * Returns the current time based on specified type.
+ *
+ * The 'laci' type will return the time in the format for LaciDb date field(s).
+ * The 'timestamp' type will return the current timestamp.
+ * Other strings will be interpreted as PHP date formats (e.g. 'Y-m-d h:i:s').
+ *
+ * If $gmt is set to either '1' or 'true', then both types will use GMT time.
+ * if $gmt is false, the output is adjusted with the GMT offset based on General Settings.
+ * 
+ * @file app/functions.php
+ *
+ * @param string $type Type of time to return. Accepts 'laci', 'timestamp', or PHP date
+ *                     format string (e.g. 'Y-m-d').
+ * @param bool $gmt    Optional. Whether to use GMT timezone. Default false.
+ * @return int|string Integer if $type is 'timestamp', string otherwise.
+ */
+function cuurent_time($type, bool $gmt = false)
+{
+    $time = [
+        'laci' => ($gmt) ? gmt_date() : gmt_date((time() + (date_locale()->offsetHours * 60 * 60))),
+        'timestamp' => ($gmt) ? time() : time() + (date_locale()->offsetHours * 60 * 60),
+        'default' => ($gmt) ? date($type) : date($type, time() + (date_locale()->offsetHours * 60 * 60))
+    ];
+
+    return $type <> 'laci' && $type <> 'timestamp' ? $time['default'] : $time[$type];
 }
 
 require(APP_PATH . 'functions' . DS . 'hook-function.php');

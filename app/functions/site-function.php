@@ -1560,29 +1560,3 @@ function ttcms_unique_site_slug($original_slug, $original_title, $site_id)
      */
     return app()->hook->{'apply_filter'}('ttcms_unique_site_slug', $site_slug, $original_slug, $original_title, $site_id);
 }
-
-/**
- * Returns the current time based on specified type.
- *
- * The 'laci' type will return the time in the format for LaciDb date field(s).
- * The 'timestamp' type will return the current timestamp.
- * Other strings will be interpreted as PHP date formats (e.g. 'Y-m-d h:i:s').
- *
- * If $gmt is set to either '1' or 'true', then both types will use GMT time.
- * if $gmt is false, the output is adjusted with the GMT offset based on General Settings.
- *
- * @param string $type Type of time to return. Accepts 'laci', 'timestamp', or PHP date
- *                     format string (e.g. 'Y-m-d').
- * @param bool $gmt    Optional. Whether to use GMT timezone. Default false.
- * @return int|string Integer if $type is 'timestamp', string otherwise.
- */
-function site_time($type, bool $gmt = false)
-{
-    $time = [
-        'laci' => ($gmt) ? gmt_date() : gmt_date((time() + (date_locale()->offsetHours * 60 * 60))),
-        'timestamp' => ($gmt) ? time() : time() + (date_locale()->offsetHours * 60 * 60),
-        'default' => ($gmt) ? date($type) : date($type, time() + (date_locale()->offsetHours * 60 * 60))
-    ];
-
-    return $type <> 'laci' && $type <> 'timestamp' ? $time['default'] : $time[$type];
-}
