@@ -302,7 +302,7 @@ function _include_once($file, $show_errors = true)
  * Example Usage:
  *
  *      $datetime = 'May 15, 2018 2:15 PM';
- *      format_date($datetime, 'Y-m-d h:i:s');
+ *      format_date($datetime, 'Y-m-d H:i:s');
  *
  * @file app/functions.php
  *
