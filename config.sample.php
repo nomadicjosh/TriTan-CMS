@@ -51,6 +51,7 @@ defined('EAE_FILTER_PRIORITY') or define('EAE_FILTER_PRIORITY', 1000);
 $app = new \Liten\Liten(
     [
     'cookies.lifetime' => '86400',
+    'cookies.secret.key' => 'xBQZyAc6nhv9qwonHeei', //change this to something more unique for your install
     'private.savepath' => BASE_PATH . 'private' . DS,
     'db.savepath' => BASE_PATH . 'private' . DS . 'db' . DS,
     'cookies.savepath' => BASE_PATH . 'private' . DS . 'cookies' . DS,
