@@ -11,6 +11,10 @@
  */
 use TriTan\Config;
 
+if (defined('TTCMS_MEMORY_LIMIT')) {
+    ini_set('memory_limit', TTCMS_MEMORY_LIMIT);
+}
+
 /**
  * Set the current site based on HTTP_HOST.
  */
@@ -83,9 +87,16 @@ $app->inst->singleton('fenom', function () use ($app) {
 });
 
 if (TriTan\Functions\Core\ttcms_file_exists(Config::get('theme_path') . 'views' . DS, false)) {
-    $templates = ['main' => APP_PATH . 'views' . DS, 'theme' => Config::get('theme_path') . 'views' . DS, 'plugin' => TTCMS_PLUGIN_DIR];
+    $templates = [
+      'main' => APP_PATH . 'views' . DS,
+      'theme' => Config::get('theme_path') . 'views' . DS,
+      'plugin' => TTCMS_PLUGIN_DIR
+    ];
 } else {
-    $templates = ['main' => APP_PATH . 'views' . DS, 'plugin' => TTCMS_PLUGIN_DIR];
+    $templates = [
+      'main' => APP_PATH . 'views' . DS,
+      'plugin' => TTCMS_PLUGIN_DIR
+    ];
 }
 
 /**
