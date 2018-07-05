@@ -140,8 +140,8 @@ function get_post_datetime($post_id = 0)
 function get_post_modified($post_id = 0)
 {
     $post = get_post($post_id);
-    $datetime = app()->hook->{'get_option'}('date_format') . ' ' . app()->hook->{'get_option'}('time_format');
-    $modified = format_date(Core\_escape($post['post_modified']), $datetime);
+    $format = app()->hook->{'get_option'}('date_format') . ' ' . app()->hook->{'get_option'}('time_format');
+    $modified = laci2date($format, Core\_escape($post['post_modified']));
     /**
      * Filters the post date.
      *
@@ -1720,10 +1720,10 @@ function ttcms_insert_post($postdata, $exception = false)
         if (empty($_postdata['post_published']) || Core\php_like('%0000-00-00 00:00', $_postdata['post_published'])) {
             $post_published = (string) current_time( 'Y-m-d h:i A');
         } else {
-            $post_published = format_date($_postdata['post_published'], 'Y-m-d h:i A');
+            $post_published = laci2date('Y-m-d h:i A', $_postdata['post_published']);
         }
     } else {
-        $post_published = format_date($_postdata['post_published'], 'Y-m-d h:i A');
+        $post_published = laci2date('Y-m-d h:i A', $_postdata['post_published']);
     }
 
     $compacted = compact('post_title', 'post_slug', 'post_content', 'post_author', 'post_posttype', 'post_parent', 'post_sidebar', 'post_show_in_menu', 'post_show_in_search', 'post_relative_url', 'post_featured_image', 'post_status', 'post_published');

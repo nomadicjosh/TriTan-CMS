@@ -57,8 +57,8 @@ Config::set('screen_child', 'audit');
                                 <td class="text-center"><?= $aud['process']; ?></td>
                                 <td class="text-center"><?= $aud['record']; ?></td>
                                 <td class="text-center"><?= $aud['uname']; ?></td>
-                                <td class="text-center"><?= format_date($aud['created_at'], 'D, M d, o'); ?></td>
-                                <td class="text-center"><?= format_date($aud['expires_at'], 'D, M d, o'); ?></td>
+                                <td class="text-center"><?= laci2date('D, M d, o', $aud['created_at']); ?></td>
+                                <td class="text-center"><?= laci2date('D, M d, o', $aud['expires_at']); ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>

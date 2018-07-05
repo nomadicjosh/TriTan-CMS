@@ -92,7 +92,7 @@ $app->hook->{'do_action'}('admin_init');
 
                                         <p>
                                             <?= User\get_name(User\get_current_user_id()); ?>
-                                            <small><?= Core\_t('Member since', 'tritan-cms'); ?> <?= format_date(Core\_escape($user->user_registered), 'M Y'); ?></small>
+                                            <small><?= Core\_t('Member since', 'tritan-cms'); ?> <?= laci2date('M Y', Core\_escape($user->user_registered)); ?></small>
                                         </p>
                                     </li>
                                     <!-- Menu Footer-->

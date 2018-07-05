@@ -513,7 +513,7 @@ function get_age($birthdate = '0000-00-00')
     $date = new Date($birthdate);
     $age = $date->age;
 
-    if ($birthdate <= '0000-00-00' || $age == format_date('now', 'Y')) {
+    if ($birthdate <= '0000-00-00' || $age == format_date('Y', 'now')) {
         return _t('Unknown', 'tritan-cms');
     }
     return $age;

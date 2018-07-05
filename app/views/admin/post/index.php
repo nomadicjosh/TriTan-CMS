@@ -80,9 +80,9 @@ TriTan\Config::set('screen_child', $this->posttype);
                                     <!-- /.modal -->
                                 </td>
                                 <td><a href="<?=Core\get_base_url();?>admin/user/<?=$post['post_author'];?>/"><?= User\get_name($post['post_author'], true); ?></a></td>
-                                <td><?= format_date($post['post_published'], 'Y-m-d @ h:i A');?></td>
+                                <td><?= laci2date('Y-m-d @ h:i A', $post['post_published']);?></td>
                                 <?php $this->app->hook->{'do_action'}('manage_post_content_column', 'default', (int) $post['post_id']);?>
-                                <td><?= format_date($post['post_modified'], 'Y-m-d @ h:i A');?></td>
+                                <td><?= laci2date('Y-m-d @ h:i A', $post['post_modified']);?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>

@@ -170,7 +170,7 @@ function ttcms_logger_activity_log_purge()
 function ttcms_monolog($name, $message)
 {
     $log = new \Monolog\Logger(_trim($name));
-    $log->pushHandler(new \Monolog\Handler\StreamHandler(BASE_PATH . 'static' . DS . 'tmp' . DS . 'logs' . DS . _trim($name) . '.' . format_date('now', 'm-d-Y') . '.txt'));
+    $log->pushHandler(new \Monolog\Handler\StreamHandler(BASE_PATH . 'static' . DS . 'tmp' . DS . 'logs' . DS . _trim($name) . '.' . format_date('m-d-Y', 'now') . '.txt'));
     $log->addError($message);
 }
 
@@ -199,7 +199,7 @@ function ttcms_set_environment()
         error_reporting(E_ALL & ~E_NOTICE);
         ini_set('display_errors', 'Off');
         ini_set('log_errors', 'On');
-        ini_set('error_log', Config::get('site_path') . 'files' . DS . 'logs' . DS . 'ttcms-error-' . format_date('now', 'Y-m-d') . '.txt');
+        ini_set('error_log', Config::get('site_path') . 'files' . DS . 'logs' . DS . 'ttcms-error-' . format_date('Y-m-d', 'now') . '.txt');
         set_error_handler('TriTan\\Functions\\Logger\\ttcms_error_handler', E_ALL & ~E_NOTICE);
     }
 }

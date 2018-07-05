@@ -302,16 +302,16 @@ function _include_once($file, $show_errors = true)
  * Example Usage:
  *
  *      $datetime = 'May 15, 2018 2:15 PM';
- *      format_date($datetime, 'Y-m-d H:i:s');
+ *      format_date('Y-m-d H:i:s', $datetime);
  *
  * @file app/functions.php
  *
  * @since 0.9
- * @param string $date      Date to be formatted. Default is `now`.
  * @param string $format    Format of the date. Default is `Y-m-d H:i:s`.
+ * @param string $date      Date to be formatted. Default is `now`.
  * @return string
  */
-function format_date($date = 'now', $format = 'Y-m-d H:i:s')
+function format_date($format = 'Y-m-d H:i:s', $date = 'now')
 {
     $timezone = app()->hook->{'get_option'}('system_timezone');
     return $date === 'now' ? (string) Jenssegers\Date\Date::now($timezone)->format($format) : (string) Jenssegers\Date\Date::parse($date, $timezone)->format($format);
@@ -2034,7 +2034,7 @@ function laci2date($format, $date, $translate = true)
     if ($translate) {
         return date_locale()->parse($i)->format($format);
     } else {
-        return format_date($i, $format);
+        return format_date($format, $i);
     }
 }
 
@@ -2073,11 +2073,11 @@ function current_time($type, bool $gmt = false)
  * @file app/functions.php
  *
  * @since 0.9.9
- * @param int $timestamp Timestamp to convert.
  * @param string $format PHP date format string (e.g. 'Y-m-d').
+ * @param int $timestamp Timestamp to convert.
  * @return string Localized human readable date.
  */
-function timestamp_to_date(int $timestamp, string $format = 'Y-m-d H:i:s')
+function timestamp_to_date(string $format, int $timestamp)
 {
     return (string) date_locale()->createFromTimestamp($timestamp)->format($format);
 }
