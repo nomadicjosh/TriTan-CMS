@@ -1,6 +1,4 @@
 <?php
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use Jenssegers\Date\Date;
 use TriTan\Config;
 use TriTan\Functions\Dependency;
@@ -8,9 +6,9 @@ use TriTan\Functions\Core;
 
 /**
  * Audit Trail View
- *  
+ *
  * @license GPLv3
- * 
+ *
  * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
@@ -19,7 +17,7 @@ $this->layout('main::_layouts/admin-layout');
 $this->section('backend');
 Config::set('screen_parent', 'dashboard');
 Config::set('screen_child', 'audit');
-?>        
+?>
 
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
@@ -34,7 +32,7 @@ Config::set('screen_child', 'audit');
     <!-- Main content -->
     <section class="content">
 
-        <?= Dependency\_ttcms_flash()->showMessage(); ?> 
+        <?= Dependency\_ttcms_flash()->showMessage(); ?>
 
         <!-- SELECT2 EXAMPLE -->
         <div class="box box-default">
