@@ -737,20 +737,6 @@ function is_ttcms_exception($object)
 }
 
 /**
- * Returns the datetime of when the content of file was changed.
- *
- * @file app/functions/core-function.php
- *
- * @since 0.9
- * @param string $file
- *            Absolute path to file.
- */
-function file_mod_time($file)
-{
-    filemtime($file);
-}
-
-/**
  * Returns an array of function names in a file.
  *
  * @file app/functions/core-function.php

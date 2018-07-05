@@ -265,16 +265,16 @@ class Cache_Cookie extends \TriTan\Cache\Abstract_Cache
 
             if (is_readable($files[0])) {
                 $result = $files[0];
-                $time = $data[0] - Core\file_mod_time($result);
+                $time = $data[0] - filemtime($result);
 
                 $now = time();
-                if ((Core\file_mod_time($result) + $time < $now)) {
+                if ((filemtime($result) + $time < $now)) {
                     $this->cacheMisses();
                     unlink($result);
                     return false;
                 }
 
-                if ((Core\file_mod_time($result) + $time > $now)) {
+                if ((filemtime($result) + $time > $now)) {
                     $this->cacheHits();
                     settype($result, 'string');
                     $this->_cache[$namespace][$key] = $data[1];
@@ -492,7 +492,7 @@ class Cache_Cookie extends \TriTan\Cache\Abstract_Cache
         echo "<p>";
         echo "<strong>" . Core\_t('Cache Hits:', 'tritan-cms') . "</strong> " . Core\_file_get_contents($this->_dir . 'cache_hits.txt') . "<br />";
         echo "<strong>" . Core\_t('Cache Misses:', 'tritan-cms') . "</strong> " . Core\_file_get_contents($this->_dir . 'cache_misses.txt') . "<br />";
-        echo "<strong>" . Core\_t('Uptime:', 'tritan-cms') . "</strong> " . time_ago(Core\file_mod_time($this->_dir)) . "<br />";
+        echo "<strong>" . Core\_t('Uptime:', 'tritan-cms') . "</strong> " . time_ago(filemtime($this->_dir)) . "<br />";
         echo "</p>";
     }
 

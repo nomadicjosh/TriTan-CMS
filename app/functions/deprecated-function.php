@@ -293,7 +293,7 @@ function parsecode_unautop($pee)
  */
 function hasPermission($perm)
 {
-    Hook\_deprecated_function(__FUNCTION__, '0.9.8', 'Tritan\Functions\Auth\current_user_can');
+    Hook\_deprecated_function(__FUNCTION__, '0.9.8', 'Tritan\\Functions\\Auth\\current_user_can');
 
     return \TriTan\Functions\Auth\current_user_can($perm);
 }
@@ -313,7 +313,22 @@ function hasPermission($perm)
  */
 function get_post_posttype_slug($post_id = 0)
 {
-    Hook\_deprecated_function(__FUNCTION__, '0.9.9', 'TriTan\Functions\Post\get_post_posttype');
+    Hook\_deprecated_function(__FUNCTION__, '0.9.9', 'TriTan\\Functions\\Post\\get_post_posttype');
 
     return \TriTan\Functions\Post\get_post_posttype($post_id);
+}
+
+/**
+ * Returns the datetime of when the content of file was changed.
+ *
+ * file app/functions/deprecated-function.php
+ *
+ * @deprecated since release 0.9.9
+ * @since 0.9
+ * @param string $file
+ *            Absolute path to file.
+ */
+function file_mod_time($file = 'deprecated')
+{
+    Hook\_deprecated_function(__FUNCTION__, '0.9.9', 'filemtime');
 }
