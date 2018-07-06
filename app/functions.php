@@ -12,6 +12,19 @@ use TriTan\Config;
  */
 
 /**
+ * Configs for expressing human-readable intervals
+ * in their respective number of seconds.
+ *
+ * @since 0.9.9
+ */
+Config::set('MINUTE_IN_SECONDS', 60);
+Config::set('HOUR_IN_SECONDS', 60 * Config::get('MINUTE_IN_SECONDS'));
+Config::set('DAY_IN_SECONDS', 24 * Config::get('HOUR_IN_SECONDS'));
+Config::set('WEEK_IN_SECONDS', 7 * Config::get('DAY_IN_SECONDS'));
+Config::set('MONTH_IN_SECONDS', date('t') * Config::get('DAY_IN_SECONDS'));
+Config::set('YEAR_IN_SECONDS', (date('z', mktime(0, 0, 0, 12, 31, date('Y'))) + 1) * Config::get('DAY_IN_SECONDS'));
+
+/**
  * Call the application global scope.
  *
  * @file app/functions.php
@@ -2058,11 +2071,11 @@ function laci2date($format, $date, $translate = true)
 function current_time($type, bool $gmt = false)
 {
     $time = [
-        'laci' => ($gmt) ? gmt_date() : gmt_date((time() + (date_locale()->offsetHours * 3600))),
-        'timestamp' => ($gmt) ? time() : time() + (date_locale()->offsetHours * 3600),
+        'laci' => ($gmt) ? gmt_date() : gmt_date((time() + (date_locale()->offsetHours * (int) Config::get('HOUR_IN_SECONDS')))),
+        'timestamp' => ($gmt) ? time() : time() + (date_locale()->offsetHours * (int) Config::get('HOUR_IN_SECONDS')),
     ];
 
-    $default = ($gmt) ? gmt_date('now', $type) : gmt_date(time() + (date_locale()->offsetHours * 3600), $type);
+    $default = ($gmt) ? gmt_date('now', $type) : gmt_date(time() + (date_locale()->offsetHours * (int) Config::get('HOUR_IN_SECONDS')), $type);
 
     return $type <> 'laci' && $type <> 'timestamp' ? $default : $time[$type];
 }
