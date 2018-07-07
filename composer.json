@@ -63,7 +63,9 @@
         "foil/foil": "^0.6.7",
         "symfony/console": "^4.1",
         "nette/security": "^2.4",
-        "liten/liten": "^1.0"
+        "liten/liten": "^1.0",
+        "spatie/image": "^1.5",
+        "spatie/schema-org": "^2.0"
     },
     "autoload": {
         "psr-4": {
