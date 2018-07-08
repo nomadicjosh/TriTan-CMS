@@ -27,7 +27,7 @@
         }
     ],
     "require": {
-        "php": ">=7.0",
+        "php": ">=7.1",
         "mikey179/vfsStream": "^1",
         "jolicode/jolinotif": "^1.0",
         "phpmailer/phpmailer": "*",

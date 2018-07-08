@@ -19,7 +19,7 @@ TriTan is pretty stable at the moment, but it is currently in beta and should no
 * Multisite (needs testing)
 
 ## Requirements
-* PHP 7.0+
+* PHP 7.1+
     * gd graphics support
     * zip extention support
     * APC, XCache or Memcache(d) (optional)
