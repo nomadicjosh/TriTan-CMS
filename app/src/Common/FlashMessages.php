@@ -374,7 +374,7 @@ class FlashMessages
     protected function doRedirect()
     {
         if ($this->redirectUrl) {
-            redirect($this->redirectUrl);
+            (new Uri(hook::getInstance()))->{'redirect'}($this->redirectUrl);
             exit();
         }
         return $this;

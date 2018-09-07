@@ -1111,28 +1111,24 @@ function ttcms_upload_image()
  * @file app/functions/hook-function.php
  *
  * @since 0.9
- * @param string $current
- *            Current release value.
- * @param string $latest
- *            Latest release value.
- * @param string $operator
- *            Operand use to compare current and latest release values.
+ * @param string $current Current installed release.
+ * @param string $latest The latest TriTan CMS release.
+ * @param string $operator Operand use to compare current and latest release values.
  * @return bool
  */
-function compare_releases($current, $latest, $operator = '>')
+function compare_releases($current, $latest, $operator = '>'): bool
 {
-    $php_function = version_compare($latest, $current, $operator);
+    $php_function = version_compare($current, $latest, $operator);
     /**
-     * Filters the comparison between two release.
+     * Filters the comparison between two releases.
      *
      * @since 0.9
-     * @param $php_function PHP
-     *            function for comparing two release values.
+     * @param $php_function PHP function for comparing two release values.
      */
     $release = hook::getInstance()->{'applyFilter'}('compare_releases', $php_function);
 
     if ($release) {
-        return $latest;
+        return (bool) $latest;
     } else {
         return false;
     }
