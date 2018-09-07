@@ -4,8 +4,12 @@ namespace TriTan;
 use Monolog\Logger;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\MailHandler as ttcms_MailHandler;
-use TriTan\Email;
-use TriTan\Functions\Core;
+use TriTan\Database;
+use TriTan\Common\Mailer;
+use TriTan\Exception\InvalidArgumentException;
+use TriTan\Common\Options\Options;
+use TriTan\Common\Options\OptionsMapper;
+use TriTan\Common\Context\HelperContext;
 
 /**
  * Monolog Handler Email Class
@@ -24,7 +28,7 @@ class MailHandler extends ttcms_MailHandler
     private $messageTemplate;
     public $app;
 
-    public function __construct(Email $mailer, $message, $email_to, $subject, $level = Logger::ALERT, $bubble = true, \Liten\Liten $liten = null)
+    public function __construct(Mailer $mailer, $message, $email_to, $subject, $level = Logger::ALERT, $bubble = true, \Liten\Liten $liten = null)
     {
         parent::__construct($level, $bubble);
 
@@ -32,7 +36,6 @@ class MailHandler extends ttcms_MailHandler
         $this->email_to = $email_to;
         $this->subject = $subject;
         $this->messageTemplate = $message;
-        $this->app = !empty($liten) ? $liten : \Liten\Liten::getInstance();
     }
 
     protected function send($content, array $records)
@@ -49,26 +52,33 @@ class MailHandler extends ttcms_MailHandler
      */
     protected function buildMessage($content, array $records)
     {
-        $sitename = Core\get_domain_name();
+        $sitename = get_domain_name();
 
-        $site = $this->app->hook{'get_option'}('sitename');
+        $site = (
+            new Options(
+                new OptionsMapper(
+                    new Database(),
+                    new HelperContext()
+                )
+            )
+        )->{'read'}('sitename');
 
         $message = null;
-        if ($this->mailer instanceof Email) {
+        if ($this->mailer instanceof Mailer) {
             $message = clone $this->mailer;
         } elseif (is_callable($this->mailer)) {
             $message = call_user_func($this->mailer, $content, $records);
         }
-        if (!$message instanceof Email) {
-            throw new \InvalidArgumentException(_t('Could not resolve message as instance of Email or a callable returning it', 'tritan-cms'));
+        if (!$message instanceof Mailer) {
+            throw new InvalidArgumentException('Could not resolve message as instance of Email or a callable returning it');
         }
         if ($records) {
             $subjectFormatter = new LineFormatter($this->subject);
             $headers = "From: $site <auto-reply@$sitename>\r\n";
             $headers .= sprintf("X-Mailer: TriTan CMS %s\r\n", CURRENT_RELEASE);
             $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-            $body = Core\process_email_html($content, $subjectFormatter->format($this->getHighestRecord($records)));
-            $message = $this->mailer->ttcmsMail($this->email_to, $subjectFormatter->format($this->getHighestRecord($records)), $body, $headers);
+            $body = process_email_html($content, $subjectFormatter->format($this->getHighestRecord($records)));
+            $message = $this->mailer->{'mail'}($this->email_to, $subjectFormatter->format($this->getHighestRecord($records)), $body, $headers);
         }
         return $message;
     }

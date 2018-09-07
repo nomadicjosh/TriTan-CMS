@@ -1,8 +1,4 @@
 <?php
-namespace TriTan\Functions\Deprecated;
-
-use TriTan\Functions\Hook;
-
 /**
  * TriTan CMS Deprecated Functions
  *
@@ -23,9 +19,9 @@ use TriTan\Functions\Hook;
  */
 function clean_pre($matches)
 {
-    Hook\_deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'clean_pre'}");
-
-    return app()->hook->{'clean_pre'}($matches);
+    _deprecated_function(__FUNCTION__, '0.9.8', "Parsecode::cleanPre");
+    
+    return (new TriTan\Common\Parsecode())->{'cleanPre'}($matches);
 }
 
 /**
@@ -40,9 +36,9 @@ function clean_pre($matches)
  */
 function add_parsecode($tag, $func)
 {
-    Hook\_deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'add_parsecode'}()");
-
-    return app()->hook->{'add_parsecode'}($tag, $func);
+    _deprecated_function(__FUNCTION__, '0.9.8', "Parsecode::add");
+    
+    return (new TriTan\Common\Parsecode())->{'add'}($tag, $func);
 }
 
 /**
@@ -57,9 +53,9 @@ function add_parsecode($tag, $func)
  */
 function remove_parsecode($tag)
 {
-    Hook\_deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'remove_parsecode'}");
-
-    return app()->hook->{'remove_parsecode'}($tag);
+    _deprecated_function(__FUNCTION__, '0.9.8', "Parsecode::remove");
+    
+    return (new TriTan\Common\Parsecode())->{'remove'}($tag);
 }
 
 /**
@@ -77,9 +73,9 @@ function remove_parsecode($tag)
  */
 function remove_all_parsecodes()
 {
-    Hook\_deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'remove_all_parsecodes'}");
-
-    return app()->hook->{'remove_all_parsecodes'}();
+    _deprecated_function(__FUNCTION__, '0.9.8', "Parsecode::removeAll");
+    
+    return (new TriTan\Common\Parsecode())->{'removeAll'}();
 }
 
 /**
@@ -100,9 +96,9 @@ function remove_all_parsecodes()
  */
 function do_parsecode($content)
 {
-    Hook\_deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'do_parsecode'}");
-
-    return app()->hook->{'do_parsecode'}($content);
+    _deprecated_function(__FUNCTION__, '0.9.8', "Parsecode::doParsecode");
+    
+    return (new TriTan\Common\Parsecode())->{'doParsecode'}($content);
 }
 
 /**
@@ -129,9 +125,9 @@ function do_parsecode($content)
  */
 function get_parsecode_regex()
 {
-    Hook\_deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'get_parsecode_regex'}");
-
-    return app()->hook->{'get_parsecode_regex'}();
+    _deprecated_function(__FUNCTION__, '0.9.8', "Parsecode::getRegex");
+    
+    return (new TriTan\Common\Parsecode())->{'getRegex'}();
 }
 
 /**
@@ -147,11 +143,9 @@ function get_parsecode_regex()
  * @param array $m Regular expression match array
  * @return mixed False on failure.
  */
-function do_parsecode_tag($m)
+function do_parsecode_tag($m = 'deprecated')
 {
-    Hook\_deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'do_parsecode_tag'}");
-
-    return app()->hook->{'do_parsecode_tag'}($m);
+    _deprecated_function(__FUNCTION__, '0.9.8');
 }
 
 /**
@@ -170,9 +164,9 @@ function do_parsecode_tag($m)
  */
 function parsecode_parse_atts($text)
 {
-    Hook\_deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'parsecode_parse_atts'}");
-
-    return app()->hook->{'parsecode_parse_atts'}($text);
+    _deprecated_function(__FUNCTION__, '0.9.8', "Parsecode::parseAtts");
+    
+    return (new TriTan\Common\Parsecode())->{'parseAtts'}($text);
 }
 
 /**
@@ -195,9 +189,9 @@ function parsecode_parse_atts($text)
  */
 function parsecode_atts($pairs, $atts)
 {
-    Hook\_deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'parsecode_atts'}");
-
-    return app()->hook->{'parsecode_atts'}($pairs, $atts);
+    _deprecated_function(__FUNCTION__, '0.9.8', "Parsecode::atts");
+    
+    return (new TriTan\Common\Parsecode())->{'atts'}($pairs, $atts);
 }
 
 /**
@@ -213,9 +207,9 @@ function parsecode_atts($pairs, $atts)
  */
 function strip_parsecodes($content)
 {
-    Hook\_deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'strip_parsecodes'}");
-
-    return app()->hook->{'strip_parsecodes'}($content);
+    _deprecated_function(__FUNCTION__, '0.9.8', "Parsecode::stripParsecodes");
+    
+    return (new TriTan\Common\Parsecode())->{'stripParsecodes'}($content);
 }
 
 /**
@@ -228,9 +222,9 @@ function strip_parsecodes($content)
  */
 function strip_parsecode_tag($m)
 {
-    Hook\_deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'strip_parsecode_tag'}");
+    _deprecated_function(__FUNCTION__, '0.9.8', "Parsecode::stripParsecodeTag");
 
-    return app()->hook->{'strip_parsecode_tag'}($m);
+    return (new TriTan\Common\Parsecode())->{'stripParsecodeTag'}($m);
 }
 
 /**
@@ -245,9 +239,9 @@ function strip_parsecode_tag($m)
  */
 function ttcms_autop($pee, $br = 1)
 {
-    Hook\_deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'ttcms_autop'}");
-
-    return app()->hook->{'ttcms_autop'}($pee, $br);
+    _deprecated_function(__FUNCTION__, '0.9.8', "Parsecode::autop");
+    
+    return (new TriTan\Common\Parsecode())->{'autop'}($pee, $br);
 }
 
 /**
@@ -260,9 +254,9 @@ function ttcms_autop($pee, $br = 1)
  */
 function _autop_newline_preservation_helper($matches)
 {
-    Hook\_deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'_autop_newline_preservation_helper'}");
-
-    return app()->hook->{'_autop_newline_preservation_helper'}($matches);
+    _deprecated_function(__FUNCTION__, '0.9.8', "Parsecode::autopNewlinePreservationHelper");
+    
+    return (new TriTan\Common\Parsecode())->{'autopNewlinePreservationHelper'}($matches);
 }
 
 /**
@@ -276,9 +270,9 @@ function _autop_newline_preservation_helper($matches)
  */
 function parsecode_unautop($pee)
 {
-    Hook\_deprecated_function(__FUNCTION__, '0.9.8', "app()->hook->{'parsecode_unautop'}");
-
-    return app()->hook->{'parsecode_unautop'}($pee);
+    _deprecated_function(__FUNCTION__, '0.9.8', "Parsecode::unAutop");
+    
+    return (new TriTan\Common\Parsecode())->{'unAutop'}($pee);
 }
 
 /**
@@ -293,9 +287,9 @@ function parsecode_unautop($pee)
  */
 function hasPermission($perm)
 {
-    Hook\_deprecated_function(__FUNCTION__, '0.9.8', 'Tritan\\Functions\\Auth\\current_user_can');
+    _deprecated_function(__FUNCTION__, '0.9.8', 'current_user_can');
 
-    return \TriTan\Functions\Auth\current_user_can($perm);
+    return current_user_can($perm);
 }
 
 /**
@@ -313,9 +307,9 @@ function hasPermission($perm)
  */
 function get_post_posttype_slug($post_id = 0)
 {
-    Hook\_deprecated_function(__FUNCTION__, '0.9.9', 'TriTan\\Functions\\Post\\get_post_posttype');
+    _deprecated_function(__FUNCTION__, '0.9.9', 'get_post_posttype');
 
-    return \TriTan\Functions\Post\get_post_posttype($post_id);
+    return get_post_posttype($post_id);
 }
 
 /**
@@ -328,7 +322,463 @@ function get_post_posttype_slug($post_id = 0)
  * @param string $file
  *            Absolute path to file.
  */
-function file_mod_time($file = 'deprecated')
+function file_mod_time($file)
 {
-    Hook\_deprecated_function(__FUNCTION__, '0.9.9', 'filemtime');
+    _deprecated_function(__FUNCTION__, '0.9.9', 'filemtime');
+    filemtime($file);
+}
+
+/**
+ * Retrieves TriTan CMS site root url.
+ *
+ * @file app/functions/deprecated-function.php
+ *
+ * @deprecated since release 0.9.9
+ * @since 0.9
+ * @return string TriTan CMS root url.
+ */
+function get_base_url()
+{
+    _deprecated_function(__FUNCTION__, '0.9.9', 'site_url');
+
+    return site_url();
+}
+
+/**
+ * Displays the returned translated text.
+ *
+ * @file app/functions/deprecated-function.php
+ *
+ * @deprecated since release 0.9.9
+ * @since 0.9
+ * @param type $msgid The translated string.
+ * @param type $domain Domain lookup for translated text.
+ * @return string Translated text according to current locale.
+ */
+function _t($msgid, $domain = '')
+{
+    _deprecated_function(__FUNCTION__, '0.9.9', 't__');
+
+    return t__($msgid, $domain);
+}
+
+/**
+ * @deprecated since release 0.9.9
+ * @param type $relative
+ * @return type
+ */
+function get_path_info($relative)
+{
+    _deprecated_function(__FUNCTION__, '0.9.9', 'Uri::getPathInfo');
+
+    return (
+        new \TriTan\Common\Uri(
+            \TriTan\Common\Hooks\ActionFilterHook::getInstance()
+        )
+    )->{'getPathInfo'}($relative);
+}
+
+/**
+ * Custom function to use curl, fopen, or use file_get_contents
+ * if curl is not available.
+ *
+ * Uses `trigger_include_path_search`, `resource_context` and `stream_context_create_options`
+ * filters.
+ *
+ * @file app/functions/deprecated-function.php
+ *
+ * @deprecated since release 0.9.9
+ * @since 0.9
+ * @param string $filename
+ *            Resource to read.
+ * @param bool $use_include_path
+ *            Whether or not to use include path.
+ * @param bool $context
+ *            Whether or not to use a context resource.
+ */
+function _file_get_contents($filename, $use_include_path = false, $context = true)
+{
+    _deprecated_function(__FUNCTION__, '0.9.9', 'FileSystem::getContents');
+    
+    return (
+        new \TriTan\Common\FileSystem(
+            \TriTan\Common\Hooks\ActionFilterHook::getInstance()
+        )
+    )->{'getContents'}($filename, $use_include_path, $context);
+}
+
+/**
+ * Subdomain as directory function uses the subdomain
+ * of the install as a directory.
+ *
+ * @file app/functions/deprecated-function.php
+ *
+ * @deprecated since release 0.9.9
+ * @since 0.9
+ * @return string
+ */
+function subdomain_as_directory()
+{
+    _deprecated_function(__FUNCTION__, '0.9.9', 'FileSystem::subdomainAsDirectory');
+    
+    return (
+        new TriTan\Common\FileSystem(
+            \TriTan\Common\Hooks\ActionFilterHook::getInstance()
+        )
+    )->{'subdomainAsDirectory'}();
+}
+
+/**
+ * Returns an array of function names in a file.
+ *
+ * @file app/functions/deprecated-function.php
+ *
+ * @deprecated since release 0.9.9
+ * @since 0.9
+ * @param string $filename
+ *            The path to the file.
+ * @param bool $sort
+ *            If true, sort results by function name.
+ */
+function get_functions_in_file($filename, $sort = false)
+{
+    _deprecated_function(__FUNCTION__, '0.9.9', 'FileSystem::getFunctions');
+     
+    return (
+        new \TriTan\Common\FileSystem(
+            \TriTan\Common\Hooks\ActionFilterHook::getInstance()
+        )
+    )->{'getFunctions'}($filename, $sort);
+}
+
+/**
+ * Checks a given file for any duplicated named user functions.
+ *
+ * @file app/functions/deprecated-function.php
+ *
+ * @deprecated since release 0.9.9
+ * @since 0.9
+ * @param string $filename
+ */
+function is_duplicate_function($filename)
+{
+    _deprecated_function(__FUNCTION__, '0.9.9', 'FileSystem::isDuplicateFunction');
+    
+    return (
+        new \TriTan\Common\FileSystem(
+            \TriTan\Common\Hooks\ActionFilterHook::getInstance()
+        )
+    )->{'isDuplicateFunction'}($filename);
+}
+
+/**
+ * Performs a check within a php script and returns any other files
+ * that might have been required or included.
+ *
+ * @file app/functions/deprecated-function.php
+ *
+ * @deprecated since release 0.9.9
+ * @since 0.9
+ * @param string $filename
+ *            PHP script to check.
+ */
+function ttcms_php_check_includes($filename)
+{
+    _deprecated_function(__FUNCTION__, '0.9.9', 'FileSystem::checkIncludes');
+    
+    return (
+        new \TriTan\Common\FileSystem(
+            \TriTan\Common\Hooks\ActionFilterHook::getInstance()
+        )
+    )->{'checkIncludes'}($filename);
+}
+
+/**
+ * Performs a syntax and error check of a given PHP script.
+ *
+ * @file app/functions/deprecated-function.php
+ *
+ * @deprecated since release 0.9.9
+ * @since 0.9
+ * @param string $filename
+ *            PHP script/file to check.
+ * @param bool $check_includes
+ *            If set to true, will check if other files have been included.
+ * @return void|\TriTan\Exception\Exception
+ * @throws NotFoundException If file does not exist or is not readable.
+ * @throws Exception If file contains duplicate function names.
+ */
+function ttcms_php_check_syntax($filename, $check_includes = true)
+{
+    _deprecated_function(__FUNCTION__, '0.9.9', 'FileSystem::checkSyntax');
+    
+    return (
+        new \TriTan\Common\FileSystem(
+            \TriTan\Common\Hooks\ActionFilterHook::getInstance()
+        )
+    )->{'checkSyntax'}($filename, $check_includes);
+}
+
+/**
+ * Single file writable atribute check.
+ * Thanks to legolas558.users.sf.net
+ *
+ * @file app/functions/deprecated-function.php
+ *
+ * @deprecated since release 0.9.9
+ * @since 0.9
+ * @param string $path
+ * @return true
+ */
+function win_is_writable($path)
+{
+    _deprecated_function(__FUNCTION__, '0.9.9', 'FileSystem::winIsWritable');
+    
+    return (
+        new \TriTan\Common\FileSystem(
+            \TriTan\Common\Hooks\ActionFilterHook::getInstance()
+        )
+    )->{'winIsWritable'}($path);
+}
+
+/**
+ * Alternative to PHP's native is_writable function due to a Window's bug.
+ *
+ * @file app/functions/deprecated-function.php
+ *
+ * @deprecated since release 0.9.9
+ * @since 0.9
+ * @param string $path
+ *            Path to check.
+ */
+function ttcms_is_writable($path)
+{
+    _deprecated_function(__FUNCTION__, '0.9.9', 'FileSystem::isWritable');
+    
+    return (
+        new \TriTan\Common\FileSystem(
+            \TriTan\Common\Hooks\ActionFilterHook::getInstance()
+        )
+    )->{'isWritable'}($path);
+}
+
+/**
+ * A wrapper for htmLawed which is a set of functions
+ * for html purifier
+ *
+ * @file app/functions/deprecated-function.php
+ *
+ * @deprecated since release 0.9.9
+ * @since 0.9
+ * @param string $string
+ * @return mixed
+ */
+function _escape($string)
+{
+    _deprecated_function(__FUNCTION__, '0.9.9', 'esc_html');
+    
+    return esc_html($string);
+}
+
+/**
+ * Checks whether a file or directory exists.
+ *
+ * @file app/functions/deprecated-function.php
+ *
+ * @deprecated since release 0.9.9
+ * @since 0.9
+ * @param string $filename  Path to the file or directory.
+ * @param bool $throw       Determines whether to do a simple check or throw an exception.
+ *                          Default: true.
+ * @return boolean <b>true</b> if the file or directory specified by
+ * <i>$filename</i> exists; <b>false</b> otherwise.
+ * @throws NotFoundException If file does not exist.
+ */
+function ttcms_file_exists($filename, $throw = true)
+{
+    _deprecated_function(__FUNCTION__, '0.9.9', 'FileSystem::exists');
+    
+    return (
+        new \TriTan\Common\FileSystem(
+            \TriTan\Common\Hooks\ActionFilterHook::getInstance()
+        )
+    )->{'exists'}($filename, $throw);
+}
+
+/**
+ * Get an array that represents directory tree.
+ *
+ * @file app/functions/deprecated-function.php
+ *
+ * @deprecated since release 0.9.9
+ * @since 0.9
+ * @param string $dir   Directory path
+ * @param string $bool  Include sub directories
+ */
+function directory_listing($dir, $bool = "dirs")
+{
+    _deprecated_function(__FUNCTION__, '0.9.9', 'FileSystem::directoryListing');
+    
+    return (
+        new \TriTan\Common\FileSystem(
+            \TriTan\Common\Hooks\ActionFilterHook::getInstance()
+        )
+    )->{'directoryListing'}($dir, $bool);
+}
+
+/**
+ * Normalize a filesystem path.
+ *
+ * @file app/functions/deprecated-function.php
+ *
+ * @deprecated since release 0.9.9
+ * @since 0.9
+ * @param string $path Path to normalize.
+ * @return string Normalized path.
+ */
+function ttcms_normalize_path($path)
+{
+    _deprecated_function(__FUNCTION__, '0.9.9', 'FileSystem::normalizePath');
+    
+    return (
+        new \TriTan\Common\FileSystem(
+            \TriTan\Common\Hooks\ActionFilterHook::getInstance()
+        )
+    )->{'normalizePath'}($path);
+}
+
+/**
+ * Beautifies a filename for use.
+ *
+ * @file app/functions/deprecated-function.php
+ *
+ * @deprecated since release 0.9.9
+ * @since 0.9
+ * @param string $filename Filename to beautify.
+ * @return string Beautified filename.
+ */
+function beautify_filename($filename)
+{
+    _deprecated_function(__FUNCTION__, '0.9.9', 'FileSystem::beautifyFilename');
+    
+    return (
+        new \TriTan\Common\FileSystem(
+            \TriTan\Common\Hooks\ActionFilterHook::getInstance()
+        )
+    )->{'beautifyFilename'}($filename);
+}
+
+/**
+ * Sanitizes a filename.
+ *
+ * @file app/functions/deprecated-function.php
+ *
+ * @deprecated since release 0.9.9
+ * @since 0.9
+ * @param string $filename  Name of file to sanitize.
+ * @param bool $beautify    Whether or not to beautify the sanitized filename.
+ * @return string Sanitized filename for use.
+ */
+function sanitize_filename($filename, $beautify = true)
+{
+    _deprecated_function(__FUNCTION__, '0.9.9', 'FileSystem::sanitizeFilename');
+    
+    return (
+        new \TriTan\Common\FileSystem(
+            \TriTan\Common\Hooks\ActionFilterHook::getInstance()
+        )
+    )->{'sanitizeFilename'}($filename, $beautify);
+}
+
+/**
+ * Sanitizes a url to be used safely.
+ *
+ * Example usage:
+ *
+ *      $url = "http://www.example.com/?message=test&<script>alert('XSS');</script>";
+ *
+ *      sanitize_url($url); //returns 'http://www.example.com/?message=test&38;';
+ *
+ * @file app/functions/deprecated-function.php
+ *
+ * @deprecated since release 0.9.9
+ * @since 0.9.8
+ * @param string $url   The url to be sanitized.
+ * @param bool $encode  Whether url params should be encoded.
+ * @return string The sanitized $url after the `sanitize_url` filter is applied.
+ */
+function sanitize_url($url, $encode = false)
+{
+    _deprecated_function(__FUNCTION__, '0.9.9', 'esc_url');
+    
+    return esc_url($url, ['http','https'], $encode);
+}
+
+/**
+ * Turns multi-dimensional array into a regular array.
+ *
+ * @file app/functions/deprecated-function.php
+ *
+ * @deprecated since release 0.9.9
+ * @since 0.9.9
+ * @param array $array The array to convert.
+ * @return array
+ */
+function flatten_array($array)
+{
+    _deprecated_function(__FUNCTION__, '0.9.9', 'Utils::flattenArray');
+    
+    return (
+        new \TriTan\Common\Utils(
+            \TriTan\Common\Hooks\ActionFilterHook::getInstance()
+        )
+    )->{'flattenArray'}($array);
+}
+
+/**
+ * Removes directory recursively along with any files.
+ *
+ * @file app/functions/deprecated-function.php
+ *
+ * @deprecated since release 0.9.9
+ * @since 0.9
+ * @param string $dir
+ *            Directory that should be removed.
+ */
+function _rmdir($dir)
+{
+    _deprecated_function(__FUNCTION__, '0.9.9', 'FileSystem::rmdir');
+    
+    return (
+        new \TriTan\Common\FileSystem(
+            \TriTan\Common\Hooks\ActionFilterHook::getInstance()
+        )
+    )->{'rmdir'}($dir);
+}
+
+/**
+ * Sanitizes a string, or returns a fallback string.
+ *
+ * Specifically, HTML and PHP tags are stripped. Further actions can be added
+ * via the plugin API. If $string is empty and $fallback_string is set, the latter
+ * will be used.
+ *
+ * @file app/functions/deprecated-function.php
+ *
+ * @deprecated since release 0.9.9
+ * @since 0.9
+ * @param string $string          The string to be sanitized.
+ * @param string $fallback_string Optional. A string to use if $string is empty.
+ * @param string $context        Optional. The operation for which the string is sanitized
+ * @return string The sanitized string.
+ */
+function ttcms_sanitize_string($string, $fallback_string = 'deprecated', $context = 'save')
+{
+    _deprecated_function(__FUNCTION__, '0.9.9', 'Sanitizer::item');
+    
+    return (
+        new \TriTan\Common\Sanitizer(
+            \TriTan\Common\Hooks\ActionFilterHook::getInstance()
+        )
+    )->{'item'}($string, 'string', $context);
 }

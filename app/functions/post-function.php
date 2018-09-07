@@ -1,15 +1,15 @@
 <?php
-namespace TriTan\Functions\Post;
-
-use TriTan\Config;
+use TriTan\Database;
+use TriTan\Container as c;
 use TriTan\Exception\Exception;
-use TriTan\Functions\Posttype;
-use TriTan\Functions\Cache;
-use TriTan\Functions\Meta;
-use TriTan\Functions\Db;
-use TriTan\Functions\Core;
-use TriTan\Functions\Hook;
-use TriTan\Functions\User;
+use TriTan\Common\Post\Post;
+use TriTan\Common\Post\PostRepository;
+use TriTan\Common\Post\PostMapper;
+use TriTan\Common\Hooks\ActionFilterHook as hook;
+use TriTan\Common\Context\HelperContext;
+use TriTan\Common\Options\Options;
+use TriTan\Common\Options\OptionsMapper;
+use TriTan\Common\MetaData;
 
 /**
  * TriTan CMS Post Functions
@@ -32,7 +32,8 @@ use TriTan\Functions\User;
  */
 function has_posts()
 {
-    $posts = app()->db->table(Config::get('tbl_prefix') . 'post')
+    $db = new Database();
+    $posts = $db->table(c::getInstance()->get('tbl_prefix') . 'post')
             ->where('post_type.post_posttype', 'post')
             ->count();
     return $posts > 0;
@@ -47,7 +48,8 @@ function has_posts()
  */
 function the_post()
 {
-    $posts = app()->db->table(Config::get('tbl_prefix') . 'post')
+    $db = new Database();
+    $posts = $db->table(c::getInstance()->get('tbl_prefix') . 'post')
             ->where('post_type.post_posttype', 'post')
             ->get();
     return $posts;
@@ -59,25 +61,37 @@ function the_post()
  * @file app/functions/post-function.php
  *
  * @since 0.9
- * @param int|Post|null $post
- *            Post ID or post object.
- * @param bool $object
- *              If set to true, data will return as an object, else as an array.
- *              Default: false.
+ * @param int|Post|null $post Post ID or post object.
+ * @param bool $object  If set to true, data will return as an object, else as an array.
+ *                      Default: true.
  * @return array|object
  */
-function get_post($post, $object = false)
+function get_post($post, $object = true)
 {
-    if ($post instanceof \TriTan\Post) {
+    if ($post instanceof Post) {
         $_post = $post;
     } elseif (is_object($post)) {
-        if (empty($post->post_id)) {
-            $_post = new \TriTan\Post($post);
+        if (empty($post->getId())) {
+            $_post = null;
         } else {
-            $_post = \TriTan\Post::get_instance($post->post_id);
+            $_post = (
+                new PostRepository(
+                    new PostMapper(
+                        new Database(),
+                        new HelperContext()
+                    )
+                )
+            )->{'findById'}($post->getId());
         }
     } else {
-        $_post = \TriTan\Post::get_instance($post);
+        $_post = (
+            new PostRepository(
+                new PostMapper(
+                    new Database(),
+                    new HelperContext()
+                )
+            )
+        )->{'findById'}((int) $post);
     }
 
     if (!$_post) {
@@ -85,7 +99,7 @@ function get_post($post, $object = false)
     }
 
     if ($object === false) {
-        $_post = (array) $_post;
+        $_post = $_post->toArray();
     }
 
     /**
@@ -94,9 +108,32 @@ function get_post($post, $object = false)
      * @since 0.9
      * @param Post $_post Post data.
      */
-    $_post = app()->hook->{'apply_filter'}('get_post', $_post);
+    $_post = hook::getInstance()->{'applyFilter'}('get_post', $_post);
 
     return $_post;
+}
+
+/**
+ * Retrieve post by a given field from the post table.
+ *
+ * @file app/functions/post-function.php
+ *
+ * @since 0.9
+ * @param string     $field The field to retrieve the post with.
+ * @param int|string $value A value for $field (_id, post_id, post_slug).
+ */
+function get_post_by(string $field, $value)
+{
+    $post = (
+        new \TriTan\Common\Post\PostRepository(
+            new TriTan\Common\Post\PostMapper(
+                new \TriTan\Database(),
+                new TriTan\Common\Context\HelperContext()
+            )
+        )
+    )->{'findBy'}($field, $value);
+
+    return $post;
 }
 
 /**
@@ -111,7 +148,7 @@ function get_post($post, $object = false)
  * @param int $post_id The unique id of a post.
  * @return string
  */
-function get_post_datetime($post_id = 0)
+function get_post_datetime(int $post_id = 0)
 {
     $datetime = concat_ws(' ', get_post_date($post_id), get_post_time($post_id));
     /**
@@ -122,7 +159,7 @@ function get_post_datetime($post_id = 0)
      * @param string $datetime The post's datetime.
      * @param int  $post_id The post ID.
      */
-    return app()->hook->{'apply_filter'}('post_datetime', $datetime, $post_id);
+    return hook::getInstance()->{'applyFilter'}('post_datetime', $datetime, $post_id);
 }
 
 /**
@@ -137,11 +174,22 @@ function get_post_datetime($post_id = 0)
  * @param int $post_id The unique id of a post.
  * @return string
  */
-function get_post_modified($post_id = 0)
+function get_post_modified(int $post_id = 0)
 {
+    $option = new Options(
+        new Database(),
+        new HelperContext()
+    );
     $post = get_post($post_id);
-    $format = app()->hook->{'get_option'}('date_format') . ' ' . app()->hook->{'get_option'}('time_format');
-    $modified = laci2date($format, Core\_escape($post['post_modified']));
+    $format = $option->{'read'}('date_format') . ' ' . $option->{'read'}('time_format');
+
+    $modified = (
+        new \TriTan\Common\Date()
+    )->{'laci2date'}(
+        $format,
+        $post->getModified()
+    );
+
     /**
      * Filters the post date.
      *
@@ -150,7 +198,7 @@ function get_post_modified($post_id = 0)
      * @param string $modified The post's modified datetime.
      * @param int  $post_id The post ID.
      */
-    return app()->hook->{'apply_filter'}('post_modified', $modified, $post_id);
+    return hook::getInstance()->{'applyFilter'}('post_modified', $modified, $post_id);
 }
 
 /**
@@ -165,10 +213,10 @@ function get_post_modified($post_id = 0)
  * @param int $post_id The unique id of a post.
  * @return string
  */
-function get_post_content($post_id = 0)
+function get_post_content(int $post_id = 0)
 {
     $post = get_post($post_id);
-    $content = Core\_escape($post['post_content']);
+    $content = $post->getContent();
     /**
      * Filters the post date.
      *
@@ -177,7 +225,7 @@ function get_post_content($post_id = 0)
      * @param string $content The post's content.
      * @param int  $post_id The post ID.
      */
-    return app()->hook->{'apply_filter'}('post_content', $content, (int) $post_id);
+    return hook::getInstance()->{'applyFilter'}('post_content', $content, (int) $post_id);
 }
 
 /**
@@ -192,11 +240,11 @@ function get_post_content($post_id = 0)
  * @param int $post_id The unique id of a post.
  * @return string
  */
-function get_post_type_name($post_id = 0)
+function get_post_type_name(int $post_id = 0)
 {
     $post = get_post($post_id);
-    $posttype = Posttype\get_posttype(Core\_escape($post['post_type']['posttype_id']));
-    $posttype_name = Core\_escape($posttype['posttype_title']);
+    $posttype = get_posttype($post->getPosttypeId());
+    $posttype_name = $posttype->getTitle();
     /**
      * Filters the post posttype name.
      *
@@ -205,7 +253,7 @@ function get_post_type_name($post_id = 0)
      * @param string $posttype_name The post's posttype name.
      * @param string  $post_id The post ID.
      */
-    return app()->hook->{'apply_filter'}('post_posttype_name', $posttype_name, $post_id);
+    return hook::getInstance()->{'applyFilter'}('post_posttype_name', $posttype_name, $post_id);
 }
 
 /**
@@ -220,9 +268,9 @@ function get_post_type_name($post_id = 0)
  * @param into $post_id The unique id of a post.
  * @return string
  */
-function get_post_posttype_link($post_id = 0)
+function get_post_posttype_link(int $post_id = 0)
 {
-    $link = Core\get_base_url() . get_post_posttype($post_id) . '/';
+    $link = site_url( get_post_posttype($post_id) . '/' );
     /**
      * Filters the post posttype link.
      *
@@ -231,7 +279,7 @@ function get_post_posttype_link($post_id = 0)
      * @param string $link The post's posttype link.
      * @param string  $post_id The post ID.
      */
-    return app()->hook->{'apply_filter'}('post_posttype_link', $link, $post_id);
+    return hook::getInstance()->{'applyFilter'}('post_posttype_link', $link, $post_id);
 }
 
 /**
@@ -246,10 +294,10 @@ function get_post_posttype_link($post_id = 0)
  * @param int $post_id The unique id of a post.
  * @return string
  */
-function get_post_title($post_id = 0)
+function get_post_title(int $post_id = 0)
 {
     $post = get_post($post_id);
-    $title = Core\_escape($post['post_title']);
+    $title = $post->getTitle();
     /**
      * Filters the post title.
      *
@@ -258,7 +306,7 @@ function get_post_title($post_id = 0)
      * @param string $title The post's title.
      * @param string  $post_id The post ID.
      */
-    return app()->hook->{'apply_filter'}('post_title', $title, $post_id);
+    return hook::getInstance()->{'applyFilter'}('post_title', $title, $post_id);
 }
 
 /**
@@ -273,10 +321,10 @@ function get_post_title($post_id = 0)
  * @param int $post_id The unique id of a post.
  * @return string
  */
-function get_post_slug($post_id = 0)
+function get_post_slug(int $post_id = 0)
 {
     $post = get_post($post_id);
-    $slug = Core\_escape($post['post_slug']);
+    $slug = $post->getSlug();
     /**
      * Filters the post's slug.
      *
@@ -285,79 +333,83 @@ function get_post_slug($post_id = 0)
      * @param string $slug The post's slug.
      * @param int  $post_id The post ID.
      */
-    return app()->hook->{'apply_filter'}('post_slug', $slug, $post_id);
+    return hook::getInstance()->{'applyFilter'}('post_slug', $slug, $post_id);
 }
 
 /**
  * A function which retrieves a TriTan CMS post's relative url.
  *
- * Purpose of this function is for the `post_relative_url`
+ * Purpose of this function is for the `{$posttype}_relative_url`
  * filter.
  *
  * @file app/functions/post-function.php
  *
  * @since 0.9.5
- * @param int|array $post Post id or array.
+ * @param int|Post $post Post id or Post.
  * @return string
  */
 function get_relative_url($post = 0)
 {
-    if (is_array($post)) {
-        $_post = $post;
-    } else {
-        $_post = get_post($post);
+    if (!is_object($post) && !is_numeric($post)) {
+        return '';
     }
 
-    if ((int) Core\_escape($_post['post_id']) <= 0) {
+    $post = get_post($post);
+
+    if ((int) $post->getId() <= 0) {
         return false;
     }
 
-    $relative_url = Core\_escape($_post['post_relative_url']);
+    $relative_url = $post->getRelativeUrl();
     /**
      * Filters the post's relative_url.
      *
      * @since 0.9.5
      *
      * @param string $relative_url The post's relative url.
-     * @param string|array  $_post The post id or array.
+     * @param int    $post_id      The post id.
      */
-    return app()->hook->{'apply_filter'}('post_relative_url', $relative_url, $_post);
+    return hook::getInstance()->{'applyFilter'}(
+        $post->getPosttype() . '_relative_url',
+        $relative_url,
+        $post->getId()
+    );
 }
 
 /**
  * A function which retrieves a TriTan CMS post's permalink.
  *
- * Purpose of this function is for the `permalink`
+ * Purpose of this function is for the `{$posttype}_link`
  * filter.
  *
  * @file app/functions/post-function.php
  *
  * @since 0.9
- * @param int|array $post Post id or array.
+ * @param int|Post $post Post id or Post.
  * @return string
  */
 function get_permalink($post = 0)
 {
-    if (is_array($post)) {
-        $_post = $post;
-    } else {
-        $_post = get_post($post);
+    if (!is_object($post) && !is_numeric($post)) {
+        return '';
     }
 
-    if (empty(Core\_escape($_post['post_id']))) {
+    $post = get_post($post);
+
+    if (empty($post->getId())) {
         return false;
     }
 
-    $link = Core\get_base_url() . get_relative_url($_post);
+    $link = home_url( get_relative_url($post) );
     /**
-     * Filters the post's link.
+     * Filters the post's link based on its posttype.
      *
      * @since 0.9
      *
-     * @param string $link The post's link.
-     * @param string|array  $_post The post id or array.
+     * @param string $link    The post's link.
+     * @param int    $post_id The post id.
      */
-    return app()->hook->{'apply_filter'}('permalink', $link, $_post);
+    return hook::getInstance()->{'applyFilter'}( $post->getPosttype() . '_link', $link, $post->getId() );
 }
 
 /**
@@ -371,10 +423,10 @@ function get_permalink($post = 0)
  * @param int $post_id The unique id of a post.
  * @return string
  */
-function the_content($post_id = 0)
+function the_content(int $post_id = 0)
 {
     $post_content = get_post_content($post_id);
-    $post_content = app()->hook->{'apply_filter'}('the_content', $post_content);
+    $post_content = hook::getInstance()->{'applyFilter'}('the_content', $post_content);
     $post_content = str_replace(']]>', ']]&gt;', $post_content);
     return $post_content;
 }
@@ -393,61 +445,7 @@ function the_content($post_id = 0)
  */
 function the_posts($post_type = null, $limit = 0, $offset = null, $status = 'all')
 {
-    return Db\get_all_posts($post_type, $limit, $offset, $status);
-}
-
-/**
- * A function which retrieves TriTan CMS post css.
- *
- * Purpose of this function is for the `post_css`
- * filter.
- *
- * @file app/functions/post-function.php
- *
- * @since 0.9
- * @param int $post_id The unique id of a post.
- * @return string
- */
-function post_css($post_id = 0)
-{
-    $post = get_post($post_id);
-    $css = '<style>' . Core\_escape($post['post_css']) . '</style>';
-    /**
-     * Filters the post css code.
-     *
-     * @since 0.9
-     *
-     * @param string $css The post's css code.
-     * @param int  $post_id The post ID.
-     */
-    return app()->hook->{'apply_filter'}('post_css', $css, $post_id);
-}
-
-/**
- * A function which retrieves TriTan CMS post javascript.
- *
- * Purpose of this function is for the `post_js`
- * filter.
- *
- * @file app/functions/post-function.php
- *
- * @since 0.9
- * @param int $post_id The unique id of a post.
- * @return string
- */
-function post_js($post_id = 0)
-{
-    $post = get_post($post_id);
-    $js = '<script>' . Core\_escape($post['post_js']) . '</script>';
-    /**
-     * Filters the post javascript code.
-     *
-     * @since 0.9
-     *
-     * @param string $js The post's javascript code.
-     * @param int  $post_id The post ID.
-     */
-    return app()->hook->{'apply_filter'}('post_js', $js, $post_id);
+    return get_all_posts($post_type, $limit, $offset, $status);
 }
 
 /**
@@ -459,7 +457,7 @@ function post_js($post_id = 0)
  * @param string $status
  * @return string
  */
-function ttcms_post_status_label($status)
+function ttcms_post_status_label(string $status)
 {
     $label = [
         'published' => 'label-success',
@@ -483,9 +481,19 @@ function ttcms_post_status_label($status)
  * @return mixed Will be an array if $single is false. Will be value of meta data
  *               field if $single is true.
  */
-function get_post_meta($post_id, $key = '', $single = false)
+function get_post_meta(int $post_id, string $key = '', bool $single = false)
 {
-    return Meta\get_metadata(Config::get('tbl_prefix') . 'post', $post_id, $key, $single);
+    return (
+        new MetaData(
+            new Database(),
+            new HelperContext()
+        )
+    )->{'read'}(
+        c::getInstance()->get('tbl_prefix') . 'post',
+        $post_id,
+        $key,
+        $single
+    );
 }
 
 /**
@@ -497,9 +505,17 @@ function get_post_meta($post_id, $key = '', $single = false)
  * @param int $mid
  * @return array|bool
  */
-function get_post_meta_by_mid($mid)
+function get_post_meta_by_mid(int $mid)
 {
-    return Meta\get_metadata_by_mid(Config::get('tbl_prefix') . 'post', $mid);
+    return (
+        new MetaData(
+            new Database(),
+            new HelperContext()
+        )
+    )->{'readByMid'}(
+        c::getInstance()->get('tbl_prefix') . 'post',
+        $mid
+    );
 }
 
 /**
@@ -521,9 +537,20 @@ function get_post_meta_by_mid($mid)
  * @return int|bool Meta ID if the key didn't exist, true on successful update,
  *                  false on failure.
  */
-function update_post_meta($post_id, $meta_key, $meta_value, $prev_value = '')
+function update_post_meta(int $post_id, string $meta_key, $meta_value, $prev_value = '')
 {
-    return Meta\update_metadata(Config::get('tbl_prefix') . 'post', $post_id, $meta_key, $meta_value, $prev_value);
+    return (
+        new MetaData(
+            new Database(),
+            new HelperContext()
+        )
+    )->{'update'}(
+        c::getInstance()->get('tbl_prefix') . 'post',
+        $post_id,
+        $meta_key,
+        $meta_value,
+        $prev_value
+    );
 }
 
 /**
@@ -537,11 +564,21 @@ function update_post_meta($post_id, $meta_key, $meta_value, $prev_value = '')
  * @param string $meta_value
  * @return bool
  */
-function update_post_meta_by_mid($mid, $meta_key, $meta_value)
+function update_post_meta_by_mid(int $mid, string $meta_key, $meta_value)
 {
-    $_meta_key = Core\ttcms_unslash($meta_key);
-    $_meta_value = Core\ttcms_unslash($meta_value);
-    return Meta\update_metadata_by_mid(Config::get('tbl_prefix') . 'post', $mid, $_meta_key, $_meta_value);
+    $_meta_key = ttcms()->obj['util']->{'unslash'}($meta_key);
+    $_meta_value = ttcms()->obj['util']->{'unslash'}($meta_value);
+    return (
+        new MetaData(
+            new Database(),
+            new HelperContext()
+        )
+    )->{'updateByMid'}(
+        c::getInstance()->get('tbl_prefix') . 'post',
+        $mid,
+        $_meta_key,
+        $_meta_value
+    );
 }
 
 /**
@@ -557,9 +594,20 @@ function update_post_meta_by_mid($mid, $meta_key, $meta_value)
  *                           Default false.
  * @return int|false Meta ID on success, false on failure.
  */
-function add_post_meta($post_id, $meta_key, $meta_value, $unique = false)
+function add_post_meta(int $post_id, string $meta_key, $meta_value, $unique = false)
 {
-    return Meta\add_metadata(Config::get('tbl_prefix') . 'post', $post_id, $meta_key, $meta_value, $unique);
+    return (
+        new MetaData(
+            new Database(),
+            new HelperContext()
+        )
+    )->{'create'}(
+        c::getInstance()->get('tbl_prefix') . 'post',
+        $post_id,
+        $meta_key,
+        $meta_value,
+        $unique
+    );
 }
 
 /**
@@ -578,9 +626,19 @@ function add_post_meta($post_id, $meta_key, $meta_value, $unique = false)
  *                           non-scalar. Default empty.
  * @return bool True on success, false on failure.
  */
-function delete_post_meta($post_id, $meta_key, $meta_value = '')
+function delete_post_meta(int $post_id, string $meta_key, $meta_value = '')
 {
-    return Meta\delete_metadata(Config::get('tbl_prefix') . 'post', $post_id, $meta_key, $meta_value);
+    return (
+        new MetaData(
+            new Database(),
+            new HelperContext()
+        )
+    )->{'delete'}(
+        c::getInstance()->get('tbl_prefix') . 'post',
+        $post_id,
+        $meta_key,
+        $meta_value
+    );
 }
 
 /**
@@ -592,9 +650,17 @@ function delete_post_meta($post_id, $meta_key, $meta_value = '')
  * @param int $mid
  * @return bool
  */
-function delete_post_meta_by_mid($mid)
+function delete_post_meta_by_mid(int $mid)
 {
-    return Meta\delete_metadata_by_mid(Config::get('tbl_prefix') . 'post', $mid);
+    return (
+        new MetaData(
+            new Database(),
+            new HelperContext()
+        )
+    )->{'deleteByMid'}(
+        c::getInstance()->get('tbl_prefix') . 'post',
+        $mid
+    );
 }
 
 /**
@@ -609,9 +675,9 @@ function delete_post_meta_by_mid($mid)
  * @param int $post_id The post's id.
  * @return array Post meta for the given post.
  */
-function get_post_custom($post_id = 0)
+function get_post_custom(int $post_id = 0)
 {
-    $_post_id = Core\absint($post_id);
+    $_post_id = ttcms()->obj['util']->{'absint'}($post_id);
     return get_post_meta($_post_id);
 }
 
@@ -626,7 +692,7 @@ function get_post_custom($post_id = 0)
  * @param int $post_id The post's id.
  * @return array|void Array of the keys, if retrieved.
  */
-function get_post_custom_keys($post_id = 0)
+function get_post_custom_keys(int $post_id = 0)
 {
     $custom = get_post_custom($post_id);
     if (!is_array($custom)) {
@@ -650,7 +716,7 @@ function get_post_custom_keys($post_id = 0)
  * @param int    $post_id The post's id.
  * @return array|null Meta field values.
  */
-function get_post_custom_values($key = '', $post_id = 0)
+function get_post_custom_values(string $key = '', int $post_id = 0)
 {
     if (!$key) {
         return null;
@@ -678,7 +744,7 @@ function the_permalink($post = 0)
      * @param string            $permalink The permalink for the current post.
      * @param int|array $post   Post ID, Post array, or 0. Default 0.
      */
-    echo app()->hook->{'apply_filter'}('the_permalink', get_permalink($post), $post);
+    echo hook::getInstance()->{'applyFilter'}('the_permalink', get_permalink($post), $post);
 }
 
 /**
@@ -693,10 +759,10 @@ function the_permalink($post = 0)
  * @param int $post_id The unique id of a post.
  * @return string
  */
-function get_post_author_id($post_id = 0)
+function get_post_author_id(int $post_id = 0)
 {
     $post = get_post($post_id);
-    $author_id = Core\_escape($post['post_author']);
+    $author_id = $post->getAuthor();
     /**
      * Filters the post author id.
      *
@@ -705,7 +771,7 @@ function get_post_author_id($post_id = 0)
      * @param string    $author_id The post's author id.
      * @param string    $post_id The post ID.
      */
-    return app()->hook->{'apply_filter'}('post_author_id', $author_id, $post_id);
+    return hook::getInstance()->{'applyFilter'}('post_author_id', (int) $author_id, $post_id);
 }
 
 /**
@@ -721,10 +787,10 @@ function get_post_author_id($post_id = 0)
  * @param bool  $reverse If first name should appear first or not. Default is false.
  * @return string
  */
-function get_post_author($post_id = 0, $reverse = false)
+function get_post_author(int $post_id = 0, bool $reverse = false)
 {
     $post = get_post($post_id);
-    $author = User\get_name(Core\_escape($post['post_author']), $reverse);
+    $author = get_name($post->getAuthor(), $reverse);
     /**
      * Filters the post author.
      *
@@ -733,7 +799,7 @@ function get_post_author($post_id = 0, $reverse = false)
      * @param string    $author The post's author.
      * @param string    $post_id The post ID.
      */
-    return app()->hook->{'apply_filter'}('post_author', $author, $post_id);
+    return hook::getInstance()->{'applyFilter'}('post_author', $author, $post_id);
 }
 
 /**
@@ -748,10 +814,10 @@ function get_post_author($post_id = 0, $reverse = false)
  * @param int   $post_id The unique id of a post.
  * @return string
  */
-function get_post_status($post_id = 0)
+function get_post_status(int $post_id = 0)
 {
     $post = get_post($post_id);
-    $status = Core\_escape($post['post_status']);
+    $status = $post->getStatus();
     /**
      * Filters the post status.
      *
@@ -760,7 +826,7 @@ function get_post_status($post_id = 0)
      * @param string    $status The post's status.
      * @param string    $post_id The post ID.
      */
-    return app()->hook->{'apply_filter'}('post_status', $status, $post_id);
+    return hook::getInstance()->{'applyFilter'}('post_status', $status, $post_id);
 }
 
 /**
@@ -776,9 +842,9 @@ function get_post_status($post_id = 0)
  * @param string $type Type of date to return: created, published, modified. Default: published.
  * @return string
  */
-function get_post_date($post_id = 0, $type = 'published')
+function get_post_date(int $post_id = 0, string $type = 'published')
 {
-    return call_user_func_array("Tritan\\Functions\\Post\\the_{$type}_date", ['Y-m-d',&$post_id]);
+    return call_user_func_array("the_{$type}_date", ['Y-m-d',&$post_id]);
 }
 
 /**
@@ -794,9 +860,9 @@ function get_post_date($post_id = 0, $type = 'published')
  * @param string $type Type of date to return: created, published, modified. Default: published.
  * @return string
  */
-function get_post_time($post_id = 0, $type = 'published')
+function get_post_time(int $post_id = 0, string $type = 'published')
 {
-    return call_user_func_array("Tritan\\Functions\\Post\\the_{$type}_time", ['h:i A',&$post_id]);
+    return call_user_func_array("the_{$type}_time", ['h:i A',&$post_id]);
 }
 
 /**
@@ -812,29 +878,30 @@ function get_post_time($post_id = 0, $type = 'published')
 function get_post_created_date(string $format = 'U', bool $gmt = false, $post = null, bool $translate = false)
 {
     $post = get_post($post);
+    $date = new \TriTan\Common\Date();
 
     if (!$post) {
         return false;
     }
 
     if ($gmt) {
-        $date = gmt_date(Core\_escape($post['post_created']));
+        $the_date = $date->{'gmtdate'}($post->getCreated());
     } else {
-        $date = Core\_escape($post['post_created']);
+        $the_date = $post->getCreated();
     }
 
-    $date = laci2date($format, $date, $translate);
+    $the_date = $date->{'laci2Date'}($format, $the_date, $translate);
     /**
      * Filters the post created date.
      *
      * @since 0.9.9
      *
-     * @param string $date The post's formatted date.
+     * @param string $the_date The post's formatted date.
      * @param bool $format Format to use for retrieving the date the post was written.
      *                     Accepts 'G', 'U', or php date format. Default 'U'.
      * @param bool   $gmt  Whether to retrieve the GMT date. Default false.
      */
-    return app()->hook->{'apply_filter'}('get_post_created_date', $date, $format, $gmt);
+    return hook::getInstance()->{'applyFilter'}('get_post_created_date', $the_date, $format, $gmt);
 }
 
 /**
@@ -856,7 +923,21 @@ function the_created_date(string $format = '', $post = null)
     }
 
     if ('' == $format) {
-        $the_date = get_post_created_date(app()->hook->{'get_option'}('date_format'), false, $post, true);
+        $the_date = get_post_created_date(
+            (
+            new Options(
+                new OptionsMapper(
+                    new Database(),
+                    new HelperContext()
+                )
+            )
+            )->{'read'}(
+                'date_format'
+            ),
+            false,
+            $post,
+            true
+        );
     } else {
         $the_date = get_post_created_date($format, false, $post, true);
     }
@@ -871,7 +952,7 @@ function the_created_date(string $format = '', $post = null)
      *                            in 'date_format' option. Default empty.
      * @param int|Post  $post     Post array or post id.
      */
-    return app()->hook->{'apply_filter'}('the_created_date', $the_date, $format, $post);
+    return hook::getInstance()->{'applyFilter'}('the_created_date', $the_date, $format, $post);
 }
 
 /**
@@ -889,18 +970,19 @@ function the_created_date(string $format = '', $post = null)
 function get_post_created_time(string $format = 'U', bool $gmt = false, $post = null, bool $translate = false)
 {
     $post = get_post($post);
+    $date = new \TriTan\Common\Date();
 
     if (!$post) {
         return false;
     }
 
     if ($gmt) {
-        $time = gmt_date(Core\_escape($post['post_created']));
+        $time = $date->{'gmtdate'}($post->getCreated());
     } else {
-        $time = Core\_escape($post['post_created']);
+        $time = $post->getCreated();
     }
 
-    $time = laci2date($format, $time, $translate);
+    $time = $date->{'laci2Date'}($format, $time, $translate);
     /**
      * Filters the post created time.
      *
@@ -911,7 +993,7 @@ function get_post_created_time(string $format = 'U', bool $gmt = false, $post = 
      *                     Accepts 'G', 'U', or php date format. Default 'U'.
      * @param bool   $gmt  Whether to retrieve the GMT time. Default false.
      */
-    return app()->hook->{'apply_filter'}('get_post_created_time', $time, $format, $gmt);
+    return hook::getInstance()->{'applyFilter'}('get_post_created_time', $time, $format, $gmt);
 }
 
 /**
@@ -933,7 +1015,21 @@ function the_created_time(string $format = '', $post = null)
     }
 
     if ('' == $format) {
-        $the_time = get_post_created_time(app()->hook->{'get_option'}('time_format'), false, $post, true);
+        $the_time = get_post_created_time(
+            (
+            new Options(
+                new OptionsMapper(
+                    new Database(),
+                    new HelperContext()
+                )
+            )
+            )->{'read'}(
+                'time_format'
+            ),
+            false,
+            $post,
+            true
+        );
     } else {
         $the_time = get_post_created_time($format, false, $post, true);
     }
@@ -948,7 +1044,7 @@ function the_created_time(string $format = '', $post = null)
      *                            in 'time_format' option. Default empty.
      * @param int|Post  $post     Post array or post id.
      */
-    return app()->hook->{'apply_filter'}('the_created_date', $the_time, $format, $post);
+    return hook::getInstance()->{'applyFilter'}('the_created_date', $the_time, $format, $post);
 }
 
 /**
@@ -963,29 +1059,30 @@ function the_created_time(string $format = '', $post = null)
 function get_post_published_date(string $format = 'U', bool $gmt = false, $post = null, bool $translate = false)
 {
     $post = get_post($post);
+    $date = new \TriTan\Common\Date();
 
     if (!$post) {
         return false;
     }
 
     if ($gmt) {
-        $date = gmt_date(Core\_escape($post['post_published']));
+        $the_date = $date->{'gmtdate'}($post->getPublished());
     } else {
-        $date = Core\_escape($post['post_published']);
+        $the_date = $post->getPublished();
     }
 
-    $date = laci2date($format, $date, $translate);
+    $the_date = $date->{'laci2Date'}($format, $the_date, $translate);
     /**
      * Filters the post published date.
      *
      * @since 0.9.9
      *
-     * @param string $date The post's formatted date.
+     * @param string $the_date The post's formatted date.
      * @param bool $format Format to use for retrieving the date the post was published.
      *                     Accepts 'G', 'U', or php date format. Default 'U'.
      * @param bool   $gmt  Whether to retrieve the GMT date. Default false.
      */
-    return app()->hook->{'apply_filter'}('get_post_published_date', $date, $format, $gmt);
+    return hook::getInstance()->{'applyFilter'}('get_post_published_date', $the_date, $format, $gmt);
 }
 
 /**
@@ -1007,7 +1104,21 @@ function the_published_date(string $format = '', $post = null)
     }
 
     if ('' == $format) {
-        $the_date = get_post_published_date(app()->hook->{'get_option'}('date_format'), false, $post, true);
+        $the_date = get_post_published_date(
+            (
+            new Options(
+                new OptionsMapper(
+                    new Database(),
+                    new HelperContext()
+                )
+            )
+            )->{'read'}(
+                'date_format'
+            ),
+            false,
+            $post,
+            true
+        );
     } else {
         $the_date = get_post_published_date($format, false, $post, true);
     }
@@ -1022,7 +1133,7 @@ function the_published_date(string $format = '', $post = null)
      *                            in 'date_format' option. Default empty.
      * @param int|Post  $post     Post array or post id.
      */
-    return app()->hook->{'apply_filter'}('the_published_date', $the_date, $format, $post);
+    return hook::getInstance()->{'applyFilter'}('the_published_date', $the_date, $format, $post);
 }
 
 /**
@@ -1037,18 +1148,19 @@ function the_published_date(string $format = '', $post = null)
 function get_post_published_time(string $format = 'U', bool $gmt = false, $post = null, bool $translate = false)
 {
     $post = get_post($post);
+    $date = new \TriTan\Common\Date();
 
     if (!$post) {
         return false;
     }
 
     if ($gmt) {
-        $time = gmt_date(Core\_escape($post['post_published']));
+        $time = $date->{'gmtdate'}( $post->getPublished() );
     } else {
-        $time = Core\_escape($post['post_published']);
+        $time = $post->getPublished();
     }
 
-    $time = laci2date($format, $time, $translate);
+    $time = $date->{'laci2Date'}($format, $time, $translate);
     /**
      * Filters the post published time.
      *
@@ -1059,7 +1171,7 @@ function get_post_published_time(string $format = 'U', bool $gmt = false, $post 
      *                     Accepts 'G', 'U', or php date format. Default 'U'.
      * @param bool   $gmt  Whether to retrieve the GMT time. Default false.
      */
-    return app()->hook->{'apply_filter'}('get_post_published_time', $time, $format, $gmt);
+    return hook::getInstance()->{'applyFilter'}('get_post_published_time', $time, $format, $gmt);
 }
 
 /**
@@ -1081,7 +1193,21 @@ function the_published_time(string $format = '', $post = null)
     }
 
     if ('' == $format) {
-        $the_time = get_post_published_time(app()->hook->{'get_option'}('time_format'), false, $post, true);
+        $the_time = get_post_published_time(
+            (
+            new Options(
+                new OptionsMapper(
+                    new Database(),
+                    new HelperContext()
+                )
+            )
+            )->{'read'}(
+                'time_format'
+            ),
+            false,
+            $post,
+            true
+        );
     } else {
         $the_time = get_post_published_time($format, false, $post, true);
     }
@@ -1096,7 +1222,7 @@ function the_published_time(string $format = '', $post = null)
      *                            in 'time_format' option. Default empty.
      * @param int|Post  $post     Post array or post id.
      */
-    return app()->hook->{'apply_filter'}('the_published_time', $the_time, $format, $post);
+    return hook::getInstance()->{'applyFilter'}('the_published_time', $the_time, $format, $post);
 }
 
 /**
@@ -1111,29 +1237,30 @@ function the_published_time(string $format = '', $post = null)
 function get_post_modified_date(string $format = 'U', bool $gmt = false, $post = null, bool $translate = false)
 {
     $post = get_post($post);
+    $date = new \TriTan\Common\Date();
 
     if (!$post) {
         return false;
     }
 
     if ($gmt) {
-        $date = gmt_date(Core\_escape($post['post_modified']));
+        $the_date = $date->{'gmtdate'}( $post->getModified() );
     } else {
-        $date = Core\_escape($post['post_modified']);
+        $the_date = $post->getModified();
     }
 
-    $date = laci2date($format, $date, $translate);
+    $the_date = $date->{'laci2Date'}($format, $the_date, $translate);
     /**
      * Filters the post modified date.
      *
      * @since 0.9.9
      *
-     * @param string $date The post's formatted date.
+     * @param string $the_date The post's formatted date.
      * @param bool $format Format to use for retrieving the date the post was published.
      *                     Accepts 'G', 'U', or php date format. Default 'U'.
      * @param bool   $gmt  Whether to retrieve the GMT date. Default false.
      */
-    return app()->hook->{'apply_filter'}('get_post_modified_date', $date, $format, $gmt);
+    return hook::getInstance()->{'applyFilter'}('get_post_modified_date', $the_date, $format, $gmt);
 }
 
 /**
@@ -1155,7 +1282,21 @@ function the_modified_date(string $format = '', $post = null)
     }
 
     if ('' == $format) {
-        $the_date = get_post_modified_date(app()->hook->{'get_option'}('date_format'), false, $post, true);
+        $the_date = get_post_modified_date(
+            (
+            new Options(
+                new OptionsMapper(
+                    new Database(),
+                    new HelperContext()
+                )
+            )
+            )->{'read'}(
+                'date_format'
+            ),
+            false,
+            $post,
+            true
+        );
     } else {
         $the_date = get_post_modified_date($format, false, $post, true);
     }
@@ -1170,7 +1311,7 @@ function the_modified_date(string $format = '', $post = null)
      *                            in 'date_format' option. Default empty.
      * @param int|Post  $post     Post array or post id.
      */
-    return app()->hook->{'apply_filter'}('the_modified_date', $the_date, $format, $post);
+    return hook::getInstance()->{'applyFilter'}('the_modified_date', $the_date, $format, $post);
 }
 
 /**
@@ -1185,18 +1326,19 @@ function the_modified_date(string $format = '', $post = null)
 function get_post_modified_time(string $format = 'U', bool $gmt = false, $post = null, bool $translate = false)
 {
     $post = get_post($post);
+    $date = new \TriTan\Common\Date();
 
     if (!$post) {
         return false;
     }
 
     if ($gmt) {
-        $time = gmt_date(Core\_escape($post['post_modified']));
+        $time = $date->{'gmtdate'}( $post->getModified() );
     } else {
-        $time = Core\_escape($post['post_modified']);
+        $time = $post->getModified();
     }
 
-    $time = laci2date($format, $time, $translate);
+    $time = $date->{'laci2Date'}($format, $time, $translate);
     /**
      * Filters the post modified time.
      *
@@ -1207,7 +1349,7 @@ function get_post_modified_time(string $format = 'U', bool $gmt = false, $post =
      *                     Accepts 'G', 'U', or php date format. Default 'U'.
      * @param bool   $gmt  Whether to retrieve the GMT time. Default false.
      */
-    return app()->hook->{'apply_filter'}('get_post_modified_time', $time, $format, $gmt);
+    return hook::getInstance()->{'applyFilter'}('get_post_modified_time', $time, $format, $gmt);
 }
 
 /**
@@ -1229,7 +1371,21 @@ function the_modified_time(string $format = '', $post = null)
     }
 
     if ('' == $format) {
-        $the_time = get_post_modified_time(app()->hook->{'get_option'}('time_format'), false, $post, true);
+        $the_time = get_post_modified_time(
+            (
+            new Options(
+                new OptionsMapper(
+                    new Database(),
+                    new HelperContext()
+                )
+            )
+            )->{'read'}(
+                'time_format'
+            ),
+            false,
+            $post,
+            true
+        );
     } else {
         $the_time = get_post_modified_time($format, false, $post, true);
     }
@@ -1244,7 +1400,7 @@ function the_modified_time(string $format = '', $post = null)
      *                            in 'time_format' option. Default empty.
      * @param int|Post  $post     Post array or post id.
      */
-    return app()->hook->{'apply_filter'}('the_modified_time', $the_time, $format, $post);
+    return hook::getInstance()->{'applyFilter'}('the_modified_time', $the_time, $format, $post);
 }
 
 /**
@@ -1259,10 +1415,10 @@ function the_modified_time(string $format = '', $post = null)
  * @param int $post_id The unique id of a post.
  * @return string
  */
-function get_post_posttype_id($post_id = 0)
+function get_post_posttype_id(int $post_id = 0)
 {
-    $post = Db\get_post_by('post_id', $post_id);
-    $posttype_id = Core\_escape($post['post_type']['posttype_id']);
+    $post = get_post_by('id', $post_id);
+    $posttype_id = $post->getPosttypeId();
     /**
      * Filters the post posttype id.
      *
@@ -1271,7 +1427,7 @@ function get_post_posttype_id($post_id = 0)
      * @param int   $posttype_id    The post's posttype id.
      * @param int   $post_id        The post ID.
      */
-    return app()->hook->{'apply_filter'}('post_posttype_id', (int) $posttype_id, (int) $post_id);
+    return hook::getInstance()->{'applyFilter'}('post_posttype_id', (int) $posttype_id, (int) $post_id);
 }
 
 /**
@@ -1286,10 +1442,10 @@ function get_post_posttype_id($post_id = 0)
  * @param int $post_id The unique id of a post.
  * @return string
  */
-function get_post_posttype($post_id = 0)
+function get_post_posttype(int $post_id = 0)
 {
-    $post = Db\get_post_by('post_id', $post_id);
-    $posttype = Core\_escape($post['post_type']['post_posttype']);
+    $post = get_post_by('id', $post_id);
+    $posttype = $post->getPosttype();
     /**
      * Filters the post posttype.
      *
@@ -1298,7 +1454,7 @@ function get_post_posttype($post_id = 0)
      * @param string    $posttype   The post's posttype.
      * @param int       $post_id    The post ID.
      */
-    return app()->hook->{'apply_filter'}('post_posttype', $posttype, (int) $post_id);
+    return hook::getInstance()->{'applyFilter'}('post_posttype', $posttype, (int) $post_id);
 }
 
 /**
@@ -1313,10 +1469,10 @@ function get_post_posttype($post_id = 0)
  * @param int $post_id The unique id of a post.
  * @return string
  */
-function get_post_parent_id($post_id = 0)
+function get_post_parent_id(int $post_id = 0)
 {
-    $post = Db\get_post_by('post_id', $post_id);
-    $parent_id = Core\_escape($post['post_attributes']['parent']['parent_id']);
+    $post = get_post_by('id', $post_id);
+    $parent_id = $post->getParentId();
     /**
      * Filters the post parent id.
      *
@@ -1325,7 +1481,7 @@ function get_post_parent_id($post_id = 0)
      * @param int   $parent_id  The post's parent id.
      * @param int   $post_id    The post ID.
      */
-    return app()->hook->{'apply_filter'}('post_parent_id', (int) $parent_id, (int) $post_id);
+    return hook::getInstance()->{'applyFilter'}('post_parent_id', (int) $parent_id, (int) $post_id);
 }
 
 /**
@@ -1340,10 +1496,10 @@ function get_post_parent_id($post_id = 0)
  * @param int $post_id The unique id of a post.
  * @return string
  */
-function get_post_parent($post_id = 0)
+function get_post_parent(int $post_id = 0)
 {
-    $post = Db\get_post_by('post_id', $post_id);
-    $parent = Core\_escape($post['post_attributes']['parent']['post_parent']);
+    $post = get_post_by('id', $post_id);
+    $parent = $post->getParent();
     /**
      * Filters the post parent.
      *
@@ -1352,7 +1508,7 @@ function get_post_parent($post_id = 0)
      * @param string    $parent     The post's parent.
      * @param int       $post_id    The post ID.
      */
-    return app()->hook->{'apply_filter'}('post_parent', $parent, (int) $post_id);
+    return hook::getInstance()->{'applyFilter'}('post_parent', $parent, (int) $post_id);
 }
 
 /**
@@ -1367,10 +1523,10 @@ function get_post_parent($post_id = 0)
  * @param int $post_id The unique id of a post.
  * @return string
  */
-function get_post_sidebar($post_id = 0)
+function get_post_sidebar(int $post_id = 0)
 {
-    $post = Db\get_post_by('post_id', $post_id);
-    $sidebar = Core\_escape($post['post_attributes']['post_sidebar']);
+    $post = get_post_by('id', $post_id);
+    $sidebar = $post->getSidebar();
     /**
      * Filters the post sidebar.
      *
@@ -1379,7 +1535,7 @@ function get_post_sidebar($post_id = 0)
      * @param int   $sidebar    The post's sidebar option.
      * @param int   $post_id    The post ID.
      */
-    return app()->hook->{'apply_filter'}('post_sidebar', (int) $sidebar, (int) $post_id);
+    return hook::getInstance()->{'applyFilter'}('post_sidebar', (int) $sidebar, (int) $post_id);
 }
 
 /**
@@ -1394,10 +1550,10 @@ function get_post_sidebar($post_id = 0)
  * @param int $post_id The unique id of a post.
  * @return string
  */
-function get_post_show_in_menu($post_id = 0)
+function get_post_show_in_menu(int $post_id = 0)
 {
-    $post = Db\get_post_by('post_id', $post_id);
-    $menu = Core\_escape($post['post_attributes']['post_show_in_menu']);
+    $post = get_post_by('id', $post_id);
+    $menu = $post->getShowInMenu();
     /**
      * Filters the post show in menu.
      *
@@ -1406,7 +1562,7 @@ function get_post_show_in_menu($post_id = 0)
      * @param int   $menu       The post's show in menu option.
      * @param int   $post_id    The post ID.
      */
-    return app()->hook->{'apply_filter'}('post_show_in_menu', (int) $menu, (int) $post_id);
+    return hook::getInstance()->{'applyFilter'}('post_show_in_menu', (int) $menu, (int) $post_id);
 }
 
 /**
@@ -1421,10 +1577,10 @@ function get_post_show_in_menu($post_id = 0)
  * @param int $post_id The unique id of a post.
  * @return string
  */
-function get_post_show_in_search($post_id = 0)
+function get_post_show_in_search(int $post_id = 0)
 {
-    $post = Db\get_post_by('post_id', $post_id);
-    $search = Core\_escape($post['post_attributes']['post_show_in_search']);
+    $post = get_post_by('id', $post_id);
+    $search = $post->getShowInSearch();
     /**
      * Filters the post show in search.
      *
@@ -1433,7 +1589,7 @@ function get_post_show_in_search($post_id = 0)
      * @param int   $search     The post's show in search option.
      * @param int   $post_id    The post ID.
      */
-    return app()->hook->{'apply_filter'}('post_show_in_search', (int) $search, (int) $post_id);
+    return hook::getInstance()->{'applyFilter'}('post_show_in_search', (int) $search, (int) $post_id);
 }
 
 /**
@@ -1444,14 +1600,14 @@ function get_post_show_in_search($post_id = 0)
  * @since 0.9.8
  * @param string $original_slug     Original slug of post.
  * @param string $original_title    Original title of post.
- * @param int $post_id              Unique post id.
+ * @param int|null $post_id         Unique post id or null.
  * @param string $post_type         Post type of post.
  * @return string Unique post slug.
  */
-function ttcms_unique_post_slug($original_slug, $original_title, $post_id, $post_type)
+function ttcms_unique_post_slug(string $original_slug, string $original_title, $post_id, string $post_type)
 {
-    if (Db\ttcms_post_slug_exist($post_id, $original_slug, $post_type)) {
-        $post_slug = Db\ttcms_slugify($original_title, 'post');
+    if (ttcms_post_slug_exist($post_id, $original_slug, $post_type)) {
+        $post_slug = ttcms_slugify($original_title, 'post');
     } else {
         $post_slug = $original_slug;
     }
@@ -1465,7 +1621,14 @@ function ttcms_unique_post_slug($original_slug, $original_title, $post_id, $post
      * @param int       $post_id        The post's unique id.
      * @param string    $post_type      The post's post type.
      */
-    return app()->hook->{'apply_filter'}('ttcms_unique_post_slug', $post_slug, $original_slug, $original_title, $post_id, $post_type);
+    return hook::getInstance()->{'applyFilter'}(
+        'ttcms_unique_post_slug',
+        $post_slug,
+        $original_slug,
+        $original_title,
+        $post_id,
+        $post_type
+    );
 }
 
 /**
@@ -1498,9 +1661,10 @@ function ttcms_unique_post_slug($original_slug, $original_title, $post_id, $post
  * @return int|Exception|null   The newly created post's post_id or throws an exception or returns null
  *                              if the post could not be created or updated.
  */
-function ttcms_insert_post($postdata, $exception = false)
+function ttcms_insert_post(array $postdata, bool $exception = false)
 {
-    $user_id = User\get_current_user_id();
+    $user_id = get_current_user_id();
+    $date = new \TriTan\Common\Date();
 
     $defaults = [
         'post_title' => null,
@@ -1516,17 +1680,22 @@ function ttcms_insert_post($postdata, $exception = false)
         'post_status' => 'draft'
     ];
 
-    $_postdata = Core\ttcms_parse_args($postdata, $defaults);
+    $_postdata = ttcms()->obj['util']->{'parseArgs'}($postdata, $defaults);
 
     // Are we updating or creating?
     if (!empty($_postdata['post_id'])) {
         $update = true;
         $post_id = (int) $_postdata['post_id'];
-        $post_before = get_post((int) $post_id, true);
+        $post_before = get_post((int) $post_id);
 
         if (is_null($post_before)) {
             if ($exception) {
-                throw new Exception(Core\_t('Invalid post id.', 'tritan-cms'), 'invalid_post_id');
+                throw new Exception(
+                    esc_html__(
+                        'Invalid post id.'
+                    ),
+                    'invalid_post_id'
+                );
             } else {
                 return null;
             }
@@ -1542,10 +1711,15 @@ function ttcms_insert_post($postdata, $exception = false)
          * @param int       $post_id            The post's post_id.
          * @param bool      $update             Whether this is an existing post or a new post.
          */
-        app()->hook->{'do_action'}('post_previous_status', $previous_status, (int) $post_id, $update);
+        hook::getInstance()->{'doAction'}('post_previous_status', $previous_status, (int) $post_id, $update);
+
+        /**
+         * Create new post object.
+         */
+        $post = new Post();
+        $post->setId((int) $post_id);
     } else {
         $update = false;
-        $post_id = Db\auto_increment(Config::get('tbl_prefix') . 'post', 'post_id');
 
         $previous_status = 'new';
         /**
@@ -1557,7 +1731,12 @@ function ttcms_insert_post($postdata, $exception = false)
          * @param int       $post_id            The post's post_id.
          * @param bool      $update             Whether this is an existing post or a new post.
          */
-        app()->hook->{'do_action'}('post_previous_status', $previous_status, (int) $post_id, $update);
+        hook::getInstance()->{'doAction'}('post_previous_status', $previous_status, (int) $post_id, $update);
+
+        /**
+         * Create new post object.
+         */
+        $post = new Post();
     }
 
     if (isset($_postdata['post_title'])) {
@@ -1571,22 +1750,36 @@ function ttcms_insert_post($postdata, $exception = false)
     }
 
     $raw_post_posttype = $_postdata['post_posttype'];
+    $sanitized_post_posttype = ttcms()->obj['sanitizer']->{'item'}($raw_post_posttype);
     /**
      * Filters a post's posttype before the post is created or updated.
      *
      * @since 0.9.9
+     * @param string $sanitized_post_posttype Post posttype after it has been sanitized.
      * @param string $raw_post_posttype The post's post type.
      */
-    $post_posttype = app()->hook->{'apply_filter'}('pre_post_posttype', (string) $raw_post_posttype);
+    $post_posttype = hook::getInstance()->{'applyFilter'}(
+        'pre_post_posttype',
+        $sanitized_post_posttype,
+        $raw_post_posttype
+    );
+    $post->setPosttype($post_posttype);
 
     $raw_post_title = $post_title;
+    $sanitized_post_title = ttcms()->obj['sanitizer']->{'item'}($raw_post_title);
     /**
      * Filters a post's title before created/updated.
      *
      * @since 0.9.9
+     * @param string $sanitized_post_title Post title after it has been sanitized.
      * @param string $raw_post_title The post's title.
      */
-    $post_title = app()->hook->{'apply_filter'}('pre_post_title', (string) $raw_post_title);
+    $post_title = hook::getInstance()->{'applyFilter'}(
+        'pre_post_title',
+        (string) $sanitized_post_title,
+        (string) $raw_post_title
+    );
+    $post->setTitle($post_title);
 
     if (isset($_postdata['post_slug'])) {
         /**
@@ -1600,26 +1793,40 @@ function ttcms_insert_post($postdata, $exception = false)
          * For an update, don't modify the post_slug if it
          * wasn't supplied as an argument.
          */
-        $post_slug = $post_before->post_slug;
+        $post_slug = $post_before->getSlug();
     }
 
     $raw_post_slug = $post_slug;
+    $sanitized_post_slug = ttcms()->obj['sanitizer']->{'item'}($raw_post_slug);
     /**
      * Filters a post's slug before created/updated.
      *
      * @since 0.9.9
+     * @param string $sanitized_post_slug Post slug after it has been sanitized.
      * @param string $raw_post_slug The post's slug.
      */
-    $post_slug = app()->hook->{'apply_filter'}('pre_post_slug', (string) $raw_post_slug);
+    $post_slug = hook::getInstance()->{'applyFilter'}(
+        'pre_post_slug',
+        (string) $sanitized_post_slug,
+        (string) $raw_post_slug
+    );
+    $post->setSlug($post_slug);
 
     $raw_post_content = $_postdata['post_content'];
+    $sanitized_post_content = ttcms()->obj['sanitizer']->{'item'}($raw_post_content);
     /**
      * Filters a post's content before created/updated.
      *
      * @since 0.9.9
+     * @param string $sanitized_post_content Post content after it has been sanitized.
      * @param string $raw_post_slug The post's slug.
      */
-    $post_content = app()->hook->{'apply_filter'}('pre_post_content', (string) $raw_post_content);
+    $post_content = hook::getInstance()->{'applyFilter'}(
+        'pre_post_content',
+        $sanitized_post_content,
+        $raw_post_content
+    );
+    $post->setContent($post_content);
 
     /**
      * Check for post author
@@ -1631,74 +1838,130 @@ function ttcms_insert_post($postdata, $exception = false)
 
     if ($post_author <= 0 || $post_author === null) {
         if ($exception) {
-            throw new Exception(Core\_t('Post author cannot be zero or null.', 'tritan-cms'), 'empty_post_author');
+            throw new Exception(
+                esc_html__(
+                    'Post author cannot be zero or null.'
+                ),
+                'empty_post_author'
+            );
         } else {
             return null;
         }
     }
 
+    $post->setAuthor((int) $post_author);
+
     $raw_post_parent = $_postdata['post_parent'];
+    $sanitized_post_parent = ttcms()->obj['sanitizer']->{'item'}($raw_post_parent);
     /**
      * Filters a post's parent before the post is created or updated.
      *
      * @since 0.9.9
+     * @param string $sanitized_post_parent Post parent after it has been sanitized.
      * @param string $raw_post_parent The post's parent.
      */
-    $post_parent = app()->hook->{'apply_filter'}('pre_post_parent', (string) $raw_post_parent);
+    $post_parent = hook::getInstance()->{'applyFilter'}(
+        'pre_post_parent',
+        (string) $sanitized_post_parent,
+        (string) $raw_post_parent
+    );
+    $post->setParent($post_parent);
 
     $raw_post_sidebar = $_postdata['post_sidebar'];
+    $sanitized_post_sidebar = ttcms()->obj['sanitizer']->{'item'}($raw_post_sidebar, 'int');
     /**
      * Filters a post's sidebar before the post is created or updated.
      *
      * @since 0.9.9
+     * @param string $sanitized_post_sidebar Post sidebar after it has been sanitized.
      * @param int $raw_post_sidebar The post's sidebar.
      */
-    $post_sidebar = app()->hook->{'apply_filter'}('pre_post_sidebar', (int) $raw_post_sidebar);
+    $post_sidebar = hook::getInstance()->{'applyFilter'}(
+        'pre_post_sidebar',
+        (int) $sanitized_post_sidebar,
+        (int) $raw_post_sidebar
+    );
+    $post->setSidebar((int) $post_sidebar);
 
     $raw_post_show_in_menu = $_postdata['post_show_in_menu'];
+    $sanitized_post_show_in_menu = ttcms()->obj['sanitizer']->{'item'}($raw_post_show_in_menu);
     /**
      * Filters a post's show in menu before the post is created or updated.
      *
      * @since 0.9.9
+     * @param string $sanitized_post_show_in_menu Post show in menu after it has been sanitized.
      * @param int $raw_post_show_in_menu The post's show in menu.
      */
-    $post_show_in_menu = app()->hook->{'apply_filter'}('pre_post_show_in_menu', (int) $raw_post_show_in_menu);
+    $post_show_in_menu = hook::getInstance()->{'applyFilter'}(
+        'pre_post_show_in_menu',
+        (int) $sanitized_post_show_in_menu,
+        (int) $raw_post_show_in_menu
+    );
+    $post->setShowInMenu((int) $post_show_in_menu);
 
     $raw_post_show_in_search = $_postdata['post_show_in_search'];
+    $sanitized_post_show_in_search = ttcms()->obj['sanitizer']->{'item'}($raw_post_show_in_search, 'int');
     /**
      * Filters a post's show in search before the post is created or updated.
      *
      * @since 0.9.9
+     * @param string $sanitized_post_show_in_search Post show in search after it has been sanitized.
      * @param int $raw_post_show_in_search The post's show in search.
      */
-    $post_show_in_search = app()->hook->{'apply_filter'}('pre_post_show_in_search', (int) $raw_post_show_in_search);
+    $post_show_in_search = hook::getInstance()->{'applyFilter'}(
+        'pre_post_show_in_search',
+        (int) $sanitized_post_show_in_search,
+        (int) $raw_post_show_in_search
+    );
+    $post->setShowInSearch((int) $post_show_in_search);
 
     $raw_post_relative_url = $post_posttype . '/' . $post_slug . '/';
+    $sanitized_post_relative_url = ttcms()->obj['sanitizer']->{'item'}($raw_post_relative_url);
     /**
      * Filters a post's relative url before the post is created or updated.
      *
      * @since 0.9.9
+     * @param string $sanitized_post_relative_url Post relative url after it has been sanitized.
      * @param string $raw_post_relative_url The post's relative url.
      */
-    $post_relative_url = app()->hook->{'apply_filter'}('pre_post_relative_url', (string) $raw_post_relative_url);
+    $post_relative_url = hook::getInstance()->{'applyFilter'}(
+        'pre_post_relative_url',
+        (string) $sanitized_post_relative_url,
+        (string) $raw_post_relative_url
+    );
+    $post->setRelativeUrl($post_relative_url);
 
-    $raw_post_featured_image = Hook\ttcms_optimized_image_upload($_postdata['post_featured_image']);
+    $raw_post_featured_image = ttcms_optimized_image_upload($_postdata['post_featured_image']);
+    $sanitized_post_featured_image = ttcms()->obj['sanitizer']->{'item'}($raw_post_featured_image);
     /**
      * Filters a post's featured image before the post is created or updated.
      *
      * @since 0.9.9
+     * @param string $sanitized_post_featured_image Post featured image after it has been sanitized.
      * @param string $raw_post_featured_image The post's featured image.
      */
-    $post_featured_image = app()->hook->{'apply_filter'}('pre_post_featured_image', (string) $raw_post_featured_image);
+    $post_featured_image = hook::getInstance()->{'applyFilter'}(
+        'pre_post_featured_image',
+        (string) $sanitized_post_featured_image,
+        (string) $raw_post_featured_image
+    );
+    $post->setFeaturedImage($post_featured_image);
 
     $raw_post_status = $_postdata['post_status'];
+    $sanitized_post_status = ttcms()->obj['sanitizer']->{'item'}($raw_post_status);
     /**
      * Filters a post's status before the post is created or updated.
      *
      * @since 0.9.9
+     * @param string $sanitized_post_status Post status after it has been sanitized.
      * @param string $raw_post_status The post's status.
      */
-    $post_status = app()->hook->{'apply_filter'}('pre_post_status', (string) $raw_post_status);
+    $post_status = hook::getInstance()->{'applyFilter'}(
+        'pre_post_status',
+        (string) $sanitized_post_status,
+        (string) $raw_post_status
+    );
+    $post->setStatus($post_status);
 
     /*
      * Filters whether the post is null.
@@ -1708,26 +1971,45 @@ function ttcms_insert_post($postdata, $exception = false)
      * @param array $_postdata   Array of post data.
      */
     $maybe_null = !$post_title && !$post_content;
-    if (app()->hook->{'apply_filter'}('ttcms_insert_post_empty_content', $maybe_null, $_postdata)) {
+    if (hook::getInstance()->{'applyFilter'}('ttcms_insert_post_empty_content', $maybe_null, $_postdata)) {
         if ($exception) {
-            throw new Exception(Core\_t('The title and content are null'), 'empty_content');
+            throw new Exception(
+                esc_html__(
+                    'The title and content are null'
+                ),
+                'empty_content'
+            );
         } else {
             return null;
         }
     }
 
     if (!$update) {
-        if (empty($_postdata['post_published']) || Core\php_like('%0000-00-00 00:00', $_postdata['post_published'])) {
-            $post_published = (string) current_time('Y-m-d h:i A');
+        if (empty($_postdata['post_published']) || php_like('%0000-00-00 00:00', $_postdata['post_published'])) {
+            $post_published = (string) $date->{'current'}('Y-m-d h:i A');
         } else {
-            $post_published = laci2date('Y-m-d h:i A', $_postdata['post_published']);
+            $post_published = (string) $date->{'laci2Date'}('Y-m-d h:i A', $_postdata['post_published']);
         }
     } else {
-        $post_published = laci2date('Y-m-d h:i A', $_postdata['post_published']);
+        $post_published = (string) $date->{'laci2Date'}('Y-m-d h:i A', $_postdata['post_published']);
     }
 
-    $compacted = compact('post_title', 'post_slug', 'post_content', 'post_author', 'post_posttype', 'post_parent', 'post_sidebar', 'post_show_in_menu', 'post_show_in_search', 'post_relative_url', 'post_featured_image', 'post_status', 'post_published');
-    $data = Core\ttcms_unslash($compacted);
+    $compacted = compact(
+        'post_title',
+        'post_slug',
+        'post_content',
+        'post_author',
+        'post_posttype',
+        'post_parent',
+        'post_sidebar',
+        'post_show_in_menu',
+        'post_show_in_search',
+        'post_relative_url',
+        'post_featured_image',
+        'post_status',
+        'post_published'
+    );
+    $data = ttcms()->obj['util']->{'unslash'}($compacted);
 
     /**
      * Filters post data before the record is created or updated.
@@ -1755,39 +2037,86 @@ function ttcms_insert_post($postdata, $exception = false)
      * @param bool     $update Whether the post is being updated rather than created.
      * @param int|null $id     ID of the post to be updated, or NULL if the post is being created.
      */
-    $data = app()->hook->{'apply_filter'}('ttcms_before_insert_post_data', $data, $update, $update ? (int) $post_id : null);
-    $where = ['post_id' => (int) $post_id];
+    $data = hook::getInstance()->{'applyFilter'}(
+        'ttcms_before_insert_post_data',
+        $data,
+        $update,
+        $update ? (int) $post_id : null
+    );
 
     if (!$update) {
-        $data = array_merge($where, $data);
         /**
          * Fires immediately before a post is inserted into the post document.
          *
          * @since 0.9.9
-         * @param int   $post_id Post id.
-         * @param array $data    Array of post data.
+         * @param Post $post Post object.
          */
-        app()->hook->{'do_action'}('pre_post_insert', (int) $post_id, $data);
-        if (false === Db\ttcms_post_insert_document($data)) {
+        hook::getInstance()->{'doAction'}('pre_post_insert', $post);
+        
+        $parent_id = 0 || null == $post->getParent() ? 0 : get_post_id($post->getParent());
+
+        $posttype = get_posttype_by('posttype_slug', $post->getPosttype());
+        $post->setPosttypeId((int) $posttype['posttype_id']);
+        $post->setParentId($parent_id);
+        $post->setCreated($date->{'format'}());
+        $post->setPublished($post_published);
+
+        $post_id = (
+            new PostRepository(
+                new PostMapper(
+                    new Database(),
+                    new HelperContext()
+                )
+            )
+        )->{'insert'}($post);
+
+        if (false === $post_id) {
             if ($exception) {
-                throw new Exception(Core\_t('Could not insert post into the post document.'), 'post_document_insert_error');
+                throw new Exception(
+                    esc_html__(
+                        'Could not insert post into the post document.'
+                    ),
+                    'post_document_insert_error'
+                );
             } else {
                 return null;
             }
         }
     } else {
-        $data = array_merge($where, $data);
         /**
          * Fires immediately before an existing post is updated in the post document.
          *
          * @since 0.9.9
          * @param int   $post_id Post id.
-         * @param array $data    Array of post data.
+         * @param Post  $post    Post object.
          */
-        app()->hook->{'do_action'}('pre_post_update', (int) $post_id, $data);
-        if (false === Db\ttcms_post_update_document($data)) {
+        hook::getInstance()->{'doAction'}('pre_post_update', (int) $post_id, $post);
+        
+        $parent_id = 0 || null == $post->getParent() ? 0 : get_post_id($post->getParent());
+
+        $posttype = get_posttype_by('posttype_slug', $post->getPosttype());
+        $post->setPosttypeId((int) $posttype['posttype_id']);
+        $post->setParentId($parent_id);
+        $post->setPublished($post_published);
+        $post->setModified($date->format());
+
+        $post_id = (
+            new PostRepository(
+                new PostMapper(
+                    new Database(),
+                    new HelperContext()
+                )
+            )
+        )->{'update'}($post);
+
+        if (false === $post_id) {
             if ($exception) {
-                throw new Exception(Core\_t('Could not update post within the post document.'), 'post_document_update_error');
+                throw new Exception(
+                    esc_html__(
+                        'Could not update post within the post document.'
+                    ),
+                    'post_document_update_error'
+                );
             } else {
                 return null;
             }
@@ -1799,9 +2128,13 @@ function ttcms_insert_post($postdata, $exception = false)
             update_post_meta((int) $post_id, $key, $value);
         }
     }
-
-    clean_post_cache((int) $post_id);
+    
     $post = get_post((int) $post_id, true);
+
+    (new \TriTan\Common\Post\PostCache(
+        ttcms()->obj['cache'],
+        hook::getInstance()
+    ))->{'clean'}($post);
 
     if ($update) {
         /**
@@ -1811,7 +2144,7 @@ function ttcms_insert_post($postdata, $exception = false)
          * @param int   $post_id    Post id.
          * @param array $post       Post object.
          */
-        app()->hook->{'do_action'}('update_post', (int) $post_id, $post);
+        hook::getInstance()->{'doAction'}('update_post', (int) $post_id, $post);
         $post_after = get_post((int) $post_id, true);
         /**
          * Action hook triggered after existing post has been updated.
@@ -1821,7 +2154,7 @@ function ttcms_insert_post($postdata, $exception = false)
          * @param object    $post_after   Post object following the update.
          * @param object    $post_before  Post object before the update.
          */
-        app()->hook->{'do_action'}('post_updated', (int) $post_id, $post_after, $post_before);
+        hook::getInstance()->{'doAction'}('post_updated', (int) $post_id, $post_after, $post_before);
     }
 
     /**
@@ -1835,7 +2168,7 @@ function ttcms_insert_post($postdata, $exception = false)
      * @param array $post       Post object.
      * @param bool  $update     Whether this is an existing post or a new post.
      */
-    app()->hook->{'do_action'}("save_post_{$post_posttype}", (int) $post_id, $post, $update);
+    hook::getInstance()->{'doAction'}("save_post_{$post_posttype}", (int) $post_id, $post, $update);
 
     /**
      * Action hook triggered after post has been saved.
@@ -1848,7 +2181,7 @@ function ttcms_insert_post($postdata, $exception = false)
      * @param array $post       Post object.
      * @param bool  $update     Whether this is an existing post or a new post.
      */
-    app()->hook->{'do_action'}("save_post_{$post_posttype}_{$post_status}", (int) $post_id, $post, $update);
+    hook::getInstance()->{'doAction'}("save_post_{$post_posttype}_{$post_status}", (int) $post_id, $post, $update);
 
     /**
      * Action hook triggered after post has been saved.
@@ -1858,7 +2191,7 @@ function ttcms_insert_post($postdata, $exception = false)
      * @param array $post       Post object.
      * @param bool  $update     Whether this is an existing post or a new post.
      */
-    app()->hook->{'do_action'}('ttcms_after_insert_post_data', (int) $post_id, $post, $update);
+    hook::getInstance()->{'doAction'}('ttcms_after_insert_post_data', (int) $post_id, $post, $update);
 
     return (int) $post_id;
 }
@@ -1874,18 +2207,25 @@ function ttcms_insert_post($postdata, $exception = false)
  * @param array|object $postdata An array of post data or a post object.
  * @return int|Exception|null The updated post's id or throw an Exception or return null if post could not be updated.
  */
-function ttcms_update_post($postdata = [], $exception = false)
+function ttcms_update_post($postdata, bool $exception = false)
 {
-    if (is_object($postdata)) {
+    if ($postdata instanceof \stdClass) {
         $postdata = get_object_vars($postdata);
+    } elseif($postdata instanceof Post) {
+        $postdata = $postdata->toArray();
     }
 
     // First, get all of the original fields.
-    $post = get_post((int) $postdata['post_id']);
+    $post = get_post((int) $postdata['post_id'], false);
 
     if (is_null($post)) {
         if ($exception) {
-            throw new Exception(Core\_t('Invalid post ID.'), 'invalid_post');
+            throw new Exception(
+                esc_html__(
+                    'Invalid post ID.'
+                ),
+                'invalid_post'
+            );
         }
         return null;
     }
@@ -1903,11 +2243,12 @@ function ttcms_update_post($postdata = [], $exception = false)
  *
  * @since 0.9.9
  * @param int $post_id The id of the post to delete.
- * @return boolean
+ * @return bool|Post Post on success, false otherwise.
  */
-function ttcms_delete_post($post_id = 0)
+function ttcms_delete_post(int $post_id = 0)
 {
-    $post = get_post($post_id, true);
+    $post = get_post($post_id);
+    $db = new Database();
 
     if (!$post) {
         return false;
@@ -1919,23 +2260,37 @@ function ttcms_delete_post($post_id = 0)
      * @since 0.9.9
      * @param int $post_id Post id.
      */
-    app()->hook->{'do_action'}('before_delete_post', (int) $post_id);
+    hook::getInstance()->{'doAction'}('before_delete_post', (int) $post_id);
 
-    if (Db\is_post_parent($post_id)) {
-        foreach (Db\is_post_parent($post_id) as $children) {
-            $update_children = app()->db->table(Config::get('tbl_prefix') . 'post');
+    if (is_post_parent($post_id)) {
+        foreach (is_post_parent($post_id) as $children) {
+            $update_children = $db->table(c::getInstance()->get('tbl_prefix') . 'post');
             $update_children->begin();
             try {
-                $update_children->where('post_attributes.parent.parent_id', Core\_escape($children['post_attributes']['parent']['parent_id']))
-                        ->where('post_attributes.parent.post_parent', Core\_escape($children['post_attributes']['parent']['post_parent']))
-                        ->update([
-                            'post_attributes.parent.parent_id' => null,
-                            'post_attributes.parent.post_parent' => null
-                        ]);
+                $update_children->where(
+                    'post_attributes.parent.parent_id',
+                    esc_html($children['post_attributes']['parent']['parent_id'])
+                )
+                ->where(
+                    'post_attributes.parent.post_parent',
+                    esc_html($children['post_attributes']['parent']['post_parent'])
+                )
+                ->update(
+                    [
+                        'post_attributes.parent.parent_id' => null,
+                        'post_attributes.parent.post_parent' => null
+                    ]
+                );
                 $update_children->commit();
             } catch (Exception $ex) {
                 $update_children->rollback();
-                Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
+                Cascade::getLogger('error')->{'error'}(
+                    sprintf(
+                        'SQLSTATE[%s]: %s',
+                        $ex->getCode(),
+                        $ex->getMessage()
+                    )
+                );
                 return false;
             }
         }
@@ -1955,18 +2310,14 @@ function ttcms_delete_post($post_id = 0)
      * @since 0.9.9
      * @param int $post_id Post ID.
      */
-    app()->hook->{'do_action'}('delete_post', (int) $post_id);
+    hook::getInstance()->{'doAction'}('delete_post', (int) $post_id);
 
-    $delete = app()->db->table(Config::get('tbl_prefix') . 'post');
-    $delete->begin();
-    try {
-        $delete->where('post_id', (int) $post_id)->delete();
-        $delete->commit();
-    } catch (Exception $ex) {
-        $delete->rollback();
-        Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
-        return false;
-    }
+    (new PostRepository(
+        new PostMapper(
+            new Database(),
+            new HelperContext()
+        )
+    ))->{'delete'}($post);
 
     /**
      * Action hook fires immediately after a post is deleted from the post document.
@@ -1974,13 +2325,11 @@ function ttcms_delete_post($post_id = 0)
      * @since 0.9.9
      * @param int $post_id Post id.
      */
-    app()->hook->{'do_action'}('deleted_post', (int) $post_id);
+    hook::getInstance()->{'doAction'}('deleted_post', (int) $post_id);
 
-    clean_post_cache($post);
-
-    if (Db\is_post_parent($post_id)) {
-        foreach (Db\is_post_parent($post_id) as $children) {
-            clean_post_cache(Core\_escape($children['post_id']));
+    if (is_post_parent($post_id)) {
+        foreach (is_post_parent($post_id) as $children) {
+            ttcms()->obj['postcache']->{'clean'}((object) $children);
         }
     }
 
@@ -1990,37 +2339,57 @@ function ttcms_delete_post($post_id = 0)
      * @since 0.9.9
      * @param int $post_id Post id.
      */
-    app()->hook->{'do_action'}('after_delete_post', (int) $post_id);
+    hook::getInstance()->{'doAction'}('after_delete_post', (int) $post_id);
 
     return $post;
 }
 
 /**
- * Clean post caches.
- *
- * Uses `clean_post_cache` action.
+ * Returns the number of posts within a given post type.
  *
  * @file app/functions/post-function.php
  *
- * @since 0.9.9
- * @param array|int|object $post Post array, post_id, post object to be cleaned from the cache.
+ * @since 0.9
+ * @param string $slug Post type slug.
+ * @return int
  */
-function clean_post_cache($post)
+function number_posts_per_type(string $slug) : int
 {
-    $_post = get_post($post);
-    if (empty($_post)) {
-        return;
+    $count = (
+        new PostRepository(
+            new PostMapper(
+                new Database(),
+                new HelperContext()
+            )
+        )
+    )->{'findByType'}($slug);
+    return @count($count);
+}
+
+/**
+ * Retrieves all posts
+ *
+ * @file app/functions/post-function.php
+ *
+ * @since 0.9
+ * @access private
+ * @param string $slug  Post slug.
+ * @param int $post_id  Post id.
+ * @return array
+ */
+function get_post_dropdown_list($slug = null, int $post_id = 0)
+{
+    $posts = (
+        new \TriTan\Common\Post\PostRepository(
+            new TriTan\Common\Post\PostMapper(
+                new \TriTan\Database(),
+                new TriTan\Common\Context\HelperContext()
+            )
+        )
+    )->{'findAll'}();
+    foreach ($posts as $post) {
+        if($post_id != $post->getId()) {
+            echo '<option value="' . $post->getSlug() . '"' . selected($slug, $post->getSlug(), false) . '>' . $post->getTitle() . '</option>';
+        }
     }
-
-    Cache\ttcms_cache_delete((int) Core\_escape($_post['post_id']), 'post');
-    Cache\ttcms_cache_delete((int) Core\_escape($_post['post_id']), 'post_meta');
-
-    /**
-     * Fires immediately after the given post's cache is cleaned.
-     *
-     * @since 0.9.9
-     * @param int   $_post['post_id']   Post id.
-     * @param array $_post              Post array.
-     */
-    app()->hook->{'do_action'}('clean_post_cache', (int) Core\_escape($_post['post_id']), $_post);
 }

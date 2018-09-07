@@ -1,12 +1,10 @@
 <?php
 namespace TriTan;
 
-use TriTan\Config;
+use TriTan\Container as c;
 use TriTan\Exception\Exception;
 use TriTan\Exception\IOException;
 use Cascade\Cascade;
-use TriTan\Functions\Db;
-use TriTan\Functions\Core;
 
 /**
  * Task Manager Queue
@@ -61,29 +59,30 @@ class Queue
      * @var type
      */
     public $prefix;
-
-    /**
-     *
-     * @param \Liten\Liten $liten
-     */
-    public function __construct(array $config = [], \Liten\Liten $liten = null)
+    
+    private $db;
+    
+    private $hook;
+    
+    public function __construct(array $config = [])
     {
         $this->setConfig($this->getDefaultConfig());
         $this->setConfig($config);
 
-        $this->app = !empty($liten) ? $liten : \Liten\Liten::getInstance();
+        $this->db = new Database();
+        $this->hook = Common\Hooks\ActionFilterHook::getInstance();
 
         try {
             /**
              * Creates a directory with proper permissions.
              */
-            Core\_mkdir(Config::get('cache_path') . 'ttcms_queue');
+            (new Common\FileSystem($this->hook))->{'mkdir'}(c::getInstance()->get('cache_path') . 'ttcms_queue');
         } catch (IOException $e) {
-            Cascade::getLogger('error')->error(sprintf('IOSTATE[%s]: Forbidden: %s', $e->getCode(), $e->getMessage()));
-            Cascade::getLogger('system_email')->alert(sprintf('IOSTATE[%s]: Forbidden: %s', $e->getCode(), $e->getMessage()));
+            Cascade::getLogger('error')->error(sprintf('QUEUESTATE[%s]: Forbidden: %s', $e->getCode(), $e->getMessage()));
+            Cascade::getLogger('system_email')->alert(sprintf('QUEUESTATE[%s]: Forbidden: %s', $e->getCode(), $e->getMessage()));
         }
-        $this->prefix = Config::get('tbl_prefix');
-        $this->dir = Config::get('cache_path') . 'ttcms_queue' . DS;
+        $this->prefix = c::getInstance()->get('tbl_prefix');
+        $this->dir = c::getInstance()->get('cache_path') . 'ttcms_queue' . DS;
     }
 
     /**
@@ -167,25 +166,25 @@ class Queue
      */
     public function enqueue($args)
     {
-        $tasks = Core\ttcms_parse_args($args);
+        $tasks = (new Common\Utils($this->hook))->{'parseArgs'}($args);
 
-        $count = $this->app->db->table($this->node())
+        $count = $this->db->table($this->node())
                 ->where('pid', (int) $tasks['task_worker']['pid'])
                 ->get();
         if (count($count) >= 1) {
-            $node = $this->app->db->table($this->node());
+            $node = $this->db->table($this->node());
             $node->begin();
             try {
                 $node->where('pid', (int) $tasks['task_worker']['pid'])
                         ->update([
-                            'pid' => Core\if_null($tasks['task_worker']['pid']),
-                            'name' => Core\if_null($tasks['task_worker']['name']),
-                            'task_callback' => Core\if_null($tasks['task_worker']['task_callback']),
-                            'action_hook' => Core\if_null($tasks['task_worker']['action_hook']),
-                            'schedule' => Core\if_null($tasks['task_worker']['schedule']),
-                            'debug' => Core\if_null($tasks['task_worker']['debug']),
-                            'max_runtime' => Core\if_null($tasks['task_worker']['max_runtime']),
-                            'enabled' => Core\if_null($tasks['task_worker']['enabled'])
+                            'pid' => $this->db->{'ifNull'}($tasks['task_worker']['pid']),
+                            'name' => $this->db->{'ifNull'}($tasks['task_worker']['name']),
+                            'task_callback' => $this->db->{'ifNull'}($tasks['task_worker']['task_callback']),
+                            'action_hook' => $this->db->{'ifNull'}($tasks['task_worker']['action_hook']),
+                            'schedule' => $this->db->{'ifNull'}($tasks['task_worker']['schedule']),
+                            'debug' => $this->db->{'ifNull'}($tasks['task_worker']['debug']),
+                            'max_runtime' => $this->db->{'ifNull'}($tasks['task_worker']['max_runtime']),
+                            'enabled' => $this->db->{'ifNull'}($tasks['task_worker']['enabled'])
                         ]);
                 $node->commit();
             } catch (Exception $ex) {
@@ -193,24 +192,23 @@ class Queue
                 Cascade::getLogger('error')->error(sprintf('QUEUESTATE[2646]: %s', $ex->getMessage()));
             }
         } else {
-            $node = $this->app->db->table($this->node());
+            $node = $this->db->table($this->node());
             $node->begin();
             try {
                 $node->insert([
-                    'tasks_id' => Db\auto_increment($this->node(), 'tasks_id'),
-                    'pid' => Core\if_null($tasks['task_worker']['pid']),
-                    'name' => Core\if_null($tasks['task_worker']['name']),
-                    'task_callback' => Core\if_null($tasks['task_worker']['task_callback']),
-                    'action_hook' => Core\if_null($tasks['task_worker']['action_hook']),
-                    'schedule' => Core\if_null($tasks['task_worker']['schedule']),
-                    'debug' => Core\if_null($tasks['task_worker']['debug']),
-                    'max_runtime' => Core\if_null($tasks['task_worker']['max_runtime']),
-                    'enabled' => Core\if_null($tasks['task_worker']['enabled'])
+                    'pid' => $this->db->{'ifNull'}($tasks['task_worker']['pid']),
+                    'name' => $this->db->{'ifNull'}($tasks['task_worker']['name']),
+                    'task_callback' => $this->db->{'ifNull'}($tasks['task_worker']['task_callback']),
+                    'action_hook' => $this->db->{'ifNull'}($tasks['task_worker']['action_hook']),
+                    'schedule' => $this->db->{'ifNull'}($tasks['task_worker']['schedule']),
+                    'debug' => $this->db->{'ifNull'}($tasks['task_worker']['debug']),
+                    'max_runtime' => $this->db->{'ifNull'}($tasks['task_worker']['max_runtime']),
+                    'enabled' => $this->db->{'ifNull'}($tasks['task_worker']['enabled'])
                 ]);
                 $node->commit();
             } catch (Exception $ex) {
                 $node->rollback();
-                Cascade::getLogger('error')->error(sprintf('QUEUESTATE[2646]: %s', $e->getMessage()));
+                Cascade::getLogger('error')->error(sprintf('QUEUESTATE[2646]: %s', $ex->getMessage()));
             }
         }
     }
@@ -254,7 +252,7 @@ class Queue
             return 0;
         }
 
-        $pid = Core\_file_get_contents($lockFile);
+        $pid = file_get_contents($lockFile);
         if (!empty($pid)) {
             return 0;
         }
@@ -334,13 +332,13 @@ class Queue
             /**
              * The action that should run when queue is called.
              */
-            $this->app->hook->{'do_action'}($config['action_hook']);
+            $this->hook->{'doAction'}($config['action_hook']);
             /**
              * At the end of executing the action.
              */
             $time_end = (microtime(true) - $time_start);
 
-            $upd = $this->app->db->table($this->node());
+            $upd = $this->db->table($this->node());
             $upd->begin();
             try {
                 /**

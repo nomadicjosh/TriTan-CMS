@@ -5,8 +5,8 @@
 <?php $app->view->block('default'); ?>
 
 <div class="center message">
-    <h1><?= _t("This page doesn't exist!"); ?></h1>
-    <p><?= sprintf(_t('Would you like to try our <a href="%s">homepage</a> instead?'), get_base_url()); ?></p>
+    <h1><?= esc_html__("This page doesn't exist!"); ?></h1>
+    <p><?= sprintf(esc_html__('Would you like to try our <a href="%s">homepage</a> instead?'), home_url()); ?></p>
 </div>
 
 <?php $app->view->stop(); ?>

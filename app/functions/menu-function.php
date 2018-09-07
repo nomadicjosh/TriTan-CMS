@@ -1,6 +1,5 @@
 <?php
-namespace TriTan\Functions\Menu;
-
+use TriTan\Common\Hooks\ActionFilterHook as hook;
 /**
  * TriTan CMS Menu Functions
  *
@@ -10,14 +9,12 @@ namespace TriTan\Functions\Menu;
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
  */
-use TriTan\Config;
-use TriTan\Functions\Auth;
-use TriTan\Functions\Core;
+use TriTan\Container as c;
 
 /**
  * Add an admin submenu page link.
  *
- * Uses admin_submenu_$location filter hook.
+ * Uses admin_submenu_$location_{$menu_route} filter hook.
  *
  * @file app/functions/menu-function.php
  *
@@ -32,12 +29,12 @@ use TriTan\Functions\Core;
 function add_admin_submenu($location, $menu_title, $menu_route, $screen, $permission = null)
 {
     if ($permission !== null) {
-        if (!Auth\current_user_can($permission)) {
+        if (!current_user_can($permission)) {
             return false;
         }
     }
-    $_menu_route = add_trailing_slash($menu_route);
-    $menu = '<li' . (Config::get('screen_child') === $screen ? ' class="active"' : '') . '><a href="' . Core\get_base_url() . 'admin' . $_menu_route . '"><i class="fa fa-circle-o"></i> ' . $menu_title . '</a></li>' . "\n";
+    $menu_route = add_trailing_slash($menu_route);
+    $menu = '<li' . (c::getInstance()->get('screen_child') === $screen ? ' class="active"' : '') . '><a href="' . admin_url($menu_route) . '"><i class="fa fa-circle-o"></i> ' . $menu_title . '</a></li>' . "\n";
     /**
      * Filter's the admin menu.
      *
@@ -47,7 +44,7 @@ function add_admin_submenu($location, $menu_title, $menu_route, $screen, $permis
      * @since 0.9
      * @param string $menu The menu to return.
      */
-    echo app()->hook->{'apply_filter'}("admin_submenu_{$location}_{$_menu_route}", $menu);
+    echo hook::getInstance()->{'applyFilter'}("admin_submenu_{$location}_{$menu_route}", $menu);
 }
 
 /**

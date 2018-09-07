@@ -1,5 +1,4 @@
 <?php
-use TriTan\Functions\Core;
 
 /**
  * File Manager Window
@@ -16,15 +15,23 @@ use TriTan\Functions\Core;
 $this->layout('main::_layouts/blank-layout');
 $this->section('blank');
 error_reporting(0);
+$option = (
+    new \TriTan\Common\Options\Options(
+        new TriTan\Common\Options\OptionsMapper(
+            new \TriTan\Database(),
+            new TriTan\Common\Context\HelperContext()
+        )
+    )
+);
 ?>
 
 <!DOCTYPE html>
 <html>
     <head>
-        <base href="<?= Core\get_base_url(); ?>">
+        <base href="<?= site_url(); ?>">
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title><?=$this->title . ' &lsaquo; ' . $this->app->hook->{'get_option'}('sitename'); ?> &#8212; <?= Core\_t('TriTan CMS', 'tritan-cms');?></title>
+        <title><?=$this->title . ' &lsaquo; ' . $option->{'read'}('sitename'); ?> &#8212; <?= esc_html__('TriTan CMS', 'tritan-cms');?></title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
@@ -38,7 +45,7 @@ error_reporting(0);
         <script src="//oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
         <script>
-            var rootPath = '<?= Core\get_base_url(); ?>';
+            var rootPath = '<?= site_url(); ?>';
         </script>
         <!-- jQuery 2.2.3 -->
         <script src="static/assets/js/jQuery/jquery-2.2.3.min.js"></script>

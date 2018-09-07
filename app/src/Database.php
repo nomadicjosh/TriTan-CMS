@@ -10,29 +10,27 @@ namespace TriTan;
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
  */
-class Database
+class Database implements Interfaces\DatabaseInterface
 {
 
     /**
-     * Application object.
+     * Table name.
      *
-     * @var object
+     * @var string
      */
-    public $app;
+    public $name;
 
     /**
      *
      * @var array
      */
-    public $options;
+    public $options = [];
 
     /**
      * Constructor.
      */
-    public function __construct(array $options = [], \Liten\Liten $liten = null)
+    public function __construct(array $options = [])
     {
-        $this->app = !empty($liten) ? $liten : \Liten\Liten::getInstance();
-
         $this->options = $options;
     }
 
@@ -46,6 +44,20 @@ class Database
      */
     public function table($name)
     {
-        return new Laci\Collection(TTCMS_NODEQ_PATH . $name . '.json', $this->options);
+        $this->name = $name;
+        return new Laci\Collection(TTCMS_NODEQ_PATH . $this->name . '.json', $this->options);
+    }
+    
+    /**
+     * Checks if a variable is null. If not null, check if integer or string.
+     *
+     * @since 0.9.9
+     * @param string|int $var   Variable to check.
+     * @return string|int|null Returns null if empty otherwise a string or an integer.
+     */
+    public function ifNull($var)
+    {
+        $_var = ctype_digit($var) ? (int) $var : (string) $var;
+        return $var === '' ? null : $_var;
     }
 }

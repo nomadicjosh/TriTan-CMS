@@ -1,21 +1,32 @@
 <?php
-use TriTan\Functions\Dependency;
-use TriTan\Functions\Auth;
-use TriTan\Functions\User;
-use TriTan\Functions\Core;
-use TriTan\Functions\Logger;
+use TriTan\Common\Hooks\ActionFilterHook as hook;
+use TriTan\Common\PasswordGenerate;
+use TriTan\Common\PasswordHash;
+use TriTan\Common\Uri;
+$db = new \TriTan\Database();
 
-$app->hook->{'do_action'}('maintenance_mode', $app);
+hook::getInstance()->{'doAction'}('maintenance_mode', $app);
 
 $app->get('/logout/', function () use ($app) {
-    $user = User\ttcms_get_current_user();
+    $user = ttcms_get_current_user();
 
-    Logger\ttcms_logger_activity_log_write(Core\_t('Authentication', 'tritan-cms'), Core\_t('Logout', 'tritan-cms'), User\get_name(Core\_escape($user->user_id)), Core\_escape($user->user_login));
+    ttcms_logger_activity_log_write(
+        t__('Authentication', 'tritan-cms'),
+        t__('Logout', 'tritan-cms'),
+        get_name((int) $user->getId()),
+        $user->getLogin()
+    );
 
     if (strpos($app->req->server['HTTP_REFERER'], 'admin') !== false) {
-        $logout_link = $app->hook->{'apply_filter'}('user_logout_redirect', Core\get_base_url() . 'login' . '/');
+        $logout_link = hook::getInstance()->{'applyFilter'}(
+            'user_logout_redirect',
+            login_url()
+        );
     } else {
-        $logout_link = $app->hook->{'apply_filter'}('admin_logout_redirect', $app->req->server['HTTP_REFERER']);
+        $logout_link = hook::getInstance()->{'applyFilter'}(
+            'admin_logout_redirect',
+            $app->req->server['HTTP_REFERER']
+        );
     }
 
     /**
@@ -23,32 +34,32 @@ $app->get('/logout/', function () use ($app) {
      *
      * @since 0.9
      */
-    Auth\ttcms_clear_auth_cookie();
+    ttcms_clear_auth_cookie();
 
     /**
      * Fires after a user has logged out.
      *
      * @since 0.9
      */
-    app()->hook->{'do_action'}('ttcms_logout');
+    hook::getInstance()->{'doAction'}('ttcms_logout');
 
-    Core\ttcms_redirect($logout_link);
+    (new Uri(hook::getInstance()))->{'redirect'}($logout_link);
 });
 
-$app->post('/reset-password/', function () use ($app) {
-    $user = $app->db->table('user')
+$app->post('/reset-password/', function () use ($app, $db) {
+    $user = $db->table('user')
             ->where('user_login', $app->req->post['username'])
             ->where('user_email', $app->req->post['email'])
             ->first();
 
-    if ((int) Core\_escape($user['user_id']) >= 1) {
-        $password = Core\ttcms_generate_password();
-        $reset = $app->db->table('user');
+    if ((int) esc_html($user['user_id']) >= 1) {
+        $password = (new PasswordGenerate(hook::getInstance()))->{'generate'}();
+        $reset = $db->table('user');
         $reset->begin();
         try {
-            $reset->where('user_id', (int) Core\_escape($user['user_id']))
+            $reset->where('user_id', (int) esc_html($user['user_id']))
                     ->update([
-                        'user_pass' => Core\ttcms_hash_password($password)
+                        'user_pass' => (new PasswordHash(hook::getInstance()))->{'hash'}($password)
                     ]);
             $reset->commit();
             /**
@@ -58,16 +69,44 @@ $app->post('/reset-password/', function () use ($app) {
              * @param array $user       User data array.
              * @param string $password  Plaintext password.
              */
-            $app->hook->{'do_action'}('reset_password_route', $user, $password);
-            Logger\ttcms_logger_activity_log_write(Core\_t('Update Record', 'tritan-cms'), Core\_t('Reset Password', 'tritan-cms'), User\get_name(Core\_escape($user['user_id'])), User\get_user_value(User\get_current_user_id(), 'user_login'));
-            Dependency\_ttcms_flash()->{'success'}(Core\_t('A new password was sent to your email. May take a few minutes to arrive, so please be patient', 'tritan-cms'), $app->req->server['HTTP_REFERER']);
+            hook::getInstance()->{'doAction'}(
+                'reset_password_route',
+                $user,
+                $password
+            );
+            
+            ttcms_logger_activity_log_write(
+                t__('Update Record', 'tritan-cms'),
+                t__('Reset Password', 'tritan-cms'),
+                get_name((int) esc_html($user['user_id'])),
+                get_user_value(get_current_user_id(), 'user_login')
+            );
+            
+            ttcms()->obj['flash']->{'success'}(
+                t__('A new password was sent to your email. May take a few minutes to arrive, so please be patient', 'tritan-cms'),
+                $app->req->server['HTTP_REFERER']
+            );
+            
         } catch (Exception $ex) {
             $reset->rollback();
-            Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
-            Dependency\_ttcms_flash()->{'error'}($ex->getMessage(), $app->req->server['HTTP_REFERER']);
+            Cascade::getLogger('error')->{'error'}(
+                sprintf(
+                    'SQLSTATE[%s]: %s',
+                    $ex->getCode(),
+                    $ex->getMessage()
+                )
+            );
+            
+            ttcms()->obj['flash']->{'error'}(
+                $ex->getMessage(),
+                $app->req->server['HTTP_REFERER']
+            );
         }
     } else {
-        Dependency\_ttcms_flash()->{'error'}(Core\_t('The username or email you entered was incorrect.', 'tritan-cms'), $app->req->server['HTTP_REFERER']);
+        ttcms()->obj['flash']->{'error'}(
+            t__('The username or email you entered was incorrect.', 'tritan-cms'),
+            $app->req->server['HTTP_REFERER']
+        );
     }
 });
 

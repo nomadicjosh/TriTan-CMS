@@ -1,9 +1,5 @@
 <?php
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
-use TriTan\Config;
-use TriTan\Functions\Dependency;
-use TriTan\Functions\Core;
+use TriTan\Container;
 /**
  * Error Log View
  *
@@ -16,8 +12,8 @@ use TriTan\Functions\Core;
 $this->layout('main::_layouts/admin-layout');
 $this->section('backend');
 $logger = new TriTan\Logger();
-Config::set('screen_parent', 'dashboard');
-Config::set('screen_child', 'error');
+Container::getInstance()->{'set'}('screen_parent', 'dashboard');
+Container::getInstance()->{'set'}('screen_child', 'error');
 
 ?>
 
@@ -27,14 +23,14 @@ Config::set('screen_child', 'error');
     <div class="box box-solid">
         <div class="box-header with-border">
             <i class="fa fa-exclamation-triangle"></i>
-            <h3 class="box-title"><?= Core\_t('Error Logs', 'tritan-cms'); ?></h3>
+            <h3 class="box-title"><?= esc_html__('Error Logs'); ?></h3>
         </div>
     </div>
 
     <!-- Main content -->
     <section class="content">
 
-        <?= Dependency\_ttcms_flash()->showMessage(); ?>
+        <?= (new \TriTan\Common\FlashMessages())->showMessage(); ?>
 
         <!-- SELECT2 EXAMPLE -->
         <div class="box box-default">
@@ -42,33 +38,33 @@ Config::set('screen_child', 'error');
                 <table id="example2" class="table table-bordered table-hover">
                     <thead>
                         <tr>
-                            <th class="text-center"><?= Core\_t('Error Type', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= Core\_t('String', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= Core\_t('File', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= Core\_t('Line Number', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= Core\_t('Action', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= esc_html__('Error Type'); ?></th>
+                            <th class="text-center"><?= esc_html__('String'); ?></th>
+                            <th class="text-center"><?= esc_html__('File'); ?></th>
+                            <th class="text-center"><?= esc_html__('Line Number'); ?></th>
+                            <th class="text-center"><?= esc_html__('Action'); ?></th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($this->errors as $error) : ?>
                             <tr class="gradeX">
-                                <td class="text-center"><?= $logger->errorConstantToName($error['type']); ?></td>
-                                <td class="text-center"><?= $error['string']; ?></td>
-                                <td class="text-center"><?= $error['file']; ?></td>
-                                <td class="text-center"><?= $error['line']; ?></td>
+                                <td class="text-center"><?= $logger->errorConstantToName(esc_html($error['type'])); ?></td>
+                                <td class="text-center"><?= esc_html($error['string']); ?></td>
+                                <td class="text-center"><?= esc_html($error['file']); ?></td>
+                                <td class="text-center"><?= esc_html($error['line']); ?></td>
                                 <td class="text-center">
-                                    <a href="<?= Core\get_base_url(); ?>admin/error/<?= $error['error_id']; ?>/delete/" class="btn btn-danger"><i class="fa fa-trash-o"></i></a>
+                                    <a href="<?= admin_url('error/' . $error['error_id'] . '/delete/'); ?>" class="btn btn-danger"><i class="fa fa-trash-o"></i></a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th class="text-center"><?= Core\_t('Error Type', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= Core\_t('String', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= Core\_t('File', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= Core\_t('Line Number', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= Core\_t('Action', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= esc_html__('Error Type'); ?></th>
+                            <th class="text-center"><?= esc_html__('String'); ?></th>
+                            <th class="text-center"><?= esc_html__('File'); ?></th>
+                            <th class="text-center"><?= esc_html__('Line Number'); ?></th>
+                            <th class="text-center"><?= esc_html__('Action'); ?></th>
                         </tr>
                     </tfoot>
                 </table>

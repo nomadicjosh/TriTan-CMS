@@ -1,11 +1,11 @@
 <?php
 namespace TriTan\Queue;
 
-use TriTan\Config;
+use TriTan\Container;
 use TriTan\Exception\Exception;
 use Cascade\Cascade;
-use TriTan\Functions\Db;
-use TriTan\Functions\Core;
+use TriTan\Common\Hooks\ActionFilterHook as hook;
+use TriTan\Database;
 
 /**
  * NodeQ Task Manager Queue
@@ -42,14 +42,7 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
     /**
      * The nodeq table name.
      */
-    public $node = 'ttcms_queue';
-
-    /**
-     * Application object.
-     *
-     * @var object
-     */
-    public $app;
+    public $node = 'nodequeue';
 
     /**
      * Table prefix.
@@ -57,6 +50,10 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
      * @var type
      */
     public $prefix;
+    
+    private $db;
+    
+    private $hook;
 
     /**
      * Constructs a \Liten\Liten $liten object.
@@ -66,14 +63,15 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
      * @param \Liten\Liten $liten
      *   Liten framework object.
      */
-    public function __construct(array $config = [], \Liten\Liten $liten = null)
+    public function __construct(array $config = [])
     {
         $this->name = $config['name'];
         $this->lease_time = $config['max_runtime'];
         $this->schedule = $config['schedule'];
         $this->debug = (bool) $config['debug'];
-        $this->app = !empty($liten) ? $liten : \Liten\Liten::getInstance();
-        $this->prefix = Config::get('tbl_prefix');
+        $this->prefix = Container::getInstance()->get('tbl_prefix');
+        $this->hook = hook::getInstance();
+        $this->db = new Database();
     }
 
     public function node()
@@ -140,18 +138,17 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
             return false;
         }
 
-        $query = $this->app->db->table($this->node());
+        $query = $this->db->table($this->node());
         $query->begin();
-        $lastId = Db\auto_increment($this->node(), 'queue_id');
         try {
             $query->insert([
-                'quevue_id' => (int) $lastId,
-                'name' => Core\if_null($this->name),
-                'data' => Core\if_null($this->app->hook->{'maybe_serialize'}($data)),
-                'created' => Core\if_null(time()),
+                'name' => $this->db->{'ifNull'}($this->name),
+                'data' => $this->db->{'ifNull'}($this->hook->{'maybe_serialize'}($data)),
+                'created' => $this->db->{'ifNull'}(time()),
                 'expire' => (int) 0
             ]);
             $query->commit();
+            $lastId = $query->lastInsertId();
         } catch (Exception $e) {
             $query->rollback();
             Cascade::getLogger('error')->error(sprintf('NODEQSTATE: %s', $e->getMessage()), ['Queue' => 'NodeQueue::doCreateItem']);
@@ -168,7 +165,7 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
     public function numberOfItems()
     {
         try {
-            return count($this->app->db->table($this->node())->where('name', $this->name)->get());
+            return count($this->db->table($this->node())->where('name', $this->name)->get());
         } catch (Exception $e) {
             $this->catchException($e);
             /**
@@ -191,11 +188,11 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
          */
         while (true) {
             try {
-                $item = $this->app->db->table($this->node())
+                $item = $this->db->table($this->node())
                         ->where('expire', (int) 0)
                         ->where('name', $this->name)
                         ->sortBy('created')
-                        ->sortBy('queue_id')
+                        ->sortBy('nodequeue_id')
                         ->first();
             } catch (Exception $e) {
                 $this->catchException($e);
@@ -206,7 +203,7 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
                 return false;
             }
             if ($item) {
-                $update = $this->app->db->table($this->node());
+                $update = $this->db->table($this->node());
                 $update->begin();
                 try {
                     /**
@@ -218,7 +215,7 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
                      * and will tend to reset items before the lease should really
                      * expire.
                      */
-                    $update->where('expire', (int) 0)->where('queue_id', (int) Core\_escape($item['queue_id']))
+                    $update->where('expire', (int) 0)->where('nodequeue_id', (int) esc_html($item['nodequeue_id']))
                             ->update([
                                 'expire' => (int) time() + ($this->lease_time <= (int) 0 ? (int) $lease_time : (int) $this->lease_time)
                             ]);
@@ -247,10 +244,10 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
      */
     public function releaseItem($item)
     {
-        $update = $this->app->db->table($this->node());
+        $update = $this->db->table($this->node());
         $update->begin();
         try {
-            $update->where('queue_id', (int) $item['queue_id'])
+            $update->where('nodequeue_id', (int) $item['nodequeue_id'])
                     ->update([
                         'expire' => (int) 0
                     ]);
@@ -270,10 +267,10 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
      */
     public function deleteItem($item)
     {
-        $delete = $this->app->db->table($this->node());
+        $delete = $this->db->table($this->node());
         $delete->begin();
         try {
-            $delete->where('queue_id', (int) $item['queue_id'])
+            $delete->where('nodequeue_id', (int) $item['nodequeue_id'])
                     ->delete();
             $delete->commit();
         } catch (Exception $e) {
@@ -298,7 +295,7 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
      */
     public function deleteQueue()
     {
-        $delete = $this->app->db->table($this->node());
+        $delete = $this->db->table($this->node());
         $delete->begin();
         try {
             $delete->where('name', $this->name)
@@ -315,7 +312,7 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
      */
     public function garbageCollection()
     {
-        $delete = $this->app->db->table($this->node());
+        $delete = $this->db->table($this->node());
         $delete->begin();
         try {
             /**
@@ -332,7 +329,7 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
 
 
 
-        $update = $this->app->db->table($this->node());
+        $update = $this->db->table($this->node());
         $update->begin();
 
 
@@ -380,21 +377,21 @@ class NodeqQueue implements ReliableQueueInterface, QueueGarbageCollectionInterf
         /**
          * The action that should run when queue is called.
          */
-        $this->app->hook->{'do_action'}($data['action_hook']);
+        $this->hook->{'doAction'}($data['action_hook']);
         /**
          * At the end of executing the action.
          */
         $time_end = (microtime(true) - $time_start);
 
-        $runs = $this->app->db->table($this->prefix . 'tasks')->where('pid', (int) $data['pid'])->first();
+        $runs = $this->db->table($this->prefix . 'tasks')->where('pid', (int) $data['pid'])->first();
 
-        $task = $this->app->db->table($this->prefix . 'tasks');
+        $task = $this->db->table($this->prefix . 'tasks');
         $task->begin();
         try {
             $task->where('pid', (int) $data['pid'])
                     ->update([
-                        'executions' => Core\if_null(Core\_escape($runs['executions']) + 1),
-                        'lastrun' => (string) current_time( 'laci'),
+                        'executions' => $this->db->{'ifNull'}(esc_html($runs['executions']) + 1),
+                        'lastrun' => (string) (new \TriTan\Common\Date())->{'current'}('laci'),
                         'last_runtime' => (double) $time_end
                     ]);
             $task->commit();

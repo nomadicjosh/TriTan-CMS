@@ -1,7 +1,11 @@
 <?php
+use TriTan\Common\Options\Options;
+use TriTan\Common\Options\OptionsMapper;
+use TriTan\Common\Context\HelperContext;
+$db = new \TriTan\Database();
 
 // RESTful API
-$app->group('/rest', function () use ($app, $orm) {
+$app->group('/rest', function () use ($app, $db) {
 
     /**
      * Will result in /rest/.
@@ -42,12 +46,12 @@ $app->group('/rest', function () use ($app, $orm) {
      *          "user_modified": "2017-08-29 23:55:30"
      *      }
      */
-    $app->get('/v1/(\w+)/(\w+)', function ($key, $table) use ($app) {
-        if ($key !== $app->hook->{'get_option'}('api_key') || $app->hook->{'get_option'}('api_key') === null) {
+    $app->get('/v1/(\w+)/(\w+)', function ($key, $table) use ($app, $db) {
+        if ($key !== (new Options(new OptionsMapper($db, new HelperContext())))->{'read'}('api_key') || (new Options(new OptionsMapper($db, new HelperContext())))->{'read'}('api_key') === null) {
             $app->res->_format('json', 401);
             exit();
         }
-        $sql = $app->db->table($table)->all();
+        $sql = $db->table($table)->all();
         /**
          * If the database table doesn't exist, then it
          * is false and a 404 should be sent.
@@ -83,12 +87,12 @@ $app->group('/rest', function () use ($app, $orm) {
      * @apiExample {curl} Example usage:
      *     curl -i http://localhost:8888/rest/v1/UJHUPtxpEgezl45gjazX/user/sort/user_login/
      */
-    $app->get('/v1/(\w+)/(\w+)/sort/(\w+)/', function ($key, $table, $sort) use ($app) {
-        if ($key !== $app->hook->{'get_option'}('api_key') || $app->hook->{'get_option'}('api_key') === null) {
+    $app->get('/v1/(\w+)/(\w+)/sort/(\w+)/', function ($key, $table, $sort) use ($app, $db) {
+        if ($key !== (new Options(new OptionsMapper($db, new HelperContext())))->{'read'}('api_key') || (new Options(new OptionsMapper($db, new HelperContext())))->{'read'}('api_key') === null) {
             $app->res->_format('json', 401);
             exit();
         }
-        $sql = $app->db->table($table)
+        $sql = $db->table($table)
             ->sortBy($sort)
             ->get();
         /**
@@ -126,12 +130,12 @@ $app->group('/rest', function () use ($app, $orm) {
      * @apiExample {curl} Example usage:
      *     curl -i http://localhost:8888/rest/v1/UJHUPtxpEgezl45gjazX/user/sort/user_login/desc/
      */
-    $app->get('/v1/(\w+)/(\w+)/sort/(\w+)/desc/', function ($key, $table, $sort) use ($app) {
-        if ($key !== $app->hook->{'get_option'}('api_key') || $app->hook->{'get_option'}('api_key') === null) {
+    $app->get('/v1/(\w+)/(\w+)/sort/(\w+)/desc/', function ($key, $table, $sort) use ($app, $db) {
+        if ($key !== (new Options(new OptionsMapper($db, new HelperContext())))->{'read'}('api_key') || (new Options(new OptionsMapper($db, new HelperContext())))->{'read'}('api_key') === null) {
             $app->res->_format('json', 401);
             exit();
         }
-        $sql = $app->db->table($table)
+        $sql = $db->table($table)
             ->sortBy($sort, 'desc')
             ->get();
         /**
@@ -169,13 +173,13 @@ $app->group('/rest', function () use ($app, $orm) {
      * @apiExample {curl} Example usage:
      *     curl -i http://localhost:8888/rest/v1/UJHUPtxpEgezl45gjazX/user/many/ttcms_1_post/post_author/user_id/
      */
-    $app->get('/v1/(\w+)/(\w+)/many/(\w+)/(\w+)/(\w+)/', function ($key, $table1, $table2, $field1, $field2) use ($app) {
-        if ($key !== $app->hook->{'get_option'}('api_key') || $app->hook->{'get_option'}('api_key') === null) {
+    $app->get('/v1/(\w+)/(\w+)/many/(\w+)/(\w+)/(\w+)/', function ($key, $table1, $table2, $field1, $field2) use ($app, $db) {
+        if ($key !== (new Options(new OptionsMapper($db, new HelperContext())))->{'read'}('api_key') || (new Options(new OptionsMapper($db, new HelperContext())))->{'read'}('api_key') === null) {
             $app->res->_format('json', 401);
             exit();
         }
-        $firstCollection = $app->db->table($table1);
-        $secondCollection = $app->db->table($table2);
+        $firstCollection = $db->table($table1);
+        $secondCollection = $db->table($table2);
         $sql = $firstCollection->withMany($secondCollection, "{$table2}s", $field1, '=', $field2)->get();
         /**
          * If the database table doesn't exist, then it
@@ -212,13 +216,13 @@ $app->group('/rest', function () use ($app, $orm) {
      * @apiExample {curl} Example usage:
      *     curl -i http://localhost:8888/rest/v1/UJHUPtxpEgezl45gjazX/ttcms_1_post/one/user/user_id/post_author/
      */
-    $app->get('/v1/(\w+)/(\w+)/one/(\w+)/(\w+)/(\w+)/', function ($key, $table1, $table2, $field1, $field2) use ($app) {
-        if ($key !== $app->hook->{'get_option'}('api_key') || $app->hook->{'get_option'}('api_key') === null) {
+    $app->get('/v1/(\w+)/(\w+)/one/(\w+)/(\w+)/(\w+)/', function ($key, $table1, $table2, $field1, $field2) use ($app, $db) {
+        if ($key !== (new Options(new OptionsMapper($db, new HelperContext())))->{'read'}('api_key') || (new Options(new OptionsMapper($db, new HelperContext())))->{'read'}('api_key') === null) {
             $app->res->_format('json', 401);
             exit();
         }
-        $firstCollection = $app->db->table($table1);
-        $secondCollection = $app->db->table($table2);
+        $firstCollection = $db->table($table1);
+        $secondCollection = $db->table($table2);
         $sql = $firstCollection->withMany($secondCollection, "{$table2}s", $field1, '=', $field2)->get();
         /**
          * If the database table doesn't exist, then it
@@ -270,12 +274,12 @@ $app->group('/rest', function () use ($app, $orm) {
      *          "user_modified": "2017-08-29 23:55:30"
      *      }
      */
-    $app->get('/v1/(\w+)/(\w+)/(\w+)/(.+)', function ($key, $table, $field, $any) use ($app) {
-        if ($key !== $app->hook->{'get_option'}('api_key') || $app->hook->{'get_option'}('api_key') === null) {
+    $app->get('/v1/(\w+)/(\w+)/(\w+)/(.+)', function ($key, $table, $field, $any) use ($app, $db) {
+        if ($key !== (new Options(new OptionsMapper($db, new HelperContext())))->{'read'}('api_key') || (new Options(new OptionsMapper($db, new HelperContext())))->{'read'}('api_key') === null) {
             $app->res->_format('json', 401);
             exit();
         }
-        $sql = $app->db->table($table)->where($field, $any)->get();
+        $sql = $db->table($table)->where($field, $any)->get();
         /**
          * If the database table doesn't exist, then it
          * is false and a 404 should be sent.

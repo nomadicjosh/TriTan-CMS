@@ -1,7 +1,6 @@
 <?php
-namespace TriTan\Functions\Dependency;
-
 use Spatie\ImageOptimizer\OptimizerChainFactory;
+use TriTan\Common\Hooks\ActionFilterHook as hook;
 
 /**
  * TriTan CMS Global Scope Functions.
@@ -23,7 +22,7 @@ use Spatie\ImageOptimizer\OptimizerChainFactory;
  */
 function _ttcms_cache_init()
 {
-    $driver = app()->hook->{'apply_filter'}('ttcms_cache_driver', 'json');
+    $driver = hook::getInstance()->{'applyFilter'}('ttcms_cache_driver', 'json');
     $cache = new \TriTan\Cache\Object_Cache($driver);
     return $cache;
 }

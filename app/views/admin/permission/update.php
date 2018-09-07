@@ -1,7 +1,5 @@
 <?php
-use TriTan\Config;
-use TriTan\Functions\Dependency;
-use TriTan\Functions\Core;
+use TriTan\Container;
 
 /**
  * View Permission View
@@ -14,25 +12,30 @@ use TriTan\Functions\Core;
  */
 $this->layout('main::_layouts/admin-layout');
 $this->section('backend');
-$ePerm = new \TriTan\ACL();
-Config::set('screen_parent', 'roles');
-Config::set('screen_child', 'perm');
+$ePerm = new \TriTan\Common\Acl\PermissionRepository(
+    new \TriTan\Common\Acl\PermissionMapper(
+        new TriTan\Database(),
+        new \TriTan\Common\Context\HelperContext()
+    )
+);
+Container::getInstance()->{'set'}('screen_parent', 'roles');
+Container::getInstance()->{'set'}('screen_child', 'perm');
 
 ?>
 
 <!-- form start -->
-<form method="post" action="<?= Core\get_base_url(); ?>admin/permission/<?= Core\_escape((int) $this->perm['permission_id']); ?>/" data-toggle="validator" autocomplete="off">
+<form method="post" action="<?= admin_url('permission/' . (int) $this->perm->getId() . '/'); ?>" data-toggle="validator" autocomplete="off">
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
         <div class="box box-solid">
             <div class="box-header with-border">
                 <i class="fa fa-text-width"></i>
-                <h3 class="box-title"><?= Core\_t('Update Permission', 'tritan-cms'); ?></h3>
+                <h3 class="box-title"><?= esc_html__('Update Permission'); ?></h3>
 
                 <div class="pull-right">
-                    <button type="submit" class="btn btn-success"><i class="fa fa-pencil"></i> <?= Core\_t('Update', 'tritan-cms'); ?></button>
-                    <button type="button" class="btn btn-primary" onclick="window.location = '<?= Core\get_base_url(); ?>admin/permission/'"><i class="fa fa-ban"></i> <?= Core\_t('Cancel', 'tritan-cms'); ?></button>
+                    <button type="submit" class="btn btn-success"><i class="fa fa-pencil"></i> <?= esc_html__('Update'); ?></button>
+                    <button type="button" class="btn btn-primary" onclick="window.location = '<?= admin_url('permission/'); ?>'"><i class="fa fa-ban"></i> <?= esc_html__('Cancel'); ?></button>
                 </div>
             </div>
         </div>
@@ -40,7 +43,7 @@ Config::set('screen_child', 'perm');
         <!-- Main content -->
         <section class="content">
 
-            <?= Dependency\_ttcms_flash()->showMessage(); ?>
+            <?= (new \TriTan\Common\FlashMessages())->showMessage(); ?>
 
             <!-- SELECT2 EXAMPLE -->
             <div class="box box-default">
@@ -50,8 +53,8 @@ Config::set('screen_child', 'perm');
                         <div class="col-md-6">
 
                             <div class="form-group">
-                                <label><font color="red">*</font> <?= Core\_t('Name', 'tritan-cms'); ?></label>
-                                <input type="text" class="form-control" name="permission_name" value="<?= $ePerm->getPermNameFromID(Core\_escape((int) $this->perm['permission_id'])); ?>" required>
+                                <label><font color="red">*</font> <?= esc_html__('Name'); ?></label>
+                                <input type="text" class="form-control" name="permission_name" value="<?= $ePerm->findNameById((int) $this->perm->getId()); ?>" required>
                             </div>
 
                         </div>
@@ -60,8 +63,8 @@ Config::set('screen_child', 'perm');
                         <div class="col-md-6">
 
                             <div class="form-group">
-                                <label><font color="red">*</font> <?= Core\_t('Key', 'tritan-cms'); ?></label>
-                                <input type="text" class="form-control" name="permission_key" value="<?= $ePerm->getPermKeyFromID(Core\_escape((int) $this->perm['permission_id'])); ?>" required>
+                                <label><font color="red">*</font> <?= esc_html__('Key'); ?></label>
+                                <input type="text" class="form-control" name="permission_key" value="<?= $ePerm->findKeyById((int) $this->perm->getId()); ?>" required>
                             </div>
 
                         </div>

@@ -1,8 +1,6 @@
 <?php
-use Jenssegers\Date\Date;
-use TriTan\Config;
-use TriTan\Functions\Dependency;
-use TriTan\Functions\Core;
+use TriTan\Common\Date;
+use TriTan\Container;
 
 /**
  * Audit Trail View
@@ -15,8 +13,8 @@ use TriTan\Functions\Core;
  */
 $this->layout('main::_layouts/admin-layout');
 $this->section('backend');
-Config::set('screen_parent', 'dashboard');
-Config::set('screen_child', 'audit');
+Container::getInstance()->{'set'}('screen_parent', 'dashboard');
+Container::getInstance()->{'set'}('screen_child', 'audit');
 ?>
 
 <!-- Content Wrapper. Contains page content -->
@@ -25,14 +23,14 @@ Config::set('screen_child', 'audit');
     <div class="box box-solid">
         <div class="box-header with-border">
             <i class="fa fa-road"></i>
-            <h3 class="box-title"><?= Core\_t('Audit Trail', 'tritan-cms'); ?></h3>
+            <h3 class="box-title"><?= esc_html__('Audit Trail'); ?></h3>
         </div>
     </div>
 
     <!-- Main content -->
     <section class="content">
 
-        <?= Dependency\_ttcms_flash()->showMessage(); ?>
+        <?= (new \TriTan\Common\FlashMessages())->showMessage(); ?>
 
         <!-- SELECT2 EXAMPLE -->
         <div class="box box-default">
@@ -40,34 +38,34 @@ Config::set('screen_child', 'audit');
                 <table id="example2" class="table table-bordered table-hover">
                     <thead>
                         <tr>
-                            <th class="text-center"><?= Core\_t('Action', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= Core\_t('Process', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= Core\_t('Record', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= Core\_t('Username', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= Core\_t('Action Date', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= Core\_t('Expire Date', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= esc_html__('Action'); ?></th>
+                            <th class="text-center"><?= esc_html__('Process'); ?></th>
+                            <th class="text-center"><?= esc_html__('Record'); ?></th>
+                            <th class="text-center"><?= esc_html__('Username'); ?></th>
+                            <th class="text-center"><?= esc_html__('Action Date'); ?></th>
+                            <th class="text-center"><?= esc_html__('Expire Date'); ?></th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($this->audit as $aud) : ?>
                             <tr class="gradeX">
-                                <td class="text-center"><?= $aud['action']; ?></td>
-                                <td class="text-center"><?= $aud['process']; ?></td>
-                                <td class="text-center"><?= $aud['record']; ?></td>
-                                <td class="text-center"><?= $aud['uname']; ?></td>
-                                <td class="text-center"><?= laci2date('D, M d, o', $aud['created_at']); ?></td>
-                                <td class="text-center"><?= laci2date('D, M d, o', $aud['expires_at']); ?></td>
+                                <td class="text-center"><?= esc_html($aud['action']); ?></td>
+                                <td class="text-center"><?= esc_html($aud['process']); ?></td>
+                                <td class="text-center"><?= esc_html($aud['record']); ?></td>
+                                <td class="text-center"><?= esc_html($aud['uname']); ?></td>
+                                <td class="text-center"><?= (new Date())->{'laci2date'}('D, M d, o', esc_html($aud['created_at'])); ?></td>
+                                <td class="text-center"><?= (new Date())->{'laci2date'}('D, M d, o', esc_html($aud['expires_at'])); ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th class="text-center"><?= Core\_t('Action', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= Core\_t('Process', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= Core\_t('Record', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= Core\_t('Username', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= Core\_t('Action Date', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= Core\_t('Expire Date', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= esc_html__('Action'); ?></th>
+                            <th class="text-center"><?= esc_html__('Process'); ?></th>
+                            <th class="text-center"><?= esc_html__('Record'); ?></th>
+                            <th class="text-center"><?= esc_html__('Username'); ?></th>
+                            <th class="text-center"><?= esc_html__('Action Date'); ?></th>
+                            <th class="text-center"><?= esc_html__('Expire Date'); ?></th>
                         </tr>
                     </tfoot>
                 </table>

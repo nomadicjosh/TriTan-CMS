@@ -1,18 +1,26 @@
 <?php
 $app = \Liten\Liten::getInstance();
-use TriTan\Functions\Core;
+use TriTan\Common\Hooks\ActionFilterHook as hook;
 
 ob_start();
 ob_implicit_flush(0);
-$app->hook->{'do_action'}('login_init');
+hook::getInstance()->{'doAction'}('login_init');
+$option = (
+    new \TriTan\Common\Options\Options(
+        new TriTan\Common\Options\OptionsMapper(
+            new \TriTan\Database(),
+            new TriTan\Common\Context\HelperContext()
+        )
+    )
+);
 ?>
 <!DOCTYPE html>
 <html>
     <head>
-        <base href="<?= Core\get_base_url(); ?>">
+        <base href="<?= site_url(); ?>">
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title><?= Core\_t('Login', 'tritan-cms') . ' &lsaquo; ' . $app->hook->{'get_option'}('sitename'); ?> &#8212; <?= Core\_t('TriTan CMS', 'tritan-cms'); ?></title>
+        <title><?= t__('Login', 'tritan-cms') . ' &lsaquo; ' . $option->{'read'}('sitename'); ?> &#8212; <?= t__('TriTan CMS', 'tritan-cms'); ?></title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <meta name="theme-color" content="#ffffff">
@@ -37,4 +45,4 @@ $app->hook->{'do_action'}('login_init');
         <script src="static/assets/js/login.js" type="text/javascript"></script>
     </body>
 </html>
-<?php Core\print_gzipped_page(); ?>
+<?php print_gzipped_page(); ?>

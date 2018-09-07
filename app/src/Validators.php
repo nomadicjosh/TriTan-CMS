@@ -3,8 +3,8 @@ namespace TriTan;
 
 use Respect\Validation\Exceptions\ValidationException;
 use Respect\Validation\Validator;
+use TriTan\Container as c;
 use Cascade\Cascade;
-use TriTan\Functions\Dependency;
 
 /**
  * Validators
@@ -34,7 +34,7 @@ class Validators
             return true;
         } catch (ValidationException $ex) {
             Cascade::getLogger('error')->error(sprintf('VALIDATOR[%s]: %s', $ex->getCode(), $ex->getMessage()));
-            Dependency\_ttcms_flash()->error($ex->getMessage());
+            c::getInstance()->get('flash')->{'error'}($ex->getMessage());
             return false;
         }
     }

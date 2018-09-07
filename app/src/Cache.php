@@ -1,7 +1,7 @@
 <?php
 namespace TriTan;
 
-use TriTan\Config;
+use TriTan\Container as c;
 
 /**
  * Liten - PHP 5 micro framework
@@ -32,7 +32,7 @@ use TriTan\Config;
  *          THE SOFTWARE.
  */
 
-defined('CACHE_PATH') or define('CACHE_PATH', Config::get('cache_path'));
+defined('CACHE_PATH') or define('CACHE_PATH', c::getInstance()->get('cache_path'));
 
 class Cache
 {

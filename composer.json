@@ -69,8 +69,8 @@
     },
     "autoload": {
         "psr-4": {
-            "TriTan\\Functions\\": "app/functions/",
             "TriTan\\": "app/src/",
+            "TriTan\\Functions\\": "app/functions/",
             "Plugin\\": "plugins/"
         }
     },

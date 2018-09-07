@@ -68,7 +68,7 @@ defined('TTCMS_NODEQ_PATH') or define('TTCMS_NODEQ_PATH', $app->config('db.savep
  * Sets up the database global variable.
  */
 $app->inst->singleton('db', function () {
-    return new TriTan\Database(['more_entropy' => true]);
+    return new TriTan\Database();
 });
 
 /**

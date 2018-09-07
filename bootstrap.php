@@ -12,15 +12,26 @@ if (! defined('BASE_PATH')) {
 }
 
 /**
- * Step 2: Require the autoloader
+ * Step 2: Check PHP version.
+ */
+if (version_compare($ver = PHP_VERSION, $req = 7.1, '<')) {
+    die(sprintf('You are running PHP %s, but TriTan CMS requires at least <strong>PHP %s</strong> to run.', $ver, $req));
+}
+
+/**
+ * Step 3: Require the autoloader
  *
  * The autoloader includes the Liten framework as well as
  * other libraries TriTan CMS needs to work.
  */
-require_once('vendor' . DS . 'autoload.php');
+$autoload = BASE_PATH . 'vendor' . DS . 'autoload.php';
+if (!is_file($autoload)) {
+    die("Please run: <i>composer update</i> to install dependencies");
+}
+require_once($autoload);
 
 /**
- * Step 3: Include config file
+ * Step 4: Include config file
  */
 if (file_exists(BASE_PATH . 'config.php')) {
     /**

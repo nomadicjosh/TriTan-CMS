@@ -1,8 +1,11 @@
 <?php
-namespace TriTan\Functions\Logger;
+use TriTan\Container as c;
+use TriTan\Common\Options\Options;
+use TriTan\Common\Options\OptionsMapper;
+use TriTan\Database;
+use TriTan\Common\Context\HelperContext;
+use TriTan\Common\Hooks\ActionFilterHook as hook;
 
-use TriTan\Config;
-use TriTan\Functions\Dependency;
 /**
  * TriTan CMS Logging Functions
  *
@@ -69,10 +72,10 @@ $config = [
             'class' => '\TriTan\MailHandler',
             'level' => 'ALERT',
             'formatter' => 'exception',
-            'mailer' => new \TriTan\Email,
+            'mailer' => new TriTan\Common\Mailer(),
             'message' => 'This message will be replaced with the real one.',
-            'email_to' => app()->hook->{'apply_filter'}('system_alert_email', app()->hook->{'get_option'}('admin_email')),
-            'subject' => \TriTan\Functions\Core\_t('TriTan CMS System Alert!', 'tritan-cms')
+            'email_to' => hook::getInstance()->{'applyFilter'}('system_alert_email', (new Options(new OptionsMapper(new Database(), new HelperContext())))->{'read'}('admin_email')),
+            'subject' => t__('TriTan CMS System Alert!', 'tritan-cms')
         ]
     ],
     'processors' => [
@@ -99,7 +102,7 @@ $config = [
     ]
 ];
 
-Cascade::fileConfig(app()->hook->{'apply_filter'}('monolog_cascade_config', $config));
+Cascade::fileConfig(hook::getInstance()->{'applyFilter'}('monolog_cascade_config', $config));
 
 /**
  * Default Error Handler
@@ -113,7 +116,7 @@ Cascade::fileConfig(app()->hook->{'apply_filter'}('monolog_cascade_config', $con
  */
 function ttcms_error_handler($type, $string, $file, $line)
 {
-    $logger = Dependency\_ttcms_logger();
+    $logger = _ttcms_logger();
     $logger->logError($type, $string, $file, $line);
 }
 
@@ -126,7 +129,7 @@ function ttcms_error_handler($type, $string, $file, $line)
  */
 function ttcms_logger_activity_log_write($action, $process, $record, $uname)
 {
-    $logger = Dependency\_ttcms_logger();
+    $logger = _ttcms_logger();
     $logger->writeLog($action, $process, $record, $uname);
 }
 
@@ -139,7 +142,7 @@ function ttcms_logger_activity_log_write($action, $process, $record, $uname)
  */
 function ttcms_logger_error_log_purge()
 {
-    $logger = Dependency\_ttcms_logger();
+    $logger = _ttcms_logger();
     $logger->purgeErrorLog();
 }
 
@@ -152,7 +155,7 @@ function ttcms_logger_error_log_purge()
  */
 function ttcms_logger_activity_log_purge()
 {
-    $logger = Dependency\_ttcms_logger();
+    $logger = _ttcms_logger();
     $logger->purgeActivityLog();
 }
 
@@ -162,15 +165,13 @@ function ttcms_logger_activity_log_purge()
  * @file app/functions/logger-function.php
  *
  * @since 0.9
- * @param string $name
- *            Log channel and log file prefix.
- * @param string $message
- *            Message printed to log.
+ * @param string $name      Log channel and log file prefix.
+ * @param string $message   Message printed to log.
  */
 function ttcms_monolog($name, $message)
 {
-    $log = new \Monolog\Logger(_trim($name));
-    $log->pushHandler(new \Monolog\Handler\StreamHandler(BASE_PATH . 'static' . DS . 'tmp' . DS . 'logs' . DS . _trim($name) . '.' . format_date('m-d-Y', 'now') . '.txt'));
+    $log = new \Monolog\Logger(trim($name));
+    $log->pushHandler(new \Monolog\Handler\StreamHandler(BASE_PATH . 'static' . DS . 'tmp' . DS . 'logs' . DS . trim($name) . '.' . (new \TriTan\Common\Date())->{'format'}('m-d-Y', 'now') . '.txt'));
     $log->addError($message);
 }
 
@@ -199,7 +200,7 @@ function ttcms_set_environment()
         error_reporting(E_ALL & ~E_NOTICE);
         ini_set('display_errors', 'Off');
         ini_set('log_errors', 'On');
-        ini_set('error_log', Config::get('site_path') . 'files' . DS . 'logs' . DS . 'ttcms-error-' . format_date('Y-m-d', 'now') . '.txt');
-        set_error_handler('TriTan\\Functions\\Logger\\ttcms_error_handler', E_ALL & ~E_NOTICE);
+        ini_set('error_log', c::getInstance()->get('site_path') . 'files' . DS . 'logs' . DS . 'ttcms-error-' . (new \TriTan\Common\Date())->{'format'}('Y-m-d', 'now') . '.txt');
+        set_error_handler('ttcms_error_handler', E_ALL & ~E_NOTICE);
     }
 }

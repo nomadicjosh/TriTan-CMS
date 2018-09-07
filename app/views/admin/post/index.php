@@ -1,14 +1,10 @@
 <?php
-use TriTan\Functions\Dependency;
-use TriTan\Functions\Auth;
-use TriTan\Functions\Core;
-use TriTan\Functions\Post;
-use TriTan\Functions\User;
-
 $this->layout('main::_layouts/admin-layout');
 $this->section('backend');
-TriTan\Config::set('screen_parent', $this->posttype);
-TriTan\Config::set('screen_child', $this->posttype);
+TriTan\Container::getInstance()->{'set'}('screen_parent', $this->posttype);
+TriTan\Container::getInstance()->{'set'}('screen_child', $this->posttype);
+use TriTan\Common\Hooks\ActionFilterHook as hook;
+use TriTan\Common\Date;
 ?>
 
 <!-- Content Wrapper. Contains page content -->
@@ -20,7 +16,7 @@ TriTan\Config::set('screen_child', $this->posttype);
             <h3 class="box-title"><?=$this->title;?></h3>
 
             <div class="pull-right">
-                <button type="button"<?= Auth\ae('create_posts');?> class="btn btn-warning" onclick="window.location = '<?= Core\get_base_url(); ?>admin/<?=$this->posttype;?>/create/'"><i class="fa fa-plus"></i> <?= Core\_t('New', 'tritan-cms'); ?> <?=$this->posttype;?></button>
+                <button type="button"<?= ae('create_posts');?> class="btn btn-warning" onclick="window.location = '<?= admin_url($this->posttype . '/create/'); ?>'"><i class="fa fa-plus"></i> <?= esc_html__('New'); ?> <?=$this->posttype;?></button>
             </div>
         </div>
     </div>
@@ -28,7 +24,7 @@ TriTan\Config::set('screen_child', $this->posttype);
     <!-- Main content -->
     <section class="content">
 
-        <?= Dependency\_ttcms_flash()->showMessage(); ?>
+        <?= (new \TriTan\Common\FlashMessages())->showMessage(); ?>
 
         <!-- SELECT2 EXAMPLE -->
         <div class="box box-default">
@@ -36,11 +32,11 @@ TriTan\Config::set('screen_child', $this->posttype);
                 <table id="example1" class="table table-bordered table-hover">
                     <thead>
                         <tr>
-                            <th><?= Core\_t('Title', 'tritan-cms'); ?></th>
-                            <th><?= Core\_t('Author', 'tritan-cms'); ?></th>
-                            <th><?= Core\_t('Date', 'tritan-cms'); ?></th>
-                            <?php $this->app->hook->{'do_action'}('manage_post_header_column', 'default', $this->posttype);?>
-                            <th><?= Core\_t('Last Modified', 'tritan-cms'); ?></th>
+                            <th><?= esc_html__('Title'); ?></th>
+                            <th><?= esc_html__('Author'); ?></th>
+                            <th><?= esc_html__('Date'); ?></th>
+                            <?php hook::getInstance()->{'doAction'}('manage_post_header_column', 'default', $this->posttype);?>
+                            <th><?= esc_html__('Last Modified'); ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -48,29 +44,29 @@ TriTan\Config::set('screen_child', $this->posttype);
                             <tr class="gradeX">
                                 <td>
                                     <div class="post_title">
-                                        <strong><a href="<?= Core\get_base_url(); ?>admin/<?=$this->posttype;?>/<?= $post['post_id']; ?>/"><?= $post['post_title']; ?></a></strong> --
-                                        <span class="label <?= Post\ttcms_post_status_label($post['post_status']);?>" style="font-size:1em;font-weight: bold;">
-                                            <?= ucfirst($post['post_status']); ?>
+                                        <strong><a href="<?= admin_url($this->posttype . '/'. $post->getId() . '/'); ?>"><?= $post->getTitle(); ?></a></strong> --
+                                        <span class="label <?= ttcms_post_status_label($post->getStatus());?>" style="font-size:1em;font-weight: bold;">
+                                            <?= ucfirst($post->getStatus()); ?>
                                         </span>
                                     </div>
                                     <div class="row-actions">
-                                        <span class="edit"><a href="<?= Core\get_base_url(); ?>admin/<?=$this->posttype;?>/<?= $post['post_id']; ?>/"><?=Core\_t('Edit', 'tritan-cms');?></a></span> |
-                                        <span class="delete"><a<?= Auth\ae('delete_posts');?> href="#" data-toggle="modal" data-target="#delete-<?= $post['post_id']; ?>"><?=Core\_t('Delete', 'tritan-cms');?></a></span>
+                                        <span class="edit"><a href="<?= admin_url($this->posttype . '/'. $post->getId() . '/'); ?>"><?=esc_html__('Edit');?></a></span> |
+                                        <span class="delete"><a<?= ae('delete_posts');?> href="#" data-toggle="modal" data-target="#delete-<?= $post->getId(); ?>"><?=esc_html__('Delete');?></a></span>
                                     </div>
-                                    <div class="modal" id="delete-<?= $post['post_id']; ?>">
+                                    <div class="modal" id="delete-<?= $post->getId(); ?>">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <div class="modal-header">
                                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                         <span aria-hidden="true">&times;</span></button>
-                                                    <h4 class="modal-title"><?= $post['post_title']; ?></h4>
+                                                    <h4 class="modal-title"><?= $post->getTitle(); ?></h4>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <p><?=Core\_t('Are you sure you want to delete this post?', 'tritan-cms');?></p>
+                                                    <p><?=esc_html__('Are you sure you want to delete this post?');?></p>
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><?= Core\_t('Close', 'tritan-cms'); ?></button>
-                                                    <button type="button" class="btn btn-primary" onclick="window.location='<?=Core\get_base_url();?>admin/<?=$this->posttype;?>/<?= $post['post_id']; ?>/d/'"><?= Core\_t('Confirm', 'tritan-cms'); ?></button>
+                                                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><?= esc_html__('Close'); ?></button>
+                                                    <button type="button" class="btn btn-primary" onclick="window.location='<?= admin_url($this->posttype . '/'. $post->getId() . '/d/'); ?>'"><?= esc_html__('Confirm'); ?></button>
                                                 </div>
                                             </div>
                                             <!-- /.modal-content -->
@@ -79,20 +75,20 @@ TriTan\Config::set('screen_child', $this->posttype);
                                     </div>
                                     <!-- /.modal -->
                                 </td>
-                                <td><a href="<?=Core\get_base_url();?>admin/user/<?=$post['post_author'];?>/"><?= User\get_name($post['post_author'], true); ?></a></td>
-                                <td><?= laci2date('Y-m-d @ h:i A', $post['post_published']);?></td>
-                                <?php $this->app->hook->{'do_action'}('manage_post_content_column', 'default', (int) $post['post_id']);?>
-                                <td><?= laci2date('Y-m-d @ h:i A', $post['post_modified']);?></td>
+                                <td><a href="<?= admin_url('user/' . $post->getAuthor() . '/'); ?>"><?= get_name($post->getAuthor(), true); ?></a></td>
+                                <td><?= (new Date())->{'laci2date'}('Y-m-d @ h:i A', $post->getPublished());?></td>
+                                <?php hook::getInstance()->{'doAction'}('manage_post_content_column', 'default', (int) $post->getId());?>
+                                <td><?= (new Date())->{'laci2date'}('Y-m-d @ h:i A', $post->getModified());?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th><?= Core\_t('Title', 'tritan-cms'); ?></th>
-                            <th><?= Core\_t('Author', 'tritan-cms'); ?></th>
-                            <th><?= Core\_t('Date', 'tritan-cms'); ?></th>
-                            <?php $this->app->hook->{'do_action'}('manage_post_header_column', 'default', $this->posttype);?>
-                            <th><?= Core\_t('Last Modified', 'tritan-cms'); ?></th>
+                            <th><?= esc_html__('Title'); ?></th>
+                            <th><?= esc_html__('Author'); ?></th>
+                            <th><?= esc_html__('Date'); ?></th>
+                            <?php hook::getInstance()->{'doAction'}('manage_post_header_column', 'default', $this->posttype);?>
+                            <th><?= esc_html__('Last Modified'); ?></th>
                         </tr>
                     </tfoot>
                 </table>

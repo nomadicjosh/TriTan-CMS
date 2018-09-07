@@ -26,9 +26,11 @@ class SorterPipe implements PipeInterface
             return $value($row);
         }, $array);
         switch ($ascending) {
-            case 'asc': asort($values);
+            case 'asc':
+                asort($values);
                 break;
-            case 'desc': arsort($values);
+            case 'desc':
+                arsort($values);
                 break;
         }
         $keys = array_keys($values);

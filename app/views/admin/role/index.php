@@ -1,7 +1,5 @@
 <?php
-use TriTan\Config;
-use TriTan\Functions\Dependency;
-use TriTan\Functions\Core;
+use TriTan\Container;
 
 /**
  * Manage Roles View
@@ -14,9 +12,8 @@ use TriTan\Functions\Core;
  */
 $this->layout('main::_layouts/admin-layout');
 $this->section('backend');
-$roles = new \TriTan\ACL();
-Config::set('screen_parent', 'roles');
-Config::set('screen_child', 'role');
+Container::getInstance()->{'set'}('screen_parent', 'roles');
+Container::getInstance()->{'set'}('screen_child', 'role');
 
 ?>
 
@@ -26,10 +23,10 @@ Config::set('screen_child', 'role');
     <div class="box box-solid">
         <div class="box-header with-border">
             <i class="fa fa-text-width"></i>
-            <h3 class="box-title"><?= Core\_t('Roles', 'tritan-cms'); ?></h3>
+            <h3 class="box-title"><?= esc_html__('Roles'); ?></h3>
 
             <div class="pull-right">
-                <button type="button" class="btn btn-success" onclick="window.location = '<?= Core\get_base_url(); ?>admin/role/create/'"><i class="fa fa-plus-circle"></i> <?= Core\_t('Create a Role', 'tritan-cms'); ?></button>
+                <button type="button" class="btn btn-success" onclick="window.location = '<?= admin_url('role/create/'); ?>'"><i class="fa fa-plus-circle"></i> <?= esc_html__('Create a Role'); ?></button>
             </div>
         </div>
     </div>
@@ -37,7 +34,7 @@ Config::set('screen_child', 'role');
     <!-- Main content -->
     <section class="content">
 
-        <?= Dependency\_ttcms_flash()->showMessage(); ?>
+        <?= (new \TriTan\Common\FlashMessages())->showMessage(); ?>
 
         <!-- SELECT2 EXAMPLE -->
         <div class="box box-default">
@@ -45,30 +42,27 @@ Config::set('screen_child', 'role');
                 <table id="example1" class="table table-bordered table-hover">
                     <thead>
                         <tr>
-                            <th class="text-center"><?= Core\_t('Name', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= Core\_t('Key', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= Core\_t('Edit', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= esc_html__('Name'); ?></th>
+                            <th class="text-center"><?= esc_html__('Key'); ?></th>
+                            <th class="text-center"><?= esc_html__('Edit'); ?></th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
-                        $listRoles = $roles->getAllRoles('full');
-                        if ($listRoles != '') {
-                            foreach ($listRoles as $k => $v) {
-                                echo '<tr class="gradeX">' . "\n";
-                                echo '<td class="text-center">' . Core\_escape($v['Name']) . '</td>' . "\n";
-                                echo '<td class="text-center">' . Core\_escape($v['Key']) . '</td>' . "\n";
-                                echo '<td class="text-center"><a href="' . Core\get_base_url() . 'admin/role/' . Core\_escape((int) $v['ID']) . '/" data-toggle="tooltip" data-placement="top" title="View/Edit" class="btn bg-yellow"><i class="fa fa-edit"></i></a></td>';
-                                echo '</tr>';
-                            }
-                        }
-
+                            foreach ($this->roles as $role) : ?>
+                                <tr class="gradeX">
+                                    <td class="text-center"><?=$role['Name'];?></td>
+                                    <td class="text-center"><?=$role['Key'];?></td>
+                                    <td class="text-center"><a href="<?= admin_url('role/' . (int) $role['ID'] . '/'); ?>" data-toggle="tooltip" data-placement="top" title="View/Edit" class="btn bg-yellow"><i class="fa fa-edit"></i></a></td>
+                                </tr>
+                        <?php
+                            endforeach;
                         ?>
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th class="text-center"><?= Core\_t('Name', 'tritan-cms'); ?></th>
-                            <th class="text-center"><?= Core\_t('Edit', 'tritan-cms'); ?></th>
+                            <th class="text-center"><?= esc_html__('Name'); ?></th>
+                            <th class="text-center"><?= esc_html__('Edit'); ?></th>
                         </tr>
                     </tfoot>
                 </table>

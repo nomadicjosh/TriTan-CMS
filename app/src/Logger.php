@@ -1,11 +1,11 @@
 <?php
 namespace TriTan;
 
-use TriTan\Config;
+use TriTan\Container as c;
 use TriTan\Exception;
 use Cascade\Cascade;
-use TriTan\Functions\Db;
-use TriTan\Functions\Dependency;
+use TriTan\Common\Hooks\ActionFilterHook as hook;
+use TriTan\Database;
 
 /**
  * Event Logger for Errors and Activity.
@@ -24,10 +24,16 @@ class Logger
      * @var type
      */
     public $app;
+    
+    public $hook;
+    
+    public $db;
 
     public function __construct()
     {
         $this->app = \Liten\Liten::getInstance();
+        $this->hook = hook::getInstance();
+        $this->db = new Database();
     }
 
     /**
@@ -42,13 +48,12 @@ class Logger
         /* 20 days after creation date */
         $expire = date("Y-m-d H:i:s", $current_date += 1728000);
 
-        $expires_at = $this->app->hook->{'apply_filter'}('activity_log_expires', $expire);
+        $expires_at = $this->hook->{'applyFilter'}('activity_log_expires', $expire);
 
-        $log = $this->app->db->table(Config::get('tbl_prefix') . 'activity');
+        $log = $this->db->table(c::getInstance()->get('tbl_prefix') . 'activity');
         $log->begin();
         try {
             $log->insert([
-                'activity_id' => Db\auto_increment(Config::get('tbl_prefix') . 'activity', 'activity_id'),
                 'action' => $action,
                 'process' => $process,
                 'record' => $record,
@@ -60,7 +65,7 @@ class Logger
         } catch (Exception $ex) {
             $log->rollback();
             Cascade::getLogger('error')->error($ex->getMessage());
-            Dependency\_ttcms_flash()->error(Dependency\_ttcms_flash()->notice(409));
+            c::getInstance()->get('context')->obj['flash']->error(c::getInstance()->get('context')->obj['flash']->notice(409));
         }
     }
 
@@ -71,12 +76,12 @@ class Logger
      */
     public function purgeActivityLog()
     {
-        $log_count = $this->app->db->table(Config::get('tbl_prefix') . 'activity')
+        $log_count = $this->db->table(c::getInstance()->get('tbl_prefix') . 'activity')
                 ->where('expires_at', '<=', date('Y-m-d H:i:s', time()))
                 ->count();
 
         if ($log_count > 0) {
-            $delete = $this->app->db->table(Config::get('tbl_prefix') . 'activity');
+            $delete = $this->db->table(c::getInstance()->get('tbl_prefix') . 'activity');
             $delete->begin();
             try {
                 $delete->where('expires_at', '<=', date('Y-m-d H:i:s', time()))
@@ -85,7 +90,7 @@ class Logger
             } catch (Exception $ex) {
                 $delete->rollback();
                 Cascade::getLogger('error')->error($ex->getMessage());
-                Dependency\_ttcms_flash()->error(Dependency\_ttcms_flash()->notice(409));
+                c::getInstance()->get('context')->obj['flash']->error(c::getInstance()->get('context')->obj['flash']->notice(409));
             }
         }
     }
@@ -97,7 +102,7 @@ class Logger
      */
     public function purgeErrorLog()
     {
-        $logs = glob(Config::get('site_path') . 'files' . DS . 'logs' . DS . '*.txt');
+        $logs = glob(c::getInstance()->get('site_path') . 'files' . DS . 'logs' . DS . '*.txt');
         if (is_array($logs)) {
             foreach ($logs as $log) {
                 $filelastmodified = filemtime($log);
@@ -111,23 +116,22 @@ class Logger
     public function logError($type, $string, $file, $line)
     {
         $date = new \DateTime();
-        $log = $this->app->db->table(Config::get('tbl_prefix') . 'error');
+        $log = $this->db->table(c::getInstance()->get('tbl_prefix') . 'error');
         $log->begin();
         try {
             $log->insert([
-                'error_id' => Db\auto_increment(Config::get('tbl_prefix') . 'error', 'error_id'),
                 'time' => $date->getTimestamp(),
                 'type' => (int) $type,
                 'string' => (string) $string,
                 'file' => (string) $file,
                 'line' => (int) $line,
-                'add_date' => (string) \Jenssegers\Date\Date::now()
+                'add_date' => (string) (new Common\Date())->format()
             ]);
             $log->commit();
         } catch (Exception $ex) {
             $log->rollback();
             Cascade::getLogger('error')->error($ex->getMessage());
-            Dependency\_ttcms_flash()->error(Dependency\_ttcms_flash()->notice(409));
+            c::getInstance()->get('context')->obj['flash']->error(c::getInstance()->get('context')->obj['flash']->notice(409));
         }
     }
 

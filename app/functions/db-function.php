@@ -1,15 +1,8 @@
 <?php
-namespace TriTan\Functions\Db;
-
-use TriTan\Config;
+use TriTan\Container as c;
 use TriTan\Exception\Exception;
 use Cocur\Slugify\Slugify;
 use Cascade\Cascade;
-use TriTan\Functions\Core;
-use TriTan\Functions\Dependency;
-use TriTan\Functions\Meta;
-use TriTan\Functions\User;
-use TriTan\Functions\Cache;
 
 /**
  * TriTan CMS Database Related Functions
@@ -48,69 +41,21 @@ function auto_increment($table, $pk)
 }
 
 /**
- * Used by ttcms_check_password in order to rehash
- * an old password that was hashed using MD5 function.
- *
- * @file app/functions/db-function.php
- *
- * @since 0.9
- * @param string $password
- *            User password.
- * @param int $user_id
- *            User ID.
- * @return mixed
- */
-function ttcms_set_password($password, $user_id)
-{
-    $hash = Core\ttcms_hash_password($password);
-    $user = app()->db->table("user");
-    $user->begin();
-    try {
-        $user->where('user_id', $user_id)->update([
-            'user_pass' => $hash
-        ]);
-        $user->commit();
-    } catch (Exception $ex) {
-        $user->rollback();
-        Cascade::getLogger('error')->error($ex->getMessage());
-        Dependency\_ttcms_flash()->error(Core\_t('Password was not updated.', 'tritan-cms'));
-    }
-}
-
-/**
  * Retrieve post type by a given field from the post type table.
  *
  * @file app/functions/db-function.php
  *
  * @since 0.9
- * @param string $field The field to retrieve the post type with.
- * @param string $value A value for $field (_id, post_id, posttype_slug).
+ * @param string     $field The field to retrieve the post type with.
+ * @param int|string $value A value for $field (_id, post_id, posttype_slug).
  */
-function get_posttype_by($field, $value)
+function get_posttype_by(string $field, $value)
 {
-    $posttype = app()->db->table(Config::get('tbl_prefix') . 'posttype')
+    $db = new \TriTan\Database();
+    $posttype = $db->table(c::getInstance()->get('tbl_prefix') . 'posttype')
             ->where($field, $value)
             ->first();
-
     return $posttype;
-}
-
-/**
- * Retrieve post by a given field from the post table.
- *
- * @file app/functions/db-function.php
- *
- * @since 0.9
- * @param string $field The field to retrieve the post with.
- * @param string|int|string $value A value for $field (_id, post_id, post_slug).
- */
-function get_post_by($field, $value)
-{
-    $post = app()->db->table(Config::get('tbl_prefix') . 'post')
-            ->where($field, $value)
-            ->first();
-
-    return $post;
 }
 
 /**
@@ -122,13 +67,14 @@ function get_post_by($field, $value)
  * @param string $post_slug The unique slug of a post.
  * @return integer
  */
-function get_post_id($post_slug = null)
+function get_post_id($post_slug = null) : int
 {
-    $post = app()->db->table(Config::get('tbl_prefix') . 'post')
+    $db = new \TriTan\Database();
+    $post = $db->table(c::getInstance()->get('tbl_prefix') . 'post')
             ->where('post_slug', $post_slug)
             ->first();
 
-    return (int) Core\_escape($post['post_id']);
+    return (int) esc_html($post['post_id']);
 }
 
 /**
@@ -141,8 +87,9 @@ function get_post_id($post_slug = null)
  * @param string $table Table the text is saved to (i.e. post, posttype)
  * @return string
  */
-function ttcms_slugify($title, $table = null)
+function ttcms_slugify(string $title, $table = null)
 {
+    $db = new \TriTan\Database();
     /**
      * Instantiate the slugify class.
      */
@@ -162,10 +109,10 @@ function ttcms_slugify($title, $table = null)
     if ($table === 'site') {
         $table = $table;
     } else {
-        $table = Config::get('tbl_prefix') . $table;
+        $table = c::getInstance()->get('tbl_prefix') . $table;
     }
 
-    $results = app()->db->table($table)
+    $results = $db->table($table)
             ->where("$field", 'match', "/$slug(-[0-9]+)?$/");
     if ($results->count() > 0) {
         foreach ($results->get() as $item) {
@@ -181,14 +128,9 @@ function ttcms_slugify($title, $table = null)
      */
     if ($total == 0) {
         return $slug;
-    }
-
-    /**
-     * If we have only one result, we look if it has a number at the end
-     */
-    elseif ($total == 1) {
+    } elseif ($total == 1) { // If we have only one result, we look if it has a number at the end.
         /**
-         * Take the only value of the array, because there is only 1
+         * Take the only value of the array, because there is only 1.
          */
         $exists = $titles[0];
 
@@ -203,12 +145,7 @@ function ttcms_slugify($title, $table = null)
          */
         if ("" == trim($exists)) {
             return $slug . "-1";
-        }
-
-        /**
-         * If not..........
-         */
-        else {
+        } else { // If not..........
             /**
              * Obtain the number because of REGEX it will be there... ;-)
              */
@@ -221,11 +158,7 @@ function ttcms_slugify($title, $table = null)
 
             return $slug . "-" . $number;
         }
-    }
-
-    /**
-     * If there is more than one result, we need the last one
-     */ else {
+    } else { // If there is more than one result, we need the last one.
         /**
          * Last value
          */
@@ -251,61 +184,6 @@ function ttcms_slugify($title, $table = null)
 }
 
 /**
- * Function used to dynamically generate post screens
- * based on post type.
- *
- * @file app/functions/db-function.php
- *
- * @since 0.9
- * @access private
- * @return array
- */
-function get_all_post_types()
-{
-    $post_types = app()->db->table(Config::get('tbl_prefix') . 'posttype')->all();
-    return $post_types;
-}
-
-/**
- * Retrieves all posts
- *
- * @file app/functions/db-function.php
- *
- * @since 0.9
- * @access private
- * @param string $slug  Post slug.
- * @param int $post_id  Post id.
- * @return array
- */
-function get_post_dropdown_list($slug = null, $post_id = 0)
-{
-    $posts = app()->db->table(Config::get('tbl_prefix') . 'post')
-            ->where('post_status', 'published')
-            ->where('post_id', 'not in', $post_id)
-            ->get();
-    foreach ($posts as $post) {
-        echo '<option value="' . Core\_escape($post['post_slug']) . '"' . selected($slug, Core\_escape($post['post_slug']), false) . '>' . Core\_escape($post['post_title']) . '</option>';
-    }
-}
-
-/**
- * Returns the number of posts within a given post type.
- *
- * @file app/functions/db-function.php
- *
- * @since 0.9
- * @param int $slug Post type slug.
- * @return int
- */
-function number_posts_per_type($slug)
-{
-    $count = app()->db->table(Config::get('tbl_prefix') . 'post')
-            ->where('post_type.post_posttype', $slug)
-            ->count();
-    return $count;
-}
-
-/**
  * Retrieve all published posts or all published posts by post type.
  *
  * @file app/functions/db-function.php
@@ -316,10 +194,11 @@ function number_posts_per_type($slug)
  * @param null|int $offset  The offset of the first row to be returned.
  * @return array
  */
-function get_all_posts($post_type = null, $limit = 0, $offset = null, $status = 'all')
+function get_all_posts($post_type = null, int $limit = 0, $offset = null, $status = 'all')
 {
+    $db = new \TriTan\Database();
     if ($post_type != null) {
-        $posts = app()->db->table(Config::get('tbl_prefix') . 'post')
+        $posts = $db->table(c::getInstance()->get('tbl_prefix') . 'post')
                 ->where('post_type.post_posttype', $post_type);
 
         if ($status !== 'all') {
@@ -335,7 +214,7 @@ function get_all_posts($post_type = null, $limit = 0, $offset = null, $status = 
         }
         return $posts->get();
     } else {
-        $posts = app()->db->table(Config::get('tbl_prefix') . 'post');
+        $posts = $db->table(c::getInstance()->get('tbl_prefix') . 'post');
 
         if ($status !== 'all') {
             $posts->where('post_status', $status);
@@ -370,7 +249,8 @@ function get_all_posts($post_type = null, $limit = 0, $offset = null, $status = 
  */
 function tinymce_link_list()
 {
-    $links = app()->db->table(Config::get('tbl_prefix') . 'post')
+    $db = new \TriTan\Database();
+    $links = $db->table(c::getInstance()->get('tbl_prefix') . 'post')
             ->where('post_status', 'published')
             ->get(['post_title', 'post_relative_url']);
     return $links;
@@ -386,13 +266,13 @@ function tinymce_link_list()
  * @param int|array $array_ids Array or comma delimited list of array IDs to update cache for
  * @return array|false Metadata cache for the specified arrays, or false on failure.
  */
-function update_meta_cache($meta_type, $array_ids)
+function update_meta_cache(string $meta_type, $array_ids)
 {
     if (!$meta_type || !$array_ids) {
         return false;
     }
 
-    $table = Meta\_get_meta_table($meta_type);
+    $table = _get_meta_table($meta_type);
     if (!$table) {
         return false;
     }
@@ -410,7 +290,7 @@ function update_meta_cache($meta_type, $array_ids)
     $ids = [];
     $cache = [];
     foreach ($array_ids as $id) {
-        $cached_array = Cache\ttcms_cache_get($id, $cache_key);
+        $cached_array = ttcms_cache_get($id, $cache_key);
         if (false === $cached_array) {
             $ids[] = $id;
         } else {
@@ -449,7 +329,7 @@ function update_meta_cache($meta_type, $array_ids)
         if (!isset($cache[$id])) {
             $cache[$id] = [];
         }
-        Cache\ttcms_cache_add($id, $cache[$id], $cache_key);
+        ttcms_cache_add($id, $cache[$id], $cache_key);
     }
     return $cache;
 }
@@ -465,7 +345,8 @@ function update_meta_cache($meta_type, $array_ids)
  */
 function generate_php_encryption()
 {
-    $encrypt = app()->db->table('php_encryption');
+    $db = new \TriTan\Database();
+    $encrypt = $db->table('encryption');
 
     if ($encrypt->count() > 0) {
         return false;
@@ -475,14 +356,22 @@ function generate_php_encryption()
     try {
         $key = \Defuse\Crypto\Key::createNewRandomKey();
         $encrypt->insert([
-            'encryption_id' => (int) 1,
             'key' => $key->saveToAsciiSafeString(),
-            'created_at' => (string) current_time( 'laci')
+            'created_at' => (string) (new \TriTan\Common\Date())->{'current'}('laci')
         ]);
         $encrypt->commit();
     } catch (Exception $ex) {
         $encrypt->rollback();
-        Cascade::getLogger('error')->error(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()), ['Db Functions' => 'php_encryption']);
+        Cascade::getLogger('error')->error(
+            sprintf(
+                'SQLSTATE[%s]: %s',
+                $ex->getCode(),
+                $ex->getMessage()
+            ),
+            [
+                'Db Functions' => 'php_encryption'
+            ]
+        );
     }
 }
 
@@ -495,17 +384,13 @@ function generate_php_encryption()
  * @param string $option_key Key to check against.
  * @return bool
  */
-function does_option_exist($option_key)
+function does_option_exist(string $option_key) : bool
 {
-    $key = app()->db->table(Config::get('tbl_prefix') . 'option')
+    $db = new \TriTan\Database();
+    $key = $db->table(c::getInstance()->get('tbl_prefix') . 'option')
             ->where('option_key', '=', $option_key)
             ->first();
-
-    if (Core\_escape((int) $key['option_id']) <= 0) {
-        return false;
-    }
-
-    return true;
+    return (int) $key['option_id'] > 0;
 }
 
 /**
@@ -519,9 +404,10 @@ function does_option_exist($option_key)
  * @param string $old_slug  Old posttype slug.
  * @param string $new_slug  New posttype slug.
  */
-function update_post_relative_url_posttype($id, $old_slug, $new_slug)
+function update_post_relative_url_posttype(int $id, string $old_slug, string $new_slug)
 {
-    $post = app()->db->table(Config::get('tbl_prefix') . 'post');
+    $db = new \TriTan\Database();
+    $post = $db->table(c::getInstance()->get('tbl_prefix') . 'post');
     $post->begin();
     try {
         $post->where('post_type.posttype_id', (int) $id)
@@ -532,120 +418,19 @@ function update_post_relative_url_posttype($id, $old_slug, $new_slug)
     } catch (Exception $ex) {
         $post->rollback();
         Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
-        Dependency\_ttcms_flash()->{'error'}(Dependency\_ttcms_flash()->notice(409));
+        ttcms()->obj['flash']->{'error'}(ttcms()->obj['flash']->{'notice'}(409));
     }
 
-    $collection = app()->db->table(Config::get('tbl_prefix') . 'post');
+    $collection = $db->table(c::getInstance()->get('tbl_prefix') . 'post');
     $query = $collection->where('post_type.posttype_id', (int) $id)->map(function ($data) use ($old_slug, $new_slug) {
-        $data['post_relative_url'] = str_replace((string) $old_slug, (string) $new_slug, (string) $data['post_relative_url']);
+        $data['post_relative_url'] = str_replace(
+            (string) $old_slug,
+            (string) $new_slug,
+            (string) $data['post_relative_url']
+        );
         return $data;
     });
     $query->save();
-}
-
-/**
- * Insert new post into the post document.
- *
- * To be only used by `ttcms_insert_post`.
- *
- * @file app/functions/db-function.php
- *
- * @access private
- * @since 0.9.9
- * @param array $data   Array of post data.
- */
-function ttcms_post_insert_document($data)
-{
-    $posttype = get_posttype_by('posttype_slug', $data['post_posttype']);
-    $post = app()->db->table(Config::get('tbl_prefix') . 'post');
-    $post->begin();
-    try {
-        $post->insert([
-            'post_id' => (int) $data['post_id'],
-            'post_title' => Core\if_null($data['post_title']),
-            'post_slug' => Core\if_null($data['post_slug']),
-            'post_content' => Core\if_null($data['post_content']),
-            'post_author' => Core\if_null($data['post_author']),
-            'post_type' => [
-                'posttype_id' => (int) $posttype['posttype_id'],
-                'post_posttype' => Core\if_null($data['post_posttype'])
-            ],
-            'post_attributes' => [
-                'parent' => [
-                    'parent_id' => (int) get_post_id($data['post_parent']),
-                    'post_parent' => Core\if_null($data['post_parent'])
-                ],
-                'post_sidebar' => Core\if_null($data['post_sidebar']),
-                'post_show_in_menu' => Core\if_null($data['post_show_in_menu']),
-                'post_show_in_search' => Core\if_null($data['post_show_in_search'])
-            ],
-            'post_relative_url' => Core\if_null($data['post_relative_url']),
-            'post_featured_image' => Core\if_null($data['post_featured_image']),
-            'post_status' => Core\if_null($data['post_status']),
-            'post_created' => (string) current_time( 'laci'),
-            'post_published' => Core\if_null($data['post_published'])
-        ]);
-        $post->commit();
-    } catch (Exception $ex) {
-        $post->rollback();
-        Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
-        return false;
-    }
-}
-
-/**
- * Updates the post.
- *
- * To be only used by `ttcms_insert_post`.
- *
- * @file app/functions/db-function.php
- *
- * @access private
- * @since 0.9.9
- * @param array $data   Array of post data.
- */
-function ttcms_post_update_document($data)
-{
-    $posttype = get_posttype_by('posttype_slug', $data['post_posttype']);
-    $post = app()->db->table(Config::get('tbl_prefix') . 'post');
-    $post->begin();
-    try {
-        $post->where('post_id', (int) $data['post_id'])->update([
-            'post_title' => Core\if_null($data['post_title']),
-            'post_slug' => Core\if_null($data['post_slug']),
-            'post_content' => Core\if_null($data['post_content']),
-            'post_author' => Core\if_null($data['post_author']),
-            'post_type' => [
-                'posttype_id' => (int) $posttype['posttype_id'],
-                'post_posttype' => Core\if_null($data['post_posttype'])
-            ],
-            'post_attributes' => [
-                'parent' => [
-                    'parent_id' => (int) get_post_id($data['post_parent']),
-                    'post_parent' => Core\if_null($data['post_parent'])
-                ],
-                'post_sidebar' => Core\if_null($data['post_sidebar']),
-                'post_show_in_menu' => Core\if_null($data['post_show_in_menu']),
-                'post_show_in_search' => Core\if_null($data['post_show_in_search'])
-            ],
-            'post_relative_url' => Core\if_null($data['post_relative_url']),
-            'post_featured_image' => Core\if_null($data['post_featured_image']),
-            'post_status' => Core\if_null($data['post_status']),
-            'post_published' => Core\if_null($data['post_published']),
-            'post_modified' => (string) current_time( 'laci')
-        ]);
-        $post->commit();
-
-        $parent = app()->db->table(Config::get('tbl_prefix') . 'post');
-        $parent->where('post_attributes.parent.parent_id', (int) $data['post_id'])
-                ->update([
-                    'post_attributes.parent.post_parent' => $data['post_slug']
-                ]);
-    } catch (Exception $ex) {
-        $post->rollback();
-        Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
-        return false;
-    }
 }
 
 /**
@@ -658,16 +443,14 @@ function ttcms_post_update_document($data)
  * @param string    $slug           Slug to search for.
  * @return boolean
  */
-function ttcms_posttype_slug_exist($posttype_id, $slug)
+function ttcms_posttype_slug_exist(int $posttype_id, string $slug) : bool
 {
-    $exist = app()->db->table(Config::get('tbl_prefix') . 'posttype')
+    $db = new \TriTan\Database();
+    $exist = $db->table(c::getInstance()->get('tbl_prefix') . 'posttype')
             ->where('posttype_slug', $slug)
             ->where('posttype_id', 'not in', $posttype_id)
             ->count();
-    if ($exist > 0) {
-        return true;
-    }
-    return false;
+    return $exist > 0;
 }
 
 /**
@@ -676,22 +459,20 @@ function ttcms_posttype_slug_exist($posttype_id, $slug)
  * @file app/functions/db-function.php
  *
  * @since 0.9.9
- * @param int       $post_id    Post id to check against.
+ * @param int|null  $post_id    Post id to check against or null.
  * @param string    $slug       Slug to search for.
  * @param string    $post_type  The post type to filter.
  * @return boolean
  */
-function ttcms_post_slug_exist($post_id, $slug, $post_type)
+function ttcms_post_slug_exist($post_id, string $slug, string $post_type) : bool
 {
-    $exist = app()->db->table(Config::get('tbl_prefix') . 'post')
+    $db = new \TriTan\Database();
+    $exist = $db->table(c::getInstance()->get('tbl_prefix') . 'post')
             ->where('post_slug', $slug)
             ->where('post_id', 'not in', $post_id)
             ->where('post_type.post_posttype', $post_type)
             ->count();
-    if ($exist > 0) {
-        return true;
-    }
-    return false;
+    return $exist > 0;
 }
 
 /**
@@ -700,20 +481,18 @@ function ttcms_post_slug_exist($post_id, $slug, $post_type)
  * @file app/functions/db-function.php
  *
  * @since 0.9.9
- * @param int       $site_id    Site id to check against.
+ * @param int|null  $site_id    Site id to check against or null.
  * @param string    $slug       Slug to search for.
  * @return boolean
  */
-function ttcms_site_slug_exist($site_id, $slug)
+function ttcms_site_slug_exist($site_id, string $slug) : bool
 {
-    $exist = app()->db->table('site')
+    $db = new \TriTan\Database();
+    $exist = $db->table('site')
             ->where('site_slug', $slug)
             ->where('site_id', 'not in', $site_id)
             ->count();
-    if ($exist > 0) {
-        return true;
-    }
-    return false;
+    return $exist > 0;
 }
 
 /**
@@ -725,9 +504,10 @@ function ttcms_site_slug_exist($site_id, $slug)
  * @param int $post_id Post id to check.
  * @return bool|array False if not, array of children if true.
  */
-function is_post_parent($post_id)
+function is_post_parent(int $post_id)
 {
-    $children = app()->db->table(Config::get('tbl_prefix') . 'post')
+    $db = new \TriTan\Database();
+    $children = $db->table(c::getInstance()->get('tbl_prefix') . 'post')
             ->where('post_attributes.parent.parent_id', $post_id);
     if ($children->count() <= 0) {
         return false;
@@ -736,27 +516,56 @@ function is_post_parent($post_id)
 }
 
 /**
+ * Checks if a given posttype exists on posts.
+ *
+ * @since 0.9.9
+ * @param int $posttype_id Posttype id to check for.
+ * @return bool True if exists, false otherwise;
+ */
+function is_post_posttype_exist($posttype_id) : bool
+{
+    $db = new \TriTan\Database();
+    $exist = $db->table(c::getInstance()->get('tbl_prefix') . 'post')
+            ->where('post_type.posttype_id', $posttype_id)
+            ->count();
+    return $exist > 0;
+}
+
+/**
  * Reassigns posts to a different user.
  *
  * @file app/functions/db-function.php
  *
  * @since 0.9.9
- * @param int   $user_id    ID of user being removed.
- * @param type  $assign_id  ID of user to whom posts will be assigned.
+ * @param int $user_id    ID of user being removed.
+ * @param int $assign_id  ID of user to whom posts will be assigned.
  */
-function reassign_posts($user_id, $assign_id)
+function reassign_posts(int $user_id, int $assign_id)
 {
-    $reassign = app()->db->table(Config::get('tbl_prefix') . 'post');
-    $reassign->begin();
-    try {
-        $reassign->where('post_author', (int) $user_id)
+    $db = new \TriTan\Database();
+    $count = $db->table(c::getInstance()->get('tbl_prefix') . 'post')
+            ->where('post_author', (int) $user_id)
+            ->count();
+    if ($count > 0) {
+        $reassign = $db->table(c::getInstance()->get('tbl_prefix') . 'post');
+        $reassign->begin();
+        try {
+            $reassign->where('post_author', (int) $user_id)
                 ->update([
                     'post_author' => (int) $assign_id
                 ]);
-        $reassign->commit();
-    } catch (Exception $ex) {
-        $reassign->rollback();
-        Dependency\_ttcms_flash()->error(sprintf(Core\_t('Reassign post error: %s'), $ex->getMessage()));
+            $reassign->commit();
+        } catch (Exception $ex) {
+            $reassign->rollback();
+            ttcms()->obj['flash']->error(
+                sprintf(
+                    esc_html__(
+                        'Reassign post error: %s'
+                    ),
+                    $ex->getMessage()
+                )
+            );
+        }
     }
 }
 
@@ -769,8 +578,10 @@ function reassign_posts($user_id, $assign_id)
  * @param int   $user_id    ID of user being removed.
  * @param array $params     User parameters (assign_id and role).
  */
-function reassign_sites($user_id, $params = [])
+function reassign_sites(int $user_id, array $params = [])
 {
+    $db = new \TriTan\Database();
+
     if (!is_numeric($user_id)) {
         return false;
     }
@@ -779,17 +590,30 @@ function reassign_sites($user_id, $params = [])
         return false;
     }
 
-    $reassign = app()->db->table('site');
-    $reassign->begin();
-    try {
-        $reassign->where('site_owner', (int) $user_id)
-                ->update([
-                    'site_owner' => (int) $params['assign_id']
-                ]);
-        $reassign->commit();
-    } catch (Exception $ex) {
-        $reassign->rollback();
-        Dependency\_ttcms_flash()->error(sprintf(Core\_t('Reassign site error: %s'), $ex->getMessage()));
+    $count = $db->table('site')
+            ->where('site_owner', (int) $user_id)
+            ->count();
+
+    if ($count > 0) {
+        $reassign = $db->table('site');
+        $reassign->begin();
+        try {
+            $reassign->where('site_owner', (int) $user_id)
+                    ->update([
+                        'site_owner' => (int) $params['assign_id']
+                    ]);
+            $reassign->commit();
+        } catch (Exception $ex) {
+            $reassign->rollback();
+            ttcms()->obj['flash']->error(
+                sprintf(
+                    esc_html__(
+                        'Reassign site error: %s'
+                    ),
+                    $ex->getMessage()
+                )
+            );
+        }
     }
 }
 
@@ -802,16 +626,17 @@ function reassign_sites($user_id, $params = [])
  * @param int $user_id ID of user to check.
  * @return bool Returns true if user has sites and false otherwise.
  */
-function does_user_have_sites($user_id = 0)
+function does_user_have_sites(int $user_id = 0)
 {
-    $owner = app()->db->table('site')
+    $db = new \TriTan\Database();
+    $owner = $db->table('site')
             ->where('site_owner', $user_id)
             ->count();
     if ($owner > 0) {
         return true;
     }
 
-    $option = User\get_user_option('role', $user_id);
+    $option = get_user_option('role', $user_id);
     if ((int) $option == (int) 1 || (int) $option == (int) 2) {
         return true;
     }
@@ -825,77 +650,43 @@ function does_user_have_sites($user_id = 0)
  * @param int $user_id The user's id.
  * @return array
  */
-function get_users_sites($user_id)
+function get_users_sites(int $user_id)
 {
-    $sites = app()->db->table('site')
+    $db = new \TriTan\Database();
+    $sites = $db->table('site')
             ->where('site_owner', (int) $user_id)
             ->get();
     return $sites;
 }
 
 /**
- * Insert new site into site document.
- *
- * To be only used by `ttcms_insert_site`.
- *
- * @file app/functions/db-function.php
+ * Populate the option cache.
  *
  * @access private
  * @since 0.9.9
- * @param array $data   Array of site data.
  */
-function ttcms_site_insert_document($data)
+function populate_options_cache()
 {
-    $insert = app()->db->table('site');
-    $insert->begin();
-    try {
-        $insert->insert([
-            'site_id' => (int) $data['site_id'],
-            'site_name' => (string) $data['site_name'],
-            'site_slug' => (string) $data['site_slug'],
-            'site_domain' => (string) $data['site_domain'],
-            'site_path' => (string) $data['site_path'],
-            'site_owner' => (int) $data['site_owner'],
-            'site_status' => (string) $data['site_status'],
-            'site_registered' => (string) $data['site_registered']
-        ]);
-        $insert->commit();
-    } catch (Exception $ex) {
-        $insert->rollback();
-        Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
-        return false;
+    $db = new TriTan\Database();
+    $options = $db->table(c::getInstance()->get('tbl_prefix') . 'option')->all();
+    foreach ($options as $value) {
+        ttcms()->obj['cache']->{'create'}($value['option_key'], $value, 'option');
     }
 }
 
 /**
- * Updates the site.
- *
- * To be only used by `ttcms_update_site`.
- *
- * @file app/functions/db-function.php
+ * Populate the user cache.
  *
  * @access private
  * @since 0.9.9
- * @param array $data   Array of site data.
  */
-function ttcms_site_update_document($data)
+function populate_usermeta_cache()
 {
-    $update = app()->db->table('site');
-    $update->begin();
-    try {
-        $update->where('site_id', (int) $data['site_id'])->update([
-            'site_name' => (string) $data['site_name'],
-            'site_slug' => (string) $data['site_slug'],
-            'site_domain' => (string) $data['site_domain'],
-            'site_path' => (string) $data['site_path'],
-            'site_owner' => (int) $data['site_owner'],
-            'site_status' => (string) $data['site_status'],
-            'site_modified' => (string) current_time( 'laci')
-        ]);
-        $update->commit();
-    } catch (Exception $ex) {
-        $update->rollback();
-        Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
-        return false;
-    }
+    $db = new TriTan\Database();
+
+    $umeta = $db->table('usermeta')->all();
+    (new \TriTan\Common\MetaData(
+        $db,
+        new \TriTan\Common\Context\HelperContext()
+    ))->{'updateMetaDataCache'}('user', $umeta);
 }

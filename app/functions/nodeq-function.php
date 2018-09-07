@@ -1,11 +1,10 @@
 <?php
-namespace TriTan\Functions\NodeQ;
-
 use TriTan\Exception\Exception;
 use Cascade\Cascade;
-use TriTan\Functions\Core;
-use TriTan\Functions\User;
-use TriTan\Functions\Dependency;
+use TriTan\Common\Options\Options;
+use TriTan\Database;
+use TriTan\Common\Context\HelperContext;
+use TriTan\Common\Mailer;
 
 /**
  * TriTan CMS NodeQ Functions
@@ -29,8 +28,9 @@ use TriTan\Functions\Dependency;
  */
 function ttcms_nodeq_login_details()
 {
-
-    $sql = app()->db->table('login_details')->where('sent', (int) 0)->get();
+    $db = new \TriTan\Database();
+    $option = new Options(new Database(), new HelperContext());
+    $sql = $db->table('login_details')->where('sent', (int) 0)->get();
 
     if ($sql->count() == 0) {
         $sql->delete();
@@ -38,31 +38,31 @@ function ttcms_nodeq_login_details()
 
     if ($sql->count() > 0) {
         foreach ($sql as $r) {
-            $message = Core\_escape(app()->hook->{'get_option'}('person_login_details'));
-            $message = str_replace('#login#', Core\_escape($r['user_login']), $message);
-            $message = str_replace('#fname#', Core\_escape($r['user_fname']), $message);
-            $message = str_replace('#lname#', Core\_escape($r['user_lname']), $message);
-            $message = str_replace('#name#', User\get_name((int) Core\_escape($r['user_id'])), $message);
-            $message = str_replace('#id#', Core\_escape($r['user_id']), $message);
-            $message = str_replace('#password#', Core\_escape($r['user_pass']), $message);
-            $message = str_replace('#url#', Core\get_base_url(), $message);
-            $message = str_replace('#sitename#', app()->hook->{'get_option'}('sitename'), $message);
-            $message = Core\process_email_html($message, Core\_t("TriTan CMS Login Details", 'tritan-cms'));
-            $headers[] = sprintf("From: %s <auto-reply@%s>", Core\_t('TriTan CMS :: ', 'tritan-cms') . app()->hook->{'get_option'}('sitename'), Core\get_domain_name());
-            if (!function_exists('ttcms_smtp')) {
+            $message = escape($option->{'read'}('person_login_details'));
+            $message = str_replace('#login#', esc_html($r['user_login']), $message);
+            $message = str_replace('#fname#', esc_html($r['user_fname']), $message);
+            $message = str_replace('#lname#', esc_html($r['user_lname']), $message);
+            $message = str_replace('#name#', get_name((int) esc_html($r['user_id'])), $message);
+            $message = str_replace('#id#', esc_html($r['user_id']), $message);
+            $message = str_replace('#password#', esc_html($r['user_pass']), $message);
+            $message = str_replace('#url#', site_url(), $message);
+            $message = str_replace('#sitename#', $option->{'read'}('sitename'), $message);
+            $message = process_email_html($message, esc_html__("TriTan CMS Login Details"));
+            $headers[] = sprintf("From: %s <auto-reply@%s>", esc_html__('TriTan CMS :: ') . $option->{'read'}('sitename'), get_domain_name());
+            if (!function_exists('ttcms_mail_send')) {
                 $headers[] = 'Content-Type: text/html; charset="UTF-8"';
                 $headers[] = sprintf("X-Mailer: TriTan CMS %s", CURRENT_RELEASE);
             }
 
             try {
-                Dependency\_ttcms_email()->ttcmsMail(Core\_escape($r['email']), _t("TriTan CMS Login Details", 'tritan-cms'), $message, $headers);
+                (new Mailer())->{'mail'}(esc_html($r['email']), esc_html__("TriTan CMS Login Details"), $message, $headers);
             } catch (\PHPMailer\PHPMailer\Exception $e) {
-                Cascade::getLogger('system_email')->alert(sprintf('PHPMAILER[%s]: %s', $e->getCode(), $e->getMessage()));
+                Cascade::getLogger('system_email')->{'alert'}(sprintf('PHPMAILER[%s]: %s', $e->getCode(), $e->getMessage()));
             } catch (Exception $e) {
-                Cascade::getLogger('system_email')->alert(sprintf('PHPMAILER[%s]: %s', $e->getCode(), $e->getMessage()));
+                Cascade::getLogger('system_email')->{'alert'}(sprintf('PHPMAILER[%s]: %s', $e->getCode(), $e->getMessage()));
             }
 
-            $upd = app()->db->table('login_details')->where('ld_id', (int) Core\_escape($r['ld_id']));
+            $upd = $db->table('login_details')->where('login_details_id', (int) esc_html($r['login_details_id']));
             $upd->update([
                 'sent' => 1
             ]);

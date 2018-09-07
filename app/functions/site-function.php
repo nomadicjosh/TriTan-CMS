@@ -1,5 +1,15 @@
 <?php
-namespace TriTan\Functions\Site;
+use TriTan\Container as c;
+use TriTan\Database;
+use TriTan\Common\Site\Site;
+use TriTan\Common\Site\SiteRepository;
+use TriTan\Common\Site\SiteMapper;
+use TriTan\Common\Context\HelperContext;
+use TriTan\Exception\Exception;
+use TriTan\Error;
+use Cascade\Cascade;
+use TriTan\Common\Hooks\ActionFilterHook as hook;
+use TriTan\Common\User\User;
 
 /**
  * TriTan CMS Site Functions
@@ -10,17 +20,6 @@ namespace TriTan\Functions\Site;
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
  */
-use TriTan\Config;
-use TriTan\Exception\Exception;
-use TriTan\Error;
-use Cascade\Cascade;
-use TriTan\Functions\User;
-use TriTan\Functions\Cache;
-use TriTan\Functions\Db;
-use TriTan\Functions\Core;
-use TriTan\Functions\Auth;
-use TriTan\Functions\Dependency;
-use TriTan\Functions\Meta;
 
 /**
  * Retrieves site data given a site ID or post array.
@@ -30,22 +29,36 @@ use TriTan\Functions\Meta;
  * @since 0.9
  * @param int|Site|null $site
  *            Site ID or object.
- * @param bool $object
- *            If set to true, data will return as an object, else as an array.
+ * @param bool $object If set to true, data will return as an object,
+ *                     else as an array. Default: true.
  * @return array|object
  */
-function get_site($site, $object = false)
+function get_site($site, $object = true)
 {
-    if ($site instanceof \TriTan\Site) {
+    if ($site instanceof Site) {
         $_site = $site;
     } elseif (is_object($site)) {
-        if (empty($site->site_id)) {
-            $_site = new \TriTan\Site($site);
+        if (empty($site->getId())) {
+            $_site = null;
         } else {
-            $_site = \TriTan\Site::get_instance($site->site_id);
+            $_site = (
+                new SiteRepository(
+                    new SiteMapper(
+                        new Database(),
+                        new HelperContext()
+                    )
+                )
+            )->{'findById'}($site->getId());
         }
     } else {
-        $_site = \TriTan\Site::get_instance($site);
+        $_site = (
+            new SiteRepository(
+                new SiteMapper(
+                    new Database(),
+                    new HelperContext()
+                )
+            )
+        )->{'findById'}((int) $site);
     }
 
     if (!$_site) {
@@ -60,9 +73,9 @@ function get_site($site, $object = false)
      * Fires after a site is retrieved.
      *
      * @since 0.9
-     * @param Site $_site Site data.
+     * @param array|Site $_site Site data.
      */
-    $_site = app()->hook->{'apply_filter'}('get_site', $_site);
+    $_site = hook::getInstance()->{'applyFilter'}('get_site', $_site);
 
     return $_site;
 }
@@ -76,9 +89,10 @@ function get_site($site, $object = false)
  * @param string $sitedomain Site domain to check against.
  * @return bool If site domain exists, return true otherwise return false.
  */
-function site_domain_exists($sitedomain)
+function site_domain_exists(string $sitedomain) : bool
 {
-    $site = app()->db->table('site')->where('site_domain', $sitedomain)->count();
+    $db = new Database();
+    $site = $db->table('site')->where('site_domain', $sitedomain)->count();
 
     $exists = $site > 0 ? true : false;
 
@@ -89,7 +103,7 @@ function site_domain_exists($sitedomain)
      * @param bool $exists          Whether the site's domain is taken or not.
      * @param string $sitedomain    Site domain to check.
      */
-    return app()->hook->{'apply_filter'}('site_domain_exists', $exists, $sitedomain);
+    return hook::getInstance()->{'applyFilter'}('site_domain_exists', $exists, $sitedomain);
 }
 
 /**
@@ -102,9 +116,10 @@ function site_domain_exists($sitedomain)
  * @param string $site_path     Site path to check against.
  * @return bool If site exists, return true otherwise return false.
  */
-function site_exists($site_domain, $site_path)
+function site_exists(string $site_domain, string $site_path) : bool
 {
-    $site = app()->db->table('site')
+    $db = new Database();
+    $site = $db->table('site')
             ->where('site_domain', $site_domain)
             ->where('site_path', $site_path)
             ->count();
@@ -119,7 +134,7 @@ function site_exists($site_domain, $site_path)
      * @param string $site_domain   Site domain to check against.
      * @param string $site_path     Site path to check against.
      */
-    return app()->hook->{'apply_filter'}('site_exists', $exists, $site_domain, $site_path);
+    return hook::getInstance()->{'applyFilter'}('site_exists', $exists, $site_domain, $site_path);
 }
 
 /**
@@ -131,26 +146,27 @@ function site_exists($site_domain, $site_path)
  * @param int $site_id  Site ID.
  * @param array $params Parameters to set (assign_id or role).
  */
-function add_site_user_meta($site_id, $params = [])
+function add_site_user_meta(int $site_id, array $params = [])
 {
-    $userdata = Auth\get_userdata((int) $params['assign_id']);
+    $db = new Database();
+    $userdata = get_userdata((int) $params['assign_id']);
     $data = [
-        'username' => Core\if_null(Core\_escape($userdata->user_login)),
-        'fname' => Core\if_null(Core\_escape($userdata->user_fname)),
-        'lname' => Core\if_null(Core\_escape($userdata->user_lname)),
-        'email' => Core\if_null(Core\_escape($userdata->user_email)),
-        'bio' => Core\if_null(Core\_escape($userdata->bio)),
-        'status' => Core\if_null(Core\_escape($userdata->status)),
-        'admin_layout' => Core\_escape($userdata->admin_layout) <= 0 ? (int) 0 : (int) Core\_escape($userdata->admin_layout),
-        'admin_sidebar' => Core\_escape($userdata->admin_sidebar) <= 0 ? (int) 0 : (int) Core\_escape($userdata->admin_sidebar),
-        'admin_skin' => Core\_escape($userdata->admin_skin) == null ? (string) 'skin-red-light' : (string) Core\_escape($userdata->admin_skin)
+        'username' => $db->{'ifNull'}($userdata->getLogin()),
+        'fname' => $db->{'ifNull'}($userdata->getFname()),
+        'lname' => $db->{'ifNull'}($userdata->getLname()),
+        'email' => $db->{'ifNull'}($userdata->getEmail()),
+        'bio' => $db->{'ifNull'}($userdata->bio),
+        'status' => $db->{'ifNull'}($userdata->status),
+        'admin_layout' => $userdata->admin_layout <= 0 ? (int) 0 : (int) $userdata->admin_layout,
+        'admin_sidebar' => $userdata->admin_sidebar <= 0 ? (int) 0 : (int) $userdata->admin_sidebar,
+        'admin_skin' => $userdata->admin_skin == null ? (string) 'skin-red-light' : (string) $userdata->admin_skin
     ];
     foreach ($data as $meta_key => $meta_value) {
         $prefix = "ttcms_{$site_id}_";
-        User\update_user_meta((int) $params['assign_id'], $prefix . $meta_key, $meta_value);
+        update_user_meta((int) $params['assign_id'], $prefix . $meta_key, $meta_value);
     }
 
-    $user = new \TriTan\User($params['assign_id'], Core\if_null(Core\_escape($userdata->user_login)), $site_id);
+    $user = new \TriTan\User($params['assign_id'], $db->{'ifNull'}(esc_html($userdata->user_login)), $site_id);
     $user->set_role($params['role']);
 }
 
@@ -165,24 +181,30 @@ function add_site_user_meta($site_id, $params = [])
  * @param bool $update Whether the site is being created or updated.
  * @return bool Returns true on success and false otherwise.
  */
-function create_site_directories($site_id, $site, $update)
+function create_site_directories(int $site_id, $site, bool $update) : bool
 {
     if ($update) {
         return false;
     }
 
-    $site = new \TriTan\Site($site);
-    if ((int) $site->site_id <= (int) 0) {
+    $site = get_site($site_id);
+    if ((int) $site->getId() <= (int) 0) {
         return false;
     }
 
     try {
-        Core\_mkdir(Config::get('sites_dir') . (int) $site_id . DS . 'dropins' . DS);
-        Core\_mkdir(Config::get('sites_dir') . (int) $site_id . DS . 'files' . DS . 'cache' . DS);
-        Core\_mkdir(Config::get('sites_dir') . (int) $site_id . DS . 'files' . DS . 'logs' . DS);
-        Core\_mkdir(Config::get('sites_dir') . (int) $site_id . DS . 'themes' . DS);
-        Core\_mkdir(Config::get('sites_dir') . (int) $site_id . DS . 'uploads' . DS);
-        Core\_mkdir(Config::get('sites_dir') . (int) $site_id . DS . 'uploads' . DS . '__optimized__' . DS);
+        ttcms()->obj['file']->{'mkdir'}(c::getInstance()->get('sites_dir') . (int) $site_id . DS . 'dropins' . DS);
+        ttcms()->obj['file']->{'mkdir'}(
+            c::getInstance()->get('sites_dir') . (int) $site_id . DS . 'files' . DS . 'cache' . DS
+        );
+        ttcms()->obj['file']->{'mkdir'}(
+            c::getInstance()->get('sites_dir') . (int) $site_id . DS . 'files' . DS . 'logs' . DS
+        );
+        ttcms()->obj['file']->{'mkdir'}(c::getInstance()->get('sites_dir') . (int) $site_id . DS . 'themes' . DS);
+        ttcms()->obj['file']->{'mkdir'}(c::getInstance()->get('sites_dir') . (int) $site_id . DS . 'uploads' . DS);
+        ttcms()->obj['file']->{'mkdir'}(
+            c::getInstance()->get('sites_dir') . (int) $site_id . DS . 'uploads' . DS . '__optimized__' . DS
+        );
     } catch (Exception $ex) {
         Cascade::getLogger('error')->error(sprintf('IOSTATE[%s]: Forbidden: %s', $ex->getCode(), $ex->getMessage()));
     }
@@ -198,28 +220,33 @@ function create_site_directories($site_id, $site, $update)
  * @access private
  * @since 0.9
  * @param int $site_id Site ID.
- * @param array $old_site Data array of site that was deleted.
+ * @param object $old_site Site object of site that was deleted.
  */
-function delete_site_user_meta($site_id, $old_site)
+function delete_site_user_meta(int $site_id, $old_site)
 {
+    $db = new Database();
     if (!is_numeric($site_id)) {
         return false;
     }
 
-    if ((int) $site_id !== (int) $old_site['site_id']) {
+    if ((int) $site_id !== (int) $old_site->getId()) {
         return false;
     }
 
-    $umeta = app()->db->table('usermeta');
+    $umeta = $db->table('usermeta');
     $umeta->begin();
     try {
         $umeta->where('meta_key', 'match', "/ttcms_{$site_id}/")
                 ->delete();
         $umeta->commit();
 
-        $users = User\get_users_by_siteid($site_id);
+        $users = get_users_by_siteid($site_id);
         foreach ($users as $user) {
-            User\clean_user_cache($user->user_id);
+            $_user = new User();
+            $_user->setId($user['user_id']);
+            $_user->setLogin($user['user_login']);
+            $_user->setEmail($user['user_email']);
+            ttcms()->obj['usercache']->{'clean'}($user);
         }
     } catch (Exception $ex) {
         $umeta->rollback();
@@ -236,20 +263,20 @@ function delete_site_user_meta($site_id, $old_site)
  * @param int    $site_id  Site ID.
  * @param object $old_site Site object.
  */
-function delete_site_tables($site_id, $old_site)
+function delete_site_tables(int $site_id, $old_site)
 {
     if (!is_numeric($site_id)) {
         return false;
     }
 
-    if ((int) $site_id !== (int) $old_site['site_id']) {
+    if ((int) $site_id !== (int) $old_site->getId()) {
         return false;
     }
 
-    $tables = glob(app()->config('db.savepath') . "ttcms_{$site_id}_*.json");
+    $tables = glob(ttcms()->obj['app']->{'config'}('db.savepath') . "ttcms_{$site_id}_*.json");
     if (is_array($tables)) {
         foreach ($tables as $table) {
-            if (Core\ttcms_file_exists($table, false)) {
+            if (ttcms()->obj['file']->{'exists'}($table, false)) {
                 unlink($table);
             }
         }
@@ -262,20 +289,21 @@ function delete_site_tables($site_id, $old_site)
  * @file app/functions/site-function.php
  *
  * @since 0.9
- * @param int $_site_id Site ID.
+ * @param int $site_id Site ID.
+ * @param object $old_site Site object.
  * @return bool Returns true on success and false otherwise.
  */
-function delete_site_directories($site_id, $old_site)
+function delete_site_directories(int $site_id, $old_site)
 {
     if ((int) $site_id <= (int) 0) {
         return false;
     }
 
-    if ((int) $site_id !== (int) $old_site['site_id']) {
+    if ((int) $site_id !== (int) $old_site->getId()) {
         return false;
     }
 
-    _rmdir(Config::get('sites_dir') . (int) $site_id . DS);
+    ttcms()->obj['file']->{'rmdir'}(c::getInstance()->get('sites_dir') . (int) $site_id . DS);
 }
 
 /**
@@ -287,9 +315,9 @@ function delete_site_directories($site_id, $old_site)
  * @global int $site_id
  * @return int Site ID.
  */
-function get_current_site_id()
+function get_current_site_id() : int
 {
-    return Core\absint(Config::get('site_id'));
+    return ttcms()->obj['util']->{'absint'}(c::getInstance()->get('site_id'));
 }
 
 /**
@@ -302,12 +330,18 @@ function get_current_site_id()
  */
 function update_main_site()
 {
-    $main_site = app()->db->table('site')->where('site_id', (int) 1)->first();
-    if (Core\_escape($main_site['site_domain']) === TTCMS_MAINSITE && Core\_escape($main_site['site_path']) === TTCMS_MAINSITE_PATH) {
+    $db = new Database();
+    $main_site = $db->table('site')->where('site_id', (int) 1)->first();
+    if (
+        esc_html($main_site['site_domain'])
+        === TTCMS_MAINSITE
+        && esc_html($main_site['site_path'])
+        === TTCMS_MAINSITE_PATH
+    ) {
         return false;
     }
 
-    $site = app()->db->table('site');
+    $site = $db->table('site');
     $site->begin();
     try {
         $site->where('site_id', (int) 1)
@@ -333,17 +367,18 @@ function update_main_site()
  */
 function get_multisite_users()
 {
-    $tbl_prefix = Config::get('tbl_prefix');
+    $db = new Database();
+    $tbl_prefix = c::getInstance()->get('tbl_prefix');
 
     $users = [];
-    $site_users = app()->db->table('usermeta')
+    $site_users = $db->table('usermeta')
             ->where('meta_key', 'match', "/$tbl_prefix/")
             ->get();
     foreach ($site_users as $site_user) {
-        $users[] = Core\_escape($site_user['user_id']);
+        $users[] = esc_html($site_user['user_id']);
     }
 
-    $list_users = app()->db->table('user')
+    $list_users = $db->table('user')
             ->where('user_id', 'in', $users)
             ->get();
 
@@ -361,41 +396,47 @@ function get_multisite_users()
  * @param string $role      Role to assign to user for this site.
  * @return int
  */
-function add_user_to_site($user, $site, $role)
+function add_user_to_site($user, $site, string $role)
 {
-    $acl = new \TriTan\ACL();
-    $role_id = $acl->getRoleIDFromKey($role);
+    $db = new Database();
+    $acl = new TriTan\Common\Acl\RoleRepository(
+        new TriTan\Common\Acl\RoleMapper(
+            $db,
+            new HelperContext()
+        )
+    );
+    $role_id = $acl->findIdByKey($role);
 
-    if ($user instanceof \TriTan\User) {
+    if ($user instanceof User) {
         $userdata = $user;
     } else {
-        $userdata = Auth\get_userdata($user);
+        $userdata = get_userdata($user);
     }
 
-    if ($site instanceof \TriTan\Site) {
+    if ($site instanceof Site) {
         $_site = $site;
     } else {
         $_site = get_site($site);
     }
 
-    if (!User\username_exists(Core\_escape($userdata->user_login))) {
+    if (!username_exists($userdata->getLogin())) {
         return false;
     }
 
-    if (!site_exists(Core\_escape($_site['site_domain']), Core\_escape($_site['site_path']))) {
+    if (!site_exists($_site->getDomain(), $_site->getPath())) {
         return false;
     }
 
     // Store values to save in user meta.
     $meta = [];
 
-    $meta['username'] = Core\if_null($userdata->user_login);
+    $meta['username'] = $db->{'ifNull'}($userdata->getLogin());
 
-    $meta['fname'] = Core\if_null($userdata->user_fname);
+    $meta['fname'] = $db->{'ifNull'}($userdata->getFname());
 
-    $meta['lname'] = Core\if_null($userdata->user_lname);
+    $meta['lname'] = $db->{'ifNull'}($userdata->getLname());
 
-    $meta['email'] = Core\if_null($userdata->user_email);
+    $meta['email'] = $db->{'ifNull'}($userdata->getEmail());
 
     $meta['bio'] = null;
 
@@ -430,18 +471,19 @@ function add_user_to_site($user, $site, $role)
      * }
      * @param $userdata User object.
      */
-    $meta = app()->hook->{'apply_filter'}('add_user_user_meta', $meta, $userdata);
+    $meta = hook::getInstance()->{'applyFilter'}('add_user_user_meta', $meta, $userdata);
 
     // Make sure meta data doesn't already exist for this user.
-    $prefix = "ttcms_{$_site['site_id']}_";
-    if (!User\get_user_meta(Core\_escape($userdata->user_id), $prefix . $meta['role'], true)) {
+    $site_id = $_site->getId();
+    $prefix = "ttcms_{$site_id}_";
+    if (!get_user_meta($userdata->getId(), $prefix . $meta['role'], true)) {
         // Update user meta.
         foreach ($meta as $key => $value) {
-            User\update_user_meta(Core\_escape($userdata->user_id), $prefix . $key, Core\if_null($value));
+            update_user_meta($userdata->getId(), $prefix . $key, $db->{'ifNull'}($value));
         }
     }
 
-    return (int) Core\_escape($userdata->user_id);
+    return (int) $userdata->getId();
 }
 
 /**
@@ -455,8 +497,8 @@ function add_user_to_site($user, $site, $role)
  * @file app/functions/site-function.php
  *
  * @since 0.9
- * @param array|User $sitedata {
- *     An array or User array of user data arguments.
+ * @param array|Site $sitedata {
+ *     An array or Site array of user data arguments.
  *
  *     @type int        $site_id            Sites's ID. If supplied, the site will be updated.
  *     @type string     $site_domain        The site's domain.
@@ -471,9 +513,11 @@ function add_user_to_site($user, $site, $role)
  * @return int|Exception|Error  The newly created site's site_id or throws an Exception or Error if the site could not
  *                              be created.
  */
-function ttcms_insert_site($sitedata, $exception = false)
+function ttcms_insert_site($sitedata, bool $exception = false)
 {
-    if ($sitedata instanceof \TriTan\Site) {
+    $db = new Database();
+    
+    if ($sitedata instanceof \TriTan\Common\Site) {
         $sitedata = get_object_vars($sitedata);
     }
 
@@ -481,13 +525,23 @@ function ttcms_insert_site($sitedata, $exception = false)
     if (!empty($sitedata['site_id'])) {
         $update = true;
         $site_id = (int) $sitedata['site_id'];
-        $site_before = get_site($site_id, true);
+        $site_before = get_site($site_id);
 
         if (is_null($site_before)) {
             if ($exception) {
-                throw new Exception(Core\_t('Invalid site id.', 'tritan-cms'), 'invalid_site_id');
+                throw new Exception(
+                    esc_html__(
+                        'The ID of this entity is invalid.'
+                    ),
+                    'invalid_id'
+                );
             } else {
-                return new Error('invalid_site_id', Core\_t('Invalid site id.', 'tritan-cms'));
+                return new Error(
+                    'invalid_id',
+                    esc_html__(
+                        'The ID of this entity is invalid.'
+                    )
+                );
             }
         }
         $previous_status = get_site_status((int) $site_id);
@@ -500,10 +554,15 @@ function ttcms_insert_site($sitedata, $exception = false)
          * @param int       $site_id            The site's site_id.
          * @param bool      $update             Whether this is an existing site or a new site.
          */
-        app()->hook->{'do_action'}('site_previous_status', $previous_status, (int) $site_id, $update);
+        hook::getInstance()->{'doAction'}('site_previous_status', $previous_status, (int) $site_id, $update);
+        
+        /**
+         * Create new site object.
+         */
+        $site = new \TriTan\Common\Site\Site();
+        $site->setId((int) $site_id);
     } else {
         $update = false;
-        $site_id = Db\auto_increment('site', 'site_id');
 
         $previous_status = 'new';
         /**
@@ -515,45 +574,84 @@ function ttcms_insert_site($sitedata, $exception = false)
          * @param int       $site_id            The site's site_id.
          * @param bool      $update             Whether this is an existing site or a new site.
          */
-        app()->hook->{'do_action'}('site_previous_status', $previous_status, (int) $site_id, $update);
+        hook::getInstance()->{'doAction'}('site_previous_status', $previous_status, (int) $site_id, $update);
+        
+        /**
+         * Create new site object.
+         */
+        $site = new \TriTan\Common\Site\Site();
     }
 
-    $raw_site_domain = isset($sitedata['subdomain']) ? _trim(Core\if_null($sitedata['subdomain']) . '.' . app()->req->server['HTTP_HOST']) : _trim(Core\if_null($sitedata['site_domain']));
+    $raw_site_domain = isset($sitedata['subdomain']) ? trim($db->{'ifNull'}($sitedata['subdomain']) . '.' . ttcms()->obj['app']->req->server['HTTP_HOST']) : trim($db->{'ifNull'}($sitedata['site_domain']));
+    $sanitized_site_domain = ttcms()->obj['sanitizer']->{'item'}($raw_site_domain);
     /**
      * Filters a site's domain before the site is created or updated.
      *
      * @since 0.9
+     * @param string $sanitized_site_domain Site domain after it has been sanitized
      * @param string $pre_site_domain The sites domain.
      */
-    $pre_site_domain = app()->hook->{'apply_filter'}('pre_site_domain', $raw_site_domain);
+    $pre_site_domain = hook::getInstance()->{'applyFilter'}(
+        'pre_site_domain',
+        (string) $sanitized_site_domain,
+        (string) $raw_site_domain
+    );
 
-    $site_domain = _trim($pre_site_domain);
+    $site_domain = trim($pre_site_domain);
 
     // site_domain cannot be empty.
     if (empty($site_domain)) {
         if ($exception) {
-            throw new Exception(Core\_t('Cannot create a site with an empty domain name.', 'tritan-cms'), 'empty_site_domain');
+            throw new Exception(
+                esc_html__(
+                    'Cannot create a site with an empty domain name.'
+                ),
+                'empty_value'
+            );
         } else {
-            return new Error('empty_site_domain', Core\_t('Cannot create a site with an empty domain name.', 'tritan-cms'));
+            return new Error(
+                'empty_value',
+                esc_html__(
+                    'Cannot create a site with an empty domain name.'
+                )
+            );
         }
     }
 
     if (!$update && site_domain_exists($site_domain)) {
         if ($exception) {
-            throw new Exception(Core\_t('Sorry, that site already exists!', 'tritan-cms'), 'existing_site_doamin');
+            throw new Exception(
+                esc_html__(
+                    'Sorry, that site already exists!'
+                ),
+                'duplicate'
+            );
         } else {
-            return new Error('existing_site_doamin', Core\_t('Sorry, that site already exists!', 'tritan-cms'));
+            return new Error(
+                'duplicate',
+                esc_html__(
+                    'Sorry, that site already exists!'
+                )
+            );
         }
     }
+    $site->setDomain($site_domain);
 
-    $raw_site_name = Core\if_null($sitedata['site_name']);
+    $raw_site_name = $db->{'ifNull'}($sitedata['site_name']);
+    $sanitized_site_name = ttcms()->obj['sanitizer']->{'item'}($raw_site_name);
     /**
      * Filters a site's name before the site is created or updated.
      *
      * @since 0.9
+     * @param string $sanitized_site_name Site name after it has been sanitized
      * @param string $raw_site_name The site's name.
      */
-    $site_name = app()->hook->{'apply_filter'}('pre_site_name', $raw_site_name);
+    $site_name = hook::getInstance()->{'applyFilter'}(
+        'pre_site_name',
+        (string) $sanitized_site_name,
+        (string) $raw_site_name
+    );
+    $site->setName($site_name);
 
     if (isset($sitedata['site_slug'])) {
         /**
@@ -567,63 +665,95 @@ function ttcms_insert_site($sitedata, $exception = false)
          * For an update, don't modify the site_slug if it
          * wasn't supplied as an argument.
          */
-        $site_slug = $site_before->site_slug;
+        $site_slug = $site_before->getSlug();
     }
 
     $raw_site_slug = $site_slug;
+    $sanitized_site_slug = ttcms()->obj['sanitizer']->{'item'}($raw_site_slug);
     /**
      * Filters a site's slug before created/updated.
      *
      * @since 0.9.9
+     * @param string $sanitized_site_slug Site slug after it has been sanitized
      * @param string $raw_site_slug The site's slug.
      */
-    $site_slug = app()->hook->{'apply_filter'}('pre_site_slug', (string) $raw_site_slug);
+    $site_slug = hook::getInstance()->{'applyFilter'}(
+        'pre_site_slug',
+        (string) $sanitized_site_slug,
+        (string) $raw_site_slug
+    );
+    $site->setSlug($site_slug);
 
-    $raw_site_path = Core\if_null($sitedata['site_path']);
+    $raw_site_path = $db->{'ifNull'}($sitedata['site_path']);
+    $sanitized_site_path = ttcms()->obj['sanitizer']->{'item'}($raw_site_path);
     /**
      * Filters a site's path before the site is created or updated.
      *
      * @since 0.9
+     * @param string $sanitized_site_path Site path after it has been sanitized
      * @param string $raw_site_path The site's path.
      */
-    $site_path = app()->hook->{'apply_filter'}('pre_site_path', $raw_site_path);
+    $site_path = hook::getInstance()->{'applyFilter'}(
+        'pre_site_path',
+        (string) $sanitized_site_path,
+        (string) $raw_site_path
+    );
+    $site->setPath($site_path);
 
     /*
      * If there is no update, just check for `email_exists`. If there is an update,
      * check if current email and new email are the same, or not, and check `email_exists`
      * accordingly.
      */
-    if ((!$update || (!empty($site_before) && 0 !== strcasecmp($site_domain . $site_path, Core\_escape($site_before->site_domain) . Core\_escape($site_before->site_path)))) && site_exists($site_domain, $site_path)
+    if ((!$update || (!empty($site_before) && 0 !== strcasecmp($site_domain . $site_path, $site_before->getDomain() . $site_before->getPath()))) && site_exists($site_domain, $site_path)
     ) {
         if ($exception) {
-            throw new Exception(Core\_t('Sorry, that site domain and path is already used.', 'tritan-cms'), 'existing_site_domainpath');
+            throw new Exception(
+                esc_html__(
+                    'Sorry, that site domain and path is already used.'
+                ),
+                'duplicate'
+            );
         } else {
-            return new Error('existing_site_domainpath', Core\_t('Sorry, that site domain and path is already used.', 'tritan-cms'));
+            return new Error(
+                'duplicate',
+                esc_html__(
+                    'Sorry, that site domain and path is already used.'
+                )
+            );
         }
     }
 
-    $site_owner = $sitedata['site_owner'] == '' ? Core\if_null(User\get_current_user_id()) : Core\if_null($sitedata['site_owner']);
+    $site_owner = $sitedata['site_owner'] == '' ? $db->{'ifNull'}(get_current_user_id()) : $db->{'ifNull'}($sitedata['site_owner']);
+    $site->setOwner($site_owner);
 
-    $raw_site_status = $sitedata['site_status'] == '' ? (string) 'public' : Core\if_null($sitedata['site_status']);
+    $raw_site_status = $sitedata['site_status'] == '' ? (string) 'public' : $db->{'ifNull'}($sitedata['site_status']);
+    $sanitized_site_status = ttcms()->obj['sanitizer']->{'item'}($raw_site_status);
     /**
      * Filters a site's status before the site is created or updated.
      *
      * @since 0.9
+     * @param string $sanitized_site_status Site status after it has been sanitized
      * @param string $raw_site_status The site's status.
      */
-    $site_status = app()->hook->{'apply_filter'}('pre_site_status', $raw_site_status);
+    $site_status = hook::getInstance()->{'applyFilter'}(
+        'pre_site_status',
+        (string) $sanitized_site_status,
+        (string) $raw_site_status
+    );
+    $site->setStatus($site_status);
 
-    $site_registered = (string) current_time( 'laci');
+    $site_registered = (string) (new \TriTan\Common\Date())->{'current'}( 'laci');
 
-    $site_modified = (string) current_time( 'laci');
+    $site_modified = (string) (new \TriTan\Common\Date())->{'current'}( 'laci');
 
     $compacted = compact('site_id', 'site_name', 'site_slug', 'site_domain', 'site_path', 'site_owner', 'site_status', 'site_registered', 'site_modified');
-    $data = Core\ttcms_unslash($compacted);
+    $data = ttcms()->obj['util']->{'unslash'}($compacted);
 
     /**
      * Filters site data before the record is created or updated.
      *
-     * @since 0.9
+     * @since 0.9.9
      * @param array    $data {
      *     Values and keys for the site.
      *
@@ -638,59 +768,95 @@ function ttcms_insert_site($sitedata, $exception = false)
      * @param bool     $update      Whether the site is being updated rather than created.
      * @param int|null $site_id     ID of the site to be updated, or NULL if the site is being created.
      */
-    $data = app()->hook->{'apply_filter'}('ttcms_pre_insert_site_data', $data, $update, $update ? (int) $site_id : null);
+    $data = hook::getInstance()->{'applyFilter'}('ttcms_pre_insert_site_data', $data, $update, $update ? (int) $site_id : null);
 
     if ($update) {
-        if (false === Db\ttcms_site_update_document($data)) {
+        $site->setModified($site_modified);
+        $site_id = (new \TriTan\Common\Site\SiteRepository(
+            new TriTan\Common\Site\SiteMapper(
+                new Database(),
+                new TriTan\Common\Context\HelperContext()
+            )
+        ))->{'update'}($site);
+        
+        if (false === $site_id) {
             if ($exception) {
-                throw new Exception(Core\_t('Could not update site within the site document.'), 'site_document_update_error');
+                throw new Exception(
+                    esc_html__(
+                        'Could not update site within the site document.'
+                    ),
+                    'write_error'
+                );
             } else {
-                return new Error('site_document_update_error', Core\_t('Could not update site within the site document.'));
+                return new Error(
+                    'write_error',
+                    esc_html__(
+                        'Could not update site within the site document.'
+                    )
+                );
             }
         }
     } else {
-        if (false === Db\ttcms_site_insert_document($data)) {
+        $site->setRegistered($site_registered);
+        $site_id = (new \TriTan\Common\Site\SiteRepository(
+            new TriTan\Common\Site\SiteMapper(
+                new Database(),
+                new TriTan\Common\Context\HelperContext()
+            )
+        ))->{'insert'}($site);
+        
+        if (false === $site_id) {
             if ($exception) {
-                throw new Exception(Core\_t('Could not insert site into the site document.'), 'site_document_insert_error');
+                throw new Exception(
+                    esc_html__(
+                        'Could not write data to site document.'
+                    ),
+                    'write_error'
+                );
             } else {
-                return new Error('site_document_insert_error', Core\_t('Could not insert site into the site document.'));
+                return new Error(
+                    'write_error',
+                    esc_html__(
+                        'Could not write data to site document.'
+                    )
+                );
             }
         }
     }
-
-    clean_site_cache($site_id);
-    $site = get_site((int) $site_id, true);
+    
+    $site = get_site((int) $site_id);
+    ttcms()->obj['sitecache']->{'clean'}($site);
 
     if ($update) {
         /**
          * Fires immediately after an existing site is updated.
          *
          * @since 0.9
-         * @param int       $site_id    Site ID.
-         * @param object    $site       Site data object.
+         * @param int  $site_id    Site ID.
+         * @param Site $site       Site data object.
          */
-        app()->hook->{'do_action'}('update_site', $site_id, $site);
-        $site_after = get_site((int) $site_id, true);
+        hook::getInstance()->{'doAction'}('update_site', $site_id, $site);
+        $site_after = get_site((int) $site_id);
         /**
          * Action hook triggered after existing site has been updated.
          *
          * @since 0.9.9
-         * @param int       $site_id      Site id.
-         * @param object    $site_after   Site object following the update.
-         * @param object    $site_before  Site object before the update.
+         * @param int  $site_id      Site id.
+         * @param Site $site_after   Site object following the update.
+         * @param Site $site_before  Site object before the update.
          */
-        app()->hook->{'do_action'}('site_updated', (int) $site_id, $site_after, $site_before);
+        hook::getInstance()->{'doAction'}('site_updated', (int) $site_id, $site_after, $site_before);
     }
 
     /**
      * Fires immediately after a new site is saved.
      *
      * @since 0.9
-     * @param int   $site_id Site ID.
-     * @param int   $site    Site object.
-     * @param bool  $update  Whether this is an existing site or a new site.
+     * @param int  $site_id Site ID.
+     * @param Site $site    Site object.
+     * @param bool $update  Whether this is an existing site or a new site.
      */
-    app()->hook->{'do_action'}('save_site', $site_id, $site, $update);
+    hook::getInstance()->{'doAction'}('save_site', $site_id, $site, $update);
 
     /**
      * Action hook triggered after site has been saved.
@@ -699,21 +865,21 @@ function ttcms_insert_site($sitedata, $exception = false)
      * is the site's status.
      *
      * @since 0.9.9
-     * @param int   $site_id    The site's id.
-     * @param array $site       Site object.
-     * @param bool  $update     Whether this is an existing site or a new site.
+     * @param int  $site_id    The site's id.
+     * @param Site $site       Site object.
+     * @param bool $update     Whether this is an existing site or a new site.
      */
-    app()->hook->{'do_action'}("save_site_{$site_status}", (int) $site_id, $site, $update);
+    hook::getInstance()->{'doAction'}("save_site_{$site_status}", (int) $site_id, $site, $update);
 
     /**
      * Action hook triggered after site has been saved.
      *
      * @since 0.9.9
-     * @param int   $site_id    The site's id.
-     * @param array $site       Site object.
-     * @param bool  $update     Whether this is an existing site or a new site.
+     * @param int  $site_id    The site's id.
+     * @param Site $site       Site object.
+     * @param bool $update     Whether this is an existing site or a new site.
      */
-    app()->hook->{'do_action'}('ttcms_after_insert_site_data', (int) $site_id, $site, $update);
+    hook::getInstance()->{'doAction'}('ttcms_after_insert_site_data', (int) $site_id, $site, $update);
 
     return $site_id;
 }
@@ -730,13 +896,15 @@ function ttcms_insert_site($sitedata, $exception = false)
  * @return int|Exception|Error      The updated site's id or throw an Exception or Error if the site could not be updated.
  * @throws Exception
  */
-function ttcms_update_site($sitedata, $exception = false)
+function ttcms_update_site($sitedata, bool $exception = false)
 {
-    if ($sitedata instanceof \TriTan\Site) {
+    $db = new Database();
+    
+    if ($sitedata instanceof \TriTan\Common\Site\Site) {
         $sitedata = get_object_vars($sitedata);
     }
 
-    $details = app()->db->table('site')->where('site_id', $sitedata['site_id'])->first();
+    $details = $db->table('site')->where('site_id', $sitedata['site_id'])->first();
     if ((int) $details['site_owner'] !== (int) $sitedata['site_owner']) {
         $owner_change = true;
         $previous_owner = $details['site_owner'];
@@ -747,9 +915,19 @@ function ttcms_update_site($sitedata, $exception = false)
     $ID = isset($sitedata['site_id']) ? (int) $sitedata['site_id'] : (int) 0;
     if ($ID <= 0) {
         if ($exception) {
-            throw new Exception(Core\_t('Invalid site id.', 'tritan-cms'), 'invalid_site_id');
+            throw new Exception(
+                esc_html__(
+                    'The ID of this entity is invalid.'
+                ),
+                'invalid_id'
+            );
         } else {
-            return new Error('invalid_site_id', Core\_t('Invalid site id.', 'tritan-cms'));
+            return new Error(
+                'invalid_id',
+                esc_html__(
+                    'The ID of this entity is invalid.'
+                )
+            );
         }
     }
 
@@ -761,14 +939,14 @@ function ttcms_update_site($sitedata, $exception = false)
      */
     if ($site_id > 0 && $owner_change) {
         $meta_key = "ttcms_{$site_id}";
-        $old_meta = app()->db->table('usermeta')->where('user_id', (int) $previous_owner)->where('meta_key', 'match', "/$meta_key/")->get();
+        $old_meta = $db->table('usermeta')->where('user_id', (int) $previous_owner)->where('meta_key', 'match', "/$meta_key/")->get();
         foreach ($old_meta as $meta) {
-            User\delete_user_meta((int) $previous_owner, $meta['meta_key'], $meta['meta_value']);
+            delete_user_meta((int) $previous_owner, $meta['meta_key'], $meta['meta_value']);
         }
         add_user_to_site((int) $sitedata['site_owner'], (int) $sitedata['site_id'], 'admin');
     }
 
-    clean_site_cache($site_id);
+    ttcms()->obj['sitecache']->{'clean'}($site_id);
 
     return $site_id;
 }
@@ -784,10 +962,14 @@ function ttcms_update_site($sitedata, $exception = false)
  * @return bool|Error Returns true on delete or throw an Exception or Error if failed.
  * @throws Exception
  */
-function ttcms_delete_site($site_id, $exception = false)
+function ttcms_delete_site(int $site_id, bool $exception = false)
 {
     if ((int) $site_id == (int) 1) {
-        Dependency\_ttcms_flash()->{'error'}(Core\_t('You are not allowed to delete the main site.', 'tritan-cms'));
+        ttcms()->obj['flash']->{'error'}(
+            esc_html__(
+                'You are not allowed to delete the main site.'
+            )
+        );
         exit();
     }
 
@@ -795,9 +977,19 @@ function ttcms_delete_site($site_id, $exception = false)
 
     if (!$old_site) {
         if ($exception) {
-            throw new Exception(Core\_t('Site does not exist.'), 'no_site_exists');
+            throw new Exception(
+                esc_html__(
+                    'Site does not exist.'
+                ),
+                'not_found'
+            );
         } else {
-            return new Error('no_site_exists', Core\_t('Site does not exist.'));
+            return new Error(
+                'not_found',
+                esc_html__(
+                    'Site does not exist.'
+                )
+            );
         }
     }
 
@@ -805,35 +997,34 @@ function ttcms_delete_site($site_id, $exception = false)
      * Action hook triggered before the site is deleted.
      *
      * @since 0.9
-     * @param int $id Site ID.
-     * @param array $old_site Data array of site to be deleted.
+     * @param int  $id       Site ID.
+     * @param Site $old_site Data object of site to be deleted.
      */
-    app()->hook->{'do_action'}('delete_site', (int) $site_id, $old_site);
-
-    $site = app()->db->table('site');
-    $site->begin();
-    try {
-        $site->where('site_id', (int) $site_id)
-                ->delete();
-        $site->commit();
-        /**
-         * Action hook triggered after the site is deleted.
-         *
-         * @since 0.9.9
-         * @param int $id           Site ID.
-         * @param array $old_site   Data array of site that was deleted.
-         */
-        app()->hook->{'do_action'}('deleted_site', (int) $site_id, $old_site);
-    } catch (Exception $ex) {
-        $site->rollback();
-        if ($exception) {
-            return sprintf('ERROR[%s]: %s', $ex->getCode(), $ex->getMessage());
-        } else {
-            return new Error($ex->getCode(), $ex->getMessage());
-        }
+    hook::getInstance()->{'doAction'}('delete_site', (int) $site_id, $old_site);
+    
+    $delete = (
+        new \TriTan\Common\Site\SiteRepository(
+            new TriTan\Common\Site\SiteMapper(
+                new Database(),
+                new TriTan\Common\Context\HelperContext()
+            )
+        )
+    )->{'delete'}($old_site);
+                
+    if(is_ttcms_exception($delete)) {
+        $exception ? sprintf('ERROR[%s]: %s', $delete->getCode(), $delete->getMessage()) : new Error($delete->getCode(), $delete->getMessage());
     }
+    
+    /**
+     * Action hook triggered after the site is deleted.
+     *
+     * @since 0.9.9
+     * @param int $id        Site ID.
+     * @param Site $old_site Site object that was deleted.
+     */
+    hook::getInstance()->{'doAction'}('deleted_site', (int) $site_id, $old_site);
 
-    clean_site_cache($site_id);
+    ttcms()->obj['sitecache']->{'clean'}($old_site);
 
     return true;
 }
@@ -849,38 +1040,53 @@ function ttcms_delete_site($site_id, $exception = false)
  * @param bool $exception   Whether or not to throw an exception.
  * @return bool|Exception|Error Returns true if successful or will throw and exception or error otherwise.
  */
-function ttcms_delete_site_user($user_id, $params = [], $exception = false)
+function ttcms_delete_site_user(int $user_id, array $params = [], bool $exception = false)
 {
+    $db = new Database();
     if (!is_numeric($user_id)) {
         return false;
     }
 
     if ((int) $user_id == (int) 1) {
-        Dependency\_ttcms_flash()->{'error'}(Core\_t('You are not allowed to delete the super administrator account.', 'tritan-cms'));
+        ttcms()->obj['flash']->{'error'}(
+            esc_html__(
+                'You are not allowed to delete the super administrator account.'
+            )
+        );
         exit();
     }
 
-    $user = new \TriTan\User((int) $user_id);
+    $user = get_userdata((int) $user_id);
 
-    if (!$user->exists()) {
+    if (!$user) {
         return false;
     }
 
-    $sites = Db\get_users_sites((int) $user_id);
+    $sites = get_users_sites((int) $user_id);
 
     if ((int) $params['assign_id'] > 0) {
+        $assign_user = get_userdata((int) $params['assign_id']);
         /**
          * Clean cache of the assigned user.
          */
-        User\clean_user_cache((int) $params['assign_id']);
+        ttcms()->obj['usercache']->{'clean'}($assign_user);
         /**
          * We need to reassign the site(s) to the selected user and create the
          * needed usermeta for the site.
          */
         if (null != $sites && false != $sites) {
             foreach ($sites as $site) {
-                clean_site_cache((int) $site['site_id']);
-                add_user_to_site((int) $params['assign_id'], (int) Core\_escape($site['site_id']), $params['role']);
+                /**
+                 * Create new site object from array.
+                 */
+                $_site = new Site();
+                $_site->setId((int) $site['site_id']);
+                $_site->setSlug($site['site_slug']);
+                $_site->setDomain($site['site_domain']);
+                $_site->setPath($site['site_path']);
+                
+                ttcms()->obj['sitecache']->{'clean'}($_site);
+                add_user_to_site((int) $params['assign_id'], (int) $site['site_id'], $params['role']);
             }
             /**
              * Filter hook is triggered when assign_id is greater than zero.
@@ -891,12 +1097,12 @@ function ttcms_delete_site_user($user_id, $params = [], $exception = false)
              * @param int $user_id    ID of user to be deleted.
              * @param array $params   User parameters (assign_id and role).
              */
-            $params = app()->hook->{'apply_filter'}('reassign_sites', (int) $user_id, $params);
+            $params = hook::getInstance()->{'applyFilter'}('reassign_sites', (int) $user_id, $params);
         }
     } else {
         if (null != $sites && false != $sites) {
             foreach ($sites as $old_site) {
-                $site_delete = app()->db->table('site');
+                $site_delete = $db->table('site');
                 $site_delete->begin();
                 try {
                     $site_delete->where('site_owner', $user_id)->delete();
@@ -909,17 +1115,24 @@ function ttcms_delete_site_user($user_id, $params = [], $exception = false)
                         return new Error($ex->getCode(), $ex->getMessage());
                     }
                 }
-
-                clean_site_cache((int) $old_site['site_id']);
+                
+                $site = (
+                    new SiteMapper(
+                        new Database(),
+                        new HelperContext()
+                    )
+                )->{'create'}($old_site);
+                
+                ttcms()->obj['sitecache']->{'clean'}((int) $site->getId());
 
                 /**
                  * Action hook triggered after the site is deleted.
                  *
                  * @since 0.9.9
-                 * @param int $id           Site ID.
-                 * @param array $old_site   Data array of site that was deleted.
+                 * @param int  $site_id    Site ID.
+                 * @param Site $site       Site object that was deleted.
                  */
-                app()->hook->{'do_action'}('deleted_site', (int) $old_site['site_id'], $old_site);
+                hook::getInstance()->{'doAction'}('deleted_site', (int) $site->getId(), $site);
             }
         }
     }
@@ -931,22 +1144,22 @@ function ttcms_delete_site_user($user_id, $params = [], $exception = false)
      * @param int   $user_id  ID of the user to delete.
      * @param array $params   User parameters (assign_id and role).
      */
-    app()->hook->{'do_action'}('delete_site_user', (int) $user_id, $params);
+    hook::getInstance()->{'doAction'}('delete_site_user', (int) $user_id, $params);
 
     /**
      * Finally delete the user.
      */
-    $user_delete = app()->db->table('user');
+    $user_delete = $db->table('user');
     $user_delete->begin();
     try {
         $user_delete->where('user_id', (int) $user_id)
                 ->delete();
         $user_delete->commit();
 
-        $meta = app()->db->table('usermeta')->where('user_id', $user_id)->get(['meta_id']);
+        $meta = $db->table('usermeta')->where('user_id', $user_id)->get(['meta_id']);
         if ($meta) {
             foreach ($meta as $mid) {
-                Meta\delete_metadata_by_mid('user', $mid['meta_id']);
+                (new TriTan\Common\MetaData($db, new HelperContext()))->{'deleteByMid'}('user', $mid['meta_id']);
             }
         }
     } catch (Exception $ex) {
@@ -961,7 +1174,7 @@ function ttcms_delete_site_user($user_id, $params = [], $exception = false)
     /**
      * Clear the cache of the deleted user.
      */
-    User\clean_user_cache($user_id);
+    ttcms()->obj['usercache']->{'clean'}($user);
 
     /**
      * Action hook fires immediately after a user has been deleted from the usermeta document.
@@ -970,7 +1183,7 @@ function ttcms_delete_site_user($user_id, $params = [], $exception = false)
      * @param int $user_id     ID of the user who was deleted.
      * @param array $params    User parameters (assign_id and role).
      */
-    app()->hook->{'do_action'}('deleted_site_user', (int) $user_id, $params);
+    hook::getInstance()->{'doAction'}('deleted_site_user', (int) $user_id, $params);
 
     return true;
 }
@@ -988,102 +1201,87 @@ function ttcms_delete_site_user($user_id, $params = [], $exception = false)
  * @param bool $update  Whether the site is being created or updated.
  * @return int|bool Returns the site id if successful and false otherwise.
  */
-function new_site_data($site_id, $site, $update)
+function new_site_data(int $site_id, $site, bool $update)
 {
+    $db = new Database();
+    
     if ($update) {
         return false;
     }
 
-    $site = new \TriTan\Site($site);
+    $site = get_site($site_id);
 
-    if ((int) $site->site_id <= (int) 0) {
+    if ((int) $site->getId() <= (int) 0) {
         return false;
     }
+    
+    $userdata = get_userdata((int) $site->getOwner());
+    $api_key = _ttcms_random_lib()->generateString(20, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+    
+    $prefix = "ttcms_{$site_id}_";
 
-    $sitedata = get_site((int) $site_id);
-    $userdata = Auth\get_userdata((int) $site->site_owner);
-    $api_key = Dependency\_ttcms_random_lib()->generateString(20, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
-
-    $prefix = "ttcms_{$sitedata['site_id']}_";
-
-    $option = app()->db->table($prefix . 'option');
+    $option = $db->table($prefix . 'option');
     $option->insert([
-        'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'sitename',
-        'option_value' => $sitedata['site_name']
+        'option_value' => $site->getName()
     ]);
     $option->insert([
-        'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'site_description',
         'option_value' => 'Just another TriTan CMS site.'
     ]);
     $option->insert([
-        'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'admin_email',
-        'option_value' => $userdata->user_email
+        'option_value' => $userdata->getEmail()
     ]);
     $option->insert([
-        'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'ttcms_core_locale',
         'option_value' => 'en_US'
     ]);
     $option->insert([
-        'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'cookieexpire',
         'option_value' => (int) 604800
     ]);
     $option->insert([
-        'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'cookiepath',
         'option_value' => '/'
     ]);
     $option->insert([
-        'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'cron_jobs',
         'option_value' => (int) 0
     ]);
     $option->insert([
-        'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'system_timezone',
         'option_value' => 'America/New_York'
     ]);
     $option->insert([
-        'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'api_key',
         'option_value' => (string) $api_key
     ]);
     $option->insert([
-        'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'date_format',
         'option_value' => 'd F Y'
     ]);
     $option->insert([
-        'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'time_format',
         'option_value' => 'h:m A'
     ]);
     $option->insert([
-        'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'admin_skin',
         'option_value' => 'skin-red-light'
     ]);
     $option->insert([
-        'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'site_cache',
         'option_value' => (int) 0
     ]);
     $option->insert([
-        'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'current_site_theme',
         'option_value' => ''
     ]);
     $option->insert([
-        'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'posts_per_page',
         'option_value' => (int) 6
     ]);
     $option->insert([
-        'option_id' => Db\auto_increment($prefix . 'option', 'option_id'),
         'option_key' => 'maintenance_mode',
         'option_value' => (int) 0
     ]);
@@ -1091,13 +1289,13 @@ function new_site_data($site_id, $site, $update)
     // Store values to save in user meta.
     $meta = [];
 
-    $meta['username'] = Core\if_null($userdata->user_login);
+    $meta['username'] = $db->{'ifNull'}($userdata->getLogin());
 
-    $meta['fname'] = Core\if_null($userdata->user_fname);
+    $meta['fname'] = $db->{'ifNull'}($userdata->getFname());
 
-    $meta['lname'] = Core\if_null($userdata->user_lname);
+    $meta['lname'] = $db->{'ifNull'}($userdata->getLname());
 
-    $meta['email'] = Core\if_null($userdata->user_email);
+    $meta['email'] = $db->{'ifNull'}($userdata->getEmail());
 
     $meta['bio'] = null;
 
@@ -1132,14 +1330,14 @@ function new_site_data($site_id, $site, $update)
      * }
      * @param object $userdata   User object.
      */
-    $meta = app()->hook->{'apply_filter'}('new_site_user_meta', $meta, $userdata);
+    $meta = hook::getInstance()->{'applyFilter'}('new_site_user_meta', $meta, $userdata);
 
     // Update user meta.
     foreach ($meta as $key => $value) {
-        User\update_user_meta(Core\_escape($userdata->user_id), $prefix . $key, Core\if_null($value));
+        update_user_meta($userdata->getId(), $prefix . $key, $db->{'ifNull'}($value));
     }
 
-    return (int) Core\_escape($sitedata['site_id']);
+    return (int) $site->getId();
 }
 
 /**
@@ -1151,7 +1349,7 @@ function new_site_data($site_id, $site, $update)
  * @param string $status Status to check for.
  * @return string Sites status.
  */
-function ttcms_site_status_label($status)
+function ttcms_site_status_label(string $status)
 {
     $label = [
         'public' => 'label-success',
@@ -1164,7 +1362,7 @@ function ttcms_site_status_label($status)
      * @since 0.9
      * @param
      */
-    return app()->hook->{'apply_filter'}('site_status_label', $label[$status], $status);
+    return hook::getInstance()->{'applyFilter'}('site_status_label', $label[$status], $status);
 }
 
 /**
@@ -1176,22 +1374,23 @@ function ttcms_site_status_label($status)
  */
 function does_site_exist()
 {
-    $base_url = Core\get_base_url();
-    $site_path = str_replace('index.php', '', app()->req->server['PHP_SELF']);
+    $db = new Database();
+    $base_url = site_url();
+    $site_path = str_replace('index.php', '', ttcms()->obj['app']->req->server['PHP_SELF']);
     $site_domain = str_replace(['http://', 'https://', $site_path], '', $base_url);
 
-    $site = app()->db->table('site')
+    $site = $db->table('site')
             ->where('site_domain', $site_domain)
             ->where('site_path', $site_path)
             ->first();
 
     if (!$site) {
-        app()->res->_format('json', 404);
+        ttcms()->obj['app']->res->_format('json', 404);
         exit();
     }
 
-    if (Core\_escape($site['site_status']) === 'archive') {
-        app()->res->_format('json', 503);
+    if (esc_html($site['site_status']) === 'archive') {
+        ttcms()->obj['app']->res->_format('json', 503);
         exit();
     }
 }
@@ -1208,10 +1407,10 @@ function does_site_exist()
  * @param int $site_id The unique id of a site.
  * @return string
  */
-function get_site_name($site_id = 0)
+function get_site_name(int $site_id = 0)
 {
     $site = get_site($site_id);
-    $name = Core\_escape($site['site_name']);
+    $name = $site->getName();
     /**
      * Filters the site name.
      *
@@ -1220,7 +1419,7 @@ function get_site_name($site_id = 0)
      * @param string    $name The site's name.
      * @param int       $site_id The site ID.
      */
-    return app()->hook->{'apply_filter'}('site_name', $name, $site_id);
+    return hook::getInstance()->{'applyFilter'}('site_name', $name, $site_id);
 }
 
 /**
@@ -1235,10 +1434,10 @@ function get_site_name($site_id = 0)
  * @param int $site_id The unique id of a site.
  * @return string
  */
-function get_site_domain($site_id = 0)
+function get_site_domain(int $site_id = 0)
 {
     $site = get_site($site_id);
-    $domain = Core\_escape($site['site_domain']);
+    $domain = $site->getDomain();
     /**
      * Filters the site domain.
      *
@@ -1247,7 +1446,7 @@ function get_site_domain($site_id = 0)
      * @param string    $domain The site's domain.
      * @param int       $site_id The site ID.
      */
-    return app()->hook->{'apply_filter'}('site_domain', $domain, $site_id);
+    return hook::getInstance()->{'applyFilter'}('site_domain', $domain, $site_id);
 }
 
 /**
@@ -1262,10 +1461,10 @@ function get_site_domain($site_id = 0)
  * @param int $site_id The unique id of a site.
  * @return string
  */
-function get_site_path($site_id = 0)
+function get_site_path(int $site_id = 0)
 {
     $site = get_site($site_id);
-    $path = Core\_escape($site['site_path']);
+    $path = $site->getPath();
     /**
      * Filters the site path.
      *
@@ -1274,7 +1473,7 @@ function get_site_path($site_id = 0)
      * @param string    $path The site's path.
      * @param int       $site_id The site ID.
      */
-    return app()->hook->{'apply_filter'}('site_path', $path, $site_id);
+    return hook::getInstance()->{'applyFilter'}('site_path', $path, $site_id);
 }
 
 /**
@@ -1289,10 +1488,10 @@ function get_site_path($site_id = 0)
  * @param int $site_id The unique id of a site.
  * @return string
  */
-function get_site_owner($site_id = 0)
+function get_site_owner(int $site_id = 0)
 {
     $site = get_site($site_id);
-    $owner = Core\_escape($site['site_owner']);
+    $owner = $site->getOwner();
     /**
      * Filters the site owner.
      *
@@ -1301,7 +1500,7 @@ function get_site_owner($site_id = 0)
      * @param string    $owner The site's owner.
      * @param int       $site_id The site ID.
      */
-    return app()->hook->{'apply_filter'}('site_owner', $owner, $site_id);
+    return hook::getInstance()->{'applyFilter'}('site_owner', $owner, $site_id);
 }
 
 /**
@@ -1316,10 +1515,10 @@ function get_site_owner($site_id = 0)
  * @param int $site_id The unique id of a site.
  * @return string
  */
-function get_site_status($site_id = 0)
+function get_site_status(int $site_id = 0)
 {
     $site = get_site($site_id);
-    $status = Core\_escape($site['site_status']);
+    $status = $site->getStatus();
     /**
      * Filters the site status.
      *
@@ -1328,125 +1527,75 @@ function get_site_status($site_id = 0)
      * @param string    $status The site's status.
      * @param int       $site_id The site ID.
      */
-    return app()->hook->{'apply_filter'}('site_status', $status, $site_id);
+    return hook::getInstance()->{'applyFilter'}('site_status', $status, $site_id);
 }
 
 /**
- * Clean site caches.
- *
- * Uses `clean_site_cache` action.
- *
- * @file app/functions/site-function.php
- *
- * @since 0.9.9
- * @param int|object $site Site_id or site object to be cleaned from the cache.
- */
-function clean_site_cache($site)
-{
-    $site_id = $site;
-    $site = get_site($site_id, true);
-    if (!$site) {
-        if (!is_numeric($site_id)) {
-            return;
-        }
-
-        // Make sure a Site object exists even when the site has been deleted.
-        $site = new \TriTan\Site((object) [
-                    'site_id' => $site_id,
-                    'site_domain' => null,
-                    'site_path' => null,
-        ]);
-    }
-
-    $site_id = Core\_escape($site->site_id);
-    $site_domain_path_key = md5(Core\_escape($site->site_domain) . Core\_escape($site->site_path));
-
-    Cache\ttcms_cache_delete((int) Core\_escape($site->site_id), 'sites');
-    Cache\ttcms_cache_delete((int) Core\_escape($site->site_id), 'site_details');
-    Cache\ttcms_cache_delete((int) Core\_escape($site->site_id) . 'short', 'site_details');
-    Cache\ttcms_cache_delete($site_domain_path_key, 'site_lookup');
-    Cache\ttcms_cache_delete($site_domain_path_key, 'site_id_cache');
-    Cache\ttcms_cache_delete('current_site_' . Core\_escape($site->site_domain), 'site_options');
-    Cache\ttcms_cache_delete('current_site_' . Core\_escape($site->site_domain) . Core\_escape($site->site_path), 'site_options');
-
-    /**
-     * Fires immediately after the given site's cache is cleaned.
-     *
-     * @since 0.9.9
-     * @param int    $site_id              Site id.
-     * @param object $site                 Site object.
-     * @param string $site_domain_path_key md5 hash of site_domain and site_path.
-     */
-    app()->hook->{'do_action'}('clean_site_cache', (int) $site_id, $site, $site_domain_path_key);
-
-    Cache\ttcms_cache_set('last_changed', microtime(), 'sites');
-}
-
-/**
- * Retieve site data from the site document and site options.
+ * Retrieve the details of a site from the site document and site options.
  * 
  * @file app/functions/site-function.php
  *
  * @since 0.9.9
- * @param in|string|array $fields A site's id or an array of site data.
+ * @param int|string|array $fields A site's id or an array of site data.
  * @param bool $get_all Whether to retrieve all data or only data from site document.
  * @return bool|Error|\TriTan\Site Site details on success or false.
  */
-function get_sitedata($fields = null, $get_all = true)
+function get_site_details($fields = null, bool $get_all = true)
 {
+    $db = new Database();
     if (is_array($fields)) {
         if (null !== $fields['site_id']) {
             $site_id = (int) $fields['site_id'];
         } elseif (null !== $fields['site_domain'] && null !== $fields['site_path']) {
             $key = md5($fields['site_domain'] . $fields['site_path']);
-            $site = Cache\ttcms_cache_get($key, 'site_lookup');
+            $site = ttcms()->obj['cache']->{'read'}($key, 'site_lookup');
 
             if (false !== $site) {
                 return $site;
             }
 
             if (substr($fields['site_domain'], 0, 4) == 'www.') {
-                $nowww = substr(Core\_escape($fields['site_domain']), 4);
-                $site = app()->db->table('site')
-                        ->where('site_domain', 'in', [$nowww, Core\_escape($fields['site_domain'])])
-                        ->where('site_path', Core\_escape($fields['site_path']))
+                $nowww = substr($fields['site_domain'], 4);
+                $site = $db->table('site')
+                        ->where('site_domain', 'in', [$nowww, $fields['site_domain']])
+                        ->where('site_path', $fields['site_path'])
                         ->sortBy('site_domain', 'DESC')
                         ->get();
             } else {
-                $site = app()->db->table('site')
-                        ->where('site_domain', Core\_escape($fields['site_domain']))
-                        ->where('site_path', Core\_escape($fields['site_path']))
+                $site = $db->table('site')
+                        ->where('site_domain', $fields['site_domain'])
+                        ->where('site_path', $fields['site_path'])
                         ->get();
             }
 
             if (null !== $site) {
-                Cache\ttcms_cache_set((int) $site['site_id'] . 'short', $site, 'site_details');
+                ttcms()->obj['cache']->{'set'}((int) $site['site_id'] . 'short', $site, 'site_details');
                 $site_id = (int) $site['site_id'];
             } else {
                 return false;
             }
         } elseif (null !== $fields['site_domain']) {
             $key = md5($fields['site_domain']);
-            $site = Cache\ttcms_cache_get($key, 'site_lookup');
+            $site = ttcms()->obj['cache']->{'read'}($key, 'site_lookup');
 
             if (null !== $site) {
                 return $site;
             }
 
             if (substr($fields['site_domain'], 0, 4) == 'www.') {
-                $nowww = substr(Core\_escape($fields['site_domain']), 4);
-                $site = app()->db->table('site')
-                        ->where('site_domain', 'in', [$nowww, Core\_escape($fields['site_domain'])])
+                $nowww = substr($fields['site_domain'], 4);
+                $site = $db->table('site')
+                        ->where('site_domain', 'in', [$nowww, $fields['site_domain']])
                         ->sortBy('site_domain', 'DESC')
                         ->get();
             } else {
-                $site = app()->db->table('site')
-                        ->where('site_domain', Core\_escape($fields['site_domain']))
+                $site = $db->table('site')
+                        ->where('site_domain', $fields['site_domain'])
                         ->get();
             }
 
             if ($site) {
-                Cache\ttcms_cache_set((int) $site['site_id'] . 'short', $site, 'site_details');
+                ttcms()->obj['cache']->{'set'}((int) $site['site_id'] . 'short', $site, 'site_details');
                 $site_id = (int) $site['site_id'];
             } else {
                 return false;
@@ -1458,7 +1607,7 @@ function get_sitedata($fields = null, $get_all = true)
         if (null === $fields) {
             $site_id = get_current_site_id();
         } elseif (!is_numeric($fields)) {
-            $site_id = call_user_func_array("TriTan\\Functions\\get_{$fields}", [$site->site_id]);
+            $site_id = call_user_func_array("get_{$fields}", [(int) $site['site_id']]);
         } else {
             $site_id = $fields;
         }
@@ -1466,7 +1615,7 @@ function get_sitedata($fields = null, $get_all = true)
 
     $site_id = (int) $site_id;
     $all = $get_all == true ? '' : 'short';
-    $details = Cache\ttcms_cache_get($site_id . $all, 'site_details');
+    $details = ttcms()->obj['cache']->{'read'}($site_id . $all, 'site_details');
 
     if ($details) {
         if (!is_object($details)) {
@@ -1474,7 +1623,7 @@ function get_sitedata($fields = null, $get_all = true)
                 return false;
             } else {
                 // Clear old pre-json object. Cache clients do better with that.
-                Cache\ttcms_cache_delete($site_id . $all, 'site_details');
+                ttcms()->obj['cache']->{'delete'}($site_id . $all, 'site_details');
                 unset($details);
             }
         } else {
@@ -1484,9 +1633,9 @@ function get_sitedata($fields = null, $get_all = true)
 
     // Try the other cache.
     if ($get_all) {
-        $details = Cache\ttcms_cache_get($site_id . 'short', 'site_details');
+        $details = ttcms()->obj['cache']->{'read'}($site_id . 'short', 'site_details');
     } else {
-        $details = Cache\ttcms_cache_get($site_id, 'site_details');
+        $details = ttcms()->obj['cache']->{'read'}($site_id, 'site_details');
         // If short was requested and full cache is set, we can return.
         if ($details) {
             if (!is_object($details)) {
@@ -1494,7 +1643,7 @@ function get_sitedata($fields = null, $get_all = true)
                     return false;
                 } else {
                     // Clear old pre-json object. Cache clients do better with that.
-                    Cache\ttcms_cache_delete($site_id, 'site_details');
+                    ttcms()->obj['cache']->{'delete'}($site_id, 'site_details');
                     unset($details);
                 }
             } else {
@@ -1504,35 +1653,40 @@ function get_sitedata($fields = null, $get_all = true)
     }
 
     if (empty($details)) {
-        $details = \TriTan\Site::get_instance($site_id);
+        $details = (new \TriTan\Common\Site\SiteRepository(
+            new TriTan\Common\Site\SiteMapper(
+                new Database(),
+                new TriTan\Common\Context\HelperContext()
+            )
+        ))->{'findById'}($site_id);
         if (!$details) {
             // Set the full cache.
-            Cache\ttcms_cache_set($site_id, -1, 'site_details');
+            ttcms()->obj['cache']->{'set'}($site_id, -1, 'site_details');
             return false;
         }
     }
 
-    if (!$details instanceof \TriTan\Site) {
-        $details = new \TriTan\Site($details);
+    if (!$details instanceof \TriTan\Common\Site\SiteRepository) {
+        return null;
     }
 
     if (!$get_all) {
-        Cache\ttcms_cache_set($site_id . $all, $details, 'site_details');
+        ttcms()->obj['cache']->{'set'}($site_id . $all, $details, 'site_details');
         return $details;
     }
 
     /**
-     * Filters a blog's details.
+     * Filters a site's details.
      *
      * @since 0.9.9
      * @param object $details The site's details.
      */
-    $details = app()->hook->{'apply_filter'}('site_details', $details);
+    $details = hook::getInstance()->{'applyFilter'}('site_details', $details);
 
-    Cache\ttcms_cache_set($site_id . $all, $details, 'site_details');
+    ttcms()->obj['cache']->{'set'}($site_id . $all, $details, 'site_details');
 
-    $key = md5($details->site_domain . $details->site_path);
-    Cache\ttcms_cache_set($key, $details, 'site_lookup');
+    $key = md5($details->getDomain() . $details->getPath());
+    ttcms()->obj['cache']->{'set'}($key, $details, 'site_lookup');
 
     return $details;
 }
@@ -1545,13 +1699,13 @@ function get_sitedata($fields = null, $get_all = true)
  * @since 0.9.8
  * @param string $original_slug     Original slug of site.
  * @param string $original_title    Original title of site.
- * @param int $site_id              Unique site id.
+ * @param int|null $site_id         Unique site id or null.
  * @return string Unique site slug.
  */
-function ttcms_unique_site_slug($original_slug, $original_title, $site_id)
+function ttcms_unique_site_slug(string $original_slug, string $original_title, $site_id)
 {
-    if (Db\ttcms_site_slug_exist($site_id, $original_slug)) {
-        $site_slug = Db\ttcms_slugify($original_title, 'site');
+    if (ttcms_site_slug_exist($site_id, $original_slug)) {
+        $site_slug = ttcms_slugify($original_title, 'site');
     } else {
         $site_slug = $original_slug;
     }
@@ -1564,5 +1718,5 @@ function ttcms_unique_site_slug($original_slug, $original_title, $site_id)
      * @param string    $original_title The site's original title before slugified.
      * @param int       $post_id        The site's unique id.
      */
-    return app()->hook->{'apply_filter'}('ttcms_unique_site_slug', $site_slug, $original_slug, $original_title, $site_id);
+    return hook::getInstance()->{'applyFilter'}('ttcms_unique_site_slug', $site_slug, $original_slug, $original_title, $site_id);
 }
