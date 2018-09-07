@@ -90,7 +90,7 @@ There is currently no theme repository due to the nature of the project. However
 The Liten Framework was used in the build of TriTan CMS. So, if you are interested in adding a head to your TriTan install, you will need to learn about [routing](//www.litenframework.com/wiki/routing/) and [middlewares](//www.litenframework.com/wiki/middleware/).
 
 ## Plugins
-Check out [Gitspace](https://gitspace.us/projects) for available TriTan CMS plugins.
+Check out the [repository](https://gitlab.gitspace.us) for available TriTan CMS plugins.
 
 ## Todo
 * ~~Finish dashboard~~
