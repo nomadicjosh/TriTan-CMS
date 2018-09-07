@@ -13,7 +13,7 @@ use Cascade\Cascade;
 class PosttypeMapper implements PosttypeMapperInterface
 {
     public $db;
-    
+
     public $context;
 
     public function __construct(DatabaseInterface $db, ContextInterface $context)
@@ -34,10 +34,10 @@ class PosttypeMapper implements PosttypeMapperInterface
         if (!is_integer($id) || (int) $id < 1) {
             throw new InvalidArgumentException('The ID of this entity is invalid.', 'invalid_id');
         }
-        
+
         $posttype = null;
 
-        if(!$data = $this->db->table(c::getInstance()->get('tbl_prefix') . 'posttype')->where('posttype_id', $id)->first()) {
+        if (!$data = $this->db->table(c::getInstance()->get('tbl_prefix') . 'posttype')->where('posttype_id', $id)->first()) {
             return false;
         }
 
@@ -48,13 +48,13 @@ class PosttypeMapper implements PosttypeMapperInterface
         if (is_array($posttype)) {
             $posttype = $this->context->obj['util']->{'toObject'}($posttype);
         }
-        
+
         return $posttype;
     }
-    
+
     /**
      * Fetch all posttypes.
-     * 
+     *
      * @since 0.9.9
      * @return object Posttype data object.
      */
@@ -62,8 +62,8 @@ class PosttypeMapper implements PosttypeMapperInterface
     {
         $data = $this->db->table(c::getInstance()->get('tbl_prefix') . 'posttype')->all();
         $posttypes = [];
-        if($data != null) {
-            foreach($data as $posttype) {
+        if ($data != null) {
+            foreach ($data as $posttype) {
                 $posttypes[] = $this->create($posttype);
             }
         }
@@ -154,7 +154,7 @@ class PosttypeMapper implements PosttypeMapperInterface
                 'posttype_slug' => $this->db->{'ifNull'}($posttype->getSlug()),
                 'posttype_description' => $this->db->{'ifNull'}($posttype->getDescription())
             ]);
-                
+
             $sql->commit();
             return (int) $posttype->getId();
         } catch (Exception $ex) {
@@ -197,7 +197,7 @@ class PosttypeMapper implements PosttypeMapperInterface
             $sql->rollback();
             Cascade::getLogger('error')->error(sprintf('POSTTYPEMAPPER[delete]: %s', $ex->getMessage()));
         }
-        
+
         $query = $this->db->table(c::getInstance()->get('tbl_prefix') . 'post');
         $query->begin();
         try {

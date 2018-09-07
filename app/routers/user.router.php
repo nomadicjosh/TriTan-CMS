@@ -3,6 +3,7 @@ use TriTan\Exception\Exception;
 use TriTan\Exception\NotFoundException;
 use Cascade\Cascade;
 use TriTan\Common\Hooks\ActionFilterHook as hook;
+
 $db = new \TriTan\Database();
 $opt = new \TriTan\Common\Options\Options(
     new TriTan\Common\Options\OptionsMapper(
@@ -59,7 +60,7 @@ $app->group('/admin', function () use ($app, $opt, $db, $current_user) {
                 $new_user = new TriTan\Common\User\User();
                 $new_user->setId((int) $user_id);
                 $new_user->setRole($app->req->post['user_role']);
-                
+
                 ttcms()->obj['usercache']->{'clean'}($app->req->post['user_id']);
 
                 ttcms_logger_activity_log_write(
@@ -68,14 +69,13 @@ $app->group('/admin', function () use ($app, $opt, $db, $current_user) {
                     get_name((int) esc_html($current_user->getId())),
                     (string) esc_html($current_user->getLogin())
                 );
-                
+
                 ttcms()->obj['flash']->{'success'}(
                     ttcms()->obj['flash']->{'notice'}(
                         200
                     ),
                     admin_url('user/profile/')
                 );
-                
             } catch (Exception $ex) {
                 ttcms()->obj['flash']->{'error'}($ex->getMessage());
             }
@@ -182,7 +182,7 @@ $app->group('/admin', function () use ($app, $opt, $db, $current_user) {
                     get_name((int) $user_id),
                     (string) esc_html($current_user->getLogin())
                 );
-                
+
                 ttcms()->obj['flash']->{'success'}(
                     ttcms()->obj['flash']->{'notice'}(
                         200
@@ -235,21 +235,20 @@ $app->group('/admin', function () use ($app, $opt, $db, $current_user) {
                 $user = new TriTan\Common\User\User();
                 $user->setId((int) $user_id);
                 $user->setRole($app->req->post['user_role']);
-                
+
                 ttcms_logger_activity_log_write(
                     'Update Record',
                     'User',
                     get_name((int) $id),
                     (string) esc_html($current_user->getLogin())
                 );
-                
+
                 ttcms()->obj['flash']->{'success'}(
                     ttcms()->obj['flash']->{'notice'}(
                         200
                     ),
                     $app->req->server['HTTP_REFERER']
                 );
-                
             } catch (Exception $ex) {
                 ttcms()->obj['flash']->{'error'}($ex->getMessage());
             }
@@ -428,9 +427,9 @@ $app->group('/admin', function () use ($app, $opt, $db, $current_user) {
             'remember' => time() - (int) $opt->read('cookieexpire') > 86400 ? t__('yes', 'tritan-cms') : t__('no', 'tritan-cms'),
             'exp' => (int) $opt->read('cookieexpire') + time()
         ];
-        
+
         $app->cookies->setSecureCookie($switch_cookie);
-        
+
         ttcms()->obj['flash']->{'success'}(
             t__('Switching back to previous session was successful.', 'tritan-cms'),
             $app->req->server['HTTP_REFERER']
@@ -460,7 +459,7 @@ $app->group('/admin', function () use ($app, $opt, $db, $current_user) {
                 get_name((int) $id),
                 (string) esc_html($current_user->getLogin())
             );
-            
+
             ttcms()->obj['flash']->{'success'}(
                 ttcms()->obj['flash']->{'notice'}(
                     200

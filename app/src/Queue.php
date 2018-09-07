@@ -59,11 +59,11 @@ class Queue
      * @var type
      */
     public $prefix;
-    
+
     private $db;
-    
+
     private $hook;
-    
+
     public function __construct(array $config = [])
     {
         $this->setConfig($this->getDefaultConfig());
@@ -348,7 +348,7 @@ class Queue
                 $upd->where('pid', (int) $config['pid'])
                         ->update([
                             'executions' => +1,
-                            'lastrun' => (string) current_time( 'laci'),
+                            'lastrun' => (string) current_time('laci'),
                             'last_runtime' => (double) $time_end
                         ]);
                 $upd->commit();

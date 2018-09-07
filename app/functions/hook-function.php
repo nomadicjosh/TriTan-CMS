@@ -123,8 +123,8 @@ function is_plugin_activated($plugin)
  * This function is to be used in every function that is deprecated.
  *
  * @file app/functions/hook-function.php
- * 
- * @since 0.9     
+ *
+ * @since 0.9
  * @param string $function_name The function that was called.
  * @param string $release       The release of TriTan CMS that deprecated the function.
  * @param string $replacement   Optional. The function that should have been called. Default null.
@@ -134,7 +134,7 @@ function _deprecated_function($function_name, $release, $replacement = null)
     /**
      * Fires when a deprecated function is called.
      *
-     * @since 0.9     
+     * @since 0.9
      * @param string $function_name The function that was called.
      * @param string $replacement   The function that should have been called.
      * @param string $release       The release of TriTan CMS that deprecated the function.
@@ -144,7 +144,7 @@ function _deprecated_function($function_name, $release, $replacement = null)
     /**
      * Filter whether to trigger an error for deprecated functions.
      *
-     * @since 0.9   
+     * @since 0.9
      * @param bool $trigger
      *            Whether to trigger the error for deprecated functions. Default true.
      */
@@ -213,8 +213,8 @@ function _deprecated_function($function_name, $release, $replacement = null)
  * This function is to be used in every class that is deprecated.
  *
  * @file app/functions/hook-function.php
- * 
- * @since 0.9    
+ *
+ * @since 0.9
  * @param string $class_name  The class that was called.
  * @param string $release     The release of TriTan CMS that deprecated the class.
  * @param string $replacement Optional. The class that should have been called. Default null.
@@ -224,7 +224,7 @@ function _deprecated_class($class_name, $release, $replacement = null)
     /**
      * Fires when a deprecated class is called.
      *
-     * @since 0.9    
+     * @since 0.9
      * @param string $class_name  The class that was called.
      * @param string $replacement The class that should have been called.
      * @param string $release     The release of TriTan CMS that deprecated the class.
@@ -234,7 +234,7 @@ function _deprecated_class($class_name, $release, $replacement = null)
     /**
      * Filter whether to trigger an error for deprecated classes.
      *
-     * @since 0.9     
+     * @since 0.9
      * @param bool $trigger
      *            Whether to trigger the error for deprecated classes. Default true.
      */
@@ -303,8 +303,8 @@ function _deprecated_class($class_name, $release, $replacement = null)
  * This function is to be used in every class's method that is deprecated.
  *
  * @file app/functions/hook-function.php
- * 
- * @since 0.9      
+ *
+ * @since 0.9
  * @param string $method_name The class method that was called.
  * @param string $release     The release of TriTan CMS that deprecated the class's method.
  * @param string $replacement Optional. The class method that should have been called. Default null.
@@ -314,7 +314,7 @@ function _deprecated_class_method($method_name, $release, $replacement = null)
     /**
      * Fires when a deprecated class method is called.
      *
-     * @since 0.9      
+     * @since 0.9
      * @param string $method_name The class's method that was called.
      * @param string $replacement The class method that should have been called.
      * @param string $release     The release of TriTan CMS that deprecated the class's method.
@@ -324,7 +324,7 @@ function _deprecated_class_method($method_name, $release, $replacement = null)
     /**
      * Filter whether to trigger an error for deprecated class methods.
      *
-     * @since 0.9     
+     * @since 0.9
      * @param bool $trigger
      *            Whether to trigger the error for deprecated class methods. Default true.
      */
@@ -393,7 +393,7 @@ function _deprecated_class_method($method_name, $release, $replacement = null)
  * argument.
  *
  * Default behavior is to trigger a user error if `APP_ENV` is set to `DEV`.
- * 
+ *
  * Example Usage:
  *
  *      if ( ! empty( $deprecated ) ) {
@@ -401,8 +401,8 @@ function _deprecated_class_method($method_name, $release, $replacement = null)
  *      }
  *
  * @file app/functions/hook-function.php
- * 
- * @since 0.9     
+ *
+ * @since 0.9
  * @param string $function_name The function that was called.
  * @param string $release       The release of TriTan CMS that deprecated the argument used.
  * @param string $message       Optional. A message regarding the change. Default null.
@@ -412,7 +412,7 @@ function _deprecated_argument($function_name, $release, $message = null)
     /**
      * Fires when a deprecated argument is called.
      *
-     * @since 0.9      
+     * @since 0.9
      * @param string $function_name The function that was called.
      * @param string $message       A message regarding the change.
      * @param string $release       The release of TriTan CMS that deprecated the argument used.
@@ -421,7 +421,7 @@ function _deprecated_argument($function_name, $release, $message = null)
     /**
      * Filter whether to trigger an error for deprecated arguments.
      *
-     * @since 0.9     
+     * @since 0.9
      * @param bool $trigger
      *            Whether to trigger the error for deprecated arguments. Default true.
      */
@@ -484,7 +484,7 @@ function _deprecated_argument($function_name, $release, $message = null)
  * Default behavior is to trigger a user error if `APP_ENV` is set to `DEV`.
  *
  * @file app/functions/hook-function.php
- * 
+ *
  * @since 0.9
  * @param string $hook        The hook that was used.
  * @param string $release     The release of TriTan CMS that deprecated the hook.
@@ -550,8 +550,8 @@ function _deprecated_hook($hook, $release, $replacement = null, $message = null)
  * Default behavior is to trigger a user error if `APP_ENV` is set to `DEV`.
  *
  * @file app/functions/hook-function.php
- * 
- * @since 0.9     
+ *
+ * @since 0.9
  * @param string $function_name The function that was called.
  * @param string $message       A message explaining what has been done incorrectly.
  * @param string $release       The release of TriTan CMS where the message was added.
@@ -561,7 +561,7 @@ function _incorrectly_called($function_name, $message, $release)
     /**
      * Fires when the given function is being used incorrectly.
      *
-     * @since 0.9      
+     * @since 0.9
      * @param string $function_name The function that was called.
      * @param string $message       A message explaining what has been done incorrectly.
      * @param string $release       The release of TriTan CMS where the message was added.
@@ -966,9 +966,9 @@ function get_user_avatar($email, $s = 80, $class = '')
     }
 
     if (get_http_response_code('http://www.gravatar.com/') != 302) {
-        $static_image_url = site_url( "static/assets/img/avatar.png?s=200" );
+        $static_image_url = site_url("static/assets/img/avatar.png?s=200");
         $avatarsize = getimagesize($static_image_url);
-        $avatar = '<img src="' . site_url( 'static/assets/img/avatar.png' ) . ' ' . ttcms()->obj['image']->{'resize'}($avatarsize[1], $avatarsize[1], $s) . ' class="' . $class . '" alt="' . $email . '" />';
+        $avatar = '<img src="' . site_url('static/assets/img/avatar.png') . ' ' . ttcms()->obj['image']->{'resize'}($avatarsize[1], $avatarsize[1], $s) . ' class="' . $class . '" alt="' . $email . '" />';
     } else {
         $avatarsize = getimagesize($url);
         $avatar = '<img src="' . $url . '" ' . ttcms()->obj['image']->{'resize'}($avatarsize[1], $avatarsize[1], $s) . ' class="' . $class . '" alt="' . $email . '" />';
@@ -997,7 +997,7 @@ function get_user_avatar_url($email)
     }
 
     if (get_http_response_code('http://www.gravatar.com/') != 302) {
-        $avatar = site_url( 'static/assets/img/avatar.png' );
+        $avatar = site_url('static/assets/img/avatar.png');
     } else {
         $avatar = $url;
     }
@@ -1040,7 +1040,7 @@ function ttcms_upload_image()
 
                     $("#set_image").click(function (e) {
                         var elfinder = $("#elfinder").elfinder({
-                            url: "' . admin_url() . 'connector/",
+                            url: "' . admin_url('connector/') . '",
                             resizable: false,
                             onlyMimes: ["image"],
                             uiOptions: {
@@ -1221,7 +1221,9 @@ function ttcms_plugin_deactivate_message($plugin_name)
 function ttcms_dev_mode()
 {
     if (APP_ENV === 'DEV') {
-        echo '<div class="alert dismissable alert-danger center sticky">' . t__('Your system is currently in DEV mode. Please remember to set your system back to PROD mode after testing. When PROD mode is set, this warning message will disappear.', 'tritan-cms') . '</div>';
+        echo '<div class="alert dismissable alert-danger center sticky">' . esc_html__(
+            'Your system is currently in DEV mode. Please remember to set your system back to PROD mode after testing. When PROD mode is set, this warning message will disappear.'
+        ) . '</div>';
     }
 }
 
@@ -1332,7 +1334,7 @@ function plugin_dir_url($file)
 function get_theme_url()
 {
     $site_id = c::getInstance()->get('site_id');
-    $url = site_url( 'private/sites/' . $site_id . '/themes/' );
+    $url = site_url('private/sites/' . $site_id . '/themes/');
     return hook::getInstance()->{'applyFilter'}("the_theme_url_site_{$site_id}", $url);
 }
 
@@ -1410,7 +1412,7 @@ function get_private_site_url($path = '')
 function get_private_site_upload_url($path = '')
 {
     $site_id = c::getInstance()->get('site_id');
-    $url = get_private_site_url( 'uploads/' . $path );
+    $url = get_private_site_url('uploads/' . $path);
     return hook::getInstance()->{'applyFilter'}("private_site_upload_url_{$site_id}", $url);
 }
 
@@ -1454,7 +1456,7 @@ function ttcms_encode_email($string)
 				\[[\d.a-fA-F:]+\]
 			)
 		}xi');
-    
+
     return preg_replace_callback(
         $regexp,
         function ($matches) use ($method) {
@@ -1545,7 +1547,27 @@ function ttcms_editor($selector = null)
      */
     $mce_plugins = hook::getInstance()->{'applyFilter'}('tiny_mce_plugins', $plugins);
 
-    $mce_buttons = ['undo', 'redo', 'styleselect', 'bold', 'italic', 'alignleft', 'aligncenter', 'alignright', 'alignjustify', 'bullist', 'numlist', 'blockquote', 'outdent', 'indent', 'link', 'image', 'media', 'codesample', 'preview'];
+    $mce_buttons = [
+        'undo',
+        'redo',
+        'styleselect',
+        'bold',
+        'italic',
+        'alignleft',
+        'aligncenter',
+        'alignright',
+        'alignjustify',
+        'bullist',
+        'numlist',
+        'blockquote',
+        'outdent',
+        'indent',
+        'link',
+        'image',
+        'media',
+        'codesample',
+        'preview'
+    ];
     /**
      * Filters the first-row list of TinyMCE buttons.
      *
@@ -1577,7 +1599,14 @@ function ttcms_editor($selector = null)
      * @param array  $css           CSS stylesheets to include.
      * @param string $mce_selector  Unique editor identifier, e.g. 'textarea'.
      */
-    $mce_css = hook::getInstance()->{'applyFilter'}('tiny_mce_css', ['//fonts.googleapis.com/css?family=Lato:300,300i,400,400i', site_url('static/assets/css/tinymce.css')], $mce_selector);
+    $mce_css = hook::getInstance()->{'applyFilter'}(
+        'tiny_mce_css',
+        [
+            '//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
+            site_url('static/assets/css/tinymce.css')
+        ],
+        $mce_selector
+    );
 
     /**
      * Fires immediately before TinyMCE is printed.
@@ -1598,7 +1627,7 @@ function ttcms_editor($selector = null)
             link_list: [
     <?php
     foreach (tinymce_link_list() as $link) :
-            echo "{title: '" . esc_html($link['post_title']) . "', value: '" . home_url( $link['post_relative_url'] ) . "'}," . "\n";
+            echo "{title: '" . esc_html($link['post_title']) . "', value: '" . home_url($link['post_relative_url']) . "'}," . "\n";
     endforeach; ?>
             ],
             toolbar1: "<?= implode(' ', $mce_buttons_1); ?>",
@@ -1610,7 +1639,7 @@ function ttcms_editor($selector = null)
         });
         function elFinderBrowser(callback, value, meta) {
             tinymce.activeEditor.windowManager.open({
-                file: "<?= admin_url( 'elfinder/' ); ?>",
+                file: "<?= admin_url('elfinder/'); ?>",
                 title: "elFinder 2.1",
                 width: 900,
                 height: 600,
@@ -1665,7 +1694,11 @@ function ttcms_optimized_image_upload($image)
     }
     $site_id = c::getInstance()->get('site_id');
     $raw_filename = str_replace(site_url(), '', $image);
-    $new_filename = str_replace(get_private_site_upload_url(), 'private/sites/' . $site_id . '/uploads/__optimized__/', $image);
+    $new_filename = str_replace(
+        get_private_site_upload_url(),
+        'private/sites/' . $site_id . '/uploads/__optimized__/',
+        $image
+    );
     if (!file_exists($new_filename)) {
         _ttcms_image_optimizer($raw_filename, $new_filename);
     }
@@ -1740,7 +1773,7 @@ function add_files_cache_directory()
  */
 function admin_dashboard_js()
 {
-    ttcms_enqueue_js('default', site_url( 'static/assets/js/pages/dashboard.js' ));
+    ttcms_enqueue_js('default', site_url('static/assets/js/pages/dashboard.js'));
 }
 
 /**

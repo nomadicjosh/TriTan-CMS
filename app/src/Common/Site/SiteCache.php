@@ -8,7 +8,6 @@ use TriTan\Interfaces\Site\SiteCacheInterface;
 
 class SiteCache implements SiteCacheInterface
 {
-
     public $cache;
     public $hook;
 
@@ -44,10 +43,10 @@ class SiteCache implements SiteCacheInterface
      */
     public function clean($site)
     {
-        if(empty($site)) {
+        if (empty($site)) {
             return;
         }
-        
+
         $site_id = $site;
         $site = get_site($site_id);
         if (!$site) {
@@ -75,7 +74,7 @@ class SiteCache implements SiteCacheInterface
         $this->cache->{'delete'}($site_domain_path_key, 'site_id_cache');
         $this->cache->{'delete'}('current_site_' . $site->getDomain(), 'site_options');
         $this->cache->{'delete'}('current_site_' . $site->getDomain() . $site->getPath(), 'site_options');
-        
+
         /**
         * Fires immediately after the given site's cache is cleaned.
         *
@@ -84,9 +83,8 @@ class SiteCache implements SiteCacheInterface
         * @param Site   $site                 Site object.
         * @param string $site_domain_path_key md5 hash of site_domain and site_path.
         */
-       $this->hook->{'doAction'}('clean_site_cache', (int) $site_id, $site, $site_domain_path_key);
+        $this->hook->{'doAction'}('clean_site_cache', (int) $site_id, $site, $site_domain_path_key);
 
-       $this->cache->{'set'}('last_changed', microtime(), 'sites');
+        $this->cache->{'set'}('last_changed', microtime(), 'sites');
     }
-
 }

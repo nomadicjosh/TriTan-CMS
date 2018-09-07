@@ -9,7 +9,7 @@ use TriTan\Common\Post\Post;
 class PostCache implements PostCacheInterface
 {
     public $cache;
-    
+
     public $hook;
 
     public function __construct(ObjectCacheInterface $cache, ActionFilterHookInterface $hook)
@@ -27,10 +27,10 @@ class PostCache implements PostCacheInterface
      */
     public function update($post)
     {
-        if(empty($post)) {
+        if (empty($post)) {
             return;
         }
-        
+
         $this->cache->{'create'}((int) $post->getId(), $post, 'posts');
         $this->cache->{'create'}($post->getSlug(), (int) $post->getId(), 'postslugs');
         $this->cache->{'create'}($post->getPosttype(), (int) $post->getId(), 'post_posttypes');
@@ -46,10 +46,10 @@ class PostCache implements PostCacheInterface
      */
     public function clean($post)
     {
-        if(empty($post)) {
+        if (empty($post)) {
             return;
         }
-        
+
         $post_id = $post;
         $post = get_post($post_id);
         if (!$post) {
@@ -63,9 +63,9 @@ class PostCache implements PostCacheInterface
             $post->setSlug(null);
             $post->setPosttype(null);
         }
-        
+
         $post_id = $post->getId();
-        
+
         $this->cache->{'delete'}((int) $post->getId(), 'posts');
         $this->cache->{'delete'}($post->getSlug(), 'postslugs');
         $this->cache->{'delete'}($post->getPosttype(), 'post_posttypes');
@@ -80,5 +80,4 @@ class PostCache implements PostCacheInterface
          */
         $this->hook->{'doAction'}('clean_post_cache', (int) $post_id, $post);
     }
-
 }

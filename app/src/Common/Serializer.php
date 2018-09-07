@@ -5,7 +5,7 @@ class Serializer
 {
     /**
      * Serializes data if necessary.
-     * 
+     *
      * @since 0.9.9
      * @param string $data Data to be serialized.
      * @return string Serialized data or original string.
@@ -28,7 +28,7 @@ class Serializer
 
     /**
      * Unserializes data if necessary.
-     * 
+     *
      * @since 0.9.9
      * @param string $data Data that should be unserialzed.
      * @return string Unserialized data or original string.

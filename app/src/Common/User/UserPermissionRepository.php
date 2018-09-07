@@ -12,7 +12,7 @@ class UserPermissionRepository implements UserPermissionRepositoryInterface
     {
         $this->mapper = $mapper;
     }
-    
+
     public function has(string $permission): bool
     {
         return $this->mapper->{'has'}($permission);

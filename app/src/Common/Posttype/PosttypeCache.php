@@ -8,7 +8,7 @@ use TriTan\Interfaces\Posttype\PosttypeCacheInterface;
 class PosttypeCache implements PosttypeCacheInterface
 {
     public $cache;
-    
+
     public $hook;
 
     public function __construct(ObjectCacheInterface $cache, ActionFilterHookInterface $hook)
@@ -26,10 +26,10 @@ class PosttypeCache implements PosttypeCacheInterface
      */
     public function update($posttype)
     {
-        if(empty($posttype)) {
+        if (empty($posttype)) {
             return;
         }
-        
+
         $this->cache->{'create'}((int) $posttype->getId(), $posttype, 'posttypes');
     }
 
@@ -43,10 +43,10 @@ class PosttypeCache implements PosttypeCacheInterface
      */
     public function clean($posttype)
     {
-        if(empty($posttype)) {
+        if (empty($posttype)) {
             return;
         }
-        
+
         $posttype_id = $posttype;
         $posttype = get_posttype($posttype_id);
         if (!$posttype) {
@@ -58,9 +58,9 @@ class PosttypeCache implements PosttypeCacheInterface
             $posttype = new Posttype();
             $posttype->setId($posttype_id);
         }
-        
+
         $posttype_id = $posttype->getId();
-        
+
         $this->cache->{'delete'}((int) $posttype->getId(), 'posttypes');
         $this->cache->{'delete'}('posttypes', 'posttypes');
         $this->cache->{'flushNamespace'}('posts');
@@ -75,5 +75,4 @@ class PosttypeCache implements PosttypeCacheInterface
          */
         $this->hook->{'doAction'}('clean_posttype_cache', (int) $posttype_id, $posttype);
     }
-
 }

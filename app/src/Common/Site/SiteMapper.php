@@ -12,7 +12,7 @@ use Cascade\Cascade;
 class SiteMapper implements SiteMapperInterface
 {
     public $db;
-    
+
     public $context;
 
     public function __construct(DatabaseInterface $db, ContextInterface $context)
@@ -122,13 +122,13 @@ class SiteMapper implements SiteMapperInterface
 
         return $site;
     }
-    
+
     public function findAll()
     {
         $data = $this->db->table('site')->all();
         $sites = [];
-        if($data != null) {
-            foreach($data as $site) {
+        if ($data != null) {
+            foreach ($data as $site) {
                 $sites[] = $this->create($site);
             }
         }

@@ -1,5 +1,6 @@
 <?php
 namespace TriTan\Common;
+
 use TriTan\Interfaces\Hooks\ActionFilterHookInterface;
 
 class Sanitizer implements \TriTan\Interfaces\SanitizerInterface
@@ -31,7 +32,7 @@ class Sanitizer implements \TriTan\Interfaces\SanitizerInterface
     private $corrects = [];
 
     private $fields = [];
-    
+
     private $hook;
 
     public function __construct(ActionFilterHookInterface $hook, $validate = [], $required = [], $sanitize = [])
@@ -77,13 +78,13 @@ class Sanitizer implements \TriTan\Interfaces\SanitizerInterface
 
     /**
      * Sanitizes an array of items according to the $this->sanitize[].
-     * 
+     *
      * Sanitize will be standard of type string, but can also be specified.
-     * For ease of use, this syntax is accepted: 
-     * 
+     * For ease of use, this syntax is accepted:
+     *
      *      $sanitize = array('fieldname', 'otherfieldname' => 'float');
      *      $this->items($sanitize);
-     * 
+     *
      * @since 0.9.9
      * @param array $items    Items to sanitize.
      * @param string $context The context for which the string is being sanitized.
@@ -92,19 +93,18 @@ class Sanitizer implements \TriTan\Interfaces\SanitizerInterface
     public function items(array $items, $context = 'save')
     {
         $raw_items = $items;
-        
+
         foreach ($items as $key => $val) {
-            
             if ('save' == $context) {
                 $val = $this->removeAccents($val);
             }
-            
+
             if (array_search($key, $this->sanitize) === false && !array_key_exists($key, $this->sanitize)) {
                 continue;
             }
             $items[$key] = $this->sanitizeItem($val, $this->validate[$key]);
         }
-        
+
         /**
          * Filters sanitized items.
          *
@@ -128,7 +128,7 @@ class Sanitizer implements \TriTan\Interfaces\SanitizerInterface
 
     /**
      * Sanitizes an item according to type.
-     * 
+     *
      * @since 0.9.9
      * @param mixed $item     Item to sanitize.
      * @param string $type    Item type (i.e. string, float, int, etc.).
@@ -137,14 +137,14 @@ class Sanitizer implements \TriTan\Interfaces\SanitizerInterface
      */
     public function item($item, $type = 'string', $context = 'save')
     {
-        if(null === $item) {
+        if (null === $item) {
             return null;
         }
-        
+
         $raw_item = $item;
-        
+
         $flags = null;
-        
+
         switch ($type) {
             case 'url':
                 $filter = FILTER_SANITIZE_URL;
@@ -166,13 +166,13 @@ class Sanitizer implements \TriTan\Interfaces\SanitizerInterface
                 $flags = FILTER_FLAG_NO_ENCODE_QUOTES;
                 break;
         }
-        
+
         if ('save' == $context) {
             $item = $this->removeAccents($item);
         }
-            
+
         $output = filter_var($item, $filter, $flags);
-        
+
         /**
          * Filters a sanitized item.
          *
@@ -207,9 +207,9 @@ class Sanitizer implements \TriTan\Interfaces\SanitizerInterface
             ) !== false;
             return($returnval);
         }
-        
+
         $filter = false;
-        
+
         switch ($type) {
             case 'email':
                 $item = substr($item, 0, 254);
@@ -278,7 +278,7 @@ class Sanitizer implements \TriTan\Interfaces\SanitizerInterface
         // Trim spaces at the beginning and end
         $username = trim($username);
         // Replace remaining spaces with underscores
-        $username = str_replace(' ','_',$username);
+        $username = str_replace(' ', '_', $username);
         // Kill octets
         $username = preg_replace('|%([a-fA-F0-9][a-fA-F0-9])|', '', $username);
         // Kill entities
@@ -297,7 +297,7 @@ class Sanitizer implements \TriTan\Interfaces\SanitizerInterface
          */
         return $this->hook->{'applyFilter'}('sanitize_user', $username, $raw_username, $strict);
     }
-    
+
     public function removeAccents(string $string, $encoding = 'UTF-8')
     {
         $string = strip_tags($string);
@@ -308,10 +308,10 @@ class Sanitizer implements \TriTan\Interfaces\SanitizerInterface
         // Replace ligatures suce as: Œ, Æ ...
         $string = preg_replace('#&([A-za-z]{2})(?:lig);#', '\1', $string);
         // Delete apostrophes
-        $string = str_replace( "'", '',$string);
+        $string = str_replace("'", '', $string);
         // Delete other special characters.
         $string = preg_replace('#&[^;]+;#', '', $string);
-        
+
         return $string;
     }
 }

@@ -30,7 +30,7 @@ class Site implements SiteInterface
      * @var string
      */
     private $site_name;
-    
+
     /**
      * Site slug.
      *
@@ -62,10 +62,10 @@ class Site implements SiteInterface
      * @var int
      */
     private $site_owner;
-    
+
     /**
      * Site status.
-     * 
+     *
      * @since 0.9.9
      * @var string
      */
@@ -86,92 +86,92 @@ class Site implements SiteInterface
      * @var int
      */
     private $site_modified;
-    
+
     public function getId(): int
     {
         return $this->site_id;
     }
-    
+
     public function setId(int $id)
     {
         return $this->site_id = $id;
     }
-    
+
     public function getName()
     {
         return $this->site_name;
     }
-    
+
     public function setName(string $name)
     {
         return $this->site_name = $name;
     }
-    
+
     public function getSlug()
     {
         return $this->site_slug;
     }
-    
+
     public function setSlug(string $slug)
     {
         return $this->site_slug = $slug;
     }
-    
+
     public function getDomain()
     {
         return $this->site_domain;
     }
-    
+
     public function setDomain(string $domain)
     {
         return $this->site_domain = $domain;
     }
-    
+
     public function getPath()
     {
         return $this->site_path;
     }
-    
+
     public function setPath(string $path)
     {
         return $this->site_path = $path;
     }
-    
+
     public function getOwner(): int
     {
         return $this->site_owner;
     }
-    
+
     public function setOwner(int $owner)
     {
         return $this->site_owner = $owner;
     }
-    
+
     public function getStatus()
     {
         return $this->site_status;
     }
-    
+
     public function setStatus(string $status)
     {
         return $this->site_status = $status;
     }
-    
+
     public function getRegistered()
     {
         return $this->site_registered;
     }
-    
+
     public function setRegistered(string $registered)
     {
         return $this->site_registered = $registered;
     }
-    
+
     public function getModified()
     {
         return $this->site_modified;
     }
-    
+
     public function setModified(string $modified)
     {
         return $this->site_modified = $modified;
@@ -283,7 +283,7 @@ class Site implements SiteInterface
     {
         return $this->__isset($key);
     }
-    
+
     /**
      * Return an array representation.
      *
@@ -294,7 +294,7 @@ class Site implements SiteInterface
     {
         return get_object_vars($this);
     }
-    
+
     /**
      * Retrieves the details for this site.
      *

@@ -2,6 +2,7 @@
 use TriTan\Common\Options\Options;
 use TriTan\Common\Options\OptionsMapper;
 use TriTan\Common\Context\HelperContext;
+
 $db = new \TriTan\Database();
 
 // RESTful API

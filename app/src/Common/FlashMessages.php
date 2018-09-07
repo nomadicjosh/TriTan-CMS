@@ -1,5 +1,6 @@
 <?php
 namespace TriTan\Common;
+
 use TriTan\Common\Hooks\ActionFilterHook as hook;
 
 /**
@@ -14,7 +15,7 @@ use TriTan\Common\Hooks\ActionFilterHook as hook;
 class FlashMessages
 {
     public $app;
-    
+
     public $hook;
 
     // Message types and shortcuts

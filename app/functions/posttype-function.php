@@ -29,7 +29,7 @@ use TriTan\Database;
  * @return array|object
  */
 function get_posttype($posttype, $object = true)
-{    
+{
     if ($posttype instanceof \TriTan\Common\Posttype\Posttype) {
         $_posttype = $posttype;
     } elseif (is_object($posttype)) {
@@ -166,7 +166,7 @@ function get_posttype_description($posttype_id = 0)
  */
 function get_posttype_permalink($posttype_id = 0)
 {
-    $link = esc_url( site_url( get_posttype_slug($posttype_id) . '/' ) );
+    $link = esc_url(site_url(get_posttype_slug($posttype_id) . '/'));
     /**
      * Filters the posttype's link.
      *
@@ -189,7 +189,7 @@ function get_posttype_permalink($posttype_id = 0)
  */
 function ttcms_unique_posttype_slug($original_slug, $original_title, $posttype_id)
 {
-    if($posttype_id <= 0){
+    if ($posttype_id <= 0) {
         $posttype_slug = ttcms_slugify($original_title, 'posttype');
     } elseif (ttcms_posttype_slug_exist($posttype_id, $original_slug)) {
         $posttype_slug = ttcms_slugify($original_title, 'posttype');
@@ -205,7 +205,13 @@ function ttcms_unique_posttype_slug($original_slug, $original_title, $posttype_i
      * @param string    $original_title     The posttype's original title before slugified.
      * @param int       $posttype_id        The posttype's unique id.
      */
-    return hook::getInstance()->{'applyFilter'}('ttcms_unique_posttype_slug', $posttype_slug, $original_slug, $original_title, $posttype_id);
+    return hook::getInstance()->{'applyFilter'}(
+        'ttcms_unique_posttype_slug',
+        $posttype_slug,
+        $original_slug,
+        $original_title,
+        $posttype_id
+    );
 }
 
 /**
@@ -254,7 +260,7 @@ function ttcms_insert_posttype($posttypedata, $exception = false)
          * @param bool      $update         Whether this is an existing posttype or a new posttype.
          */
         hook::getInstance()->{'doAction'}('posttype_previous_slug', $previous_slug, (int) $posttype_id, $update);
-        
+
         /**
          * Create new posttype object.
          */
@@ -274,7 +280,7 @@ function ttcms_insert_posttype($posttypedata, $exception = false)
          * @param bool      $update         Whether this is an existing posttype or a new posttype.
          */
         hook::getInstance()->{'doAction'}('posttype_previous_slug', $previous_slug, (int) $posttype_id, $update);
-        
+
         /**
          * Create new posttype object.
          */
@@ -411,7 +417,7 @@ function ttcms_insert_posttype($posttypedata, $exception = false)
         ttcms()->obj['cache'],
         hook::getInstance()
     ))->{'clean'}($posttype);
-    
+
     $posttype = get_posttype((int) $posttype_id);
 
     if ($update) {
@@ -432,7 +438,11 @@ function ttcms_insert_posttype($posttypedata, $exception = false)
          * @since 0.9.9
          */
         if (is_post_posttype_exist($posttype_id) && ((string) esc_html($posttype_before->getSlug()) != (string) esc_html($posttype_after->getSlug()))) {
-            update_post_relative_url_posttype($posttype_id, esc_html($posttype_before->getSlug()), (string) esc_html($posttype_after->getSlug()));
+            update_post_relative_url_posttype(
+                $posttype_id,
+                esc_html($posttype_before->getSlug()),
+                (string) esc_html($posttype_after->getSlug())
+            );
         }
 
         (new PosttypeCache(

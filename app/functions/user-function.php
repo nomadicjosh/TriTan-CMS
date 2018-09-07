@@ -52,7 +52,7 @@ function role_perm(int $id = 0)
             )
         )
     )->{'findAll'}('full');
-    
+
     foreach ($sql as $r) {
         echo '<tr>
                 <td>' . $r['Name'] . '</td>
@@ -537,7 +537,12 @@ function get_user_meta_by_mid(int $mid)
  */
 function update_user_meta(int $user_id, string $meta_key, $meta_value, $prev_value = '')
 {
-    return (new MetaData(new Database(), new HelperContext()))->{'update'}('user', $user_id, $meta_key, $meta_value, $prev_value);
+    return (
+        new MetaData(
+            new Database(),
+            new HelperContext()
+        )
+    )->{'update'}('user', $user_id, $meta_key, $meta_value, $prev_value);
 }
 
 /**
@@ -555,7 +560,12 @@ function update_user_meta_by_mid(int $mid, string $meta_key, $meta_value)
 {
     $_meta_key = ttcms()->obj['util']->{'unslash'}($meta_key);
     $_meta_value = ttcms()->obj['util']->{'unslash'}($meta_value);
-    return (new MetaData(new Database(), new HelperContext()))->{'updateByMid'}('user', $mid, $_meta_key, $_meta_value);
+    return (
+        new MetaData(
+            new Database(),
+            new HelperContext()
+        )
+    )->{'updateByMid'}('user', $mid, $_meta_key, $_meta_value);
 }
 
 /**
@@ -572,7 +582,12 @@ function update_user_meta_by_mid(int $mid, string $meta_key, $meta_value)
  */
 function add_user_meta(int $user_id, string $meta_key, $meta_value, bool $unique = false)
 {
-    return (new MetaData(new Database(), new HelperContext()))->{'create'}('user', $user_id, $meta_key, $meta_value, $unique);
+    return (
+        new MetaData(
+            new Database(),
+            new HelperContext()
+        )
+    )->{'create'}('user', $user_id, $meta_key, $meta_value, $unique);
 }
 
 /**
@@ -592,7 +607,12 @@ function add_user_meta(int $user_id, string $meta_key, $meta_value, bool $unique
  */
 function delete_user_meta(int $user_id, string $meta_key, $meta_value = '')
 {
-    return (new MetaData(new Database(), new HelperContext()))->{'delete'}('user', $user_id, $meta_key, $meta_value);
+    return (
+        new MetaData(
+            new Database(),
+            new HelperContext()
+        )
+    )->{'delete'}('user', $user_id, $meta_key, $meta_value);
 }
 
 /**
@@ -703,7 +723,7 @@ function update_user_option(int $user_id, string $option_name, $newvalue, bool $
         new Utils(
             hook::getInstance()
         )
-        )
+    )
     )->{'update'}(
         $user_id,
         $option_name,
@@ -741,7 +761,7 @@ function delete_user_option(int $user_id, string $option_name, bool $global = fa
         new Utils(
             hook::getInstance()
         )
-        )
+    )
     )->{'delete'}(
         $user_id,
         $option_name
@@ -809,24 +829,24 @@ function ttcms_insert_user($userdata)
 
         // hashed in ttcms_update_user(), plaintext if called directly
         $user_pass = !empty($userdata['user_pass']) ? $userdata['user_pass'] : $old_user_data->getPassword();
-        
+
         /**
          * Create a new user object.
          */
         $user = new User();
-        $user->setId( $user_id );
-        $user->setPassword( $user_pass );
+        $user->setId($user_id);
+        $user->setPassword($user_pass);
     } else {
         $update = false;
-        
+
         // Hash the password
         $user_pass = (new PasswordHash(hook::getInstance()))->{'hash'}($userdata['user_pass']);
-        
+
         /**
          * Create a new user object.
          */
         $user = new User();
-        $user->setPassword( $user_pass );
+        $user->setPassword($user_pass);
     }
 
     $raw_user_login = $userdata['user_login'];
@@ -866,7 +886,7 @@ function ttcms_insert_user($userdata)
         );
     }
 
-    if (!$update && username_exists( $user_login )) {
+    if (!$update && username_exists($user_login)) {
         throw new Exception(
             esc_html__(
                 'Sorry, that username already exists!'
@@ -894,7 +914,7 @@ function ttcms_insert_user($userdata)
             'invalid_username'
         );
     }
-    $user->setLogin( $user_login );
+    $user->setLogin($user_login);
 
     $raw_user_url = $userdata['user_url'];
     $sanitized_user_url = ttcms()->obj['sanitizer']->{'item'}($raw_user_url);
@@ -910,10 +930,10 @@ function ttcms_insert_user($userdata)
         (string) $sanitized_user_url,
         (string) $raw_user_url
     );
-    $user->setUrl( $user_url );
+    $user->setUrl($user_url);
 
     $raw_user_email = $userdata['user_email'];
-    if(!validate_email( $raw_user_email )) {
+    if (!validate_email($raw_user_email)) {
         throw new Exception(
             esc_html__(
                 'Sorry, that email address is not valid.'
@@ -939,9 +959,9 @@ function ttcms_insert_user($userdata)
      * check if current email and new email are the same, or not, and check `email_exists`
      * accordingly.
      */
-    if ( (
+    if ((
         !$update || (
-            !empty( $old_user_data )
+            !empty($old_user_data)
             && 0 !== strcasecmp(
                 $user_email,
                 $old_user_data->getEmail()
@@ -955,7 +975,7 @@ function ttcms_insert_user($userdata)
             'duplicate_email'
         );
     }
-    $user->setEmail( $user_email );
+    $user->setEmail($user_email);
 
     // Store values to save in user meta.
     $meta = [];
@@ -976,7 +996,7 @@ function ttcms_insert_user($userdata)
         (string) $sanitized_user_fname,
         (string) $user_fname
     );
-    $user->setFname( $meta['fname'] );
+    $user->setFname($meta['fname']);
 
     $sanitized_user_lname = ttcms()->obj['sanitizer']->{'item'}($userdata['user_lname']);
     $user_lname = $db->{'ifNull'}($sanitized_user_lname);
@@ -992,7 +1012,7 @@ function ttcms_insert_user($userdata)
         (string) $sanitized_user_lname,
         (string) $user_lname
     );
-    $user->setLname( $meta['lname'] );
+    $user->setLname($meta['lname']);
 
     $meta['email'] = $user_email;
 
@@ -1069,15 +1089,20 @@ function ttcms_insert_user($userdata)
      * @param bool     $update Whether the user is being updated rather than created.
      * @param int|null $id     ID of the user to be updated, or NULL if the user is being created.
      */
-    $data = hook::getInstance()->{'applyFilter'}('ttcms_pre_insert_user_data', $data, $update, $update ? (int) $user_id : null);
+    $data = hook::getInstance()->{'applyFilter'}(
+        'ttcms_pre_insert_user_data',
+        $data,
+        $update,
+        $update ? (int) $user_id : null
+    );
 
     if (!$update) {
         /**
          * User object.
          */
-        $user->setAddedBy( $user_addedby );
-        $user->setRegistered( $user_registered );
-        
+        $user->setAddedBy($user_addedby);
+        $user->setRegistered($user_registered);
+
         $user_id = (
             new UserRepository(
                 new UserMapper(
@@ -1095,7 +1120,7 @@ function ttcms_insert_user($userdata)
         }
 
         $user->setModified($user_modified);
-        
+
         $user_id = (
             new UserRepository(
                 new UserMapper(
@@ -1203,7 +1228,18 @@ function ttcms_update_user($userdata)
 
     $user = $user_obj->toArray();
 
-    $additional_user_keys = ['username', 'fname', 'lname', 'email', 'bio', 'role', 'status', 'admin_layout', 'admin_sidebar', 'admin_skin'];
+    $additional_user_keys = [
+        'username',
+        'fname',
+        'lname',
+        'email',
+        'bio',
+        'role',
+        'status',
+        'admin_layout',
+        'admin_sidebar',
+        'admin_skin'
+    ];
     // Add additional custom fields
     foreach ($additional_user_keys as $key) {
         $user[$key] = get_user_option($key, (int) $user['user_id']);
@@ -1225,7 +1261,12 @@ function ttcms_update_user($userdata)
          * @param array $userdata The updated user array.
          *
          */
-        $send_password_change_email = hook::getInstance()->{'applyFilter'}('send_password_change_email', true, $user, $userdata);
+        $send_password_change_email = hook::getInstance()->{'applyFilter'}(
+            'send_password_change_email',
+            true,
+            $user,
+            $userdata
+        );
     }
 
     if (isset($userdata['user_email']) && $user['user_email'] !== $userdata['user_email']) {
@@ -1240,7 +1281,12 @@ function ttcms_update_user($userdata)
          * @param array $userdata The updated user array.
          *
          */
-        $send_email_change_email = hook::getInstance()->{'applyFilter'}('send_email_change_email', true, $user, $userdata);
+        $send_email_change_email = hook::getInstance()->{'applyFilter'}(
+            'send_email_change_email',
+            true,
+            $user,
+            $userdata
+        );
     }
 
     ttcms()->obj['cache']->{'delete'}($user['user_email'], 'useremail');
@@ -1253,7 +1299,7 @@ function ttcms_update_user($userdata)
         if (!empty($send_password_change_email)) {
             /**
              * Fires when user is updated successfully.
-             * 
+             *
              * @since 0.9
              * @param array  $user          The original user array before changes.
              * @param string $plantext_pass Plaintext password before hashing.
@@ -1265,7 +1311,7 @@ function ttcms_update_user($userdata)
         if (!empty($send_email_change_email)) {
             /**
              * Fires when user is updated successfully.
-             * 
+             *
              * @since 0.9
              * @param array $user     The original user array before changes.
              * @param array $userdata The updated user array.
@@ -1273,13 +1319,13 @@ function ttcms_update_user($userdata)
             hook::getInstance()->{'doAction'}('email_change_email', $user, $userdata);
         }
     }
-    
+
     /**
      * Update the cookies if the username changed.
      */
     $current_user = ttcms_get_current_user();
-    if($current_user->getId() == $ID) {
-        if ( isset($userdata['user_login']) && $userdata['user_login'] != $current_user->getLogin() ) {
+    if ($current_user->getId() == $ID) {
+        if (isset($userdata['user_login']) && $userdata['user_login'] != $current_user->getLogin()) {
             /**
              * Retrieve data from the old secure cookie to set expiration.
              */
@@ -1400,7 +1446,7 @@ function send_new_user_email(int $user_id, string $pass)
             new HelperContext()
         )
     );
-    
+
     $user = get_userdata((int) $user_id);
 
     $message = esc_html__('Hi there,') . "<br />";
@@ -1408,7 +1454,12 @@ function send_new_user_email(int $user_id, string $pass)
     $message .= site_url() . "</p>";
     $message .= sprintf(esc_html__('Username: %s'), $user->getLogin()) . "<br />";
     $message .= sprintf(esc_html__('Password: %s'), $pass) . "<br />";
-    $message .= sprintf(t__('<p>If you have any problems, please contact us at %s.'), $option->{'read'}('admin_email')) . "</p>";
+    $message .= sprintf(
+        t__(
+            '<p>If you have any problems, please contact us at %s.'
+        ),
+        $option->{'read'}('admin_email')
+    ) . "</p>";
 
     $message = process_email_html($message, esc_html__("New Account"));
     $headers[] = sprintf("From: %s <auto-reply@%s>", $option->{'read'}('sitename'), get_domain_name());
@@ -1441,12 +1492,22 @@ function send_reset_password_email(array $user, string $password)
             new HelperContext()
         )
     );
-    
+
     $site_name = $option->{'read'}('sitename');
 
-    $message .= sprintf(t__("<p>Hello %s! You requested that your password be reset. Please see your new password below: <br />"), esc_html($user['user_fname']));
+    $message .= sprintf(
+        t__(
+            "<p>Hello %s! You requested that your password be reset. Please see your new password below: <br />"
+        ),
+        esc_html($user['user_fname'])
+    );
     $message .= sprintf(esc_html__('Password: %s'), $password) . "</p>";
-    $message .= sprintf(t__('<p>If you still have problems with logging in, please contact us at %s.'), $option->{'read'}('admin_email')) . "</p>";
+    $message .= sprintf(
+        t__(
+            '<p>If you still have problems with logging in, please contact us at %s.'
+        ),
+        $option->{'read'}('admin_email')
+    ) . "</p>";
 
     $message = process_email_html($message, sprintf(esc_html__('[%s] Password Reset'), $site_name));
     $headers[] = sprintf("From: %s <auto-reply@%s>", $site_name, get_domain_name());
@@ -1455,7 +1516,17 @@ function send_reset_password_email(array $user, string $password)
         $headers[] = sprintf("X-Mailer: TriTan CMS %s", CURRENT_RELEASE);
     }
     try {
-        (new Mailer(hook::getInstance()))->{'mail'}(esc_html($user['user_email']), sprintf(esc_html__('[%s] Notice of Password Reset'), $site_name), $message, $headers);
+        (new Mailer(hook::getInstance()))->{'mail'}(
+            esc_html($user['user_email']),
+            sprintf(
+                esc_html__(
+                    '[%s] Notice of Password Reset'
+                ),
+                $site_name
+            ),
+            $message,
+            $headers
+        );
     } catch (\PHPMailer\PHPMailer\Exception $ex) {
         ttcms()->obj['flash']->error($ex->getMessage());
     } catch (Exception $ex) {
@@ -1482,7 +1553,7 @@ function send_password_change_email(array $user, string $password, array $userda
             new HelperContext()
         )
     );
-    
+
     $site_name = $option->{'read'}('sitename');
 
     $message .= sprintf(
@@ -1543,12 +1614,23 @@ function send_email_change_email(array $user, array $userdata)
             new HelperContext()
         )
     );
-    
+
     $site_name = $option->{'read'}('sitename');
 
-    $message .= sprintf(t__("<p>Hello %s! This is confirmation that your email on %s was updated to: <br />"), esc_html($user['user_fname']), $site_name);
+    $message .= sprintf(
+        t__(
+            "<p>Hello %s! This is confirmation that your email on %s was updated to: <br />"
+        ),
+        esc_html($user['user_fname']),
+        $site_name
+    );
     $message .= sprintf(esc_html__('Email: %s'), esc_html($userdata['user_email'])) . "</p>";
-    $message .= sprintf(t__('<p>If you did not initiate an email change/update, please contact us at %s.'), $option->{'read'}('admin_email')) . "</p>";
+    $message .= sprintf(
+        t__(
+            '<p>If you did not initiate an email change/update, please contact us at %s.'
+        ),
+        $option->{'read'}('admin_email')
+    ) . "</p>";
 
     $message = process_email_html($message, sprintf(esc_html__('[%s] Notice of Email Change'), $site_name));
     $headers[] = sprintf("From: %s <auto-reply@%s>", $site_name, get_domain_name());
@@ -1557,7 +1639,17 @@ function send_email_change_email(array $user, array $userdata)
         $headers[] = sprintf("X-Mailer: TriTan CMS %s", CURRENT_RELEASE);
     }
     try {
-        (new Mailer(hook::getInstance()))->{'mail'}(esc_html($userdata['user_email']), sprintf(esc_html__('[%s] Notice of Email Change'), $site_name), $message, $headers);
+        (new Mailer(hook::getInstance()))->{'mail'}(
+            esc_html($userdata['user_email']),
+            sprintf(
+                esc_html__(
+                    '[%s] Notice of Email Change'
+                ),
+                $site_name
+            ),
+            $message,
+            $headers
+        );
     } catch (\PHPMailer\PHPMailer\Exception $ex) {
         ttcms()->obj['flash']->error($ex->getMessage());
     } catch (Exception $ex) {
@@ -1679,18 +1771,18 @@ function recently_published_widget()
 
     foreach ($_posts as $post) {
         echo '<div class="text-muted rp-widget">';
-            echo '<table>';
-                echo '<tr>';
-                    echo '<td>' . get_post_datetime(esc_html($post['post_id'])) . '</td>';
-                    echo '<td>' . sprintf(
-                        '<a href="%s">%s</a>',
-                        admin_url(
-                            esc_html($post['post_type']['post_posttype']) . '/' . esc_html($post['post_id']) . '/'
-                        ),
-                        esc_html($post['post_title'])
-                    ) . '</td>';
-                echo '</tr>';
-            echo '</table>';
+        echo '<table>';
+        echo '<tr>';
+        echo '<td>' . get_post_datetime(esc_html($post['post_id'])) . '</td>';
+        echo '<td>' . sprintf(
+            '<a href="%s">%s</a>',
+            admin_url(
+                esc_html($post['post_type']['post_posttype']) . '/' . esc_html($post['post_id']) . '/'
+            ),
+            esc_html($post['post_title'])
+        ) . '</td>';
+        echo '</tr>';
+        echo '</table>';
         echo '</div>';
     }
 }
@@ -1705,7 +1797,7 @@ function recently_published_widget()
 function tritan_cms_feed_widget()
 {
     $cache = new \TriTan\Cache('rss');
-    if (!$cache->setCache()) :
+    if (!$cache->setCache()) {
         $rss1 = new \DOMDocument();
         $rss1->load('https://www.tritancms.com/blog/rss/');
         $feed = [];
@@ -1728,7 +1820,7 @@ function tritan_cms_feed_widget()
             echo '<small><em>Posted on ' . $date . '</em></small></p>';
             echo '<p>' . $description . '</p>';
         }
-    endif;
+    }
     echo $cache->getCache();
 }
 
@@ -1742,7 +1834,7 @@ function tritan_cms_feed_widget()
 function reset_password(int $user_id = 0)
 {
     $password = ttcms_generate_password();
-    
+
     $user = new User();
     $user->setId((int) $user_id);
     $user->setPassword((string) $password);

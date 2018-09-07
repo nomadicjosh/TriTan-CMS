@@ -685,28 +685,28 @@ class CacheFilesystem extends \TriTan\Cache\AbstractCache implements \TriTan\Int
         }
         return $this->dir . urlencode($namespace) . DS . urlencode(md5($key));
     }
-    
-/**
- * Removes directory recursively along with any files.
- *
- * @since 0.9
- * @param string $dir
- *            Directory that should be removed.
- */
-private function rmdir($dir)
-{
-    if (is_dir($dir)) {
-        $objects = scandir($dir);
-        foreach ($objects as $object) {
-            if ($object != "." && $object != "..") {
-                if (is_dir($dir . DS . $object)) {
-                    $this->rmdir($dir . DS . $object);
-                } else {
-                    unlink($dir . DS . $object);
+
+    /**
+     * Removes directory recursively along with any files.
+     *
+     * @since 0.9
+     * @param string $dir
+     *            Directory that should be removed.
+     */
+    private function rmdir($dir)
+    {
+        if (is_dir($dir)) {
+            $objects = scandir($dir);
+            foreach ($objects as $object) {
+                if ($object != "." && $object != "..") {
+                    if (is_dir($dir . DS . $object)) {
+                        $this->rmdir($dir . DS . $object);
+                    } else {
+                        unlink($dir . DS . $object);
+                    }
                 }
             }
+            rmdir($dir);
         }
-        rmdir($dir);
     }
-}
 }

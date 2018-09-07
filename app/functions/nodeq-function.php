@@ -48,18 +48,39 @@ function ttcms_nodeq_login_details()
             $message = str_replace('#url#', site_url(), $message);
             $message = str_replace('#sitename#', $option->{'read'}('sitename'), $message);
             $message = process_email_html($message, esc_html__("TriTan CMS Login Details"));
-            $headers[] = sprintf("From: %s <auto-reply@%s>", esc_html__('TriTan CMS :: ') . $option->{'read'}('sitename'), get_domain_name());
+            $headers[] = sprintf(
+                "From: %s <auto-reply@%s>",
+                esc_html__('TriTan CMS :: ') . $option->{'read'}('sitename'),
+                get_domain_name()
+            );
             if (!function_exists('ttcms_mail_send')) {
                 $headers[] = 'Content-Type: text/html; charset="UTF-8"';
                 $headers[] = sprintf("X-Mailer: TriTan CMS %s", CURRENT_RELEASE);
             }
 
             try {
-                (new Mailer())->{'mail'}(esc_html($r['email']), esc_html__("TriTan CMS Login Details"), $message, $headers);
+                (new Mailer())->{'mail'}(
+                    esc_html($r['email']),
+                    esc_html__("TriTan CMS Login Details"),
+                    $message,
+                    $headers
+                );
             } catch (\PHPMailer\PHPMailer\Exception $e) {
-                Cascade::getLogger('system_email')->{'alert'}(sprintf('PHPMAILER[%s]: %s', $e->getCode(), $e->getMessage()));
+                Cascade::getLogger('system_email')->{'alert'}(
+                    sprintf(
+                        'PHPMAILER[%s]: %s',
+                        $e->getCode(),
+                        $e->getMessage()
+                    )
+                );
             } catch (Exception $e) {
-                Cascade::getLogger('system_email')->{'alert'}(sprintf('PHPMAILER[%s]: %s', $e->getCode(), $e->getMessage()));
+                Cascade::getLogger('system_email')->{'alert'}(
+                    sprintf(
+                        'PHPMAILER[%s]: %s',
+                        $e->getCode(),
+                        $e->getMessage()
+                    )
+                );
             }
 
             $upd = $db->table('login_details')->where('login_details_id', (int) esc_html($r['login_details_id']));

@@ -7,9 +7,9 @@ use TriTan\Interfaces\Hooks\ActionFilterHookInterface;
 class TextDomain
 {
     public $t;
-    
+
     public $option;
-    
+
     public $hook;
 
     public function __construct(OptionsInterface $option, ActionFilterHookInterface $hook)
@@ -760,7 +760,7 @@ class TextDomain
             'Ǚ' => 'U', 'ǚ' => 'u',
             // grave accent
             'Ǜ' => 'U', 'ǜ' => 'u',
-        ];
+            ];
 
             // Used for locale-specific rules
             $locale = $this->loadCoreLocale();

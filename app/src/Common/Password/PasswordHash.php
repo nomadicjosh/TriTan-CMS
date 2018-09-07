@@ -7,12 +7,12 @@ use TriTan\Interfaces\Hooks\ActionFilterHookInterface;
 class PasswordHash implements PasswordHashInterface
 {
     public $hook;
-    
+
     public function __construct(ActionFilterHookInterface $hook)
     {
         $this->hook = $hook;
     }
-    
+
     /**
      * Hashes a plain text password.
      *
@@ -25,18 +25,18 @@ class PasswordHash implements PasswordHashInterface
         $options = [
             'cost' => 6,
         ];
-        
+
         /**
          * Filters the password_hash() hashing algorithm.
-         * 
+         *
          * @since 0.9.9
          * @param string $algo Hashing algorithm. Default: PASSWORD_BCRYPT
          */
         $algo = $this->hook->{'applyFilter'}('password_hash_algo', PASSWORD_BCRYPT);
-        
+
         /**
          * Filters the password_hash() options parameter.
-         * 
+         *
          * @since 0.9.9
          * @param array $options Options to pass to password_hash() function.
          */

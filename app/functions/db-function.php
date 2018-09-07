@@ -18,29 +18,6 @@ use Cascade\Cascade;
  */
 
 /**
- * Auto increments the table's primary key.
- *
- * @file app/functions/db-function.php
- *
- * @since 0.9
- * @param string $table Table in the document.
- * @param int $pk Primary key field name.
- * @return int
- */
-function auto_increment($table, $pk)
-{
-    $sql = app()->db->table($table)
-            ->sortBy($pk, 'desc')
-            ->first();
-    if (@count($sql) <= 0 || null == $sql || false == $sql) {
-        $auto_increment = 1;
-    } else {
-        $auto_increment = $sql[$pk] + 1;
-    }
-    return $auto_increment;
-}
-
-/**
  * Retrieve post type by a given field from the post type table.
  *
  * @file app/functions/db-function.php
@@ -257,84 +234,6 @@ function tinymce_link_list()
 }
 
 /**
- * Update the metadata cache for the specified arrays.
- *
- * @file app/functions/db-function.php
- *
- * @since 0.9
- * @param string    $meta_type  Type of array metadata is for (e.g., post or user)
- * @param int|array $array_ids Array or comma delimited list of array IDs to update cache for
- * @return array|false Metadata cache for the specified arrays, or false on failure.
- */
-function update_meta_cache(string $meta_type, $array_ids)
-{
-    if (!$meta_type || !$array_ids) {
-        return false;
-    }
-
-    $table = _get_meta_table($meta_type);
-    if (!$table) {
-        return false;
-    }
-
-    $column = $meta_type . '_id';
-
-    if (!is_array($array_ids)) {
-        $array_ids = preg_replace('|[^0-9,]|', '', $array_ids);
-        $array_ids = explode(',', $array_ids);
-    }
-
-    $array_ids = array_map('intval', $array_ids);
-
-    $cache_key = $meta_type . '_meta';
-    $ids = [];
-    $cache = [];
-    foreach ($array_ids as $id) {
-        $cached_array = ttcms_cache_get($id, $cache_key);
-        if (false === $cached_array) {
-            $ids[] = $id;
-        } else {
-            $cache[$id] = $cached_array;
-        }
-    }
-
-    if (empty($ids)) {
-        return $cache;
-    }
-
-    // Get meta info
-    $id_list = join(',', $ids);
-    $meta_list = app()->db->table($table)
-            ->where($column, 'in', $id_list)
-            ->sortBy('meta_id')
-            ->get();
-
-    if (!empty($meta_list)) {
-        foreach ($meta_list as $metarow) {
-            $mpid = intval($metarow[$column]);
-            $mkey = $metarow['meta_key'];
-            $mval = $metarow['meta_value'];
-            // Force subkeys to be array type:
-            if (!isset($cache[$mpid]) || !is_array($cache[$mpid])) {
-                $cache[$mpid] = [];
-            }
-            if (!isset($cache[$mpid][$mkey]) || !is_array($cache[$mpid][$mkey])) {
-                $cache[$mpid][$mkey] = [];
-            }
-            // Add a value to the current pid/key:
-            $cache[$mpid][$mkey][] = $mval;
-        }
-    }
-    foreach ($ids as $id) {
-        if (!isset($cache[$id])) {
-            $cache[$id] = [];
-        }
-        ttcms_cache_add($id, $cache[$id], $cache_key);
-    }
-    return $cache;
-}
-
-/**
  * Generates the encryption table if it does not exist.
  *
  * @file app/functions/db-function.php
@@ -373,24 +272,6 @@ function generate_php_encryption()
             ]
         );
     }
-}
-
-/**
- * Checks if a key exists in the option table.
- *
- * @file app/functions/db-function.php
- *
- * @since 0.9.4
- * @param string $option_key Key to check against.
- * @return bool
- */
-function does_option_exist(string $option_key) : bool
-{
-    $db = new \TriTan\Database();
-    $key = $db->table(c::getInstance()->get('tbl_prefix') . 'option')
-            ->where('option_key', '=', $option_key)
-            ->first();
-    return (int) $key['option_id'] > 0;
 }
 
 /**

@@ -10,7 +10,7 @@ use Cascade\Cascade;
 class PasswordSetMapper implements PasswordSetMapperInterface
 {
     public $db;
-    
+
     public $hasher;
 
     public function __construct(DatabaseInterface $db, PasswordHashInterface $hasher)
@@ -18,7 +18,7 @@ class PasswordSetMapper implements PasswordSetMapperInterface
         $this->db = $db;
         $this->hasher = $hasher;
     }
-    
+
     /**
      * Used by PasswordCheck::check() in order to rehash
      * an old password that was hashed using MD5 function.
@@ -31,14 +31,14 @@ class PasswordSetMapper implements PasswordSetMapperInterface
     public function set(string $password, int $user_id)
     {
         $hash = $this->hasher->{'hash'}($password);
-        
+
         $user = $this->db->table('user');
         $user->begin();
         try {
             $user->where('user_id', $user_id)
                  ->update([
                     'user_pass' => $hash
-                ]);
+                 ]);
             $user->commit();
         } catch (Exception $ex) {
             $user->rollback();

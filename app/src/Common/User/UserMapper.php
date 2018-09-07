@@ -12,7 +12,7 @@ use Cascade\Cascade;
 class UserMapper implements UserMapperInterface
 {
     public $db;
-    
+
     public $context;
 
     public function __construct(DatabaseInterface $db, ContextInterface $context)
@@ -114,10 +114,10 @@ class UserMapper implements UserMapperInterface
 
         return $user;
     }
-    
+
     /**
      * Fetch all users.
-     * 
+     *
      * @since 0.9.9
      * @return User User data object.
      */
@@ -125,8 +125,8 @@ class UserMapper implements UserMapperInterface
     {
         $data = $this->db->table('user')->all();
         $users = [];
-        if($data != null) {
-            foreach($data as $user) {
+        if ($data != null) {
+            foreach ($data as $user) {
                 $users[] = $this->create($user);
             }
         }
@@ -158,17 +158,17 @@ class UserMapper implements UserMapperInterface
      */
     public function populate(User $user, array $data) : User
     {
-        $user->setId( (int) $this->context->obj['escape']->{'html'}($data['user_id']) );
-        $user->setLogin( (string) $this->context->obj['escape']->{'html'}($data['user_login']) );
-        $user->setFname( (string) $this->context->obj['escape']->{'html'}($data['user_fname']) );
-        $user->setLname( (string) $this->context->obj['escape']->{'html'}($data['user_lname']) );
-        $user->setEmail( (string) $this->context->obj['escape']->{'html'}($data['user_email']) );
-        $user->setPassword( (string) $this->context->obj['html']->{'purify'}($data['user_pass']) );
-        $user->setUrl( (string) $this->context->obj['escape']->{'html'}($data['user_url']) );
-        $user->setAddedBy( (int) $this->context->obj['escape']->{'html'}($data['user_addedby']) );
-        $user->setRegistered( (string) $this->context->obj['escape']->{'html'}($data['user_registered']) );
-        $user->setModified( (string) $this->context->obj['escape']->{'html'}($data['user_modified']) );
-        $user->setActivationKey( (string) $this->context->obj['escape']->{'html'}($data['user_activation_key']) );
+        $user->setId((int) $this->context->obj['escape']->{'html'}($data['user_id']));
+        $user->setLogin((string) $this->context->obj['escape']->{'html'}($data['user_login']));
+        $user->setFname((string) $this->context->obj['escape']->{'html'}($data['user_fname']));
+        $user->setLname((string) $this->context->obj['escape']->{'html'}($data['user_lname']));
+        $user->setEmail((string) $this->context->obj['escape']->{'html'}($data['user_email']));
+        $user->setPassword((string) $this->context->obj['html']->{'purify'}($data['user_pass']));
+        $user->setUrl((string) $this->context->obj['escape']->{'html'}($data['user_url']));
+        $user->setAddedBy((int) $this->context->obj['escape']->{'html'}($data['user_addedby']));
+        $user->setRegistered((string) $this->context->obj['escape']->{'html'}($data['user_registered']));
+        $user->setModified((string) $this->context->obj['escape']->{'html'}($data['user_modified']));
+        $user->setActivationKey((string) $this->context->obj['escape']->{'html'}($data['user_activation_key']));
         return $user;
     }
 

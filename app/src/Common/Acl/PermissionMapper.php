@@ -9,7 +9,7 @@ use TriTan\Common\Acl\Permission;
 class PermissionMapper implements PermissionMapperInterface
 {
     public $db;
-    
+
     public $context;
 
     public function __construct(DatabaseInterface $db, ContextInterface $context)
@@ -17,7 +17,7 @@ class PermissionMapper implements PermissionMapperInterface
         $this->db = $db;
         $this->context = $context;
     }
-    
+
     public function findById(int $id)
     {
         if (!is_integer($id) || (int) $id < 1) {
@@ -26,35 +26,35 @@ class PermissionMapper implements PermissionMapperInterface
                 'invalid_id'
             );
         }
-        
+
         $data = $this->db->table('permission')
                 ->where('permission_id', $id)
                 ->first();
-        
+
         $permission = null;
-        if($data != null) {
+        if ($data != null) {
             $permission = $this->create($data);
         }
         return $permission;
     }
-    
+
     public function findAll($format = 'ids')
     {
         $_format = strtolower($format);
-        
+
         $data = $this->db->table('permission')
                 ->sortBy('permission_name', 'ASC')
                 ->get();
-        
+
         $permissions = [];
-        if($data != null) {
-            foreach($data as $permission) {
+        if ($data != null) {
+            foreach ($data as $permission) {
                 $permissions[] = $this->create($permission);
             }
         }
-        
+
         $resp = [];
-        foreach($permissions as $r) {
+        foreach ($permissions as $r) {
             if ($_format == 'full') {
                 $resp[] = ["ID" => $r->getId(), "Name" => $r->getName(), "Key" => $r->getKey()];
             } else {
@@ -69,34 +69,34 @@ class PermissionMapper implements PermissionMapperInterface
         $data = $this->db->table('permission')
                 ->where('permission_id', $id)
                 ->first();
-        
+
         $permission_name = null;
-        if($data != null) {
+        if ($data != null) {
             $permission_name = $this->create($data);
         }
         return $permission_name->getName();
     }
-    
+
     public function findKeyById(int $id)
     {
         $data = $this->db->table('permission')
                 ->where('permission_id', $id)
                 ->first();
-        
+
         $permission_id = null;
-        if($data != null) {
+        if ($data != null) {
             $permission_id = $this->create($data);
         }
         return $permission_id->getKey();
     }
-    
-     /**
-     * Create a new instance of Permission. Optionally populating it
-     * from a data array.
-     *
-     * @param array $data
-     * @return TriTan\Common\Acl\Permission.
-     */
+
+    /**
+    * Create a new instance of Permission. Optionally populating it
+    * from a data array.
+    *
+    * @param array $data
+    * @return TriTan\Common\Acl\Permission.
+    */
     public function create(array $data = null) : Permission
     {
         $permission = $this->__create();
@@ -130,44 +130,44 @@ class PermissionMapper implements PermissionMapperInterface
     {
         return new Permission();
     }
-    
+
     public function insert(Permission $permission)
     {
         $sql = $this->db->table('permission');
         $sql->begin();
-        try{
+        try {
             $sql->insert([
                 'permission_key' => $permission->getKey(),
                 'permission_name' => $permission->getName()
             ]);
             $sql->commit();
-            
+
             return (int) $sql->lastInsertId();
         } catch (Exception $ex) {
             $sql->rollback();
             Cascade::getLogger('error')->error(sprintf('PERMISSIONMAPPER[insert]: %s', $ex->getMessage()));
         }
     }
-    
+
     public function update(Permission $permission)
     {
         $sql = $this->db->table('permission');
         $sql->begin();
-        try{
+        try {
             $sql->where('permission_id', $permission->getId())
                 ->update([
                     'permission_key' => $permission->getKey(),
                     'permission_name' => $permission->getName(),
                 ]);
             $sql->commit();
-            
+
             return (int) $permission->getId();
         } catch (Exception $ex) {
             $sql->rollback();
             Cascade::getLogger('error')->error(sprintf('PERMISSIONMAPPER[insert]: %s', $ex->getMessage()));
         }
     }
-    
+
     /**
      * Save the Permission object.
      *
@@ -182,7 +182,7 @@ class PermissionMapper implements PermissionMapperInterface
             $this->update($permission);
         }
     }
-    
+
     public function delete(Permission $permission)
     {
         $sql = $this->db->table('permission');

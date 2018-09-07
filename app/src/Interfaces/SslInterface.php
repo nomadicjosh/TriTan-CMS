@@ -10,5 +10,4 @@ interface SslInterface
      * @return bool True if SSL, otherwise false.
      */
     public function isEnabled(): bool;
-    
 }

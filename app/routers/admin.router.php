@@ -113,10 +113,10 @@ $app->group('/admin', function () use ($app, $db, $opt, $current_user) {
                 $value = $app->req->post[$option_name];
                 $opt->update($option_name, $value);
             }
-            
+
             $current_site = get_site((int) c::getInstance()->get('site_id'));
-            
-            if($current_site) {
+
+            if ($current_site) {
                 $site_slug = ttcms_unique_site_slug($current_site->getSlug(), $app->req->post['sitename'], (int) c::getInstance()->get('site_id'));
                 $site = new TriTan\Common\Site\Site();
                 $site->setId((int) c::getInstance()->get('site_id'));
@@ -137,9 +137,9 @@ $app->group('/admin', function () use ($app, $db, $opt, $current_user) {
                         )
                     )
                 )->{'update'}($site);
-            }               
-            
-            if(!is_ttcms_exception($site_id)) {
+            }
+
+            if (!is_ttcms_exception($site_id)) {
                 // do nothing.
             } else {
                 Cascade::getLogger('error')->{'error'}(
@@ -150,7 +150,7 @@ $app->group('/admin', function () use ($app, $db, $opt, $current_user) {
                     )
                 );
             }
-            
+
             ttcms_logger_activity_log_write(
                 esc_html__('Update Record'),
                 esc_html__('Options'),
@@ -795,12 +795,12 @@ $app->group('/admin', function () use ($app, $db, $opt, $current_user) {
     });
 
     $app->match('GET|POST', '/permission/(\d+)/', function ($id) use ($app, $db, $current_user) {
-        if ($app->req->isPost()) {          
+        if ($app->req->isPost()) {
             $permission = new \TriTan\Common\Acl\Permission();
             $permission->setId((int) $id);
             $permission->setKey($app->req->post['permission_key']);
             $permission->setName($app->req->post['permission_name']);
-            
+
             $perm_id = (
                 new TriTan\Common\Acl\PermissionRepository(
                     new \TriTan\Common\Acl\PermissionMapper(
@@ -809,8 +809,8 @@ $app->group('/admin', function () use ($app, $db, $opt, $current_user) {
                     )
                 )
             )->{'update'}($permission);
-            
-            if(!is_ttcms_exception($perm_id)) {
+
+            if (!is_ttcms_exception($perm_id)) {
                 ttcms_logger_activity_log_write(
                     esc_html__('Update Record'),
                     esc_html__('Permission'),
@@ -827,7 +827,7 @@ $app->group('/admin', function () use ($app, $db, $opt, $current_user) {
                 ttcms()->obj['flash']->{'error'}($perm_id->getMessage());
             }
         }
-        
+
         $perm = (
             new TriTan\Common\Acl\PermissionRepository(
                 new \TriTan\Common\Acl\PermissionMapper(
@@ -867,7 +867,7 @@ $app->group('/admin', function () use ($app, $db, $opt, $current_user) {
             $permission = new \TriTan\Common\Acl\Permission();
             $permission->setKey($app->req->post['permission_key']);
             $permission->setName($app->req->post['permission_name']);
-            
+
             $perm_id = (
                 new TriTan\Common\Acl\PermissionRepository(
                     new \TriTan\Common\Acl\PermissionMapper(
@@ -876,8 +876,8 @@ $app->group('/admin', function () use ($app, $db, $opt, $current_user) {
                     )
                 )
             )->{'insert'}($permission);
-            
-            if(!is_ttcms_exception($perm_id)) {
+
+            if (!is_ttcms_exception($perm_id)) {
                 ttcms_logger_activity_log_write(
                     esc_html__('Create Record'),
                     esc_html__('Permission'),
@@ -925,7 +925,7 @@ $app->group('/admin', function () use ($app, $db, $opt, $current_user) {
                 )
             )
         )->{'findAll'}('full');
-        
+
         $app->foil->render(
             'main::admin/role/index',
             [
@@ -974,12 +974,12 @@ $app->group('/admin', function () use ($app, $db, $opt, $current_user) {
             $permission = (
                 new TriTan\Common\Serializer()
             )->{'serialize'}($app->req->post['role_permission']);
-            
+
             $role = new \TriTan\Common\Acl\Role();
             $role->setKey(_trim($app->req->post['role_key']));
             $role->setName($app->req->post['role_name']);
             $role->setPermission($permission);
-            
+
             $role_id = (
                 new TriTan\Common\Acl\RoleRepository(
                     new TriTan\Common\Acl\RoleMapper(
@@ -988,8 +988,8 @@ $app->group('/admin', function () use ($app, $db, $opt, $current_user) {
                     )
                 )
             )->{'insert'}($role);
-            
-            if(!is_ttcms_exception($role_id)) {
+
+            if (!is_ttcms_exception($role_id)) {
                 $id = $role_id;
 
                 ttcms_logger_activity_log_write(
@@ -1007,7 +1007,7 @@ $app->group('/admin', function () use ($app, $db, $opt, $current_user) {
                 ttcms()->obj['flash']->{'error'}($e->getMessage());
             }
         }
-        
+
         $perms = (
             new TriTan\Common\Acl\PermissionRepository(
                 new \TriTan\Common\Acl\PermissionMapper(
@@ -1028,13 +1028,13 @@ $app->group('/admin', function () use ($app, $db, $opt, $current_user) {
 
     $app->post('/role/edit-role/', function () use ($app, $db, $current_user) {
         $permission = (new TriTan\Common\Serializer())->{'serialize'}($app->req->post['role_permission']);
-        
+
         $role = new \TriTan\Common\Acl\Role();
         $role->setId((int) $app->req->post['role_id']);
         $role->setKey((string) _trim($app->req->post['role_key']));
         $role->setName((string) $app->req->post['role_name']);
         $role->setPermission($permission);
-        
+
         $role_id = (
             new TriTan\Common\Acl\RoleRepository(
                 new TriTan\Common\Acl\RoleMapper(
@@ -1043,8 +1043,8 @@ $app->group('/admin', function () use ($app, $db, $opt, $current_user) {
                 )
             )
         )->{'update'}($role);
-        
-        if(!is_ttcms_exception($role_id)) {
+
+        if (!is_ttcms_exception($role_id)) {
             ttcms_logger_activity_log_write(
                 esc_html__('Update Record'),
                 esc_html__('Role'),

@@ -274,7 +274,9 @@ class StopForumSpam
             }
 
             self::_debug(
-            'return: "' . (!empty($return) ? 'TRUE' : 'FALSE') . '"', $debug);
+                'return: "' . (!empty($return) ? 'TRUE' : 'FALSE') . '"',
+                $debug
+            );
             return $return;
         } else {
             throw new Exception('Invalid parameters for '

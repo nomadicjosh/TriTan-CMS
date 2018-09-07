@@ -782,3 +782,54 @@ function ttcms_sanitize_string($string, $fallback_string = 'deprecated', $contex
         )
     )->{'item'}($string, 'string', $context);
 }
+
+/**
+ * Auto increments the table's primary key.
+ *
+ * @file app/functions/db-function.php
+ *
+ * @since 0.9
+ * @param string $table Table in the document.
+ * @param int $pk Primary key field name.
+ * @return int
+ */
+function auto_increment($table = 'deprecated', $pk = 'deprecated')
+{
+    _deprecated_function(__FUNCTION__, '0.9.9');
+}
+
+/**
+ * Update the metadata cache for the specified arrays.
+ *
+ * @file app/functions/db-function.php
+ *
+ * @since 0.9
+ * @param string    $meta_type  Type of array metadata is for (e.g., post or user)
+ * @param int|array $array_ids Array or comma delimited list of array IDs to update cache for
+ * @return array|false Metadata cache for the specified arrays, or false on failure.
+ */
+function update_meta_cache(string $meta_type, $array_ids)
+{
+    _deprecated_function(__FUNCTION__, '0.9.9', 'MetaData::updateMetaDataCache');
+    
+    return (
+        new TriTan\Common\MetaData(
+            new TriTan\Database(),
+            new TriTan\Common\Context\HelperContext()
+        )
+    )->{'updateMetaDataCache'}($meta_type, $array_ids);
+}
+
+/**
+ * Checks if a key exists in the option table.
+ *
+ * @file app/functions/db-function.php
+ *
+ * @since 0.9.4
+ * @param string $option_key Key to check against.
+ * @return bool
+ */
+function does_option_exist($option_key = 'deprecated')
+{
+    _deprecated_function(__FUNCTION__, '0.9.9');
+}

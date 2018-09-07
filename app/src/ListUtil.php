@@ -109,8 +109,7 @@ class ListUtil
                 }
             }
 
-            if (
-                    ('AND' == $operator && $matched == $count) ||
+            if (('AND' == $operator && $matched == $count) ||
                     ('OR' == $operator && $matched > 0) ||
                     ('NOT' == $operator && 0 == $matched)
             ) {

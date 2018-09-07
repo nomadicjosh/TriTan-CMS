@@ -6,14 +6,14 @@ class Date implements \TriTan\Interfaces\DateInterface
     public $time;
 
     public $timezone;
-    
+
     public $locale;
-    
+
     public $date;
 
     /**
      * Returns new Datetime object.
-     * 
+     *
      * @since 0.9.9
      * @param string $time
      * @param string|DateTimeZone $timezone
@@ -26,10 +26,10 @@ class Date implements \TriTan\Interfaces\DateInterface
         $this->locale = null === $locale ? 'en' : $locale;
         $this->date = new \Jenssegers\Date\Date($this->time, $this->timezone);
     }
-    
+
     /**
      * Returns minute in seconds.
-     * 
+     *
      * @since 0.9.9
      * @return int
      */
@@ -37,10 +37,10 @@ class Date implements \TriTan\Interfaces\DateInterface
     {
         return 60;
     }
-    
+
     /**
      * Returns hour in seconds.
-     * 
+     *
      * @since 0.9.9
      * @return int
      */
@@ -48,10 +48,10 @@ class Date implements \TriTan\Interfaces\DateInterface
     {
         return 60 * static::minuteInSeconds();
     }
-    
+
     /**
      * Returns day in seconds.
-     * 
+     *
      * @since 0.9.9
      * @return int
      */
@@ -59,10 +59,10 @@ class Date implements \TriTan\Interfaces\DateInterface
     {
         return 24 * static::hourInSeconds();
     }
-    
+
     /**
      * Returns week in seconds.
-     * 
+     *
      * @since 0.9.9
      * @return int
      */
@@ -70,10 +70,10 @@ class Date implements \TriTan\Interfaces\DateInterface
     {
         return 7 * static::dayInSeconds();
     }
-    
+
     /**
      * Returns month in seconds.
-     * 
+     *
      * @since 0.9.9
      * @return int
      */
@@ -81,10 +81,10 @@ class Date implements \TriTan\Interfaces\DateInterface
     {
         return date('t') * static::dayInSeconds();
     }
-    
+
     /**
      * Returns year in seconds.
-     * 
+     *
      * @since 0.9.9
      * @return int
      */
@@ -92,7 +92,7 @@ class Date implements \TriTan\Interfaces\DateInterface
     {
         return (date('z', mktime(0, 0, 0, 12, 31, date('Y'))) + 1) * static::dayInSeconds();
     }
-    
+
     /**
      * Formats date.
      *
@@ -125,7 +125,7 @@ class Date implements \TriTan\Interfaces\DateInterface
     {
         return $date === 'now' ? (string) $this->date->now('GMT')->format($format) : (string) $this->date->parse($date, 'GMT')->format($format);
     }
-    
+
     /**
      * Returns the date in localized format.
      *

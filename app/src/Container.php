@@ -13,14 +13,14 @@ use Psr\Container\ContainerInterface;
  * @author Joshua Parker <joshmac3@icloud.com>
  */
 class Container implements ContainerInterface
-{    
+{
     protected $container = [];
-    
+
     /**
      * @var self The stored singleton instance
      */
     protected static $instance;
-    
+
     /**
      * Reset the Container instance.
      */

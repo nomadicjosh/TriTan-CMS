@@ -316,24 +316,6 @@ function get_file_size($file, $digits = 2)
     return false;
 }
 
-/**
- * Redirects to another page.
- *
- * @file app/functions.php
- *
- * @since 0.9
- * @param string $location The path to redirect to
- * @param int $status Status code to use
- * @return bool false if $location is not set
- */
-function redirect($location, $status = 302)
-{
-    if (!$location) {
-        return false;
-    }
-    header("Location: $location", true, $status);
-}
-
 if (!function_exists('hash_equals')) {
 
     /**
@@ -1132,7 +1114,6 @@ require(APP_PATH . 'functions' . DS . 'hook-function.php');
 require(APP_PATH . 'functions' . DS . 'dependency-function.php');
 require(APP_PATH . 'functions' . DS . 'menu-function.php');
 require(APP_PATH . 'functions' . DS . 'auth-function.php');
-require(APP_PATH . 'functions' . DS . 'cache-function.php');
 require(APP_PATH . 'functions' . DS . 'domain-function.php');
 require(APP_PATH . 'functions' . DS . 'core-function.php');
 require(APP_PATH . 'functions' . DS . 'site-function.php');

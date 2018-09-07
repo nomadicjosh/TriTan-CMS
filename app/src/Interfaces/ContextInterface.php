@@ -4,4 +4,3 @@ namespace TriTan\Interfaces;
 interface ContextInterface
 {
 }
-

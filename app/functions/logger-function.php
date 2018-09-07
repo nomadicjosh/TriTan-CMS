@@ -74,8 +74,18 @@ $config = [
             'formatter' => 'exception',
             'mailer' => new TriTan\Common\Mailer(),
             'message' => 'This message will be replaced with the real one.',
-            'email_to' => hook::getInstance()->{'applyFilter'}('system_alert_email', (new Options(new OptionsMapper(new Database(), new HelperContext())))->{'read'}('admin_email')),
-            'subject' => t__('TriTan CMS System Alert!', 'tritan-cms')
+            'email_to' => hook::getInstance()->{'applyFilter'}(
+                'system_alert_email',
+                (
+                    new Options(
+                        new OptionsMapper(
+                            new Database(),
+                            new HelperContext()
+                        )
+                    )
+                )->{'read'}('admin_email')
+            ),
+            'subject' => esc_html__('TriTan CMS System Alert!')
         ]
     ],
     'processors' => [
@@ -171,7 +181,13 @@ function ttcms_logger_activity_log_purge()
 function ttcms_monolog($name, $message)
 {
     $log = new \Monolog\Logger(trim($name));
-    $log->pushHandler(new \Monolog\Handler\StreamHandler(BASE_PATH . 'static' . DS . 'tmp' . DS . 'logs' . DS . trim($name) . '.' . (new \TriTan\Common\Date())->{'format'}('m-d-Y', 'now') . '.txt'));
+    $log->pushHandler(
+        new \Monolog\Handler\StreamHandler(
+            BASE_PATH . 'static' . DS . 'tmp' . DS . 'logs' . DS . trim($name) . '.' . (
+                new \TriTan\Common\Date()
+            )->{'format'}('m-d-Y', 'now') . '.txt'
+        )
+    );
     $log->addError($message);
 }
 
@@ -200,7 +216,12 @@ function ttcms_set_environment()
         error_reporting(E_ALL & ~E_NOTICE);
         ini_set('display_errors', 'Off');
         ini_set('log_errors', 'On');
-        ini_set('error_log', c::getInstance()->get('site_path') . 'files' . DS . 'logs' . DS . 'ttcms-error-' . (new \TriTan\Common\Date())->{'format'}('Y-m-d', 'now') . '.txt');
+        ini_set(
+            'error_log',
+            c::getInstance()->get('site_path') . 'files' . DS . 'logs' . DS . 'ttcms-error-' . (
+            new \TriTan\Common\Date()
+            )->{'format'}('Y-m-d', 'now') . '.txt'
+        );
         set_error_handler('ttcms_error_handler', E_ALL & ~E_NOTICE);
     }
 }

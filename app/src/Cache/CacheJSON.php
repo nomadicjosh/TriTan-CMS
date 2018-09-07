@@ -58,7 +58,7 @@ class CacheJSON extends \TriTan\Cache\AbstractCache implements CacheInterface
     public $persist;
 
     public function __construct()
-    {     
+    {
         if (TTCMS_FILE_CACHE_LOW_RAM && function_exists('memory_get_usage')) {
             $limit = ini_get('memory_limit');
             $mod = strtolower($limit[strlen($limit) - 1]);
@@ -680,28 +680,28 @@ class CacheJSON extends \TriTan\Cache\AbstractCache implements CacheInterface
         }
         return $this->dir . urlencode($namespace) . DS . urlencode(md5($key));
     }
-    
-/**
- * Removes directory recursively along with any files.
- *
- * @since 0.9
- * @param string $dir
- *            Directory that should be removed.
- */
-private function rmdir($dir)
-{
-    if (is_dir($dir)) {
-        $objects = scandir($dir);
-        foreach ($objects as $object) {
-            if ($object != "." && $object != "..") {
-                if (is_dir($dir . DS . $object)) {
-                    $this->rmdir($dir . DS . $object);
-                } else {
-                    unlink($dir . DS . $object);
+
+    /**
+     * Removes directory recursively along with any files.
+     *
+     * @since 0.9
+     * @param string $dir
+     *            Directory that should be removed.
+     */
+    private function rmdir($dir)
+    {
+        if (is_dir($dir)) {
+            $objects = scandir($dir);
+            foreach ($objects as $object) {
+                if ($object != "." && $object != "..") {
+                    if (is_dir($dir . DS . $object)) {
+                        $this->rmdir($dir . DS . $object);
+                    } else {
+                        unlink($dir . DS . $object);
+                    }
                 }
             }
+            rmdir($dir);
         }
-        rmdir($dir);
     }
-}
 }

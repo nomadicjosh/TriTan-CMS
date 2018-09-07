@@ -448,7 +448,7 @@ function ttcms_validate_plugin($plugin_name)
             \TriTan\Common\Hooks\ActionFilterHook::getInstance()
         )
     )->{'checkSyntax'}($file);
-    
+
     if (is_ttcms_exception($error)) {
         ttcms()->obj['flash']->{'error'}(
             t__(
@@ -1021,7 +1021,7 @@ function get_site_themes($active = null)
             hook::getInstance()
         )
     )->directoryListing(c::getInstance()->get('theme_dir'));
-    
+
     if (is_array($themes)) {
         foreach ($themes as $theme) {
             echo '<option value="' . $theme . '"' . selected($theme, $active, false) . '>' . $theme . '</option>';
@@ -1176,7 +1176,7 @@ function ttcms_enqueue_js($config, $asset, $minify = false, $plugin_slug = null)
  * Generates a random password drawn from the defined set of characters.
  *
  * Uses `random_lib` library to create passwords with far less predictability.
- * 
+ *
  * @file app/functions/core-function.php
  *
  * @since 0.9.7
@@ -1218,7 +1218,7 @@ function ttcms_maintenance_mode($app)
     }
 
     $path_info = new TriTan\Common\Uri(hook::getInstance());
-    
+
     if (strpos($path_info->getPathInfo('/logout'), "/logout") === 0) {
         return false;
     }

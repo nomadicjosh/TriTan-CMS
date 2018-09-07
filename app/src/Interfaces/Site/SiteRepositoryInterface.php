@@ -12,4 +12,3 @@ interface SiteRepositoryInterface
     public function update(Site $post);
     public function delete(Site $post);
 }
-

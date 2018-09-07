@@ -270,7 +270,7 @@ function get_post_type_name(int $post_id = 0)
  */
 function get_post_posttype_link(int $post_id = 0)
 {
-    $link = site_url( get_post_posttype($post_id) . '/' );
+    $link = site_url(get_post_posttype($post_id) . '/');
     /**
      * Filters the post posttype link.
      *
@@ -400,7 +400,7 @@ function get_permalink($post = 0)
         return false;
     }
 
-    $link = home_url( get_relative_url($post) );
+    $link = home_url(get_relative_url($post));
     /**
      * Filters the post's link based on its posttype.
      *
@@ -409,7 +409,7 @@ function get_permalink($post = 0)
      * @param string $link    The post's link.
      * @param int    $post_id The post id.
      */
-    return hook::getInstance()->{'applyFilter'}( $post->getPosttype() . '_link', $link, $post->getId() );
+    return hook::getInstance()->{'applyFilter'}($post->getPosttype() . '_link', $link, $post->getId());
 }
 
 /**
@@ -1155,7 +1155,7 @@ function get_post_published_time(string $format = 'U', bool $gmt = false, $post 
     }
 
     if ($gmt) {
-        $time = $date->{'gmtdate'}( $post->getPublished() );
+        $time = $date->{'gmtdate'}($post->getPublished());
     } else {
         $time = $post->getPublished();
     }
@@ -1244,7 +1244,7 @@ function get_post_modified_date(string $format = 'U', bool $gmt = false, $post =
     }
 
     if ($gmt) {
-        $the_date = $date->{'gmtdate'}( $post->getModified() );
+        $the_date = $date->{'gmtdate'}($post->getModified());
     } else {
         $the_date = $post->getModified();
     }
@@ -1333,7 +1333,7 @@ function get_post_modified_time(string $format = 'U', bool $gmt = false, $post =
     }
 
     if ($gmt) {
-        $time = $date->{'gmtdate'}( $post->getModified() );
+        $time = $date->{'gmtdate'}($post->getModified());
     } else {
         $time = $post->getModified();
     }
@@ -2052,7 +2052,7 @@ function ttcms_insert_post(array $postdata, bool $exception = false)
          * @param Post $post Post object.
          */
         hook::getInstance()->{'doAction'}('pre_post_insert', $post);
-        
+
         $parent_id = 0 || null == $post->getParent() ? 0 : get_post_id($post->getParent());
 
         $posttype = get_posttype_by('posttype_slug', $post->getPosttype());
@@ -2091,7 +2091,7 @@ function ttcms_insert_post(array $postdata, bool $exception = false)
          * @param Post  $post    Post object.
          */
         hook::getInstance()->{'doAction'}('pre_post_update', (int) $post_id, $post);
-        
+
         $parent_id = 0 || null == $post->getParent() ? 0 : get_post_id($post->getParent());
 
         $posttype = get_posttype_by('posttype_slug', $post->getPosttype());
@@ -2128,7 +2128,7 @@ function ttcms_insert_post(array $postdata, bool $exception = false)
             update_post_meta((int) $post_id, $key, $value);
         }
     }
-    
+
     $post = get_post((int) $post_id, true);
 
     (new \TriTan\Common\Post\PostCache(
@@ -2211,7 +2211,7 @@ function ttcms_update_post($postdata, bool $exception = false)
 {
     if ($postdata instanceof \stdClass) {
         $postdata = get_object_vars($postdata);
-    } elseif($postdata instanceof Post) {
+    } elseif ($postdata instanceof Post) {
         $postdata = $postdata->toArray();
     }
 
@@ -2388,7 +2388,7 @@ function get_post_dropdown_list($slug = null, int $post_id = 0)
         )
     )->{'findAll'}();
     foreach ($posts as $post) {
-        if($post_id != $post->getId()) {
+        if ($post_id != $post->getId()) {
             echo '<option value="' . $post->getSlug() . '"' . selected($slug, $post->getSlug(), false) . '>' . $post->getTitle() . '</option>';
         }
     }

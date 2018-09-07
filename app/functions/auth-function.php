@@ -145,7 +145,7 @@ function ae($perm)
  * @param int|string $value A value for $field (id, uname or email).
  */
 function get_user_by($field, $value)
-{  
+{
     $userdata = (
             new \TriTan\Common\User\UserRepository(
                 new \TriTan\Common\User\UserMapper(
@@ -181,7 +181,15 @@ function ttcms_authenticate($login, $password, $rememberme)
             ->first();
 
     if (false == $user) {
-        ttcms()->obj['flash']->{'error'}(sprintf(t__('Sorry, an account for <strong>%s</strong> does not exist.'), $login), ttcms()->obj['app']->req->server['HTTP_REFERER']);
+        ttcms()->obj['flash']->{'error'}(
+            sprintf(
+                t__(
+                    'Sorry, an account for <strong>%s</strong> does not exist.'
+                ),
+                $login
+            ),
+            ttcms()->obj['app']->req->server['HTTP_REFERER']
+        );
         return;
     }
 
@@ -197,7 +205,13 @@ function ttcms_authenticate($login, $password, $rememberme)
         $ll->commit();
     } catch (Exception $ex) {
         $ll->rollback();
-        Cascade::getLogger('error')->{'error'}(sprintf('AUTHSTATE[%s]: Unauthorized: %s', $ex->getCode(), $ex->getMessage()));
+        Cascade::getLogger('error')->{'error'}(
+            sprintf(
+                'AUTHSTATE[%s]: Unauthorized: %s',
+                $ex->getCode(),
+                $ex->getMessage()
+            )
+        );
     }
 
 
@@ -212,10 +226,21 @@ function ttcms_authenticate($login, $password, $rememberme)
     try {
         hook::getInstance()->{'applyFilter'}('ttcms_auth_cookie', $user, $rememberme);
     } catch (UnauthorizedException $e) {
-        Cascade::getLogger('error')->{'error'}(sprintf('AUTHSTATE[%s]: Unauthorized: %s', $e->getCode(), $e->getMessage()));
+        Cascade::getLogger('error')->{'error'}(
+            sprintf(
+                'AUTHSTATE[%s]: Unauthorized: %s',
+                $e->getCode(),
+                $e->getMessage()
+            )
+        );
     }
 
-    ttcms_logger_activity_log_write('Authentication', 'Login', get_name((int) esc_html($user['user_id'])), esc_html($user['user_login']));
+    ttcms_logger_activity_log_write(
+        'Authentication',
+        'Login',
+        get_name((int) esc_html($user['user_id'])),
+        esc_html($user['user_login'])
+    );
 
     $redirect_to = (ttcms()->obj['app']->req->post['redirect_to'] != null ? ttcms()->obj['app']->req->post['redirect_to'] : site_url());
     ttcms()->obj['uri']->{'redirect'}($redirect_to);
@@ -235,11 +260,21 @@ function ttcms_authenticate_user($login, $password, $rememberme)
 {
     if (empty($login) || empty($password)) {
         if (empty($login)) {
-            ttcms()->obj['flash']->{'error'}(t__('<strong>ERROR</strong>: The username/email field is empty.'), ttcms()->obj['app']->req->server['HTTP_REFERER']);
+            ttcms()->obj['flash']->{'error'}(
+                t__(
+                    '<strong>ERROR</strong>: The username/email field is empty.'
+                ),
+                ttcms()->obj['app']->req->server['HTTP_REFERER']
+            );
         }
 
         if (empty($password)) {
-            ttcms()->obj['flash']->{'error'}(t__('<strong>ERROR</strong>: The password field is empty.'), ttcms()->obj['app']->req->server['HTTP_REFERER']);
+            ttcms()->obj['flash']->{'error'}(
+                t__(
+                    '<strong>ERROR</strong>: The password field is empty.'
+                ),
+                ttcms()->obj['app']->req->server['HTTP_REFERER']
+            );
         }
         return;
     }
@@ -248,18 +283,28 @@ function ttcms_authenticate_user($login, $password, $rememberme)
         $user = get_user_by('email', $login);
 
         if (false == $user) {
-            ttcms()->obj['flash']->{'error'}(t__('<strong>ERROR</strong>: Invalid email address.'), ttcms()->obj['app']->req->server['HTTP_REFERER']);
+            ttcms()->obj['flash']->{'error'}(
+                t__(
+                    '<strong>ERROR</strong>: Invalid email address.'
+                ),
+                ttcms()->obj['app']->req->server['HTTP_REFERER']
+            );
             return;
         }
     } else {
         $user = get_user_by('login', $login);
 
         if (false == $user) {
-            ttcms()->obj['flash']->{'error'}(t__('<strong>ERROR</strong>: Invalid username.'), ttcms()->obj['app']->req->server['HTTP_REFERER']);
+            ttcms()->obj['flash']->{'error'}(
+                t__(
+                    '<strong>ERROR</strong>: Invalid username.'
+                ),
+                ttcms()->obj['app']->req->server['HTTP_REFERER']
+            );
             return;
         }
     }
-    
+
     $auth = new TriTan\Common\PasswordCheck(
         new \TriTan\Common\PasswordSetMapper(
             new Database(),
@@ -376,7 +421,13 @@ function ttcms_clear_auth_cookie()
             unlink($file1);
         }
     } catch (NotFoundException $e) {
-        Cascade::getLogger('error')->{'error'}(sprintf('FILESTATE[%s]: File not found: %s', $e->getCode(), $e->getMessage()));
+        Cascade::getLogger('error')->{'error'}(
+            sprintf(
+                'FILESTATE[%s]: File not found: %s',
+                $e->getCode(),
+                $e->getMessage()
+            )
+        );
     }
 
     $vars2 = [];

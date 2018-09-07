@@ -54,10 +54,10 @@ class User implements UserInterface
      * @var string
      */
     private $user_email;
-    
+
     /**
      * User password.
-     * 
+     *
      * @since 0.9.9
      * @var string
      */
@@ -102,112 +102,112 @@ class User implements UserInterface
      * @var string
      */
     private $user_activation_key;
-    
+
     public function getId(): int
     {
         return $this->user_id;
     }
-    
+
     public function setId(int $id)
     {
         return $this->user_id = $id;
     }
-    
+
     public function getLogin()
     {
         return $this->user_login;
     }
-    
+
     public function setLogin(string $login)
     {
         return $this->user_login = $login;
     }
-    
+
     public function getFname()
     {
         return $this->user_fname;
     }
-    
+
     public function setFname(string $fname)
     {
         return $this->user_fname = $fname;
     }
-    
+
     public function getLname()
     {
         return $this->user_lname;
     }
-    
+
     public function setLname(string $lname)
     {
         return $this->user_lname = $lname;
     }
-    
+
     public function getEmail()
     {
         return $this->user_email;
     }
-    
+
     public function setEmail(string $email)
     {
         return $this->user_email = $email;
     }
-    
+
     public function getPassword()
     {
         return $this->user_pass;
     }
-    
+
     public function setPassword(string $password)
     {
         return $this->user_pass = $password;
     }
-    
+
     public function getUrl()
     {
         return $this->user_url;
     }
-    
+
     public function setUrl(string $url)
     {
         return $this->user_url = $url;
     }
-    
+
     public function getAddedBy(): int
     {
         return $this->user_addedby;
     }
-    
+
     public function setAddedBy(int $addedby)
     {
         return $this->user_addedby = $addedby;
     }
-    
+
     public function getRegistered()
     {
         return $this->user_registered;
     }
-    
+
     public function setRegistered(string $registered)
     {
         return $this->user_registered = $registered;
     }
-    
+
     public function getModified()
     {
         return $this->user_modified;
     }
-    
+
     public function setModified(string $modified)
     {
         return $this->user_modified = $modified;
     }
-    
+
     public function getActivationKey()
     {
         return $this->user_activation_key;
     }
-    
+
     public function setActivationKey(string $activationkey)
     {
         return $this->user_activation_key = $activationkey;
@@ -257,7 +257,7 @@ class User implements UserInterface
 
         $this->{$key} = $value;
     }
-    
+
     /**
      * Magic method for unsetting a certain custom field.
      *
@@ -298,7 +298,7 @@ class User implements UserInterface
     {
         return $this->__isset($key);
     }
-    
+
     /**
      * Return an array representation.
      *
@@ -309,17 +309,17 @@ class User implements UserInterface
     {
         return get_object_vars($this);
     }
-    
+
     public function setRole(string $role)
     {
         $old_role = get_user_meta($this->getId(), c::getInstance()->get('tbl_prefix') . 'role', true);
-        
+
         if (is_numeric($role)) {
             $message = 'Invalid role. Must use role_key (super, admin, editor, etc.) and not role_id.';
             _incorrectly_called(__FUNCTION__, $message, '0.9.9');
             return;
         }
-        
+
         $new_role = (
             new \TriTan\Common\Acl\RoleRepository(
                 new \TriTan\Common\Acl\RoleMapper(
@@ -328,9 +328,9 @@ class User implements UserInterface
                 )
             )
         )->{'findIdByKey'}($role);
-        
+
         update_user_meta($this->getId(), c::getInstance()->get('tbl_prefix') . 'role', $new_role, $old_role);
-        
+
         /**
          * Fires after the user's role has been added/changed.
          *

@@ -29,10 +29,10 @@ class Permission implements PermissionInterface
      * @var string
      */
     private $permission_name;
-    
+
     /**
      * Permission key.
-     * 
+     *
      * @since 0.9.9
      * @var string
      */
@@ -42,27 +42,27 @@ class Permission implements PermissionInterface
     {
         return $this->permission_id;
     }
-    
+
     public function setId(int $id)
     {
         return $this->permission_id = $id;
     }
-    
+
     public function getName()
     {
         return $this->permission_name;
     }
-    
+
     public function setName(string $name)
     {
         return $this->permission_name = $name;
     }
-    
+
     public function getKey()
     {
         return $this->permission_key;
     }
-    
+
     public function setKey(string $key)
     {
         return $this->permission_key = $key;

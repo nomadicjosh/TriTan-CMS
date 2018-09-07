@@ -12,5 +12,4 @@ interface ImageInterface
     * @param string $target Size of image.
     */
     public function resize($width, $height, $target);
-    
 }

@@ -4,6 +4,7 @@ use TriTan\Container as c;
 use TriTan\Queue\NodeqQueue as Queue;
 use Cascade\Cascade;
 use TriTan\Common\Hooks\ActionFilterHook as hook;
+
 $db = new \TriTan\Database();
 $opt = new \TriTan\Common\Options\Options(
     new TriTan\Common\Options\OptionsMapper(
@@ -106,7 +107,7 @@ $app->get('/cronjob/', function () use ($app, $db, $opt) {
                             if ($task->executeAction($data)) {
                                 // Delete the item.
                                 $task->deleteItem($item);
-                                
+
                                 Cascade::getLogger('info')->{'info'}(
                                     sprintf(
                                         'QUEUESTATE[8190]: Item %s processed.',
@@ -119,7 +120,7 @@ $app->get('/cronjob/', function () use ($app, $db, $opt) {
                             } else {
                                 // Release the item to execute the job task again later.
                                 $task->releaseItem($item);
-                                
+
                                 Cascade::getLogger('info')->{'info'}(
                                     sprintf(
                                         'QUEUESTATE[8190]: Item %s NOT processed.',
@@ -129,9 +130,9 @@ $app->get('/cronjob/', function () use ($app, $db, $opt) {
                                         'Cron' => 'Release Item'
                                     ]
                                 );
-                                
+
                                 $jobs_to_do = false;
-                                
+
                                 Cascade::getLogger('info')->{'info'}(
                                     'QUEUESTATE[8190]: Queue not completed. Item not executed.',
                                     [
@@ -178,7 +179,7 @@ $app->get('/cronjob/', function () use ($app, $db, $opt) {
                                 'Queue' => 'Claim Queue Item'
                             ]
                         );
-                        
+
                         Cascade::getLogger('system_email')->{'alert'}(
                             sprintf(
                                 'QUEUESTATE[%s]: %s',

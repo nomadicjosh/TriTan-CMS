@@ -1,5 +1,6 @@
 <?php
 use TriTan\Common\Hooks\ActionFilterHook as hook;
+
 /**
  * TriTan CMS Text Domain.
  *
@@ -89,7 +90,7 @@ function load_plugin_textdomain($domain, $plugin_rel_path = false)
  * Load default translated strings based on locale.
  *
  * @file app/functions/domain-function.php
- * 
+ *
  * @since 0.9
  * @param string $domain Text domain. Unique identifier for retrieving translated strings.
  * @param string $path Path to the .mo file.

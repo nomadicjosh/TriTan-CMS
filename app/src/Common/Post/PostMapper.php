@@ -13,7 +13,7 @@ use Cascade\Cascade;
 class PostMapper implements PostMapperInterface
 {
     public $db;
-    
+
     public $context;
 
     public function __construct(DatabaseInterface $db, ContextInterface $context)
@@ -117,10 +117,10 @@ class PostMapper implements PostMapperInterface
 
         return $post;
     }
-    
+
     /**
      * Fetch all posts by particular type.
-     * 
+     *
      * @since 0.9.9
      * @param string $type
      * @return object Post data object.
@@ -129,17 +129,17 @@ class PostMapper implements PostMapperInterface
     {
         $data = $this->db->table(c::getInstance()->get('tbl_prefix') . 'post')->where('post_type.post_posttype', $type)->get();
         $posts = [];
-        if($data != null) {
-            foreach($data as $post) {
+        if ($data != null) {
+            foreach ($data as $post) {
                 $posts[] = $this->create($post);
             }
         }
         return $posts;
     }
-    
+
     /**
      * Fetch all posts.
-     * 
+     *
      * @since 0.9.9
      * @return object Post data object.
      */
@@ -147,8 +147,8 @@ class PostMapper implements PostMapperInterface
     {
         $data = $this->db->table(c::getInstance()->get('tbl_prefix') . 'post')->all();
         $posts = [];
-        if($data != null) {
-            foreach($data as $post) {
+        if ($data != null) {
+            foreach ($data as $post) {
                 $posts[] = $this->create($post);
             }
         }
@@ -291,13 +291,13 @@ class PostMapper implements PostMapperInterface
                 'post_published' => $this->db->{'ifNull'}($post->getPublished()),
                 'post_modified' => (string) $post->getModified()
             ]);
-                
+
             $parent = $this->db->table(c::getInstance()->get('tbl_prefix') . 'post');
             $parent->where('post_attributes.parent.parent_id', (int) $post->getId())
                     ->update([
                         'post_attributes.parent.post_parent' => $post->getSlug()
                     ]);
-            
+
             $sql->commit();
             return (int) $post->getId();
         } catch (Exception $ex) {

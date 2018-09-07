@@ -66,7 +66,7 @@ function get_site($site, $object = true)
     }
 
     if ($object === false) {
-        $_site = (array) $_site;
+        $_site = $_site->toArray();
     }
 
     /**
@@ -332,8 +332,7 @@ function update_main_site()
 {
     $db = new Database();
     $main_site = $db->table('site')->where('site_id', (int) 1)->first();
-    if (
-        esc_html($main_site['site_domain'])
+    if (esc_html($main_site['site_domain'])
         === TTCMS_MAINSITE
         && esc_html($main_site['site_path'])
         === TTCMS_MAINSITE_PATH
@@ -348,7 +347,7 @@ function update_main_site()
                 ->update([
                     'site_domain' => (string) TTCMS_MAINSITE,
                     'site_path' => (string) TTCMS_MAINSITE_PATH,
-                    'site_registered' => (string) current_time( 'Y-m-d H:i:s')
+                    'site_registered' => (string) current_time('Y-m-d H:i:s')
                 ]);
         $site->commit();
     } catch (Exception $ex) {
@@ -516,7 +515,7 @@ function add_user_to_site($user, $site, string $role)
 function ttcms_insert_site($sitedata, bool $exception = false)
 {
     $db = new Database();
-    
+
     if ($sitedata instanceof \TriTan\Common\Site) {
         $sitedata = get_object_vars($sitedata);
     }
@@ -555,7 +554,7 @@ function ttcms_insert_site($sitedata, bool $exception = false)
          * @param bool      $update             Whether this is an existing site or a new site.
          */
         hook::getInstance()->{'doAction'}('site_previous_status', $previous_status, (int) $site_id, $update);
-        
+
         /**
          * Create new site object.
          */
@@ -575,7 +574,7 @@ function ttcms_insert_site($sitedata, bool $exception = false)
          * @param bool      $update             Whether this is an existing site or a new site.
          */
         hook::getInstance()->{'doAction'}('site_previous_status', $previous_status, (int) $site_id, $update);
-        
+
         /**
          * Create new site object.
          */
@@ -743,11 +742,21 @@ function ttcms_insert_site($sitedata, bool $exception = false)
     );
     $site->setStatus($site_status);
 
-    $site_registered = (string) (new \TriTan\Common\Date())->{'current'}( 'laci');
+    $site_registered = (string) (new \TriTan\Common\Date())->{'current'}('laci');
 
-    $site_modified = (string) (new \TriTan\Common\Date())->{'current'}( 'laci');
+    $site_modified = (string) (new \TriTan\Common\Date())->{'current'}('laci');
 
-    $compacted = compact('site_id', 'site_name', 'site_slug', 'site_domain', 'site_path', 'site_owner', 'site_status', 'site_registered', 'site_modified');
+    $compacted = compact(
+        'site_id',
+        'site_name',
+        'site_slug',
+        'site_domain',
+        'site_path',
+        'site_owner',
+        'site_status',
+        'site_registered',
+        'site_modified'
+    );
     $data = ttcms()->obj['util']->{'unslash'}($compacted);
 
     /**
@@ -768,7 +777,12 @@ function ttcms_insert_site($sitedata, bool $exception = false)
      * @param bool     $update      Whether the site is being updated rather than created.
      * @param int|null $site_id     ID of the site to be updated, or NULL if the site is being created.
      */
-    $data = hook::getInstance()->{'applyFilter'}('ttcms_pre_insert_site_data', $data, $update, $update ? (int) $site_id : null);
+    $data = hook::getInstance()->{'applyFilter'}(
+        'ttcms_pre_insert_site_data',
+        $data,
+        $update,
+        $update ? (int) $site_id : null
+    );
 
     if ($update) {
         $site->setModified($site_modified);
@@ -778,7 +792,7 @@ function ttcms_insert_site($sitedata, bool $exception = false)
                 new TriTan\Common\Context\HelperContext()
             )
         ))->{'update'}($site);
-        
+
         if (false === $site_id) {
             if ($exception) {
                 throw new Exception(
@@ -804,7 +818,7 @@ function ttcms_insert_site($sitedata, bool $exception = false)
                 new TriTan\Common\Context\HelperContext()
             )
         ))->{'insert'}($site);
-        
+
         if (false === $site_id) {
             if ($exception) {
                 throw new Exception(
@@ -823,7 +837,7 @@ function ttcms_insert_site($sitedata, bool $exception = false)
             }
         }
     }
-    
+
     $site = get_site((int) $site_id);
     ttcms()->obj['sitecache']->{'clean'}($site);
 
@@ -899,7 +913,7 @@ function ttcms_insert_site($sitedata, bool $exception = false)
 function ttcms_update_site($sitedata, bool $exception = false)
 {
     $db = new Database();
-    
+
     if ($sitedata instanceof \TriTan\Common\Site\Site) {
         $sitedata = get_object_vars($sitedata);
     }
@@ -939,7 +953,10 @@ function ttcms_update_site($sitedata, bool $exception = false)
      */
     if ($site_id > 0 && $owner_change) {
         $meta_key = "ttcms_{$site_id}";
-        $old_meta = $db->table('usermeta')->where('user_id', (int) $previous_owner)->where('meta_key', 'match', "/$meta_key/")->get();
+        $old_meta = $db->table('usermeta')
+            ->where('user_id', (int) $previous_owner)
+            ->where('meta_key', 'match', "/$meta_key/")
+            ->get();
         foreach ($old_meta as $meta) {
             delete_user_meta((int) $previous_owner, $meta['meta_key'], $meta['meta_value']);
         }
@@ -953,7 +970,7 @@ function ttcms_update_site($sitedata, bool $exception = false)
 
 /**
  * Deletes a site.
- * 
+ *
  * @file app/functions/site-function.php
  *
  * @since 0.9.9
@@ -1001,7 +1018,7 @@ function ttcms_delete_site(int $site_id, bool $exception = false)
      * @param Site $old_site Data object of site to be deleted.
      */
     hook::getInstance()->{'doAction'}('delete_site', (int) $site_id, $old_site);
-    
+
     $delete = (
         new \TriTan\Common\Site\SiteRepository(
             new TriTan\Common\Site\SiteMapper(
@@ -1010,11 +1027,11 @@ function ttcms_delete_site(int $site_id, bool $exception = false)
             )
         )
     )->{'delete'}($old_site);
-                
-    if(is_ttcms_exception($delete)) {
+
+    if (is_ttcms_exception($delete)) {
         $exception ? sprintf('ERROR[%s]: %s', $delete->getCode(), $delete->getMessage()) : new Error($delete->getCode(), $delete->getMessage());
     }
-    
+
     /**
      * Action hook triggered after the site is deleted.
      *
@@ -1031,7 +1048,7 @@ function ttcms_delete_site(int $site_id, bool $exception = false)
 
 /**
  * Delete site user.
- * 
+ *
  * @file app/functions/site-function.php
  *
  * @since 0.9.9
@@ -1084,7 +1101,7 @@ function ttcms_delete_site_user(int $user_id, array $params = [], bool $exceptio
                 $_site->setSlug($site['site_slug']);
                 $_site->setDomain($site['site_domain']);
                 $_site->setPath($site['site_path']);
-                
+
                 ttcms()->obj['sitecache']->{'clean'}($_site);
                 add_user_to_site((int) $params['assign_id'], (int) $site['site_id'], $params['role']);
             }
@@ -1115,14 +1132,14 @@ function ttcms_delete_site_user(int $user_id, array $params = [], bool $exceptio
                         return new Error($ex->getCode(), $ex->getMessage());
                     }
                 }
-                
+
                 $site = (
                     new SiteMapper(
                         new Database(),
                         new HelperContext()
                     )
                 )->{'create'}($old_site);
-                
+
                 ttcms()->obj['sitecache']->{'clean'}((int) $site->getId());
 
                 /**
@@ -1204,7 +1221,7 @@ function ttcms_delete_site_user(int $user_id, array $params = [], bool $exceptio
 function new_site_data(int $site_id, $site, bool $update)
 {
     $db = new Database();
-    
+
     if ($update) {
         return false;
     }
@@ -1214,10 +1231,13 @@ function new_site_data(int $site_id, $site, bool $update)
     if ((int) $site->getId() <= (int) 0) {
         return false;
     }
-    
+
     $userdata = get_userdata((int) $site->getOwner());
-    $api_key = _ttcms_random_lib()->generateString(20, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
-    
+    $api_key = _ttcms_random_lib()->generateString(
+        20,
+        '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    );
+
     $prefix = "ttcms_{$site_id}_";
 
     $option = $db->table($prefix . 'option');
@@ -1532,7 +1552,7 @@ function get_site_status(int $site_id = 0)
 
 /**
  * Retrieve the details of a site from the site document and site options.
- * 
+ *
  * @file app/functions/site-function.php
  *
  * @since 0.9.9
@@ -1718,5 +1738,11 @@ function ttcms_unique_site_slug(string $original_slug, string $original_title, $
      * @param string    $original_title The site's original title before slugified.
      * @param int       $post_id        The site's unique id.
      */
-    return hook::getInstance()->{'applyFilter'}('ttcms_unique_site_slug', $site_slug, $original_slug, $original_title, $site_id);
+    return hook::getInstance()->{'applyFilter'}(
+        'ttcms_unique_site_slug',
+        $site_slug,
+        $original_slug,
+        $original_title,
+        $site_id
+    );
 }

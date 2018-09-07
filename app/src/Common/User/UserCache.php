@@ -9,15 +9,15 @@ use TriTan\Common\User\User;
 class UserCache implements UserCacheInterface
 {
     public $cache;
-    
+
     public $hook;
-    
+
     public function __construct(ObjectCacheInterface $cache, ActionFilterHookInterface $hook)
     {
         $this->cache = $cache;
         $this->hook = $hook;
     }
-    
+
     /**
      * Update user caches.
      *
@@ -27,15 +27,15 @@ class UserCache implements UserCacheInterface
      */
     public function update($user)
     {
-        if(empty($user)) {
+        if (empty($user)) {
             return;
         }
-    
+
         $this->cache->{'create'}((int) $user->getId(), $user, 'users');
         $this->cache->{'create'}($user->getLogin(), (int) $user->getId(), 'userlogins');
         $this->cache->{'create'}($user->getEmail(), (int) $user->getId(), 'useremail');
     }
-    
+
     /**
      * Clean user caches.
      *
@@ -46,10 +46,10 @@ class UserCache implements UserCacheInterface
      */
     public function clean($user)
     {
-        if(empty($user)) {
+        if (empty($user)) {
             return;
         }
-        
+
         $user_id = $user;
         $user = get_userdata($user_id);
         if (!$user) {
@@ -63,9 +63,9 @@ class UserCache implements UserCacheInterface
             $user->setLogin(null);
             $user->setEmail(null);
         }
-        
+
         $user_id = $user->getId();
-        
+
         $this->cache->{'delete'}((int) $user->getId(), 'users');
         $this->cache->{'delete'}($user->getLogin(), 'userlogins');
         $this->cache->{'delete'}($user->getEmail(), 'useremail');

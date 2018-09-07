@@ -78,7 +78,7 @@ class HtmlPurifier implements HtmlPurifierInterface
 
     /**
      * Escaping for rich text.
-     * 
+     *
      * This method should only be used on output. With the exception of uploading
      * images, never use this method on input. All inputted data should be
      * accepted and then purified on output for optimal results. For output of images,
@@ -341,9 +341,9 @@ class HtmlPurifier implements HtmlPurifierInterface
      */
     protected function urlDecodeSpaces($matches)
     {
-          $input    = $matches[0];
-          $nospaces = preg_replace('#\s+#', '', $input);
-          return ($nospaces === $input)
+        $input    = $matches[0];
+        $nospaces = preg_replace('#\s+#', '', $input);
+        return ($nospaces === $input)
               ? $input
               : rawurldecode($nospaces);
     }
