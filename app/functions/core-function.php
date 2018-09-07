@@ -1190,7 +1190,7 @@ function ttcms_enqueue_js($config, $asset, $minify = false, $plugin_slug = null)
 function ttcms_generate_password(int $length = 12, bool $special_chars = true, bool $extra_special_chars = false)
 {
     return (
-        new \TriTan\Common\PasswordGenerate(
+        new \TriTan\Common\Password\PasswordGenerate(
             hook::getInstance()
         )
     )->{'generate'}($length, $special_chars, $extra_special_chars);
