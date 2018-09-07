@@ -1,19 +1,16 @@
 <?php
-
 namespace TriTan;
 
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use Respect\Validation\Exceptions\ValidationException;
 use Respect\Validation\Validator;
+use TriTan\Container as c;
 use Cascade\Cascade;
-use TriTan\Functions as func;
 
 /**
  * Validators
  *
  * @license GPLv3
- *         
+ *
  * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
@@ -23,7 +20,7 @@ class Validators
 
     /**
      * Validates username.
-     * 
+     *
      * @since 0.9
      * @param string $username Whether given username is valid.
      * @return bool|Exception   Returns true if username is valid, false and exception
@@ -37,14 +34,14 @@ class Validators
             return true;
         } catch (ValidationException $ex) {
             Cascade::getLogger('error')->error(sprintf('VALIDATOR[%s]: %s', $ex->getCode(), $ex->getMessage()));
-            func\_ttcms_flash()->error($ex->getMessage());
+            c::getInstance()->get('flash')->{'error'}($ex->getMessage());
             return false;
         }
     }
 
     /**
      * Validates email.
-     * 
+     *
      * @since 0.9
      * @param string $email Whether given email is valid.
      * @return bool|Exception   Returns true if email is valid, false and exception
@@ -54,5 +51,4 @@ class Validators
     {
         return Validator::filterVar(FILTER_VALIDATE_EMAIL)->validate($email);
     }
-
 }

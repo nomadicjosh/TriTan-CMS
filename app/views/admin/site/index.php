@@ -1,25 +1,32 @@
 <?php
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
-use TriTan\Functions as func;
 $this->layout('main::_layouts/admin-layout');
 $this->section('backend');
-TriTan\Config::set('screen_parent', 'sites');
-TriTan\Config::set('screen_child', 'sites');
+TriTan\Container::getInstance()->{'set'}('screen_parent', 'sites');
+TriTan\Container::getInstance()->{'set'}('screen_child', 'sites');
 ?>
 
+<script src="static/assets/js/url_slug.js" type="text/javascript"></script>
+<script>
+$(function(){
+    $('#site_name').keyup(function() {
+        $('#site_slug').val(url_slug($(this).val()));
+    });
+});
+</script>
+
 <!-- form start -->
-<form name="form" method="post" data-toggle="validator" action="<?= func\get_base_url(); ?>admin/site/" autocomplete="off">
+<form name="form" method="post" data-toggle="validator" action="<?= admin_url('site/'); ?>" autocomplete="off">
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
         <div class="box box-solid">
             <div class="box-header with-border">
                 <i class="fa fa-thumb-tack"></i>
-                <h3 class="box-title"><?= func\_t('Sites', 'tritan-cms'); ?></h3>
+                <h3 class="box-title"><?= esc_html__('Sites'); ?></h3>
 
                 <div class="pull-right">
-                    <button type="submit" class="btn btn-success"><i class="fa fa-save"></i> <?= func\_t('Save', 'tritan-cms'); ?></button>
+                    <input type="hidden" id="site_slug" name="site_slug" value="<?= __return_post('site_slug'); ?>" />
+                    <button type="submit" class="btn btn-success"><i class="fa fa-save"></i> <?= esc_html__('Save'); ?></button>
                 </div>
             </div>
         </div>
@@ -27,7 +34,7 @@ TriTan\Config::set('screen_child', 'sites');
         <!-- Main content -->
         <section class="content">
 
-            <?= func\_ttcms_flash()->showMessage(); ?>
+            <?= (new \TriTan\Common\FlashMessages())->showMessage(); ?>
 
             <div class="row">
                 <!-- left column -->
@@ -35,27 +42,27 @@ TriTan\Config::set('screen_child', 'sites');
                     <!-- general form elements -->
                     <div class="box box-primary">
                         <div class="box-header with-border">
-                            <h3 class="box-title"><?= func\_t('Add New Site', 'tritan-cms'); ?></h3>
+                            <h3 class="box-title"><?= esc_html__('Add New Site'); ?></h3>
                         </div>
                         <!-- /.box-header -->
                         <div class="box-body">
                             <div class="form-group">
-                                <label><?= func\_t('Subdomain', 'tritan-cms'); ?></label>
+                                <label><?= esc_html__('Subdomain'); ?></label>
                                 <input type="text" class="form-control input-lg" name="subdomain" value="<?= __return_post('subdomain'); ?>" required/>.<?= $this->app->req->server['HTTP_HOST']; ?>
                             </div>
                             <div class="form-group">
-                                <label><?= func\_t('Site Name', 'tritan-cms'); ?></label>
-                                <input type="text" class="form-control" name="site_name" value="<?= __return_post('site_name'); ?>" required/>
+                                <label><?= esc_html__('Site Name'); ?></label>
+                                <input type="text" id="site_name" class="form-control" name="site_name" value="<?= __return_post('site_name'); ?>" required/>
                             </div>
                             <div class="form-group">
-                                <label><?= func\_t('Path', 'tritan-cms'); ?> <a href="#path" data-toggle="modal"><span class="badge"><i class="fa fa-question"></i></span></a></label>
-                                <input type="text" class="form-control" name="site_path" value="<?=str_replace('index.php', '', $this->app->req->server['PHP_SELF']);?>" required/>
+                                <label><?= esc_html__('Path'); ?> <a href="#path" data-toggle="modal"><span class="badge"><i class="fa fa-question"></i></span></a></label>
+                                <input type="text" class="form-control" name="site_path" value="<?=str_replace('index.php', '', esc_html($this->app->req->server['PHP_SELF']));?>" required/>
                             </div>
                             <div class="form-group">
-                                <label><?= func\_t('Administrator', 'tritan-cms'); ?></label>
+                                <label><?= esc_html__('Administrator'); ?></label>
                                 <select class="form-control select2" name="site_owner" style="width: 100%;" required>
                                     <option>&nbsp;</option>
-                                    <?php func\get_users_list(__return_post('site_owner')); ?>
+                                    <?php get_users_list(__return_post('site_owner')); ?>
                                 </select>
                             </div>
                         </div>
@@ -70,50 +77,50 @@ TriTan\Config::set('screen_child', 'sites');
                     <!-- general form elements -->
                     <div class="box box-primary">
                         <div class="box-header with-border">
-                            <h3 class="box-title"><?= func\_t('Sites', 'tritan-cms'); ?></h3>
+                            <h3 class="box-title"><?= esc_html__('Sites'); ?></h3>
                         </div>
                         <!-- /.box-header -->
                         <div class="box-body">
                             <table id="example1" class="table table-bordered table-hover">
                                 <thead>
                                     <tr>
-                                        <th class="text-center"><?= func\_t('URL', 'tritan-cms'); ?></th>
-                                        <th class="text-center"><?= func\_t('Name', 'tritan-cms'); ?></th>
-                                        <th class="text-center"><?= func\_t('Admin', 'tritan-cms'); ?></th>
-                                        <th class="text-center"><?= func\_t('Status', 'tritan-cms'); ?></th>
-                                        <th class="text-center"><?= func\_t('Action', 'tritan-cms'); ?></th>
+                                        <th class="text-center"><?= esc_html__('URL'); ?></th>
+                                        <th class="text-center"><?= esc_html__('Name'); ?></th>
+                                        <th class="text-center"><?= esc_html__('Admin'); ?></th>
+                                        <th class="text-center"><?= esc_html__('Status'); ?></th>
+                                        <th class="text-center"><?= esc_html__('Action'); ?></th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php foreach ($this->sites as $site) : ?>
                                         <tr class="gradeX">
-                                            <td class="text-center"><a href="//<?= $site['site_domain']; ?><?= $site['site_path']; ?>" target="new"><?= $site['site_domain']; ?></a></td>
-                                            <td class="text-center"><?= $site['site_name']; ?></td>
-                                            <td class="text-center"><?= func\get_name((int) $site['site_owner']); ?></td>
+                                            <td class="text-center"><a href="//<?= $site->getDomain(); ?><?= $site->getPath(); ?>" target="new"><?= $site->getDomain(); ?></a></td>
+                                            <td class="text-center"><?= $site->getName(); ?></td>
+                                            <td class="text-center"><?= get_name((int) $site->getOwner()); ?></td>
                                             <td class="text-center">
-                                                <span class="label <?= func\ttcms_site_status_label($site['site_status']); ?>" style="font-size:1em;font-weight: bold;">
-                                                    <?= ucfirst($site['site_status']); ?>
+                                                <span class="label <?= ttcms_site_status_label($site->getStatus()); ?>" style="font-size:1em;font-weight: bold;">
+                                                    <?= ucfirst($site->getStatus()); ?>
                                                 </span>
                                             </td>
                                             <td class="text-center">
-                                                <button type="button"<?=func\ae('update_sites');?> class="btn btn-success" onclick="window.location = '<?= func\get_base_url(); ?>admin/site/<?= (int) $site['site_id']; ?>/'"><i class="fa fa-pencil"></i></button>
-                                                <?php if((int) $site['site_id'] <> 1) : ?>
-                                                <button type="button"<?= func\ae('delete_sites'); ?> class="btn bg-red" data-toggle="modal" data-target="#delete-<?= $site['site_id']; ?>"><i class="fa fa-trash-o"></i></button>
+                                                <button type="button"<?= ae('update_sites');?> class="btn btn-success" onclick="window.location = '<?= admin_url('site/' . (int) $site->getId() . '/'); ?>'"><i class="fa fa-pencil"></i></button>
+                                                <?php if ((int) $site->getId() <> 1) : ?>
+                                                <button type="button"<?= ae('delete_sites'); ?> class="btn bg-red" data-toggle="modal" data-target="#delete-<?= $site->getId(); ?>"><i class="fa fa-trash-o"></i></button>
                                                 <?php endif; ?>
-                                                <div class="modal" id="delete-<?= $site['site_id']; ?>">
+                                                <div class="modal" id="delete-<?= $site->getId(); ?>">
                                                     <div class="modal-dialog">
                                                         <div class="modal-content">
                                                             <div class="modal-header">
                                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                                     <span aria-hidden="true">&times;</span></button>
-                                                                <h4 class="modal-title"><?= $site['site_domain']; ?></h4>
+                                                                <h4 class="modal-title"><?= $site->getDomain(); ?></h4>
                                                             </div>
                                                             <div class="modal-body">
-                                                                <p><?= func\_t("Are you sure you want to delete this site and all it's content"); ?></p>
+                                                                <p><?= esc_html__("Are you sure you want to delete this site and all it's content"); ?></p>
                                                             </div>
                                                             <div class="modal-footer">
-                                                                <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><?= func\_t('Close'); ?></button>
-                                                                <button type="button" class="btn btn-primary" onclick="window.location = '<?= func\get_base_url(); ?>admin/site/<?= (int) $site['site_id']; ?>/d/'"><?= func\_t('Confirm'); ?></button>
+                                                                <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><?= esc_html__('Close'); ?></button>
+                                                                <button type="button" class="btn btn-primary" onclick="window.location = '<?= admin_url('site/' . (int) $site->getId() . '/d/'); ?>'"><?= esc_html__('Confirm'); ?></button>
                                                             </div>
                                                         </div>
                                                         <!-- /.modal-content -->
@@ -127,11 +134,11 @@ TriTan\Config::set('screen_child', 'sites');
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <th class="text-center"><?= func\_t('URL', 'tritan-cms'); ?></th>
-                                        <th class="text-center"><?= func\_t('Name', 'tritan-cms'); ?></th>
-                                        <th class="text-center"><?= func\_t('Admin', 'tritan-cms'); ?></th>
-                                        <th class="text-center"><?= func\_t('Status', 'tritan-cms'); ?></th>
-                                        <th class="text-center"><?= func\_t('Action', 'tritan-cms'); ?></th>
+                                        <th class="text-center"><?= esc_html__('URL'); ?></th>
+                                        <th class="text-center"><?= esc_html__('Name'); ?></th>
+                                        <th class="text-center"><?= esc_html__('Admin'); ?></th>
+                                        <th class="text-center"><?= esc_html__('Status'); ?></th>
+                                        <th class="text-center"><?= esc_html__('Action'); ?></th>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -154,13 +161,13 @@ TriTan\Config::set('screen_child', 'sites');
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title"><?= func\_t('Site Path', 'tritan-cms'); ?></h4>
+                        <h4 class="modal-title"><?= esc_html__('Site Path'); ?></h4>
                     </div>
                     <div class="modal-body">
-                        <p><?= func\_t("Based on your setup and where you installed TriTan, the system will figure out the correct path.", 'tritan-cms'); ?></p>
+                        <p><?= esc_html__("Based on your setup and where you installed TriTan, the system will figure out the correct path."); ?></p>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><?= func\_t('Close', 'tritan-cms'); ?></button>
+                        <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><?= esc_html__('Close'); ?></button>
                     </div>
                 </div>
                 <!-- /.modal-content -->

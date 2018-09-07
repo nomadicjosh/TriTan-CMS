@@ -24,10 +24,14 @@
                     "reference": "master"
                 }
             }
+        },
+        {
+            "type":"composer",
+            "url": "https://packagist.tritancms.com"
         }
     ],
     "require": {
-        "php": ">=7.0",
+        "php": ">=7.1",
         "mikey179/vfsStream": "^1",
         "jolicode/jolinotif": "^1.0",
         "phpmailer/phpmailer": "*",
@@ -62,12 +66,20 @@
         "fenom/providers-collection": "^1.0",
         "foil/foil": "^0.6.7",
         "symfony/console": "^4.1",
-        "nette/security": "^2.4"
+        "nette/security": "^2.4",
+        "liten/liten": "^1.0",
+        "spatie/image": "^1.5",
+        "spatie/schema-org": "^2.0"
+    },
+    "extra": {
+        "installer-types": ["tritancms-plugin"],
+        "installer-paths": {
+            "plugins/{$name}/": ["type:tritancms-plugin"]
+        }
     },
     "autoload": {
         "psr-4": {
-            "App\\": "app/src/",
-            "TriTan\\Functions\\": "app/functions/"
+            "TriTan\\": "app/src/"
         }
     },
     "require-dev": {

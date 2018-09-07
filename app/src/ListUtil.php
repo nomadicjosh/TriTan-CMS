@@ -1,15 +1,11 @@
 <?php
-
 namespace TriTan;
-
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 
 /**
  * List Utility
  *
  * @license GPLv3
- *         
+ *
  * @since 0.9.6
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>
@@ -60,7 +56,7 @@ class ListUtil
      * @since 0.9.6
      * @return array The input array.
      */
-    public function get_input()
+    public function getInput()
     {
         return $this->input;
     }
@@ -71,7 +67,7 @@ class ListUtil
      * @since 0.9.6
      * @return array The output array.
      */
-    public function get_output()
+    public function getOutput()
     {
         return $this->output;
     }
@@ -113,10 +109,9 @@ class ListUtil
                 }
             }
 
-            if (
-                    ( 'AND' == $operator && $matched == $count ) ||
-                    ( 'OR' == $operator && $matched > 0 ) ||
-                    ( 'NOT' == $operator && 0 == $matched )
+            if (('AND' == $operator && $matched == $count) ||
+                    ('OR' == $operator && $matched > 0) ||
+                    ('NOT' == $operator && 0 == $matched)
             ) {
                 $filtered[$key] = $obj;
             }
@@ -216,9 +211,9 @@ class ListUtil
         $this->orderby = $orderby;
 
         if ($preserve_keys) {
-            uasort($this->output, [$this, 'sort_callback']);
+            uasort($this->output, [$this, 'sortCallback']);
         } else {
-            usort($this->output, [$this, 'sort_callback']);
+            usort($this->output, [$this, 'sortCallback']);
         }
 
         $this->orderby = [];
@@ -235,7 +230,7 @@ class ListUtil
      * @param object|array $b The other object to compare.
      * @return int 0 if both objects equal. -1 if second object should come first, 1 otherwise.
      */
-    private function sort_callback($a, $b)
+    private function sortCallback($a, $b)
     {
         if (empty($this->orderby)) {
             return 0;
@@ -256,7 +251,7 @@ class ListUtil
             $results = 'DESC' === $direction ? [1, -1] : [-1, 1];
 
             if (is_numeric($a[$field]) && is_numeric($b[$field])) {
-                return ( $a[$field] < $b[$field] ) ? $results[0] : $results[1];
+                return ($a[$field] < $b[$field]) ? $results[0] : $results[1];
             }
 
             return 0 > strcmp($a[$field], $b[$field]) ? $results[0] : $results[1];
@@ -264,5 +259,4 @@ class ListUtil
 
         return 0;
     }
-
 }

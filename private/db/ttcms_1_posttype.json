@@ -4,7 +4,7 @@
         "posttype_id": 1,
         "posttype_title": "Post",
         "posttype_slug": "post",
-        "posttype_description": ""
+        "posttype_description": null
     },
     "59a5fb6790fe83.51035156": {
         "_id": "59a5fb6790fe83.51035156",

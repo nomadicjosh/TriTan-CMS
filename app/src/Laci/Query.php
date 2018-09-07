@@ -11,7 +11,6 @@ use TriTan\Laci\Pipes\SorterPipe;
 
 class Query
 {
-
     const TYPE_GET = 'get';
     const TYPE_INSERT = 'insert';
     const TYPE_UPDATE = 'update';
@@ -73,43 +72,43 @@ class Query
         }
         $keyAliases = array_values($resolvedColumns);
 
-        return $this->map(function($row) use ($resolvedColumns, $keyAliases) {
-                    foreach ($resolvedColumns as $col => $keyAlias) {
-                        if (!isset($row[$keyAlias])) {
-                            $row[$keyAlias] = $row[$col];
-                        }
-                    }
-                    foreach ($row->toArray() as $col => $value) {
-                        if (!in_array($col, $keyAliases)) {
-                            unset($row[$col]);
-                        }
-                    }
-                    return $row;
-                });
+        return $this->map(function ($row) use ($resolvedColumns, $keyAliases) {
+            foreach ($resolvedColumns as $col => $keyAlias) {
+                if (!isset($row[$keyAlias])) {
+                    $row[$keyAlias] = $row[$col];
+                }
+            }
+            foreach ($row->toArray() as $col => $value) {
+                if (!in_array($col, $keyAliases)) {
+                    unset($row[$col]);
+                }
+            }
+            return $row;
+        });
     }
 
     public function withOne($relation, $as, $otherKey, $operator = '=', $thisKey = '_id')
     {
-        if (false == $relation instanceof Query AND false == $relation instanceof Collection) {
+        if (false == $relation instanceof Query and false == $relation instanceof Collection) {
             throw new \InvalidArgumentException("Relation must be instanceof Query or Collection", 1);
         }
-        return $this->map(function($row) use ($relation, $as, $otherKey, $operator, $thisKey) {
-                    $otherData = $relation->where($otherKey, $operator, $row[$thisKey])->first();
-                    $row[$as] = $otherData;
-                    return $row;
-                });
+        return $this->map(function ($row) use ($relation, $as, $otherKey, $operator, $thisKey) {
+            $otherData = $relation->where($otherKey, $operator, $row[$thisKey])->first();
+            $row[$as] = $otherData;
+            return $row;
+        });
     }
 
     public function withMany($relation, $as, $otherKey, $operator = '=', $thisKey = '_id')
     {
-        if (false !== $relation instanceof Query AND false == $relation instanceof Collection) {
+        if (false !== $relation instanceof Query and false == $relation instanceof Collection) {
             throw new \InvalidArgumentException("Relation must be instanceof Query or Collection", 1);
         }
-        return $this->map(function($row) use ($relation, $as, $otherKey, $operator, $thisKey) {
-                    $otherData = $relation->where($otherKey, $operator, $row[$thisKey])->get();
-                    $row[$as] = $otherData;
-                    return $row;
-                });
+        return $this->map(function ($row) use ($relation, $as, $otherKey, $operator, $thisKey) {
+            $otherData = $relation->where($otherKey, $operator, $row[$thisKey])->get();
+            $row[$as] = $otherData;
+            return $row;
+        });
     }
 
     public function sortBy($key, $asc = 'asc')
@@ -121,11 +120,11 @@ class Query
         if ($key instanceof Closure) {
             $value = $key;
         } else {
-            $value = function($row) use ($key) {
+            $value = function ($row) use ($key) {
                 return $row[$key];
             };
         }
-        $this->addSorter(function($row) use ($value) {
+        $this->addSorter(function ($row) use ($value) {
             return $value(new ArrayExtra($row));
         }, $asc);
         return $this;
@@ -251,52 +250,52 @@ class Query
         }
         switch ($operator) {
             case '=':
-                $filter = function($row) use ($key, $value) {
+                $filter = function ($row) use ($key, $value) {
                     return $row[$key] == $value;
                 };
                 break;
             case '>':
-                $filter = function($row) use ($key, $value) {
+                $filter = function ($row) use ($key, $value) {
                     return $row[$key] > $value;
                 };
                 break;
             case '>=':
-                $filter = function($row) use ($key, $value) {
+                $filter = function ($row) use ($key, $value) {
                     return $row[$key] >= $value;
                 };
                 break;
             case '<':
-                $filter = function($row) use ($key, $value) {
+                $filter = function ($row) use ($key, $value) {
                     return $row[$key] < $value;
                 };
                 break;
             case '<=':
-                $filter = function($row) use ($key, $value) {
+                $filter = function ($row) use ($key, $value) {
                     return $row[$key] <= $value;
                 };
                 break;
             case 'in':
-                $filter = function($row) use ($key, $value) {
+                $filter = function ($row) use ($key, $value) {
                     return in_array($row[$key], (array) $value);
                 };
                 break;
             case 'not in':
-                $filter = function($row) use ($key, $value) {
+                $filter = function ($row) use ($key, $value) {
                     return !in_array($row[$key], (array) $value);
                 };
                 break;
             case 'match':
-                $filter = function($row) use ($key, $value) {
+                $filter = function ($row) use ($key, $value) {
                     return (bool) preg_match($value, $row[$key]);
                 };
                 break;
             case 'between':
-                if (!is_array($value) OR count($value) < 2) {
+                if (!is_array($value) or count($value) < 2) {
                     throw new \InvalidArgumentException("Query between need exactly 2 items in array");
                 }
-                $filter = function($row) use ($key, $value) {
+                $filter = function ($row) use ($key, $value) {
                     $v = $row[$key];
-                    return $v >= $value[0] AND $v <= $value[1];
+                    return $v >= $value[0] and $v <= $value[1];
                 };
                 break;
         }
@@ -315,7 +314,7 @@ class Query
         } else {
             $pipe = $lastPipe;
         }
-        $newFilter = function($row) use ($filter) {
+        $newFilter = function ($row) use ($filter) {
             $row = new ArrayExtra($row);
             return $filter($row);
         };
@@ -333,7 +332,7 @@ class Query
         }
         $keyId = $this->getCollection()->getKeyId();
         $keyOldId = $this->getCollection()->getKeyOldId();
-        $newMapper = function($row) use ($mapper, $keyId, $keyOldId) {
+        $newMapper = function ($row) use ($mapper, $keyId, $keyOldId) {
             $row = new ArrayExtra($row);
             $result = $mapper($row);
 
@@ -344,7 +343,7 @@ class Query
             } else {
                 $new = null;
             }
-            if (is_array($new) AND isset($new[$keyId])) {
+            if (is_array($new) and isset($new[$keyId])) {
                 if ($row[$keyId] != $new[$keyId]) {
                     $new[$keyOldId] = $row[$keyId];
                 }
@@ -391,5 +390,4 @@ class Query
             throw new \TriTan\Exception\UndefinedMethodException("Undefined method or macro '{$method}'.");
         }
     }
-
 }

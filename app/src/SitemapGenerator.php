@@ -1,7 +1,6 @@
-<?php namespace TriTan;
+<?php
+namespace TriTan;
 
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
 use Symfony\Component\Process\Exception\InvalidArgumentException;
 use Symfony\Component\Serializer\Exception\BadMethodCallException;
 use LengthException;
@@ -10,7 +9,7 @@ use LengthException;
  * Sitemap Generator Class
  *
  * @license GPLv3
- *         
+ *
  * @since 0.9
  * @package TriTan CMS
  * @author Joshua Parker <joshmac3@icloud.com>

@@ -1,11 +1,9 @@
 <?php
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
-use TriTan\Functions as func;
+
 $this->layout('main::_layouts/admin-layout');
 $this->section('backend');
-TriTan\Config::set('screen_parent', 'dashboard');
-TriTan\Config::set('screen_child', 'home');
+TriTan\Container::getInstance()->{'set'}('screen_parent', 'dashboard');
+TriTan\Container::getInstance()->{'set'}('screen_child', 'home');
 ?>
 
 <!-- Content Wrapper. Contains page content -->
@@ -13,22 +11,22 @@ TriTan\Config::set('screen_child', 'home');
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>
-            <?= func\_t('Dashboard'); ?>
-            <small><?= func\_t('Control panel'); ?></small>
+            <?= esc_html__('Dashboard'); ?>
+            <small><?= esc_html__('Control panel'); ?></small>
         </h1>
         <ol class="breadcrumb">
-            <li><a href="#"><i class="fa fa-dashboard"></i> <?= func\_t('Home'); ?></a></li>
-            <li class="active"><?= func\_t('Dashboard'); ?></li>
+            <li><a href="#"><i class="fa fa-dashboard"></i> <?= esc_html__('Home'); ?></a></li>
+            <li class="active"><?= esc_html__('Dashboard'); ?></li>
         </ol>
     </section>
 
     <!-- Main content -->
     <section class="content">
 
-            <?= func\_ttcms_flash()->showMessage(); ?>
+            <?= (new \TriTan\Common\FlashMessages())->showMessage(); ?>
 
         <div class="row">
-            <?php //top widgets can go here.  ?>
+            <?php //top widgets can go here.?>
         </div>
         <!-- /.row -->
 
@@ -39,7 +37,7 @@ TriTan\Config::set('screen_child', 'home');
 
                 <div class="box">
                     <div class="box-header with-border">
-                        <h3 class="box-title"><i class="fa fa-text-width"></i> <?= func\_t('Recently Posted'); ?></h3>
+                        <h3 class="box-title"><i class="fa fa-text-width"></i> <?= esc_html__('Recently Posted'); ?></h3>
                         <div class="box-tools pull-right">
                             <!-- Collapse Button -->
                             <!--<button type="button" class="btn btn-box-tool" data-widget="collapse">
@@ -50,7 +48,7 @@ TriTan\Config::set('screen_child', 'home');
                     </div>
                     <!-- /.box-header -->
                     <div class="box-body">
-                        <?php func\recently_published_widget(); ?>
+                        <?php recently_published_widget(); ?>
                     </div>
                     <!-- /.box-body -->
                 </div>
@@ -61,10 +59,10 @@ TriTan\Config::set('screen_child', 'home');
 
             <!-- Left col -->
             <section class="col-lg-6 connectedSortable">
-                
+
                 <div class="box">
                     <div class="box-header with-border">
-                        <h3 class="box-title"><i class="fa fa-rss"></i> <?= func\_t('TriTan CMS Feed'); ?></h3>
+                        <h3 class="box-title"><i class="fa fa-rss"></i> <?= esc_html__('TriTan CMS Feed'); ?></h3>
                         <div class="box-tools pull-right">
                             <!-- Collapse Button -->
                             <!--<button type="button" class="btn btn-box-tool" data-widget="collapse">
@@ -75,7 +73,7 @@ TriTan\Config::set('screen_child', 'home');
                     </div>
                     <!-- /.box-header -->
                     <div class="box-body">
-                        <?php func\tritan_cms_feed_widget(); ?>
+                        <?php tritan_cms_feed_widget(); ?>
                     </div>
                     <!-- /.box-body -->
                 </div>

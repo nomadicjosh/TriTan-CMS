@@ -1,8 +1,7 @@
-<?php if (!defined('BASE_PATH')) exit('No direct script access allowed');
-use TriTan\Functions as func;
+<?php
 $this->layout('main::_layouts/admin-layout');
 $this->section('backend');
-TriTan\Config::set('screen_parent', 'media');
+TriTan\Container::getInstance()->{'set'}('screen_parent', 'media');
 ?>
 
 <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
@@ -12,7 +11,7 @@ TriTan\Config::set('screen_parent', 'media');
 <script type="text/javascript">
 	$().ready(function() {
 		var elf = $('#elfinder').elfinder({
-			url : '<?=func\get_base_url();?>admin/connector/',
+			url : '<?= admin_url( 'connector/' ); ?>',
 			modal: true,
 			resizable:false
 		}).elfinder('instance');
@@ -25,15 +24,15 @@ TriTan\Config::set('screen_parent', 'media');
     <div class="box box-solid">
         <div class="box-header with-border">
             <i class="fa fa-camera"></i>
-            <h3 class="box-title"><?= func\_t('Media Library'); ?></h3>
+            <h3 class="box-title"><?= esc_html__('Media Library', 'tritan-cms'); ?></h3>
         </div>
     </div>
 
     <!-- Main content -->
     <section class="content">
-        
-        <?= func\_ttcms_flash()->showMessage(); ?>
-        
+
+        <?= (new \TriTan\Common\FlashMessages())->showMessage(); ?>
+
         <div class="box box-default">
             <div class="box-body">
                 <div id="elfinder"></div>

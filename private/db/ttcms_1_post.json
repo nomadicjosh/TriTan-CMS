@@ -22,7 +22,8 @@
         "post_relative_url": "post\/hello-world\/",
         "post_featured_image": null,
         "post_status": "published",
-        "post_created": "2017-08-29 7:23 AM",
+        "post_created": "2017-08-29 19:23:00",
+        "post_published": "2017-08-29 7:23 AM",
         "post_modified": "2017-11-15 11:47:17"
     },
     "59a712b50327a9.30789643": {
@@ -48,7 +49,8 @@
         "post_relative_url": "page\/about-me\/",
         "post_featured_image": null,
         "post_status": "published",
-        "post_created": "2017-08-30 3:31 PM",
+        "post_created": "2017-08-30 15:31:00",
+        "post_published": "2017-08-30 3:31 PM",
         "post_modified": "2017-11-03 11:53:03"
     }
 }

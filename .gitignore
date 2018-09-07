@@ -7,7 +7,7 @@ private/db/.htaccess
 private/.tmb
 private/.quarantine
 private/db/last_login.json
-private/db/php_encryption.json
+private/db/encryption.json
 private/db/ttcms_1_activity.json
 private/db/ttcms_1_error.json
 private/db/ttcms_1_plugin.json

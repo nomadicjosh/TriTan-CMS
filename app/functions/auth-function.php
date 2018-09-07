@@ -1,14 +1,11 @@
 <?php
-
-namespace TriTan\Functions;
-
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
-use TriTan\Config;
+use TriTan\Container as c;
 use TriTan\Exception\Exception;
 use TriTan\Exception\UnauthorizedException;
 use TriTan\Exception\NotFoundException;
 use Cascade\Cascade;
+use TriTan\Database;
+use TriTan\Common\Hooks\ActionFilterHook as hook;
 
 /**
  * TriTan CMS Auth Helper
@@ -20,72 +17,85 @@ use Cascade\Cascade;
 
 /**
  * Checks the permission of the logged in user.
- * 
+ *
  * @file app/functions/auth-function.php
- * 
+ *
  * @since 0.9.8
  * @param string $perm Permission to check for.
  * @return bool Return true if permission matches or false otherwise.
  */
-function current_user_can($perm)
+function current_user_can($perm): bool
 {
-    $acl = new \TriTan\ACL(get_current_user_id());
+    $acl = new \TriTan\Common\User\UserPermissionRepository(
+        new TriTan\Common\User\UserPermissionMapper(
+            new Database(),
+            new \TriTan\Common\Context\HelperContext()
+        )
+    );
 
-    if ($acl->hasPermission($perm) && is_user_logged_in()) {
+    if ($acl->{'has'}($perm) && is_user_logged_in()) {
         return true;
     }
     return false;
 }
 
 /**
- * Checks the main role of the user from the user document.
- * 
+ * Checks the role of the logged in user.
+ *
  * @file app/functions/auth-function.php
- * 
- * @since 0.9
- * @param int $role_id The id of the role to check for.
- * @return bool True if role id matches or false otherwise
+ *
+ * @since 0.9.9
+ * @param string $role The role to check for.
+ * @return bool True if user has role, false otherwise.
  */
-function hasRole($role_id)
+function current_user_has_role(string $role)
 {
-    $user = get_userdata(get_current_user_id());
-    if ((int) $role_id === (int) _escape($user->user_role)) {
-        return true;
-    }
-    return false;
+    return (
+        new TriTan\Common\User\UserRoleRepository(
+            new \TriTan\Common\User\UserRoleMapper(
+                new Database(),
+                new \TriTan\Common\Context\HelperContext()
+            )
+        )
+    )->{'has'}($role);
 }
 
 /**
  * Returns the values of a requested role.
- * 
+ *
  * @file app/functions/auth-function.php
- * 
+ *
  * @since 0.9
  * @param int $role The id of the role to check for.
  * @return array Returned values of the role.
  */
 function get_role_by_id($role = 0)
 {
-    $sql = app()->db->table('role')
-            ->where('role_id', (int) $role)
-            ->first();
+    $repo = (
+        new TriTan\Common\Acl\RoleRepository(
+            new TriTan\Common\Acl\RoleMapper(
+                new Database(),
+                new \TriTan\Common\Context\HelperContext()
+            )
+        )
+    )->{'findById'}((int) $role);
 
     $data = [];
     $data['role'] = [
-        'role_id' => _escape($sql['role_id']),
-        'role_name' => _escape($sql['role_name']),
-        'role_key' => _escape($sql['role_key']),
-        'role_permission' => _escape($sql['role_permission'])
+        'role_id' => $repo->getId(),
+        'role_name' => $repo->getName(),
+        'role_key' => $repo->getKey(),
+        'role_permission' => $repo->getPermission()
     ];
 
-    return app()->hook->{'apply_filter'}('role_by_id', $data, $role);
+    return hook::getInstance()->{'applyFilter'}('role_by_id', $data, $role);
 }
 
 /**
  * Retrieve user info by user_id.
- * 
+ *
  * @file app/functions/auth-function.php
- * 
+ *
  * @since 0.9
  * @param mixed $user_id User's id.
  * @return User|false User array on success, false on failure.
@@ -97,28 +107,23 @@ function get_userdata($user_id)
 
 /**
  * Checks if a visitor is logged in or not.
- * 
+ *
  * @file app/functions/auth-function.php
- * 
+ *
  * @since 0.9
  * @return boolean
  */
-function is_user_logged_in()
+function is_user_logged_in(): bool
 {
     $user = get_user_by('id', get_current_user_id());
-
-    if ('' != (int) _escape($user->user_id) && app()->cookies->{'verifySecureCookie'}('TTCMS_COOKIENAME')) {
-        return true;
-    }
-
-    return false;
+    return false != $user && ttcms()->obj['app']->cookies->{'verifySecureCookie'}('TTCMS_COOKIENAME');
 }
 
 /**
  * Checks if logged in user can access menu, tab, or page.
- * 
+ *
  * @file app/functions/auth-function.php
- * 
+ *
  * @since 0.9
  * @param string $perm Permission to check for.
  * @return string
@@ -134,30 +139,34 @@ function ae($perm)
  * Retrieve user info by a given field from the user's table.
  *
  * @file app/functions/auth-function.php
- * 
+ *
  * @since 0.9
  * @param string $field The field to retrieve the user with.
  * @param int|string $value A value for $field (id, uname or email).
  */
 function get_user_by($field, $value)
 {
-    $userdata = \TriTan\User::get_data_by($field, $value);
+    $userdata = (
+            new \TriTan\Common\User\UserRepository(
+                new \TriTan\Common\User\UserMapper(
+                    new Database(),
+                    new \TriTan\Common\Context\HelperContext()
+                )
+            ))
+            ->{'findBy'}($field, $value);
 
     if (!$userdata) {
         return false;
     }
 
-    $user = new \TriTan\User();
-    $user->init($userdata);
-
-    return $user;
+    return $userdata;
 }
 
 /**
  * Logs a user in after the login information has checked out.
  *
  * @file app/functions/auth-function.php
- * 
+ *
  * @since 0.9
  * @param string $login User's username or email address.
  * @param string $password User's password.
@@ -165,58 +174,83 @@ function get_user_by($field, $value)
  */
 function ttcms_authenticate($login, $password, $rememberme)
 {
-    $user = app()->db->table('user')
+    $db = new \TriTan\Database();
+    $user = $db->table('user')
             ->where('user_login', $login)
             ->orWhere('user_email', $login)
             ->first();
 
     if (false == $user) {
-        _ttcms_flash()->{'error'}(sprintf(_t('Sorry, an account for <strong>%s</strong> does not exist.', 'tritan-cms'), $login), app()->req->server['HTTP_REFERER']);
+        ttcms()->obj['flash']->{'error'}(
+            sprintf(
+                t__(
+                    'Sorry, an account for <strong>%s</strong> does not exist.'
+                ),
+                $login
+            ),
+            ttcms()->obj['app']->req->server['HTTP_REFERER']
+        );
         return;
     }
 
-    $ll = app()->db->table('last_login');
+    $ll = $db->table('last_login');
     $ll->begin();
     try {
         $ll->insert([
-            'last_login_id' => auto_increment('last_login', 'last_login_id'),
-            'site_id' => (int) Config::get('site_id'),
-            'user_id' => (int) _escape($user['user_id']),
-            'user_ip' => (string) app()->req->server['REMOTE_ADDR'],
-            'login_timestamp' => (string) \Jenssegers\Date\Date::now()
+            'site_id' => (int) c::getInstance()->get('site_id'),
+            'user_id' => (int) esc_html($user['user_id']),
+            'user_ip' => (string) ttcms()->obj['app']->req->server['REMOTE_ADDR'],
+            'login_timestamp' => (string) ttcms()->obj['date']->{'current'}('laci')
         ]);
         $ll->commit();
     } catch (Exception $ex) {
         $ll->rollback();
-        Cascade::getLogger('error')->{'error'}(sprintf('AUTHSTATE[%s]: Unauthorized: %s', $ex->getCode(), $ex->getMessage()));
+        Cascade::getLogger('error')->{'error'}(
+            sprintf(
+                'AUTHSTATE[%s]: Unauthorized: %s',
+                $ex->getCode(),
+                $ex->getMessage()
+            )
+        );
     }
 
 
     /**
      * Filters the authentication cookie.
-     * 
+     *
      * @since 0.9
      * @param object $_user User data object.
      * @param string $rememberme Whether to remember the user.
      * @throws Exception If $user is not a database object.
      */
     try {
-        app()->hook->{'apply_filter'}('ttcms_auth_cookie', $user, $rememberme);
+        hook::getInstance()->{'applyFilter'}('ttcms_auth_cookie', $user, $rememberme);
     } catch (UnauthorizedException $e) {
-        Cascade::getLogger('error')->{'error'}(sprintf('AUTHSTATE[%s]: Unauthorized: %s', $e->getCode(), $e->getMessage()));
+        Cascade::getLogger('error')->{'error'}(
+            sprintf(
+                'AUTHSTATE[%s]: Unauthorized: %s',
+                $e->getCode(),
+                $e->getMessage()
+            )
+        );
     }
 
-    ttcms_logger_activity_log_write('Authentication', 'Login', get_name(_escape($user['user_id'])), _escape($user['user_login']));
+    ttcms_logger_activity_log_write(
+        'Authentication',
+        'Login',
+        get_name((int) esc_html($user['user_id'])),
+        esc_html($user['user_login'])
+    );
 
-    $redirect_to = (app()->req->post['redirect_to'] != null ? app()->req->post['redirect_to'] : get_base_url());
-    ttcms_redirect($redirect_to);
+    $redirect_to = (ttcms()->obj['app']->req->post['redirect_to'] != null ? ttcms()->obj['app']->req->post['redirect_to'] : site_url());
+    ttcms()->obj['uri']->{'redirect'}($redirect_to);
 }
 
 /**
  * Checks a user's login information.
  *
  * @file app/functions/auth-function.php
- * 
+ *
  * @since 0.9
  * @param string $login User's username or email address.
  * @param string $password User's password.
@@ -225,13 +259,22 @@ function ttcms_authenticate($login, $password, $rememberme)
 function ttcms_authenticate_user($login, $password, $rememberme)
 {
     if (empty($login) || empty($password)) {
-
         if (empty($login)) {
-            _ttcms_flash()->{'error'}(_t('<strong>ERROR</strong>: The username/email field is empty.', 'tritan-cms'), app()->req->server['HTTP_REFERER']);
+            ttcms()->obj['flash']->{'error'}(
+                t__(
+                    '<strong>ERROR</strong>: The username/email field is empty.'
+                ),
+                ttcms()->obj['app']->req->server['HTTP_REFERER']
+            );
         }
 
         if (empty($password)) {
-            _ttcms_flash()->{'error'}(_t('<strong>ERROR</strong>: The password field is empty.', 'tritan-cms'), app()->req->server['HTTP_REFERER']);
+            ttcms()->obj['flash']->{'error'}(
+                t__(
+                    '<strong>ERROR</strong>: The password field is empty.'
+                ),
+                ttcms()->obj['app']->req->server['HTTP_REFERER']
+            );
         }
         return;
     }
@@ -239,42 +282,70 @@ function ttcms_authenticate_user($login, $password, $rememberme)
     if (validate_email($login)) {
         $user = get_user_by('email', $login);
 
-        if (false == _escape($user->user_email)) {
-            _ttcms_flash()->{'error'}(_t('<strong>ERROR</strong>: Invalid email address.', 'tritan-cms'), app()->req->server['HTTP_REFERER']);
+        if (false == $user) {
+            ttcms()->obj['flash']->{'error'}(
+                t__(
+                    '<strong>ERROR</strong>: Invalid email address.'
+                ),
+                ttcms()->obj['app']->req->server['HTTP_REFERER']
+            );
             return;
         }
     } else {
         $user = get_user_by('login', $login);
 
-        if (false == _escape($user->user_login)) {
-            _ttcms_flash()->{'error'}(_t('<strong>ERROR</strong>: Invalid username.', 'tritan-cms'), app()->req->server['HTTP_REFERER']);
+        if (false == $user) {
+            ttcms()->obj['flash']->{'error'}(
+                t__(
+                    '<strong>ERROR</strong>: Invalid username.'
+                ),
+                ttcms()->obj['app']->req->server['HTTP_REFERER']
+            );
             return;
         }
     }
 
-    if (!ttcms_check_password($password, $user->user_pass, $user->user_id)) {
-        _ttcms_flash()->{'error'}(_t('<strong>ERROR</strong>: The password you entered is incorrect.', 'tritan-cms'), app()->req->server['HTTP_REFERER']);
+    $auth = new TriTan\Common\PasswordCheck(
+        new \TriTan\Common\PasswordSetMapper(
+            new Database(),
+            new \TriTan\Common\PasswordHash(
+                hook::getInstance()
+            )
+        ),
+        new \TriTan\Common\PasswordHash(
+            hook::getInstance()
+        ),
+        hook::getInstance()
+    );
+
+    if (!$auth->{'check'}($password, $user->getPassword(), $user->getId())) {
+        ttcms()->obj['flash']->{'error'}(
+            t__(
+                '<strong>ERROR</strong>: The password you entered is incorrect.'
+            ),
+            ttcms()->obj['app']->req->server['HTTP_REFERER']
+        );
         return;
     }
 
     /**
      * Filters log in details.
-     * 
+     *
      * @since 0.9
      * @param string $login User's username or email address.
      * @param string $password User's password.
      * @param string $rememberme Whether to remember the user.
      */
-    $user = app()->hook->{'apply_filter'}('ttcms_authenticate_user', $login, $password, $rememberme);
+    $user = hook::getInstance()->{'applyFilter'}('ttcms_authenticate_user', $login, $password, $rememberme);
 
     return $user;
 }
 
 /**
  * Sets auth cookie.
- * 
+ *
  * @file app/functions/auth-function.php
- * 
+ *
  * @since 0.9
  * @param array $user           User data array.
  * @param string $rememberme    Should user be remembered for a length of time?
@@ -283,30 +354,30 @@ function ttcms_authenticate_user($login, $password, $rememberme)
 function ttcms_set_auth_cookie($user, $rememberme = '')
 {
     if (!is_array($user)) {
-        throw new UnauthorizedException(_t('"$user" should be an array.', 'tritan-cms'), 4011);
+        throw new UnauthorizedException(esc_html__('"$user" should be an array.'), 4011);
     }
 
     if (isset($rememberme)) {
         /**
          * Ensure the browser will continue to send the cookie until it expires.
-         * 
+         *
          * @since 0.9
          */
-        $expire = app()->hook->{'apply_filter'}('auth_cookie_expiration', (app()->hook->{'get_option'}('cookieexpire') !== '') ? app()->hook->{'get_option'}('cookieexpire') : app()->config('cookies.lifetime'));
+        $expire = hook::getInstance()->{'applyFilter'}('auth_cookie_expiration', (c::getInstance()->get('option')->{'read'}('cookieexpire') !== '') ? c::getInstance()->get('option')->{'read'}('cookieexpire') : ttcms()->obj['app']->config('cookies.lifetime'));
     } else {
         /**
          * Ensure the browser will continue to send the cookie until it expires.
          *
          * @since 0.9
          */
-        $expire = app()->hook->{'apply_filter'}('auth_cookie_expiration', (app()->config('cookies.lifetime') !== '') ? app()->config('cookies.lifetime') : 86400);
+        $expire = hook::getInstance()->{'applyFilter'}('auth_cookie_expiration', (ttcms()->obj['app']->config('cookies.lifetime') !== '') ? ttcms()->obj['app']->config('cookies.lifetime') : 86400);
     }
 
     $auth_cookie = [
         'key' => 'TTCMS_COOKIENAME',
-        'user_id' => (int) _escape($user['user_id']),
-        'user_login' => (string) _escape($user['user_login']),
-        'remember' => (isset($rememberme) ? $rememberme : _t('no', 'tritan-cms')),
+        'user_id' => (int) esc_html($user['user_id']),
+        'user_login' => (string) esc_html($user['user_login']),
+        'remember' => (isset($rememberme) ? $rememberme : esc_html__('no')),
         'exp' => (int) $expire + time()
     ];
 
@@ -317,16 +388,16 @@ function ttcms_set_auth_cookie($user, $rememberme = '')
      * @param string $auth_cookie Authentication cookie.
      * @param int    $expire  Duration in seconds the authentication cookie should be valid.
      */
-    app()->hook->{'do_action'}('set_auth_cookie', $auth_cookie, $expire);
+    hook::getInstance()->{'doAction'}('set_auth_cookie', $auth_cookie, $expire);
 
-    app()->cookies->{'setSecureCookie'}($auth_cookie);
+    ttcms()->obj['app']->cookies->{'setSecureCookie'}($auth_cookie);
 }
 
 /**
  * Removes all cookies associated with authentication.
- * 
+ *
  * @file app/functions/auth-function.php
- * 
+ *
  * @since 0.9
  */
 function ttcms_clear_auth_cookie()
@@ -336,31 +407,37 @@ function ttcms_clear_auth_cookie()
      *
      * @since 0.9
      */
-    app()->hook->{'do_action'}('clear_auth_cookie');
+    hook::getInstance()->{'doAction'}('clear_auth_cookie');
 
     $vars1 = [];
-    parse_str(app()->cookies->{'get'}('TTCMS_COOKIENAME'), $vars1);
+    parse_str(ttcms()->obj['app']->cookies->{'get'}('TTCMS_COOKIENAME'), $vars1);
     /**
      * Checks to see if the cookie is exists on the server.
      * It it exists, we need to delete it.
      */
-    $file1 = app()->config('cookies.savepath') . 'cookies.' . $vars1['data'];
+    $file1 = ttcms()->obj['app']->config('cookies.savepath') . 'cookies.' . $vars1['data'];
     try {
-        if (ttcms_file_exists($file1)) {
+        if (ttcms()->obj['file']->{'exists'}($file1)) {
             unlink($file1);
         }
     } catch (NotFoundException $e) {
-        Cascade::getLogger('error')->{'error'}(sprintf('FILESTATE[%s]: File not found: %s', $e->getCode(), $e->getMessage()));
+        Cascade::getLogger('error')->{'error'}(
+            sprintf(
+                'FILESTATE[%s]: File not found: %s',
+                $e->getCode(),
+                $e->getMessage()
+            )
+        );
     }
 
     $vars2 = [];
-    parse_str(app()->cookies->{'get'}('SWITCH_USERBACK'), $vars2);
+    parse_str(ttcms()->obj['app']->cookies->{'get'}('SWITCH_USERBACK'), $vars2);
     /**
      * Checks to see if the cookie exists on the server.
      * It it exists, we need to delete it.
      */
-    $file2 = app()->config('cookies.savepath') . 'cookies.' . $vars2['data'];
-    if (ttcms_file_exists($file2, false)) {
+    $file2 = ttcms()->obj['app']->config('cookies.savepath') . 'cookies.' . $vars2['data'];
+    if (ttcms()->obj['file']->{'exists'}($file2, false)) {
         @unlink($file2);
     }
 
@@ -369,33 +446,33 @@ function ttcms_clear_auth_cookie()
      * we know need to remove it from the browser and
      * redirect the user to the login page.
      */
-    app()->cookies->{'remove'}('TTCMS_COOKIENAME');
-    app()->cookies->{'remove'}('SWITCH_USERBACK');
+    ttcms()->obj['app']->cookies->{'remove'}('TTCMS_COOKIENAME');
+    ttcms()->obj['app']->cookies->{'remove'}('SWITCH_USERBACK');
 }
 
 /**
  * Shows error messages on login form.
- * 
+ *
  * @file app/functions/auth-function.php
- * 
+ *
  * @since 0.9
  */
 function ttcms_login_form_show_message()
 {
-    echo app()->hook->{'apply_filter'}('login_form_show_message', _ttcms_flash()->showMessage());
+    echo hook::getInstance()->{'applyFilter'}('login_form_show_message', ttcms()->obj['flash']->showMessage());
 }
 
 /**
  * Retrieves data from a secure cookie.
- * 
+ *
  * @file app/functions/auth-function.php
- * 
+ *
  * @since 0.9
  * @param string $key COOKIE key.
  * @return mixed
  */
 function get_secure_cookie_data($key)
 {
-    $data = app()->cookies->{'getSecureCookie'}($key);
+    $data = ttcms()->obj['app']->cookies->{'getSecureCookie'}($key);
     return $data;
 }

@@ -1,60 +1,103 @@
 <?php
-
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
-use TriTan\Config;
-use TriTan\Exception\Exception;
+use TriTan\Common\Site\SiteRepository;
+use TriTan\Common\Site\SiteMapper;
+use TriTan\Common\Context\HelperContext;
 use Cascade\Cascade;
-use TriTan\Functions as func;
 
-$user = func\get_userdata(func\get_current_user_id());
+$db = new \TriTan\Database();
+
+$current_user = get_userdata(get_current_user_id());
 
 /**
  * Before router checks to make sure the logged in user
  * us allowed to access admin.
  */
-$app->before('GET|POST', '/admin(.*)', function() {
-    if (!func\is_user_logged_in()) {
-        func\_ttcms_flash()->{'error'}(func\_t('401 - Error: Unauthorized.', 'tritan-cms'), func\get_base_url() . 'login' . '/');
+$app->before('GET|POST', '/admin(.*)', function () {
+    if (!is_user_logged_in()) {
+        ttcms()->obj['flash']->{'error'}(
+            esc_html__('401 - Error: Unauthorized.'),
+            login_url()
+        );
         exit();
     }
-    if (!func\current_user_can('access_admin')) {
-        func\_ttcms_flash()->{'error'}(func\_t('403 - Error: Forbidden.', 'tritan-cms'), func\get_base_url());
+    if (!current_user_can('access_admin')) {
+        ttcms()->obj['flash']->{'error'}(
+            esc_html__('403 - Error: Forbidden.'),
+            home_url()
+        );
         exit();
     }
 });
 
-$app->group('/admin', function() use ($app, $user) {
+$app->group('/admin', function () use ($app, $db, $current_user) {
 
     /**
      * Before route checks to make sure the logged in user
      * is allowed to delete posts.
      */
-    $app->before('GET|POST', '/site/', function() {
-        if (!func\current_user_can('manage_sites')) {
-            func\_ttcms_flash()->{'error'}(func\_t('You do not have permission to manage sites.', 'tritan-cms'), func\get_base_url() . 'admin' . '/');
+    $app->before('GET|POST', '/site/', function () {
+        if (!current_user_can('manage_sites')) {
+            ttcms()->obj['flash']->{'error'}(
+                esc_html__('You do not have permission to manage sites.'),
+                admin_url()
+            );
             exit();
         }
     });
 
-    $app->match('GET|POST', '/site/', function () use($app) {
-
+    $app->match('GET|POST', '/site/', function () use ($app, $db, $current_user) {
         if ($app->req->isPost()) {
-            try {
-                func\ttcms_insert_site($app->req->post);
-                func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
-            } catch (Exception $ex) {
-                Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
-                func\_ttcms_flash()->{'error'}($ex->getMessage());
+            $site = ttcms_insert_site($app->req->post);
+
+            if (is_ttcms_error($site)) {
+                Cascade::getLogger('error')->{'error'}(
+                    sprintf(
+                        'ERROR[%s]: %s',
+                        $site->getErrorCode(),
+                        $site->getErrorMessage()
+                    )
+                );
+                ttcms()->obj['flash']->{'error'}(
+                    sprintf(
+                        'ERROR[%s]: %s',
+                        $site->getErrorCode(),
+                        $site->getErrorMessage()
+                    )
+                );
+            } else {
+                $new_site = get_site($site);
+                ttcms_logger_activity_log_write(
+                    esc_html__('Create Record'),
+                    esc_html__('Site'),
+                    $new_site->getDomain(),
+                    esc_html($current_user->getLogin())
+                );
+
+                ttcms()->obj['flash']->{'success'}(
+                    ttcms()->obj['flash']->{'notice'}(
+                        200
+                    ),
+                    $app->req->server['HTTP_REFERER']
+                );
             }
         }
 
-        $sites = $app->db->table('site')->all();
+        $sites = (
+            new SiteRepository(
+                new SiteMapper(
+                    $db,
+                    new HelperContext()
+                )
+            )
+        )->{'findAll'}();
+        $sites = ttcms_list_sort($sites, 'site_registered', 'DESC', true);
 
-        $app->foil->render('main::admin/site/index', [
-            'title' => func\_t('Sites', 'tritan-cms'),
-            'sites' => $sites
-                ]
+        $app->foil->render(
+            'main::admin/site/index',
+            [
+                'title' => esc_html__('Sites'),
+                'sites' => $sites
+            ]
         );
     });
 
@@ -62,26 +105,68 @@ $app->group('/admin', function() use ($app, $user) {
      * Before route checks to make sure the logged in
      * user has the permission to edit a posttype.
      */
-    $app->before('GET|POST', '/site/(\d+)/', function() {
-        if (!func\current_user_can('update_sites')) {
-            func\_ttcms_flash()->{'error'}(func\_t('You do not have permission to update sites.', 'tritan-cms'), func\get_base_url() . 'admin' . '/');
+    $app->before('GET|POST', '/site/(\d+)/', function () {
+        if (!current_user_can('update_sites')) {
+            ttcms()->obj['flash']->{'error'}(
+                esc_html__('You do not have permission to update sites.'),
+                admin_url()
+            );
             exit();
         }
     });
 
-    $app->match('GET|POST', '/site/(\d+)/', function ($id) use($app) {
+    $app->match('GET|POST', '/site/(\d+)/', function ($id) use ($app, $db, $current_user) {
         if ($app->req->isPost()) {
-            try {
-                $site = array_merge(['site_id' => $id], $app->req->post);
-                func\ttcms_update_site($site);
-                func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
-            } catch (Exception $ex) {
-                Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
-                func\_ttcms_flash()->{'error'}($ex->getMessage());
+            $site = array_merge(
+                [
+                    'site_id' => $id
+                ],
+                $app->req->post
+            );
+
+            $site_id = ttcms_update_site($site);
+
+            if (is_ttcms_error($site_id)) {
+                Cascade::getLogger('error')->{'error'}(
+                    sprintf(
+                        'ERROR[%s]: %s',
+                        $site_id->getErrorCode(),
+                        $site_id->getErrorMessage()
+                    )
+                );
+
+                ttcms()->obj['flash']->{'error'}(
+                    sprintf(
+                        'ERROR[%s]: %s',
+                        $site_id->getErrorCode(),
+                        $site_id->getErrorMessage()
+                    )
+                );
+            } else {
+                ttcms_logger_activity_log_write(
+                    esc_html__('Update Record'),
+                    esc_html__('Site'),
+                    $site['site_domain'],
+                    esc_html($current_user->getLogin())
+                );
+
+                ttcms()->obj['flash']->{'success'}(
+                    ttcms()->obj['flash']->{'notice'}(
+                        200
+                    ),
+                    $app->req->server['HTTP_REFERER']
+                );
             }
         }
 
-        $q = func\get_site((int) $id);
+        $q = (
+            new SiteRepository(
+                new SiteMapper(
+                    $db,
+                    new HelperContext()
+                )
+            )
+        )->{'findById'}((int) $id);
 
         /**
          * If the posttype doesn't exist, then it
@@ -90,25 +175,16 @@ $app->group('/admin', function() use ($app, $user) {
         if ($q === false) {
             $app->res->_format('json', 404);
             exit();
-        }
-        /**
-         * If the query is legit, but the
-         * the posttype does not exist, then a 404
-         * page should be displayed
-         */ elseif (empty($q) === true) {
+        } elseif (empty($q) === true) {
             $app->res->_format('json', 404);
             exit();
-        }
-        /**
-         * If we get to this point, then all is well
-         * and it is ok to process the query and print
-         * the results in a jhtml format.
-         */ else {
-
-            $app->foil->render('main::admin/site/update', [
-                'title' => func\_t('Update Site', 'tritan-cms'),
-                'site' => $q,
-                    ]
+        } else {
+            $app->foil->render(
+                'main::admin/site/update',
+                [
+                    'title' => esc_html__('Update Site'),
+                    'site' => $q,
+                ]
             );
         }
     });
@@ -117,37 +193,51 @@ $app->group('/admin', function() use ($app, $user) {
      * Before route checks to make sure the logged in user
      * us allowed to delete posttypes.
      */
-    $app->before('GET|POST', '/site/(\d+)/d/', function() {
-        if (!func\current_user_can('delete_sites')) {
-            func\_ttcms_flash()->{'error'}(func\_t('You do not have permission to delete sites.', 'tritan-cms'), func\get_base_url() . 'admin' . '/');
+    $app->before('GET|POST', '/site/(\d+)/d/', function () {
+        if (!current_user_can('delete_sites')) {
+            ttcms()->obj['flash']->{'error'}(
+                esc_html__('You do not have permission to delete sites.'),
+                admin_url()
+            );
             exit();
         }
     });
 
-    $app->get('/site/(\d+)/d/', function($id) use($app) {
+    $app->get('/site/(\d+)/d/', function ($id) use ($current_user) {
         if ((int) $id == (int) '1') {
-            func\_ttcms_flash()->{'error'}(func\_t('You are not allowed to delete the main site.', 'tritan-cms'), func\get_base_url() . 'admin' . '/');
+            ttcms()->obj['flash']->{'error'}(
+                esc_html__('You are not allowed to delete the main site.'),
+                admin_url()
+            );
             exit();
         }
-        $site = $app->db->table('site');
-        $site->begin();
-        try {
-            $site->where('site_id', (int) $id)
-                    ->delete();
-            $site->commit();
-            /**
-             * Action hook triggered after the site is deleted.
-             * 
-             * @since 0.9
-             * @param int $id Site ID.
-             */
-            $app->hook->{'do_action'}('delete_site', (int) $id);
-            func\ttcms_cache_delete($id, 'site');
-            func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), func\get_base_url() . 'admin/site/');
-        } catch (Exception $ex) {
-            $site->rollback();
-            Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
-            func\_ttcms_flash()->{'error'}($ex->getMessage(), func\get_base_url() . 'admin/site/');
+
+        $old_site = get_site($id);
+        $site = ttcms_delete_site($id);
+
+        if (is_ttcms_error($site)) {
+            ttcms()->obj['flash']->{'error'}(
+                sprintf(
+                    'ERROR[%s]: %s',
+                    $site->getErrorCode(),
+                    $site->getErrorMessage()
+                ),
+                admin_url('site/')
+            );
+        } else {
+            ttcms_logger_activity_log_write(
+                esc_html__('Delete Record'),
+                esc_html__('Site'),
+                $old_site->getDomain(),
+                esc_html($current_user->getLogin())
+            );
+
+            ttcms()->obj['flash']->{'success'}(
+                ttcms()->obj['flash']->{'notice'}(
+                    200
+                ),
+                admin_url('site/')
+            );
         }
     });
 
@@ -155,19 +245,32 @@ $app->group('/admin', function() use ($app, $user) {
      * Before route check.
      */
     $app->before('GET|POST', '/site/users/', function () {
-        if (!func\current_user_can('manage_sites')) {
-            func\_ttcms_flash()->{'error'}(func\_t("You don't have permission to manage sites.", 'tritan-cms'), func\get_base_url() . 'admin' . '/');
+        if (!current_user_can('manage_sites')) {
+            ttcms()->obj['flash']->{'error'}(
+                esc_html__("You don't have permission to manage sites."),
+                admin_url()
+            );
             exit();
         }
     });
 
-    $app->get('/site/users/', function () use($app) {
-        $users = $app->db->table('user')->all();
+    $app->get('/site/users/', function () use ($app, $db) {
+        $users = (
+            new TriTan\Common\User\UserRepository(
+                new TriTan\Common\User\UserMapper(
+                    $db,
+                    new HelperContext()
+                )
+            )
+        )->{'findAll'}();
+        $users = ttcms_list_sort($users, 'user_lname', 'ASC', true);
 
-        $app->foil->render('main::admin/site/users', [
-            'title' => func\_t('Manage Site Users', 'tritan-cms'),
-            'users' => $users
-                ]
+        $app->foil->render(
+            'main::admin/site/users',
+            [
+                'title' => esc_html__('Manage Site Users'),
+                'users' => $users
+            ]
         );
     });
 
@@ -175,61 +278,42 @@ $app->group('/admin', function() use ($app, $user) {
      * Before route checks to make sure the logged in user
      * us allowed to delete posttypes.
      */
-    $app->before('GET|POST', '/site/users/(\d+)/d/', function() {
-        if (!func\current_user_can('delete_users') && !func\current_user_can('manage_sites')) {
-            func\_ttcms_flash()->{'error'}(func\_t('You do not have permission to delete site users.', 'tritan-cms'), func\get_base_url() . 'admin/site/users/');
+    $app->before('GET|POST', '/site/users/(\d+)/d/', function () {
+        if (!current_user_can('delete_users') && !current_user_can('manage_sites')) {
+            ttcms()->obj['flash']->{'error'}(
+                esc_html__('You do not have permission to delete site users.'),
+                admin_url('site/users/')
+            );
             exit();
         }
     });
 
-    $app->get('/site/users/(\d+)/d/', function($id) use($app) {
-        $tbl_prefix = Config::get('tbl_prefix');
-        if ((int) $id == (int) '1') {
-            func\_ttcms_flash()->{'error'}(func\_t('You are not allowed to delete the super administrator.', 'tritan-cms'), func\get_base_url() . 'admin/site/users/');
-            exit();
+    $app->post('/site/users/(\d+)/d/', function ($id) use ($app, $current_user) {
+        if (isset($app->req->post['assign_id']) && (int) $app->req->post['assign_id'] > 0) {
+            $site_user = ttcms_delete_site_user((int) $id, [
+                'assign_id' => (int) $app->req->post['assign_id'],
+                'role' => (string) $app->req->post['role']
+            ]);
+        } else {
+            $site_user = ttcms_delete_site_user((int) $id);
         }
-        $user = $app->db->table('user');
-        $user->begin();
-        try {
-            $user->where('user_id', (int) $id)
-                    ->delete();
-            $user->commit();
 
-            $check = $app->db->table('usermeta')
-                    ->where('user_id', (int) $id)
-                    ->where('meta_key', 'match', "/$tbl_prefix/")
-                    ->count();
-
-            if ((int) $check > 0) {
-
-                $umeta = $app->db->table('usermeta');
-                $umeta->begin();
-                try {
-                    $umeta->where('user_id', (int) $id)
-                            ->where('meta_key', 'match', "/$tbl_prefix/")
-                            ->delete();
-
-                    $umeta->commit();
-                } catch (Exception $ex) {
-                    $umeta->rollback();
-                    Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
-                }
-            }
-            /**
-             * Action hook triggered after the user is deleted.
-             * 
-             * @since 0.9
-             * @param int $id Site ID.
-             */
-            $app->hook->{'do_action'}('delete_user', (int) $id);
-            func\ttcms_cache_delete($id, 'user');
-            func\ttcms_cache_flush_namespace('user_meta');
-            func\clean_user_cache($id);
-            func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), func\get_base_url() . 'admin/site/users/');
-        } catch (Exception $ex) {
-            $user->rollback();
-            Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
-            func\_ttcms_flash()->{'error'}($ex->getMessage(), func\get_base_url() . 'admin/site/');
+        if (is_ttcms_error($site_user)) {
+            ttcms()->obj['flash']->{'error'}(
+                sprintf(
+                    'ERROR[%s]: %s',
+                    $site_user->getErrorCode(),
+                    $site_user->getErrorMessage()
+                ),
+                admin_url('site/users/')
+            );
+        } else {
+            ttcms()->obj['flash']->{'success'}(
+                ttcms()->obj['flash']->{'notice'}(
+                    200
+                ),
+                admin_url('site/users/')
+            );
         }
     });
 
@@ -237,7 +321,7 @@ $app->group('/admin', function() use ($app, $user) {
      * If the requested page does not exist,
      * return a 404.
      */
-    $app->setError(function() use($app) {
+    $app->setError(function () use ($app) {
         $app->res->_format('json', 404);
     });
 });

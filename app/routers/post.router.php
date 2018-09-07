@@ -1,56 +1,74 @@
 <?php
-
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
-use TriTan\Config;
+use TriTan\Container as c;
 use TriTan\Exception\Exception;
+use TriTan\Exception\InvalidArgumentException;
 use Cascade\Cascade;
-use TriTan\Functions as func;
+use TriTan\Common\Post\PostRepository;
+use TriTan\Common\Post\PostMapper;
+use TriTan\Common\Posttype\PosttypeRepository;
+use TriTan\Common\Posttype\PosttypeMapper;
+use TriTan\Common\Context\HelperContext;
 
-$user = func\get_userdata(func\get_current_user_id());
+$db = new \TriTan\Database();
+$current_user = get_userdata(get_current_user_id());
 
 /**
  * Before router checks to make sure the logged in user
  * us allowed to access admin.
  */
-$app->before('GET|POST', '/admin(.*)', function() {
-    if (!func\is_user_logged_in()) {
-        func\_ttcms_flash()->{'error'}(func\_t('401 - Error: Unauthorized.', 'tritan-cms'), func\get_base_url() . 'login' . '/');
+$app->before('GET|POST', '/admin(.*)', function () {
+    if (!is_user_logged_in()) {
+        ttcms()->obj['flash']->{'error'}(
+            esc_html__('401 - Error: Unauthorized.'),
+            login_url()
+        );
         exit();
     }
-    if (!func\current_user_can('access_admin')) {
-        func\_ttcms_flash()->{'error'}(func\_t('403 - Error: Forbidden.', 'tritan-cms'), func\get_base_url());
+    if (!current_user_can('access_admin')) {
+        ttcms()->obj['flash']->{'error'}(
+            esc_html__('403 - Error: Forbidden.'),
+            home_url()
+        );
         exit();
     }
 });
 
-$app->group('/admin', function() use ($app, $user) {
-
-    foreach (func\get_all_post_types() as $post_type) :
+$app->group('/admin', function () use ($app, $db, $current_user) {
+    foreach (get_all_post_types() as $posttype) :
         /**
          * Before route checks to make sure the logged in user
          * has permission to create a new post.
          */
-        $app->before('GET|POST', '/' . func\_escape($post_type['posttype_slug']) . '/', function() {
-            if (!func\current_user_can('manage_posts')) {
-                func\_ttcms_flash()->{'error'}(func\_t('You do not have permission to manage posts.', 'tritan-cms'), func\get_base_url() . 'admin' . '/');
+        $app->before('GET|POST', '/' . $posttype->getSlug() . '/', function () {
+            if (!current_user_can('manage_posts')) {
+                ttcms()->obj['flash']->{'error'}(
+                    esc_html__('You do not have permission to manage posts.'),
+                    admin_url()
+                );
                 exit();
             }
         });
         /**
          * Show a list of all of our posts in the backend.
          */
-        $app->get('/' . func\_escape($post_type['posttype_slug']) . '/', function () use($app, $post_type) {
-            $posts = $app->db->table(Config::get('tbl_prefix') . 'post')
-                    ->where('post_type.post_posttype', func\_escape($post_type['posttype_slug']))
-                    ->sortBy('post_created', 'desc')
-                    ->get();
+        $app->get('/' . $posttype->getSlug() . '/', function () use ($app, $db, $posttype) {
+            $posts = (
+                    new PostRepository(
+                        new PostMapper(
+                            $db,
+                            new HelperContext()
+                        )
+                    )
+                    )->{'findByType'}($posttype->getSlug());
+            $_posts = ttcms_list_sort($posts, 'post_created', 'DESC', true);
 
-            $app->foil->render('main::admin/post/index', [
-                'title' => func\_escape($post_type['posttype_title']),
-                'posts' => $posts,
-                'posttype' => func\_escape($post_type['posttype_slug'])
-                    ]
+            $app->foil->render(
+                'main::admin/post/index',
+                [
+                    'title' => $posttype->getTitle(),
+                    'posts' => $_posts,
+                    'posttype' => $posttype->getSlug()
+                ]
             );
         });
 
@@ -58,84 +76,57 @@ $app->group('/admin', function() use ($app, $user) {
          * Before route checks to make sure the logged in user
          * has permission to create a new post.
          */
-        $app->before('GET|POST', '/' . func\_escape($post_type['posttype_slug']) . '/create/', function() {
-            if (!func\current_user_can('create_posts')) {
-                func\_ttcms_flash()->{'error'}(func\_t('You do not have permission to create posts.', 'tritan-cms'), func\get_base_url() . 'admin' . '/');
+        $app->before('GET|POST', '/' . $posttype->getSlug() . '/create/', function () {
+            if (!current_user_can('create_posts')) {
+                ttcms()->obj['flash']->{'error'}(
+                    esc_html__('You do not have permission to create posts.'),
+                    admin_url()
+                );
                 exit();
             }
         });
         /**
          * Shows the add new post form.
          */
-        $app->match('GET|POST', '/' . func\_escape($post_type['posttype_slug']) . '/create/', function () use($app, $post_type) {
-
+        $app->match('GET|POST', '/' . $posttype->getSlug() . '/create/', function () use ($app, $db, $posttype, $current_user) {
             if ($app->req->isPost()) {
-                $post = $app->db->table(Config::get('tbl_prefix') . 'post');
-                $post->begin();
                 try {
-                    $post_id = func\auto_increment(Config::get('tbl_prefix') . 'post', 'post_id');
-                    $posttype = func\get_posttype_by('posttype_slug', $app->req->post['post_posttype']);
-                    $post_status = $app->req->post['post_status'];
-                    $post_slug = $app->req->post['post_slug'] != '' ? $app->req->post['post_slug'] : func\ttcms_slugify($app->req->post['post_title']);
-                    $relative_url = func\_escape($post_type['posttype_slug']) . '/' . $post_slug . '/';
-                    $featured_image = func\ttcms_optimized_image_upload($app->req->post['post_featured_image']);
-                    $post->insert([
-                        'post_id' => (int) $post_id,
-                        'post_title' => (string) $app->req->post['post_title'],
-                        'post_slug' => (string) $post_slug,
-                        'post_content' => func\if_null($app->req->post['post_content']),
-                        'post_author' => (int) $app->req->post['post_author'],
-                        'post_type' => [
-                            'posttype_id' => (int) func\_escape($posttype['posttype_id']),
-                            'post_posttype' => (string) $app->req->post['post_posttype']
-                        ],
-                        'post_attributes' => [
-                            'parent' => [
-                                'parent_id' => func\if_null(func\get_post_id($app->req->post['post_parent'])),
-                                'post_parent' => func\if_null($app->req->post['post_parent'])
-                            ],
-                            'post_sidebar' => func\if_null($app->req->post['post_sidebar']),
-                            'post_show_in_menu' => func\if_null($app->req->post['post_show_in_menu']),
-                            'post_show_in_search' => func\if_null($app->req->post['post_show_in_search'])
-                        ],
-                        'post_relative_url' => (string) $relative_url,
-                        'post_featured_image' => func\if_null($featured_image),
-                        'post_status' => (string) $post_status,
-                        'post_created' => (string) $app->req->post['post_created']
-                    ]);
-                    $post->commit();
-                    $lastId = $post_id;
-                    /**
-                     * Action hook triggered after the post is created.
-                     * 
-                     * @since 0.9
-                     * @param int $lastId Post ID.
-                     */
-                    $app->hook->{'do_action'}('create_post', $lastId);
-                    /**
-                     * Action hook triggered depending on page status.
-                     * 
-                     * @since 0.9
-                     * @param string $page_status Posted status of page.
-                     * @param int $lastId Post ID.
-                     */
-                    $app->hook->{'do_action'}("{$post_type['posttype_slug']}_{$post_status}_create", $lastId);
-                    func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), func\get_base_url() . 'admin/' . $app->req->post['post_posttype'] . '/' . $lastId . '/');
+                    $post_id = ttcms_insert_post($app->req->post, true);
+
+                    ttcms_logger_activity_log_write(
+                        esc_html__('Update Record'),
+                        esc_html__('Post'),
+                        $app->req->post['post_title'],
+                        esc_html($current_user->getLogin())
+                    );
+
+                    ttcms()->obj['flash']->{'success'}(
+                        ttcms()->obj['flash']->{'notice'}(
+                            200
+                        ),
+                        admin_url((string) $app->req->post['post_posttype'] . '/' . (int) $post_id . '/')
+                    );
                 } catch (Exception $ex) {
-                    $post->rollback();
-                    Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
-                    func\_ttcms_flash()->{'error'}(func\_ttcms_flash()->notice(409));
+                    ttcms()->obj['flash']->{'error'}(
+                        sprintf(
+                            'POSTMAPPER[insert]: %s',
+                            $ex->getMessage()
+                        ),
+                        $app->req->server['HTTP_REFERER']
+                    );
                 }
             }
 
-            $post_count = $app->db->table(Config::get('tbl_prefix') . 'post')->count();
+            $post_count = $db->table(c::getInstance()->get('tbl_prefix') . 'post')->count();
 
-            $app->foil->render('main::admin/post/create', [
-                'title' => func\_t('Create', 'tritan-cms') . ' ' . func\_escape($post_type['posttype_title']),
-                'posttype_title' => func\_escape($post_type['posttype_title']),
-                'posttype' => func\_escape($post_type['posttype_slug']),
-                'post_count' => (int) $post_count
-                    ]
+            $app->foil->render(
+                'main::admin/post/create',
+                [
+                    'title' => esc_html__('Create') . ' ' . $posttype->getTitle(),
+                    'posttype_title' => $posttype->getTitle(),
+                    'posttype' => $posttype->getSlug(),
+                    'post_count' => (int) $post_count
+                ]
             );
         });
 
@@ -143,9 +134,14 @@ $app->group('/admin', function() use ($app, $user) {
          * Before route checks to make sure the logged in
          * user has the permission to edit a post.
          */
-        $app->before('GET|POST', '/' . func\_escape($post_type['posttype_slug']) . '/(\d+)/', function() {
-            if (!func\current_user_can('update_posts')) {
-                func\_ttcms_flash()->{'error'}(func\_t('You do not have permission to update posts.', 'tritan-cms'), func\get_base_url() . 'admin' . '/');
+        $app->before('GET|POST', '/' . $posttype->getSlug() . '/(\d+)/', function () {
+            if (!current_user_can('update_posts')) {
+                ttcms()->obj['flash']->{'error'}(
+                    esc_html__(
+                        'You do not have permission to update posts.'
+                    ),
+                    admin_url()
+                );
                 exit();
             }
         });
@@ -153,121 +149,83 @@ $app->group('/admin', function() use ($app, $user) {
         /**
          * Shows the edit form with the requested id.
          */
-        $app->match('GET|POST', '/' . func\_escape($post_type['posttype_slug']) . '/(\d+)/', function ($id) use($app, $post_type) {
-
+        $app->match('GET|POST', '/' . esc_html($posttype->getSlug()) . '/(\d+)/', function ($id) use ($app, $db, $posttype, $current_user) {
             if ($app->req->isPost()) {
-                $post = $app->db->table(Config::get('tbl_prefix') . 'post');
-                $post->begin();
                 try {
-                    $posttype = func\get_posttype_by('posttype_slug', $app->req->post['post_posttype']);
-                    $post_status = $app->req->post['post_status'];
-                    $post_slug = $app->req->post['post_slug'] != '' ? $app->req->post['post_slug'] : func\ttcms_slugify($app->req->post['post_title']);
-                    /**
-                     * Can be used to filter the relative url.
-                     * 
-                     * @since 0.9
-                     */
-                    $url_filter = $app->hook->{'apply_filter'}('relative_url', func\_escape($post_type['posttype_slug']) . '/', $post_type);
-                    $relative_url = $url_filter . $post_slug . '/';
-                    $featured_image = func\ttcms_optimized_image_upload($app->req->post['post_featured_image']);
-                    $post->where('post_id', (int) $id)->update([
-                        'post_title' => (string) $app->req->post['post_title'],
-                        'post_slug' => (string) $post_slug,
-                        'post_content' => func\if_null($app->req->post['post_content']),
-                        'post_author' => (int) $app->req->post['post_author'],
-                        'post_type' => [
-                            'posttype_id' => (int) func\_escape($posttype['posttype_id']),
-                            'post_posttype' => (string) $app->req->post['post_posttype']
-                        ],
-                        'post_attributes' => [
-                            'parent' => [
-                                'parent_id' => func\if_null(func\get_post_id($app->req->post['post_parent'])),
-                                'post_parent' => func\if_null($app->req->post['post_parent'])
-                            ],
-                            'post_sidebar' => func\if_null($app->req->post['post_sidebar']),
-                            'post_show_in_menu' => func\if_null($app->req->post['post_show_in_menu']),
-                            'post_show_in_search' => func\if_null($app->req->post['post_show_in_search'])
-                        ],
-                        'post_relative_url' => (string) $relative_url,
-                        'post_featured_image' => func\if_null($featured_image),
-                        'post_status' => (string) $post_status,
-                        'post_created' => (string) $app->req->post['post_created'],
-                        'post_modified' => (string) Jenssegers\Date\Date::now()
-                    ]);
-                    $post->commit();
+                    ttcms_update_post($app->req->post, true);
 
-                    $parent = $app->db->table(Config::get('tbl_prefix') . 'post');
-                    $parent->where('post_attributes.parent.parent_id', (int) $id)
-                            ->update([
-                                'post_attributes.parent.post_parent' => (string) $post_slug
-                    ]);
-                    func\ttcms_cache_delete((int) $id, 'post');
-                    /**
-                     * Action hook triggered after the post is updated.
-                     * 
-                     * @since 0.9
-                     * @param int $id Post ID.
-                     */
-                    $app->hook->{'do_action'}('update_post', (int) $id);
-                    /**
-                     * Action hook triggered depending on post status.
-                     * 
-                     * @since 0.9
-                     * @param string $post_status Posted status of post.
-                     * @param int $id Post ID.
-                     */
-                    $app->hook->{'do_action'}("{$post_type['posttype_slug']}_{$post_status}_update", (int) $id);
-                    func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), func\get_base_url() . 'admin/' . (string) $app->req->post['post_posttype'] . '/' . (int) $id . '/');
+                    ttcms_logger_activity_log_write(
+                        esc_html__('Update Record'),
+                        esc_html__('Post'),
+                        $app->req->post['post_title'],
+                        esc_html($current_user->getLogin())
+                    );
+
+                    ttcms()->obj['flash']->{'success'}(
+                        ttcms()->obj['flash']->{'notice'}(
+                            200
+                        ),
+                        admin_url((string) $app->req->post['post_posttype'] . '/' . (int) $id . '/')
+                    );
                 } catch (Exception $ex) {
-                    $post->rollback();
-                    Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
-                    func\_ttcms_flash()->{'error'}(func\_ttcms_flash()->notice(409));
+                    ttcms()->obj['flash']->{'error'}(
+                        sprintf(
+                            'POSTMAPPER[update]: %s',
+                            $ex->getMessage()
+                        ),
+                        $app->req->server['HTTP_REFERER']
+                    );
                 }
             }
 
-            $q = $app->db->table(Config::get('tbl_prefix') . 'post');
-            $cache = func\ttcms_cache_get((int) $id, 'post');
-            if (empty($cache)) {
-                $cache = $q->where('post_id', (int) $id)
-                        ->where('post_type.post_posttype', func\_escape((string) $post_type['posttype_slug']))
-                        ->first();
-                func\ttcms_cache_add((int) $id, $cache, 'post');
+            try {
+                $post = (
+                        new PostRepository(
+                            new PostMapper(
+                                $db,
+                                new HelperContext()
+                            )
+                        )
+                        )->{'findById'}((int) $id);
+            } catch (InvalidArgumentException $ex) {
+                echo sprintf(
+                    'POSTMAPPER[%s]: %s',
+                    $ex->getCode(),
+                    $ex->getMessage()
+                );
+                exit();
+            } catch (Exception $ex) {
+                echo sprintf(
+                    'POSTMAPPER[%s]: %s',
+                    $ex->getCode(),
+                    $ex->getMessage()
+                );
+                exit();
             }
+
 
             /**
              * If the category doesn't exist, then it
              * is false and a 404 page should be displayed.
              */
-            if ($cache === false) {
+            if ($post === false) {
                 $app->res->_format('json', 404);
                 exit();
-            }
-            /**
-             * If the query is legit, but the
-             * the category does not exist, then a 404
-             * page should be displayed
-             */ elseif (empty($cache) === true) {
+            } elseif (empty($post) === true) {
                 $app->res->_format('json', 404);
                 exit();
-            }
-            /**
-             * If data is zero, 404 not found.
-             */ elseif (count($cache) <= 0) {
+            } elseif ($post->post_id <= 0) {
                 $app->res->_format('json', 404);
                 exit();
-            }
-            /**
-             * If we get to this point, then all is well
-             * and it is ok to process the query and print
-             * the results in a jhtml format.
-             */ else {
-
-                $app->foil->render('main::admin/post/update-post', [
-                    'title' => func\_t('Update', 'tritan-cms') . ' ' . func\_escape($post_type['posttype_title']),
-                    'posttype_title' => func\_escape($post_type['posttype_title']),
-                    'posttype' => func\_escape($post_type['posttype_slug']),
-                    'post' => $cache
-                        ]
+            } else {
+                $app->foil->render(
+                    'main::admin/post/update-post',
+                    [
+                        'title' => esc_html__('Update') . ' ' . $posttype->getTitle(),
+                        'posttype_title' => $posttype->getTitle(),
+                        'posttype' => $posttype->getSlug(),
+                        'post' => $post
+                    ]
                 );
             }
         });
@@ -276,27 +234,49 @@ $app->group('/admin', function() use ($app, $user) {
          * Before route checks to make sure the logged in user
          * is allowed to delete posts.
          */
-        $app->before('GET|POST', '/' . func\_escape($post_type['posttype_slug']) . '/(\d+)/remove-featured-image/', function() {
-            if (!func\current_user_can('update_posts')) {
-                func\_ttcms_flash()->{'error'}(func\_t('You do not have permission to update posts.', 'tritan-cms'), func\get_base_url() . 'admin' . '/');
+        $app->before('GET|POST', '/' . $posttype->getSlug() . '/(\d+)/remove-featured-image/', function () {
+            if (!current_user_can('update_posts')) {
+                ttcms()->obj['flash']->{'error'}(
+                    esc_html__(
+                        'You do not have permission to update posts.'
+                    ),
+                    admin_url()
+                );
                 exit();
             }
         });
 
-        $app->get('/' . func\_escape($post_type['posttype_slug']) . '/(\d+)/remove-featured-image/', function($id) use($app) {
-            $post = $app->db->table(Config::get('tbl_prefix') . 'post');
+        $app->get('/' . $posttype->getSlug() . '/(\d+)/remove-featured-image/', function ($id) use ($app, $db) {
+            $post = $db->table(c::getInstance()->get('tbl_prefix') . 'post');
             $post->begin();
             try {
                 $post->where('post_id', (int) $id)->update([
                     'post_featured_image' => null
                 ]);
                 $post->commit();
-                func\ttcms_cache_delete((int) $id, 'post');
-                func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
+
+                ttcms()->obj['cache']->{'delete'}((int) $id, 'post');
+
+                ttcms()->obj['flash']->{'success'}(
+                    ttcms()->obj['flash']->{'notice'}(
+                        200
+                    ),
+                    $app->req->server['HTTP_REFERER']
+                );
             } catch (Exception $ex) {
                 $post->rollback();
-                Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
-                func\_ttcms_flash()->{'error'}($ex->getMessage(), $app->req->server['HTTP_REFERER']);
+                Cascade::getLogger('error')->{'error'}(
+                    sprintf(
+                        'SQLSTATE[%s]: %s',
+                        $ex->getCode(),
+                        $ex->getMessage()
+                    )
+                );
+
+                ttcms()->obj['flash']->{'error'}(
+                    $ex->getMessage(),
+                    $app->req->server['HTTP_REFERER']
+                );
             }
         });
 
@@ -304,25 +284,41 @@ $app->group('/admin', function() use ($app, $user) {
          * Before route checks to make sure the logged in user
          * is allowed to delete posts.
          */
-        $app->before('GET', '/' . func\_escape($post_type['posttype_slug']) . '/(\d+)/d/', function() {
-            if (!func\current_user_can('delete_posts')) {
-                func\_ttcms_flash()->{'error'}(func\_t('You do not have permission to delete posts.', 'tritan-cms'), func\get_base_url() . 'admin' . '/');
+        $app->before('GET', '/' . $posttype->getSlug() . '/(\d+)/d/', function () {
+            if (!current_user_can('delete_posts')) {
+                ttcms()->obj['flash']->{'error'}(
+                    esc_html__(
+                        'You do not have permission to delete posts.'
+                    ),
+                    admin_url()
+                );
                 exit();
             }
         });
 
-        $app->get('/' . func\_escape($post_type['posttype_slug']) . '/(\d+)/d/', function($id) use($app, $post_type) {
-            $post = $app->db->table(Config::get('tbl_prefix') . 'post');
-            $post->begin();
-            try {
-                $post->where('post_id', (int) $id)
-                        ->delete();
-                $post->commit();
-                func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), func\get_base_url() . 'admin/' . (string) func\_escape($post_type['posttype_slug']) . '/');
-            } catch (Exception $ex) {
-                $post->rollback();
-                Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
-                func\_ttcms_flash()->{'error'}($ex->getMessage(), func\get_base_url() . 'admin/' . (string) func\_escape($post_type['posttype_slug']) . '/');
+        $app->get('/' . $posttype->getSlug() . '/(\d+)/d/', function ($id) use ($posttype, $current_user) {
+            $title = get_post_title($id);
+
+            $post = ttcms_delete_post($id);
+            if (is_ttcms_exception($post)) {
+                ttcms()->obj['flash']->{'error'}(
+                    $post->getMessage(),
+                    admin_url((string) $posttype->getSlug() . '/')
+                );
+            } else {
+                ttcms_logger_activity_log_write(
+                    esc_html__('Delete Record'),
+                    esc_html__('Post'),
+                    $title,
+                    esc_html($current_user->getLogin())
+                );
+
+                ttcms()->obj['flash']->{'success'}(
+                    ttcms()->obj['flash']->{'notice'}(
+                        200
+                    ),
+                    admin_url((string) $posttype->getSlug() . '/')
+                );
             }
         });
     endforeach;
@@ -331,51 +327,63 @@ $app->group('/admin', function() use ($app, $user) {
      * Before route checks to make sure the logged in user
      * is allowed to delete posts.
      */
-    $app->before('GET|POST', '/post-type/', function() {
-        if (!func\current_user_can('manage_posts')) {
-            func\_ttcms_flash()->{'error'}(func\_t('You do not have permission to manage posts or post types.', 'tritan-cms'), func\get_base_url() . 'admin' . '/');
+    $app->before('GET|POST', '/post-type/', function () {
+        if (!current_user_can('manage_posts')) {
+            ttcms()->obj['flash']->{'error'}(
+                esc_html__(
+                    'You do not have permission to manage posts or post types.'
+                ),
+                admin_url()
+            );
             exit();
         }
     });
 
-    $app->match('GET|POST', '/post-type/', function () use($app) {
-
+    $app->match('GET|POST', '/post-type/', function () use ($app, $db, $current_user) {
         if ($app->req->isPost()) {
-            $posttype = $app->db->table(Config::get('tbl_prefix') . 'posttype');
-            $posttype->begin();
             try {
-                $posttype_id = func\auto_increment(Config::get('tbl_prefix') . 'posttype', 'posttype_id');
-                $posttype_slug = $app->req->post['posttype_slug'] != '' ? $app->req->post['posttype_slug'] : func\ttcms_slugify((string) $app->req->post['posttype_title'], 'posttype');
-                $posttype->insert([
-                    'posttype_id' => (int) $posttype_id,
-                    'posttype_title' => func\if_null($app->req->post['posttype_title']),
-                    'posttype_slug' => (string) $posttype_slug,
-                    'posttype_description' => func\if_null($app->req->post['posttype_description'])
-                ]);
-                $posttype->commit();
-                $lastId = $posttype_id;
-                func\ttcms_cache_delete('posttype', 'posttype');
-                /**
-                 * Action hook triggered after the posttype is created.
-                 * 
-                 * @since 0.9
-                 * @param int $lastId posttype ID.
-                 */
-                $app->hook->{'do_action'}('create_posttype', (int) $lastId);
-                func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
+                ttcms_insert_posttype($app->req->post);
+
+                ttcms_logger_activity_log_write(
+                    esc_html__('Create Record'),
+                    esc_html__('Post Type'),
+                    $app->req->post['posttype_title'],
+                    esc_html($current_user->getLogin())
+                );
+
+                ttcms()->obj['flash']->{'success'}(
+                    ttcms()->obj['flash']->{'notice'}(
+                        200
+                    ),
+                    $app->req->server['HTTP_REFERER']
+                );
             } catch (Exception $ex) {
-                $posttype->rollback();
-                Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
-                func\_ttcms_flash()->{'error'}(func\_ttcms_flash()->notice(409));
+                ttcms()->obj['flash']->{'error'}(
+                    sprintf(
+                        'SQLSTATE[%s]: %s',
+                        $ex->getCode(),
+                        $ex->getMessage()
+                    ),
+                    $app->req->server['HTTP_REFERER']
+                );
             }
         }
 
-        $posttypes = $app->db->table(Config::get('tbl_prefix') . 'posttype')->all();
+        $posttypes = (
+                new PosttypeRepository(
+                    new PosttypeMapper(
+                        $db,
+                        new HelperContext()
+                    )
+                )
+                )->{'findAll'}();
 
-        $app->foil->render('main::admin/post/posttype', [
-            'title' => func\_t('Post Types', 'tritan-cms'),
-            'posttypes' => $posttypes
-                ]
+        $app->foil->render(
+            'main::admin/post/posttype',
+            [
+                'title' => esc_html__('Post Types'),
+                'posttypes' => $posttypes
+            ]
         );
     });
 
@@ -383,85 +391,91 @@ $app->group('/admin', function() use ($app, $user) {
      * Before route checks to make sure the logged in
      * user has the permission to edit a posttype.
      */
-    $app->before('GET|POST', '/post-type/(\d+)/', function() {
-        if (!func\current_user_can('update_posts')) {
-            func\_ttcms_flash()->{'error'}(func\_t('You do not have permission to update posts or post types.', 'tritan-cms'), func\get_base_url() . 'admin' . '/');
+    $app->before('GET|POST', '/post-type/(\d+)/', function () {
+        if (!current_user_can('update_posts')) {
+            ttcms()->obj['flash']->{'error'}(
+                esc_html__(
+                    'You do not have permission to update posts or post types.'
+                ),
+                admin_url()
+            );
             exit();
         }
     });
 
-    $app->match('GET|POST', '/post-type/(\d+)/', function ($id) use($app) {
-        $current_pt = $app->db->table(Config::get('tbl_prefix') . 'posttype')
-                ->where('posttype_id', (int) $id)
-                ->first();
-
+    $app->match('GET|POST', '/post-type/(\d+)/', function ($id) use ($app, $db, $current_user) {
         if ($app->req->isPost()) {
-            $posttype = $app->db->table(Config::get('tbl_prefix') . 'posttype');
-            $posttype->begin();
             try {
-                $posttype_slug = $app->req->post['posttype_slug'] != '' ? $app->req->post['posttype_slug'] : func\ttcms_slugify((string) $app->req->post['posttype_title'], 'posttype');
-                $posttype->where('posttype_id', (int) $id)->update([
-                    'posttype_title' => (string) $app->req->post['posttype_title'],
-                    'posttype_slug' => (string) $posttype_slug,
-                    'posttype_description' => func\if_null($app->req->post['posttype_description'])
-                ]);
-                $posttype->commit();
+                $data = array_merge(['posttype_id' => (int) $id], $app->req->post);
 
-                /**
-                 * Update all post's relative url if the the posted data
-                 * for posttype does not equal to the current posttype.
-                 * 
-                 * @since 0.9.6
-                 */
-                if ($current_pt['posttype_slug'] != (string) $posttype_slug) {
-                    func\update_post_relative_url_posttype($id, $current_pt['posttype_slug'], (string) $posttype_slug);
-                }
-                func\ttcms_cache_delete((int) $id, 'posttype');
-                /**
-                 * Action hook triggered after the posttype is updated.
-                 * 
-                 * @since 0.9
-                 * @param int $id Post Type ID.
-                 */
-                $app->hook->{'do_action'}('update_posttype', (int) $id);
-                func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), $app->req->server['HTTP_REFERER']);
+                ttcms_update_posttype($data);
+
+                ttcms_logger_activity_log_write(
+                    esc_html__('Update Record'),
+                    esc_html__('Post Type'),
+                    $app->req->post['posttype_title'],
+                    esc_html($current_user->getLogin())
+                );
+
+                ttcms()->obj['flash']->{'success'}(
+                    ttcms()->obj['flash']->{'notice'}(
+                        200
+                    ),
+                    $app->req->server['HTTP_REFERER']
+                );
             } catch (Exception $ex) {
-                $posttype->rollback();
-                Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
-                func\_ttcms_flash()->{'error'}(func\_ttcms_flash()->notice(409));
+                Cascade::getLogger('error')->{'error'}(
+                    sprintf(
+                        'SQLSTATE[%s]: %s',
+                        $ex->getCode(),
+                        $ex->getMessage()
+                    )
+                );
+
+                ttcms()->obj['flash']->{'error'}(
+                    ttcms()->obj['flash']->{'notice'}(
+                        409
+                    )
+                );
             }
         }
 
-        $q = $app->db->table(Config::get('tbl_prefix') . 'posttype')->where('posttype_id', (int) $id)->first();
-        $posttypes = $app->db->table(Config::get('tbl_prefix') . 'posttype')->all();
+        $posttype = (
+            new PosttypeRepository(
+                new PosttypeMapper(
+                    $db,
+                    new HelperContext()
+                )
+            )
+        )->{'findById'}((int) $id);
+
+        $posttypes = (
+            new PosttypeRepository(
+                new PosttypeMapper(
+                    $db,
+                    new HelperContext()
+                )
+            )
+        )->{'findAll'}();
 
         /**
          * If the posttype doesn't exist, then it
          * is false and a 404 page should be displayed.
          */
-        if ($q === false) {
+        if ($posttype === false) {
             $app->res->_format('json', 404);
             exit();
-        }
-        /**
-         * If the query is legit, but the
-         * the posttype does not exist, then a 404
-         * page should be displayed
-         */ elseif (empty($q) === true) {
+        } elseif (empty($posttype) === true) {
             $app->res->_format('json', 404);
             exit();
-        }
-        /**
-         * If we get to this point, then all is well
-         * and it is ok to process the query and print
-         * the results in a jhtml format.
-         */ else {
-
-            $app->foil->render('main::admin/post/update-posttype', [
-                'title' => func\_t('Update Post Type', 'tritan-cms'),
-                'posttype' => $q,
-                'posttypes' => $posttypes
-                    ]
+        } else {
+            $app->foil->render(
+                'main::admin/post/update-posttype',
+                [
+                    'title' => esc_html__('Update Post Type'),
+                    'posttype' => $posttype,
+                    'posttypes' => $posttypes
+                ]
             );
         }
     });
@@ -470,39 +484,44 @@ $app->group('/admin', function() use ($app, $user) {
      * Before route checks to make sure the logged in user
      * us allowed to delete posttypes.
      */
-    $app->before('GET|POST', '/post-type/(\d+)/d/', function() {
-        if (!func\current_user_can('delete_posts')) {
-            func\_ttcms_flash()->{'error'}(func\_t('You do not have permission to delete posts or post types.', 'tritan-cms'), func\get_base_url() . 'admin' . '/');
+    $app->before('GET|POST', '/post-type/(\d+)/d/', function () {
+        if (!current_user_can('delete_posts')) {
+            ttcms()->obj['flash']->{'error'}(
+                esc_html__(
+                    'You do not have permission to delete posts or post types.'
+                ),
+                admin_url()
+            );
             exit();
         }
     });
 
-    $app->get('/post-type/(\d+)/d/', function($id) use($app) {
-        $posttype = $app->db->table(Config::get('tbl_prefix') . 'posttype');
-        $posttype->begin();
-        try {
-            $posttype->where('posttype_id', (int) $id)
-                    ->delete();
-            $posttype->commit();
+    $app->get('/post-type/(\d+)/d/', function ($id) use ($current_user) {
+        $title = get_posttype_title($id);
 
-            $post = $app->db->table(Config::get('tbl_prefix') . 'post');
-            $post->begin();
-            try {
-                $post->where('post_type.posttype_id', (int) $id)
-                        ->delete();
-                $post->commit();
-                func\ttcms_cache_delete('posttype', 'posttype');
-                func\ttcms_cache_delete('post', 'post');
-            } catch (Exception $ex) {
-                $posttype->rollback();
-                Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
-            }
+        $posttype = ttcms_delete_posttype($id);
 
-            func\_ttcms_flash()->{'success'}(func\_ttcms_flash()->notice(200), func\get_base_url() . 'admin/post-type/');
-        } catch (Exception $ex) {
-            $posttype->rollback();
-            Cascade::getLogger('error')->{'error'}(sprintf('SQLSTATE[%s]: %s', $ex->getCode(), $ex->getMessage()));
-            func\_ttcms_flash()->{'error'}($ex->getMessage(), func\get_base_url() . 'admin/post-type/');
+        if ($posttype) {
+            ttcms_logger_activity_log_write(
+                esc_html__('Delete Record'),
+                esc_html__('Post Type'),
+                $title,
+                esc_html($current_user->getLogin())
+            );
+
+            ttcms()->obj['flash']->{'success'}(
+                ttcms()->obj['flash']->{'notice'}(
+                    200
+                ),
+                admin_url('post-type/')
+            );
+        } else {
+            ttcms()->obj['flash']->{'error'}(
+                ttcms()->obj['flash']->{'notice'}(
+                    409
+                ),
+                admin_url('post-type/')
+            );
         }
     });
 
@@ -510,7 +529,7 @@ $app->group('/admin', function() use ($app, $user) {
      * If the requested page does not exist,
      * return a 404.
      */
-    $app->setError(function() use($app) {
+    $app->setError(function () use ($app) {
         $app->res->_format('json', 404);
     });
 });

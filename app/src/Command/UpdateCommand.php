@@ -1,6 +1,5 @@
 <?php
-
-namespace App\Command;
+namespace TriTan\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -9,7 +8,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 final class UpdateCommand extends Command
 {
-    
+
     protected function getCurrentRelease()
     {
         $update = new \ParkerJ\AutoUpdate('static' . DIRECTORY_SEPARATOR . 'tmp', 'static' . DIRECTORY_SEPARATOR . 'tmp', 1800);
@@ -23,7 +22,7 @@ final class UpdateCommand extends Command
             }
         }
     }
-    
+
     protected function checkExternalFile($url)
     {
         $ch = curl_init($url);
@@ -70,10 +69,10 @@ final class UpdateCommand extends Command
         } else {
             $release_value = $release;
         }
-        
+
         $zip  = new \ZipArchive();
         $file = 'http://tritan-cms.s3.amazonaws.com/api/1.1/release/' . $release_value . '.zip';
-        
+
         if (version_compare(trim(file_get_contents('RELEASE')), $release_value, '<')) {
             if ($this->checkExternalFile($file) == 200) {
                 //Download file to the server
@@ -106,5 +105,4 @@ final class UpdateCommand extends Command
         // 0 = success, other values = fail
         return 0;
     }
-
 }

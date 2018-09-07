@@ -1,14 +1,12 @@
-<?php namespace TriTan\Queue;
-
-if (!defined('BASE_PATH'))
-    exit('No direct script access allowed');
+<?php
+namespace TriTan\Queue;
 
 /**
  * Interface for a queue.
- * 
+ *
  * Classes implementing this interface will do a best effort to preserve order
  * in messages and to execute them at least once.
- * 
+ *
  * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>

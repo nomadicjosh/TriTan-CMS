@@ -5,11 +5,10 @@ namespace TriTan\Laci;
 use Closure;
 use TriTan\Exception\DirectoryNotFoundException;
 use TriTan\Exception\InvalidJsonException;
-use TriTan\Exceptions\UndefinedMethodException;
+use TriTan\Exception\UndefinedMethodException;
 
 class Collection
 {
-
     const KEY_ID = '_id';
     const KEY_OLD_ID = '_old';
     const UPDATING = 'updating';
@@ -26,6 +25,7 @@ class Collection
     protected $transactionMode = false;
     protected $transactionData = null;
     protected $macros = [];
+    protected $lastInsertId = 0;
 
     public function __construct($filepath, array $options = array())
     {
@@ -33,7 +33,7 @@ class Collection
         $this->options = array_merge([
             'save_format' => JSON_PRETTY_PRINT,
             'key_prefix' => '',
-            'more_entropy' => false,
+            'more_entropy' => true,
                 ], $options);
     }
 
@@ -107,7 +107,7 @@ class Collection
 
     public function loadData()
     {
-        if ($this->isModeTransaction() AND ! empty($this->transactionData)) {
+        if ($this->isModeTransaction() and ! empty($this->transactionData)) {
             return $this->transactionData;
         }
         if (!file_exists($this->filepath)) {
@@ -258,11 +258,16 @@ class Collection
             throw new \InvalidArgumentException("Cannot execute query. Query is for different collection");
         }
         switch ($type) {
-            case Query::TYPE_GET: return $this->executeGet($query);
-            case Query::TYPE_SAVE: return $this->executeSave($query);
-            case Query::TYPE_INSERT: return $this->executeInsert($query, $arg);
-            case Query::TYPE_UPDATE: return $this->executeUpdate($query, $arg);
-            case Query::TYPE_DELETE: return $this->executeDelete($query);
+            case Query::TYPE_GET:
+                return $this->executeGet($query);
+            case Query::TYPE_SAVE:
+                return $this->executeSave($query);
+            case Query::TYPE_INSERT:
+                return $this->executeInsert($query, $arg);
+            case Query::TYPE_UPDATE:
+                return $this->executeUpdate($query, $arg);
+            case Query::TYPE_DELETE:
+                return $this->executeDelete($query);
         }
     }
 
@@ -279,13 +284,15 @@ class Collection
     {
         $data = $this->loadData();
         $key = isset($new[static::KEY_ID]) ? $new[static::KEY_ID] : $this->generateKey();
+        $this->lastInsertId = (int) $this->autoIncrementId();
 
         $newExtra = new ArrayExtra([]);
         $newExtra->merge($new);
         $args = [$newExtra];
         $this->trigger(static::INSERTING, $args);
         $data[$key] = array_merge([
-            static::KEY_ID => $key
+            static::KEY_ID => $key,
+            $this->autoIncrementIdPrefix() . '_id' => (int) $this->lastInsertId
                 ], $args[0]->toArray());
         $success = $this->persists($data);
         $args = [$data[$key]];
@@ -409,6 +416,68 @@ class Collection
         }
     }
 
+    /**
+     * Auto increments the document's primary key.
+     *
+     * @since 0.9.9
+     * @param string $table Table in the document.
+     * @param int $pk Primary key field name.
+     * @return int Auto incremented value.
+     */
+    protected function autoIncrement($table, $pk)
+    {
+        $sql = (new Collection($table))
+            ->sortBy($pk, 'desc')
+            ->first();
+        if (@count($sql) <= 0 || null == $sql || false == $sql) {
+            $auto_increment = 1;
+        } else {
+            $auto_increment = $sql[$pk] + 1;
+        }
+        return (int) $auto_increment;
+    }
+
+    /**
+     * Retrieve the unique field name from the table name.
+     *
+     * @since 0.9.9
+     * @return string Unique field name.
+     */
+    protected function autoIncrementIdPrefix()
+    {
+        $first_key = preg_replace('/^.*?(db)/', '', $this->filepath);
+        $second_key = str_replace(['/', '.json'], '', $first_key);
+        if($second_key === 'usermeta' || $second_key === 'postmeta') {
+            $key = 'meta';
+        } else {
+            $key = preg_replace('/^ttcms_+[0-9]+_+/', '', $second_key);
+        }
+        return $key;
+    }
+
+    /**
+     * Returns the autoincremented id.
+     *
+     * @since 0.9.9
+     * @return int Autoincremented id.
+     */
+    protected function autoIncrementId()
+    {
+        $autoIncrementId = $this->autoIncrement($this->filepath, $this->autoIncrementIdPrefix() . '_id');
+        return (int) $autoIncrementId;
+    }
+
+    /**
+     * Returns the last insert id from the current document being acted upon.
+     *
+     * @since 0.9.9
+     * @return int The last insert id.
+     */
+    public function lastInsertId()
+    {
+        return (int) $this->lastInsertId;
+    }
+
     public function __call($method, $args)
     {
         $macro = $this->getMacro($method);
@@ -418,5 +487,4 @@ class Collection
             throw new UndefinedMethodException("Undefined method or macro '{$method}'.");
         }
     }
-
 }

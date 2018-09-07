@@ -1,6 +1,5 @@
 <?php
-
-namespace App\Command;
+namespace TriTan\Command;
 
 use Nette\Security\Passwords;
 use Symfony\Component\Console\Command\Command;
@@ -31,7 +30,8 @@ final class HashPasswordCommand extends Command
         $hashedPassword = Passwords::hash($password);
 
         $output->writeln(sprintf(
-                        'Your hashed password is: <comment>%s</comment>', $hashedPassword
+            'Your hashed password is: <comment>%s</comment>',
+            $hashedPassword
         ));
 
         // return value is important when using CI
@@ -39,5 +39,4 @@ final class HashPasswordCommand extends Command
         // 0 = success, other values = fail
         return 0;
     }
-
 }

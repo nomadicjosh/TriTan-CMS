@@ -19,7 +19,7 @@ TriTan is pretty stable at the moment, but it is currently in beta and should no
 * Multisite (needs testing)
 
 ## Requirements
-* PHP 7.0+
+* PHP 7.1+
     * gd graphics support
     * zip extention support
     * APC, XCache or Memcache(d) (optional)
@@ -90,13 +90,13 @@ There is currently no theme repository due to the nature of the project. However
 The Liten Framework was used in the build of TriTan CMS. So, if you are interested in adding a head to your TriTan install, you will need to learn about [routing](//www.litenframework.com/wiki/routing/) and [middlewares](//www.litenframework.com/wiki/middleware/).
 
 ## Plugins
-Check out [Gitspace](https://gitspace.us/projects) for available TriTan CMS plugins.
+Check out the [repository](https://gitlab.gitspace.us) for available TriTan CMS plugins.
 
 ## Todo
 * ~~Finish dashboard~~
 * ~~Edit user functionality on multisite users screen~~
 * ~~Multisite testing (wildcard subdomains only)~~
-* Unit testing
+* ~~Unit testing~~
 * Finish documentation (action and hook filters, etc.)
 
 ## Contributing

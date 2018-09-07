@@ -1,0 +1,98 @@
+#!/usr/bin/env php
+<?php
+if (!defined('DS')) {
+    define('DS', DIRECTORY_SEPARATOR);
+}
+require_once __DIR__ . DS . '..' . DS . 'vendor' . DS . 'autoload.php';
+require_once __DIR__ . DS . '..' . DS . 'app' . DS . 'functions' . DS . 'test-function.php';
+
+it('should pass if user_id = 1.', function () {
+    $user = new TriTan\Common\User\User();
+    $user->setId((int) 1);
+    return $user->getId() === (int) 1;
+});
+
+it('should fail if user_id does not equal 2.', function () {
+    $user = new TriTan\Common\User\User();
+    $user->setId((int) 1);
+    return $user->getId() === (int) 2;
+});
+
+it("should pass when DirectoryNotFoundException is thrown.", 
+    throws("TriTan\\Exception\\DirectoryNotFoundException", function () {
+        throw new TriTan\Exception\DirectoryNotFoundException; 
+}));
+
+it("should pass when IOException is thrown.", 
+    throws("TriTan\\Exception\\IOException", function () {
+        throw new TriTan\Exception\IOException; 
+}));
+
+it("should pass when InvalidJsonException is thrown.", 
+    throws("TriTan\\Exception\\InvalidJsonException", function () {
+        throw new TriTan\Exception\InvalidJsonException; 
+}));
+
+it("should pass when InvalidJsonException is thrown.", 
+    throws("TriTan\\Exception\\InvalidJsonException", function () {
+        throw new TriTan\Exception\InvalidJsonException; 
+}));
+
+it("should pass when NotFoundException is thrown.", 
+    throws("TriTan\\Exception\\NotFoundException", function () {
+        throw new TriTan\Exception\NotFoundException; 
+}));
+
+it("should pass when UnauthorizedException is thrown.", 
+    throws("TriTan\\Exception\\UnauthorizedException", function () {
+        throw new TriTan\Exception\UnauthorizedException; 
+}));
+
+it("should pass when UndefinedMethodException is thrown.", 
+    throws("TriTan\\Exception\\UndefinedMethodException", function () {
+        throw new TriTan\Exception\UndefinedMethodException; 
+}));
+
+it("should fail when NotFoundException is not namespaced properly.", 
+    throws("NotFoundException", function () {
+        throw new TriTan\Exception\NotFoundException; 
+}));
+
+it('should pass when container parameter is set and retrieved.', function () {
+    \TriTan\Container::getInstance()->set('unit_test', true);
+    return \TriTan\Container::getInstance()->get('unit_test') === true;
+});
+
+it('should pass when defined container parameter is checked.', function () {
+    return \TriTan\Container::getInstance()->has('unit_test') === true;
+});
+
+it('should pass when all defined config parameters are retrieved.', all([
+    \TriTan\Container::getInstance()->getAll() !== null,
+    \TriTan\Container::getInstance()->getAll() !== false,
+    is_array(\TriTan\Container::getInstance()->getAll())
+]));
+
+it('should pass if post_id = 1.', function () {
+    $post = new \TriTan\Common\Post\Post();
+    $post->setId((int) 1);
+    return $post->getId() === (int) 1;
+});
+
+it('should fail if post_id does not equal 2.', function () {
+    $post = new \TriTan\Common\Post\Post();
+    $post->setId((int) 1);
+    return $post->getId() === (int) 2;
+});
+
+it('should pass if posttype_id = 1.', function () {
+    $posttype = new TriTan\Common\Posttype\Posttype();
+    $posttype->setId((int) 1);
+    return $posttype->getId() === (int) 1;
+});
+
+it('should fail if posttype_id does not equal 2.', function () {
+    $posttype = new TriTan\Common\Posttype\Posttype();
+    $posttype->setId((int) 1);
+    return $posttype->getId() === (int) 2;
+});

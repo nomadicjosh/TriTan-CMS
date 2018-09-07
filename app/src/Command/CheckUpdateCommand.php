@@ -1,6 +1,5 @@
 <?php
-
-namespace App\Command;
+namespace TriTan\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -28,17 +27,19 @@ final class CheckUpdateCommand extends Command
         $update->setUpdateUrl('http://tritan-cms.s3.amazonaws.com/api/1.1/update-check');
 
         // Optional:
-        $update->addLogHandler(new \Monolog\Handler\StreamHandler('static' . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARTOR . 'core-update.' . \Jenssegers\Date\Date::now()->format('m-d-Y') . '.txt'));
+        $update->addLogHandler(new \Monolog\Handler\StreamHandler('static' . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR . 'core-update.' . \Jenssegers\Date\Date::now()->format('m-d-Y') . '.txt'));
         $update->setCache(new \Desarrolla2\Cache\Adapter\File('static' . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'cache'), 3600);
 
         if ($update->checkUpdate() !== false) {
             if ($update->newVersionAvailable()) {
                 $output->writeln(sprintf(
-                                'Release %s is available', $update->getLatestVersion()
+                    'Release %s is available',
+                    $update->getLatestVersion()
                 ));
             } else {
                 $output->writeln(sprintf(
-                                'TriTan CMS %s is at the latest release.', file_get_contents(RELEASE)
+                    'TriTan CMS %s is at the latest release.',
+                    file_get_contents('RELEASE')
                 ));
             }
         }
@@ -48,5 +49,4 @@ final class CheckUpdateCommand extends Command
         // 0 = success, other values = fail
         return 0;
     }
-
 }

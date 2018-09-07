@@ -6,7 +6,6 @@ use Closure;
 
 class MapperPipe implements PipeInterface
 {
-
     protected $mappers = [];
 
     public function process(array $data)
@@ -21,5 +20,4 @@ class MapperPipe implements PipeInterface
     {
         $this->mappers[] = $mapper;
     }
-
 }

@@ -1,6 +1,5 @@
 <?php
-
-namespace App\Command;
+namespace TriTan\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -42,18 +41,19 @@ final class SystemCommand extends Command
                 $file = str_replace('\\', '/', $file);
 
                 // Ignore "." and ".." folders
-                if (in_array(substr($file, strrpos($file, '/') + 1), array('.', '..')))
+                if (in_array(substr($file, strrpos($file, '/') + 1), array('.', '..'))) {
                     continue;
+                }
 
                 $file = realpath($file);
 
                 if (is_dir($file) === true) {
                     $zip->addEmptyDir(str_replace($source . '/', '', $file . '/'));
-                } else if (is_file($file) === true) {
+                } elseif (is_file($file) === true) {
                     $zip->addFromString(str_replace($source . '/', '', $file), file_get_contents($file));
                 }
             }
-        } else if (is_file($source) === true) {
+        } elseif (is_file($source) === true) {
             $zip->addFromString(basename($source), file_get_contents($source));
         }
 
@@ -74,7 +74,8 @@ final class SystemCommand extends Command
             if (is_array($documents)) {
                 foreach ($documents as $document) {
                     $output->writeln(sprintf(
-                                    'Table: <comment>%s</comment>', str_replace(['private' . DIRECTORY_SEPARATOR . 'db' . DIRECTORY_SEPARATOR, '.json'], '', $document)
+                        'Table: <comment>%s</comment>',
+                        str_replace(['private' . DIRECTORY_SEPARATOR . 'db' . DIRECTORY_SEPARATOR, '.json'], '', $document)
                     ));
                 }
             }
@@ -105,19 +106,24 @@ final class SystemCommand extends Command
         $php_bin = defined('PHP_BINARY') ? PHP_BINARY : getenv('TTCMS_CLI_PHP_USED');
 
         $output->writeln(sprintf(
-                        'PHP binary: <comment>%s</comment>', $php_bin
+            'PHP binary: <comment>%s</comment>',
+            $php_bin
         ));
         $output->writeln(sprintf(
-                        'PHP version: <comment>%s</comment>', PHP_VERSION
+            'PHP version: <comment>%s</comment>',
+            PHP_VERSION
         ));
         $output->writeln(sprintf(
-                        'PHP Modules: <comment>%s</comment>', shell_exec('php -m')
+            'PHP Modules: <comment>%s</comment>',
+            shell_exec('php -m')
         ));
         $output->writeln(sprintf(
-                        'LaciDb Version: <comment>%s</comment>', 'v0.3.0'
+            'LaciDb Version: <comment>%s</comment>',
+            'v0.3.0'
         ));
         $output->writeln(sprintf(
-                        'TriTan CMS: <comment>%s</comment>', file_get_contents('RELEASE')
+            'TriTan CMS: <comment>%s</comment>',
+            file_get_contents('RELEASE')
         ));
 
         // return value is important when using CI
@@ -125,5 +131,4 @@ final class SystemCommand extends Command
         // 0 = success, other values = fail
         return 0;
     }
-
 }

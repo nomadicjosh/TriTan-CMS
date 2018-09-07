@@ -1,9 +1,9 @@
 <?php
 /**
  * Config
- *  
+ *
  * @license GPLv3
- * 
+ *
  * @since       0.9
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
@@ -51,6 +51,7 @@ defined('EAE_FILTER_PRIORITY') or define('EAE_FILTER_PRIORITY', 1000);
 $app = new \Liten\Liten(
     [
     'cookies.lifetime' => '86400',
+    'cookies.secret.key' => 'xBQZyAc6nhv9qwonHeei', //change this to something more unique for your install
     'private.savepath' => BASE_PATH . 'private' . DS,
     'db.savepath' => BASE_PATH . 'private' . DS . 'db' . DS,
     'cookies.savepath' => BASE_PATH . 'private' . DS . 'cookies' . DS,
@@ -67,7 +68,7 @@ defined('TTCMS_NODEQ_PATH') or define('TTCMS_NODEQ_PATH', $app->config('db.savep
  * Sets up the database global variable.
  */
 $app->inst->singleton('db', function () {
-    return new TriTan\Database(['more_entropy' => true]);
+    return new TriTan\Database();
 });
 
 /**
