@@ -96,7 +96,7 @@ Check out the [repository](https://gitlab.gitspace.us) for available TriTan CMS 
 * ~~Finish dashboard~~
 * ~~Edit user functionality on multisite users screen~~
 * ~~Multisite testing (wildcard subdomains only)~~
-* Unit testing
+* ~~Unit testing~~
 * Finish documentation (action and hook filters, etc.)
 
 ## Contributing
