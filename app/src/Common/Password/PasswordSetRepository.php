@@ -1,5 +1,5 @@
 <?php
-namespace TriTan\Common;
+namespace TriTan\Common\Password;
 
 use TriTan\Interfaces\Password\PasswordSetRepositoryInterface;
 use TriTan\Interfaces\Password\PasswordSetMapperInterface;

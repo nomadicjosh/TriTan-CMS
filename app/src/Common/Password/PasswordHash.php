@@ -1,5 +1,5 @@
 <?php
-namespace TriTan\Common;
+namespace TriTan\Common\Password;
 
 use TriTan\Interfaces\Password\PasswordHashInterface;
 use TriTan\Interfaces\Hooks\ActionFilterHookInterface;

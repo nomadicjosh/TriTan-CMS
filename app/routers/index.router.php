@@ -1,7 +1,7 @@
 <?php
 use TriTan\Common\Hooks\ActionFilterHook as hook;
-use TriTan\Common\PasswordGenerate;
-use TriTan\Common\PasswordHash;
+use TriTan\Common\Password\PasswordGenerate;
+use TriTan\Common\Password\PasswordHash;
 use TriTan\Common\Uri;
 
 $db = new \TriTan\Database();

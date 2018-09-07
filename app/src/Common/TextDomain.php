@@ -765,7 +765,7 @@ class TextDomain
             // Used for locale-specific rules
             $locale = $this->loadCoreLocale();
 
-            if ('de_DE' == $locale || 'de_DE_formal' == $locale || 'de_CH' == $locale || 'de_CH_informal' == $locale) {
+            if ('de' == $locale || 'de_formal' == $locale || 'de_CH' == $locale || 'de_CH_informal' == $locale) {
                 $chars['Ä'] = 'Ae';
                 $chars['ä'] = 'ae';
                 $chars['Ö'] = 'Oe';
@@ -773,7 +773,7 @@ class TextDomain
                 $chars['Ü'] = 'Ue';
                 $chars['ü'] = 'ue';
                 $chars['ß'] = 'ss';
-            } elseif ('da_DK' === $locale) {
+            } elseif ('da' === $locale) {
                 $chars['Æ'] = 'Ae';
                 $chars['æ'] = 'ae';
                 $chars['Ø'] = 'Oe';

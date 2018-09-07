@@ -305,14 +305,14 @@ function ttcms_authenticate_user($login, $password, $rememberme)
         }
     }
 
-    $auth = new TriTan\Common\PasswordCheck(
-        new \TriTan\Common\PasswordSetMapper(
+    $auth = new TriTan\Common\Password\PasswordCheck(
+        new \TriTan\Common\Password\PasswordSetMapper(
             new Database(),
-            new \TriTan\Common\PasswordHash(
+            new \TriTan\Common\Password\PasswordHash(
                 hook::getInstance()
             )
         ),
-        new \TriTan\Common\PasswordHash(
+        new \TriTan\Common\Password\PasswordHash(
             hook::getInstance()
         ),
         hook::getInstance()

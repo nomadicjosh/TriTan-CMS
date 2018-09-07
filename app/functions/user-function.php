@@ -8,7 +8,7 @@ use TriTan\Common\User\User;
 use TriTan\Common\User\UserRepository;
 use TriTan\Common\User\UserMapper;
 use TriTan\Common\Context\HelperContext;
-use TriTan\Common\PasswordHash;
+use TriTan\Common\Password\PasswordHash;
 use TriTan\Common\User\UserMetaData;
 use TriTan\Common\MetaData;
 use TriTan\Common\Utils;
