@@ -24,6 +24,10 @@
                     "reference": "master"
                 }
             }
+        },
+        {
+            "type":"composer",
+            "url": "https://packagist.tritancms.com"
         }
     ],
     "require": {
@@ -67,11 +71,15 @@
         "spatie/image": "^1.5",
         "spatie/schema-org": "^2.0"
     },
+    "extra": {
+        "installer-types": ["tritancms-plugin"],
+        "installer-paths": {
+            "plugins/{$name}/": ["type:tritancms-plugin"]
+        }
+    },
     "autoload": {
         "psr-4": {
-            "TriTan\\": "app/src/",
-            "TriTan\\Functions\\": "app/functions/",
-            "Plugin\\": "plugins/"
+            "TriTan\\": "app/src/"
         }
     },
     "require-dev": {
