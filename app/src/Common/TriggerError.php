@@ -70,18 +70,57 @@ class TriggerError
          * @param bool $trigger
          *            Whether to trigger the error for deprecated functions. Default true.
          */
-        if (APP_ENV == 'DEV' && c::getInstance()->get('hook')->{'applyFilter'}('deprecated_function_trigger_error', true)) {
-            if (method_exists('TriTan\\Common\\TextDomain', 't')) {
+        if (APP_ENV == 'DEV' && c::getInstance()->get('hook')->{'applyFilter'}(
+            'deprecated_function_trigger_error',
+            true
+        )) {
+            if (function_exists('t__')) {
                 if (!is_null($replacement)) {
-                    $this->trigger(sprintf(c::getInstance()->get('domain')->t('%1$s() is <strong>deprecated</strong> since release %2$s! Use %3$s() instead. <br />', 'tritan-cms'), $function_name, $release, $replacement), E_USER_DEPRECATED);
+                    $this->trigger(
+                        sprintf(
+                            t__(
+                                '%1$s() is <strong>deprecated</strong> since release %2$s! Use %3$s() instead. <br />',
+                                'tritan-cms'
+                            ),
+                            $function_name,
+                            $release,
+                            $replacement
+                        ),
+                        E_USER_DEPRECATED
+                    );
                 } else {
-                    $this->trigger(sprintf(c::getInstance()->get('domain')->t('%1$s() is <strong>deprecated</strong> since release %2$s with no alternative available. <br />', 'tritan-cms'), $function_name, $release), E_USER_DEPRECATED);
+                    $this->trigger(
+                        sprintf(
+                            t__(
+                                '%1$s() is <strong>deprecated</strong> since release %2$s with no alternative available. <br />',
+                                'tritan-cms'
+                            ),
+                            $function_name,
+                            $release
+                        ),
+                        E_USER_DEPRECATED
+                    );
                 }
             } else {
                 if (!is_null($replacement)) {
-                    $this->trigger(sprintf('%1$s() is <strong>deprecated</strong> since release %2$s! Use %3$s() instead. <br />', $function_name, $release, $replacement), E_USER_DEPRECATED);
+                    $this->trigger(
+                        sprintf(
+                            '%1$s() is <strong>deprecated</strong> since release %2$s! Use %3$s() instead. <br />',
+                            $function_name,
+                            $release,
+                            $replacement
+                        ),
+                        E_USER_DEPRECATED
+                    );
                 } else {
-                    $this->trigger(sprintf('%1$s() is <strong>deprecated</strong> since release %2$s with no alternative available. <br />', $function_name, $release), E_USER_DEPRECATED);
+                    $this->trigger(
+                        sprintf(
+                            '%1$s() is <strong>deprecated</strong> since release %2$s with no alternative available. <br />',
+                            $function_name,
+                            $release
+                        ),
+                        E_USER_DEPRECATED
+                    );
                 }
             }
         }
@@ -131,18 +170,57 @@ class TriggerError
          * @param bool $trigger
          *            Whether to trigger the error for deprecated classes. Default true.
          */
-        if (APP_ENV == 'DEV' && c::getInstance()->get('hook')->{'applyFilter'}('deprecated_class_trigger_error', true)) {
-            if (method_exists('TriTan\\Common\\TextDomain', 't')) {
+        if (APP_ENV == 'DEV' && c::getInstance()->get('hook')->{'applyFilter'}(
+            'deprecated_class_trigger_error',
+            true
+        )) {
+            if (function_exists('t__')) {
                 if (!is_null($replacement)) {
-                    $this->trigger(sprintf(c::getInstance()->get('domain')->t('%1$s() is <strong>deprecated</strong> since release %2$s! Use %3$s instead. <br />', 'tritan-cms'), $class_name, $release, $replacement), E_USER_DEPRECATED);
+                    $this->trigger(
+                        sprintf(
+                            t__(
+                                '%1$s() is <strong>deprecated</strong> since release %2$s! Use %3$s instead. <br />',
+                                'tritan-cms'
+                            ),
+                            $class_name,
+                            $release,
+                            $replacement
+                        ),
+                        E_USER_DEPRECATED
+                    );
                 } else {
-                    $this->trigger(sprintf(c::getInstance()->get('domain')->t('%1$s() is <strong>deprecated</strong> since release %2$s with no alternative available. <br />', 'tritan-cms'), $class_name, $release), E_USER_DEPRECATED);
+                    $this->trigger(
+                        sprintf(
+                            t__(
+                                '%1$s() is <strong>deprecated</strong> since release %2$s with no alternative available. <br />',
+                                'tritan-cms'
+                            ),
+                            $class_name,
+                            $release
+                        ),
+                        E_USER_DEPRECATED
+                    );
                 }
             } else {
                 if (!is_null($replacement)) {
-                    $this->trigger(sprintf('%1$s() is <strong>deprecated</strong> since release %2$s! Use %3$s instead. <br />', $class_name, $release, $replacement), E_USER_DEPRECATED);
+                    $this->trigger(
+                        sprintf(
+                            '%1$s() is <strong>deprecated</strong> since release %2$s! Use %3$s instead. <br />',
+                            $class_name,
+                            $release,
+                            $replacement
+                        ),
+                        E_USER_DEPRECATED
+                    );
                 } else {
-                    $this->trigger(sprintf('%1$s() is <strong>deprecated</strong> since release %2$s with no alternative available. <br />', $class_name, $release), E_USER_DEPRECATED);
+                    $this->trigger(
+                        sprintf(
+                            '%1$s() is <strong>deprecated</strong> since release %2$s with no alternative available. <br />',
+                            $class_name,
+                            $release
+                        ),
+                        E_USER_DEPRECATED
+                    );
                 }
             }
         }
@@ -182,7 +260,12 @@ class TriggerError
          * @param string $release
          *            The release of TriTan CMS that deprecated the class's method.
          */
-        c::getInstance()->get('hook')->{'doAction'}('deprecated_class_method_run', $method_name, $replacement, $release);
+        c::getInstance()->get('hook')->{'doAction'}(
+            'deprecated_class_method_run',
+            $method_name,
+            $replacement,
+            $release
+        );
 
         /**
          * Filter whether to trigger an error for deprecated class methods.
@@ -192,18 +275,57 @@ class TriggerError
          * @param bool $trigger
          *            Whether to trigger the error for deprecated class methods. Default true.
          */
-        if (APP_ENV == 'DEV' && c::getInstance()->get('hook')->{'applyFilter'}('deprecated_class_method_trigger_error', true)) {
-            if (method_exists('TriTan\\Common\\TextDomain', 't')) {
+        if (APP_ENV == 'DEV' && c::getInstance()->get('hook')->{'applyFilter'}(
+            'deprecated_class_method_trigger_error',
+            true
+        )) {
+            if (function_exists('t__')) {
                 if (!is_null($replacement)) {
-                    $this->trigger(sprintf(c::getInstance()->get('domain')->t('%1$s() is <strong>deprecated</strong> since release %2$s! Use %3$s() instead. <br />', 'tritan-cms'), $method_name, $release, $replacement), E_USER_DEPRECATED);
+                    $this->trigger(
+                        sprintf(
+                            t__(
+                                '%1$s() is <strong>deprecated</strong> since release %2$s! Use %3$s() instead. <br />',
+                                'tritan-cms'
+                            ),
+                            $method_name,
+                            $release,
+                            $replacement
+                        ),
+                        E_USER_DEPRECATED
+                    );
                 } else {
-                    $this->trigger(sprintf(c::getInstance()->get('domain')->t('%1$s() is <strong>deprecated</strong> since release %2$s with no alternative available. <br />', 'tritan-cms'), $method_name, $release), E_USER_DEPRECATED);
+                    $this->trigger(
+                        sprintf(
+                            t__(
+                                '%1$s() is <strong>deprecated</strong> since release %2$s with no alternative available. <br />',
+                                'tritan-cms'
+                            ),
+                            $method_name,
+                            $release
+                        ),
+                        E_USER_DEPRECATED
+                    );
                 }
             } else {
                 if (!is_null($replacement)) {
-                    $this->trigger(sprintf('%1$s() is <strong>deprecated</strong> since release %2$s! Use %3$s() instead. <br />', $method_name, $release, $replacement), E_USER_DEPRECATED);
+                    $this->trigger(
+                        sprintf(
+                            '%1$s() is <strong>deprecated</strong> since release %2$s! Use %3$s() instead. <br />',
+                            $method_name,
+                            $release,
+                            $replacement
+                        ),
+                        E_USER_DEPRECATED
+                    );
                 } else {
-                    $this->trigger(sprintf('%1$s() is <strong>deprecated</strong> since release %2$s with no alternative available. <br />', $method_name, $release), E_USER_DEPRECATED);
+                    $this->trigger(
+                        sprintf(
+                            '%1$s() is <strong>deprecated</strong> since release %2$s with no alternative available. <br />',
+                            $method_name,
+                            $release
+                        ),
+                        E_USER_DEPRECATED
+                    );
                 }
             }
         }
@@ -261,18 +383,57 @@ class TriggerError
          * @param bool $trigger
          *            Whether to trigger the error for deprecated arguments. Default true.
          */
-        if (APP_ENV == 'DEV' && c::getInstance()->get('hook')->{'applyFilter'}('deprecated_argument_trigger_error', true)) {
-            if (method_exists('TriTan\\Common\\TextDomain', 't')) {
+        if (APP_ENV == 'DEV' && c::getInstance()->get('hook')->{'applyFilter'}(
+            'deprecated_argument_trigger_error',
+            true
+        )) {
+            if (function_exists('t__')) {
                 if (!is_null($message)) {
-                    $this->trigger(sprintf(c::getInstance()->get('domain')->t('%1$s() was called with an argument that is <strong>deprecated</strong> since release %2$s! %3$s. <br />', 'tritan-cms'), $function_name, $release, $message), E_USER_DEPRECATED);
+                    $this->trigger(
+                        sprintf(
+                            t__(
+                                '%1$s() was called with an argument that is <strong>deprecated</strong> since release %2$s! %3$s. <br />',
+                                'tritan-cms'
+                            ),
+                            $function_name,
+                            $release,
+                            $message
+                        ),
+                        E_USER_DEPRECATED
+                    );
                 } else {
-                    $this->trigger(sprintf(c::getInstance()->get('domain')->t('%1$s() was called with an argument that is <strong>deprecated</strong> since release %2$s with no alternative available. <br />', 'tritan-cms'), $function_name, $release), E_USER_DEPRECATED);
+                    $this->trigger(
+                        sprintf(
+                            t__(
+                                '%1$s() was called with an argument that is <strong>deprecated</strong> since release %2$s with no alternative available. <br />',
+                                'tritan-cms'
+                            ),
+                            $function_name,
+                            $release
+                        ),
+                        E_USER_DEPRECATED
+                    );
                 }
             } else {
                 if (!is_null($message)) {
-                    $this->trigger(sprintf('%1$s() was called with an argument that is <strong>deprecated</strong> since release %2$s! %3$s. <br />', $function_name, $release, $message), E_USER_DEPRECATED);
+                    $this->trigger(
+                        sprintf(
+                            '%1$s() was called with an argument that is <strong>deprecated</strong> since release %2$s! %3$s. <br />',
+                            $function_name,
+                            $release,
+                            $message
+                        ),
+                        E_USER_DEPRECATED
+                    );
                 } else {
-                    $this->trigger(sprintf('%1$s() was called with an argument that is <strong>deprecated</strong> since release %2$s with no alternative available. <br />', $function_name, $release), E_USER_DEPRECATED);
+                    $this->trigger(
+                        sprintf(
+                            '%1$s() was called with an argument that is <strong>deprecated</strong> since release %2$s with no alternative available. <br />',
+                            $function_name,
+                            $release
+                        ),
+                        E_USER_DEPRECATED
+                    );
                 }
             }
         }
@@ -312,12 +473,34 @@ class TriggerError
          * @param bool $trigger Whether to trigger deprecated hook errors. Requires
          *                      `APP_DEV` to be defined DEV.
          */
-        if (APP_ENV == 'DEV' && c::getInstance()->get('hook')->{'applyFilter'}('deprecated_hook_trigger_error', true)) {
+        if (APP_ENV == 'DEV' && c::getInstance()->get('hook')->{'applyFilter'}(
+            'deprecated_hook_trigger_error',
+            true
+        )) {
             $message = empty($message) ? '' : ' ' . $message;
             if (!is_null($replacement)) {
-                $this->trigger(sprintf(__('%1$s is <strong>deprecated</strong> since release %2$s! Use %3$s instead.'), $hook, $release, $replacement) . $message, E_USER_DEPRECATED);
+                $this->trigger(
+                    sprintf(
+                        __(
+                            '%1$s is <strong>deprecated</strong> since release %2$s! Use %3$s instead.'
+                        ),
+                        $hook,
+                        $release,
+                        $replacement
+                    ) . $message,
+                    E_USER_DEPRECATED
+                );
             } else {
-                $this->trigger(sprintf(__('%1$s is <strong>deprecated</strong> since release %2$s with no alternative available.'), $hook, $release) . $message, E_USER_DEPRECATED);
+                $this->trigger(
+                    sprintf(
+                        __(
+                            '%1$s is <strong>deprecated</strong> since release %2$s with no alternative available.'
+                        ),
+                        $hook,
+                        $release
+                    ) . $message,
+                    E_USER_DEPRECATED
+                );
             }
         }
     }
@@ -364,16 +547,53 @@ class TriggerError
          * @param bool $trigger
          *            Whether to trigger the error for _incorrectly_called() calls. Default true.
          */
-        if (APP_ENV == 'DEV' && c::getInstance()->get('hook')->{'applyFilter'}('incorrectly_called_trigger_error', true)) {
-            if (method_exists('TriTan\\Common\\TextDomain', 't')) {
-                $release = is_null($release) ? '' : sprintf(c::getInstance()->get('domain')->t('(This message was added in release %s.) <br /><br />', 'tritan-cms'), $release);
+        if (APP_ENV == 'DEV' && c::getInstance()->get('hook')->{'applyFilter'}(
+            'incorrectly_called_trigger_error',
+            true
+        )) {
+            if (function_exists('t__')) {
+                $release = is_null($release) ? '' : sprintf(
+                    t__(
+                        '(This message was added in release %s.) <br /><br />', 'tritan-cms'
+                    ),
+                    $release
+                );
                 /* translators: %s: Codex URL */
-                $message .= ' ' . sprintf(c::getInstance()->get('domain')->t('Please see <a href="%s">Debugging in TriTan CMS</a> for more information.', 'tritan-cms'), 'https://learn.tritancms.com/start.html#debugging');
-                $this->trigger(sprintf(c::getInstance()->get('domain')->t('%1$s() was called <strong>incorrectly</strong>. %2$s %3$s <br />', 'tritan-cms'), $function_name, $message, $release));
+                $message .= ' ' . sprintf(
+                    t__(
+                        'Please see <a href="%s">Debugging in TriTan CMS</a> for more information.',
+                        'tritan-cms'
+                    ),
+                    'https://learn.tritancms.com/start.html#debugging'
+                );
+                $this->trigger(
+                    sprintf(
+                        t__(
+                            '%1$s() was called <strong>incorrectly</strong>. %2$s %3$s <br />',
+                            'tritan-cms'
+                        ),
+                        $function_name,
+                        $message,
+                        $release
+                    )
+                );
             } else {
-                $release = is_null($release) ? '' : sprintf('(This message was added in release %s.) <br /><br />', $release);
-                $message .= sprintf(' Please see <a href="%s">Debugging in TriTan CMS</a> for more information.', 'https://learn.tritancms.com/start.html#debugging');
-                $this->trigger(sprintf('%1$s() was called <strong>incorrectly</strong>. %2$s %3$s <br />', $function_name, $message, $release));
+                $release = is_null($release) ? '' : sprintf(
+                    '(This message was added in release %s.) <br /><br />',
+                    $release
+                );
+                $message .= sprintf(
+                    ' Please see <a href="%s">Debugging in TriTan CMS</a> for more information.',
+                    'https://learn.tritancms.com/start.html#debugging'
+                );
+                $this->trigger(
+                    sprintf(
+                        '%1$s() was called <strong>incorrectly</strong>. %2$s %3$s <br />',
+                        $function_name,
+                        $message,
+                        $release
+                    )
+                );
             }
         }
     }

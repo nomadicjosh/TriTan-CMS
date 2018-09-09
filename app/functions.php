@@ -682,10 +682,7 @@ function ttcms_load_file($file, $once = true, $show_errors = true)
     } elseif (is_bool($show_errors) && $show_errors) {
         _trigger_error(
             sprintf(
-                t__(
-                    'Invalid file name: <strong>%s</strong> does not exist. <br />',
-                    'tritan-cms'
-                ),
+                'Invalid file name: <strong>%s</strong> does not exist. <br />',
                 $file
             )
         );
@@ -1109,12 +1106,12 @@ function html_purify(string $string, bool $is_image = false)
     )->{'purify'}($string, $is_image);
 }
 
+require(APP_PATH . 'functions' . DS . 'domain-function.php');
 require(APP_PATH . 'functions' . DS . 'link-function.php');
 require(APP_PATH . 'functions' . DS . 'hook-function.php');
 require(APP_PATH . 'functions' . DS . 'dependency-function.php');
 require(APP_PATH . 'functions' . DS . 'menu-function.php');
 require(APP_PATH . 'functions' . DS . 'auth-function.php');
-require(APP_PATH . 'functions' . DS . 'domain-function.php');
 require(APP_PATH . 'functions' . DS . 'core-function.php');
 require(APP_PATH . 'functions' . DS . 'site-function.php');
 require(APP_PATH . 'functions' . DS . 'logger-function.php');

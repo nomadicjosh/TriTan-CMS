@@ -1,5 +1,6 @@
 <?php
 namespace TriTan\Common;
+use TriTan\Container as c;
 
 use TriTan\Interfaces\Options\OptionsInterface;
 use TriTan\Interfaces\Hooks\ActionFilterHookInterface;
@@ -14,8 +15,7 @@ class TextDomain
 
     public function __construct(OptionsInterface $option, ActionFilterHookInterface $hook)
     {
-        $this->t = new \Gettext\Translator();
-        $this->t->register();
+        $this->t = c::getInstance()->get('translator');
         $this->option = $option;
         $this->hook = $hook;
     }
@@ -30,6 +30,8 @@ class TextDomain
      */
     public function t__(string $msgid, string $domain = '')
     {
+        c::getInstance()->get('translator')->register();
+        
         if ($domain !== '') {
             return d__($domain, $msgid);
         } else {
@@ -104,9 +106,7 @@ class TextDomain
         }
 
         $translations = \Gettext\Translations::fromMoFile($mofile);
-        $this->t->loadTranslations($translations);
-
-        return true;
+        c::getInstance()->get('translator')->loadTranslations($translations);
     }
 
     /**

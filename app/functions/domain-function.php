@@ -1,4 +1,5 @@
 <?php
+use TriTan\Container as c;
 use TriTan\Common\Hooks\ActionFilterHook as hook;
 
 /**
@@ -10,6 +11,14 @@ use TriTan\Common\Hooks\ActionFilterHook as hook;
  * @package     TriTan CMS
  * @author      Joshua Parker <joshmac3@icloud.com>
  */
+
+/**
+ * Globally register the translator for localization.
+ * 
+ * @since 0.9.9
+ */
+$translator = new \Gettext\Translator();
+c::getInstance()->set('translator', $translator);
 
 /**
  * Retrieves a list of available locales.

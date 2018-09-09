@@ -15,15 +15,6 @@ class HelperContext implements \TriTan\Interfaces\ContextInterface
         $this->obj['uri'] = new \TriTan\Common\Uri($this->obj['hook']);
         $this->obj['util'] = new \TriTan\Common\Utils($this->obj['hook']);
         $this->obj['sanitizer'] = new \TriTan\Common\Sanitizer($this->obj['hook']);
-        $this->obj['domain'] = new \TriTan\Common\TextDomain(
-            new \TriTan\Common\Options\Options(
-                new \TriTan\Common\Options\OptionsMapper(
-                    new \TriTan\Database(),
-                    $this
-                )
-            ),
-            $this->obj['hook']
-        );
         $this->obj['meta'] = new \TriTan\Common\MetaData(new \TriTan\Database(), $this);
         $this->obj['usercache'] = new \TriTan\Common\User\UserCache($this->obj['cache'], $this->obj['hook']);
         $this->obj['postcache'] = new \TriTan\Common\Post\PostCache($this->obj['cache'], $this->obj['hook']);
