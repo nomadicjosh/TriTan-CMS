@@ -38,6 +38,9 @@ TriTan is pretty stable at the moment, but it is currently in beta and should no
 * Visit `http://replace_url/admin/options-general/`, and change the API Key to something unique.
 * Create a cronjob on the server: `http://replace_url/cronjob/`. It should run every minute.
 
+## Cookies Secret Key
+- Open your config.php file, and edit the `cookies.secret.key` to something unique.
+
 ## Security
 TriTan uses a schemaless database library and stores those files as well as some other important files on the server. Whether you are on Apache/Nginx, you must make sure to secure the following directories so that files in those directories are not downloadable:
 
