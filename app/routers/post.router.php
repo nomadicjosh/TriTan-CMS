@@ -8,6 +8,7 @@ use TriTan\Common\Post\PostMapper;
 use TriTan\Common\Posttype\PosttypeRepository;
 use TriTan\Common\Posttype\PosttypeMapper;
 use TriTan\Common\Context\HelperContext;
+use TriTan\Common\Hooks\ActionFilterHook as hook;
 
 $db = new \TriTan\Database();
 $current_user = get_userdata(get_current_user_id());
@@ -118,15 +119,12 @@ $app->group('/admin', function () use ($app, $db, $current_user) {
             }
 
             $post_count = $db->table(c::getInstance()->get('tbl_prefix') . 'post')->count();
-
-            $app->foil->render(
-                'main::admin/post/create',
-                [
-                    'title' => esc_html__('Create') . ' ' . $posttype->getTitle(),
-                    'posttype_title' => $posttype->getTitle(),
-                    'posttype' => $posttype->getSlug(),
-                    'post_count' => (int) $post_count
-                ]
+            
+            hook::getInstance()->{'doAction'}(
+                'post_create_view',
+                $app,
+                $posttype,
+                $post_count
             );
         });
 
@@ -218,14 +216,11 @@ $app->group('/admin', function () use ($app, $db, $current_user) {
                 $app->res->_format('json', 404);
                 exit();
             } else {
-                $app->foil->render(
-                    'main::admin/post/update-post',
-                    [
-                        'title' => esc_html__('Update') . ' ' . $posttype->getTitle(),
-                        'posttype_title' => $posttype->getTitle(),
-                        'posttype' => $posttype->getSlug(),
-                        'post' => $post
-                    ]
+                hook::getInstance()->{'doAction'}(
+                    'post_update_view',
+                    $app,
+                    $posttype,
+                    $post
                 );
             }
         });

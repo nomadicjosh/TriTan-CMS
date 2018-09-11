@@ -1805,6 +1805,8 @@ hook::getInstance()->{'addAction'}('flush_cache', 'populate_usermeta_cache', 5);
 hook::getInstance()->{'addAction'}('update_user_init', 'populate_usermeta_cache', 5);
 hook::getInstance()->{'addAction'}('plugins_loaded', 'load_activated_plugins', 1);
 hook::getInstance()->{'addAction'}('maintenance_mode', 'ttcms_maintenance_mode', 1);
+hook::getInstance()->{'addAction'}('post_create_view', 'ttcms_post_create_view', 5, 3);
+hook::getInstance()->{'addAction'}('post_update_view', 'ttcms_post_update_view', 5, 3);
 hook::getInstance()->{'addFilter'}('the_content', [new \TriTan\Common\Parsecode(), 'autop']);
 hook::getInstance()->{'addFilter'}('the_content', [new \TriTan\Common\Parsecode(), 'unAutop']);
 hook::getInstance()->{'addFilter'}('the_content', [new \TriTan\Common\Parsecode(), 'doParsecode'], 5);

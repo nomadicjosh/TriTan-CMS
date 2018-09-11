@@ -2393,3 +2393,53 @@ function get_post_dropdown_list($slug = null, int $post_id = 0)
         }
     }
 }
+
+/**
+ * Function which makes the post create view actionable. You can override this
+ * is you decide to create your own view and re-design the screen and elements to
+ * your liking.
+ * 
+ * @since 1.0
+ * @param object $app Application object.
+ * @param Posttype $posttype Posttype object.
+ * @param int $post_count Post count.
+ * @return mixed Returns the post create view.
+ */
+function ttcms_post_create_view($app, $posttype, $post_count)
+{
+    $app->foil->render(
+        'main::admin/post/create',
+        [
+            'title' => esc_html__('Create') . ' ' . $posttype->getTitle(),
+            'posttype_title' => $posttype->getTitle(),
+            'posttype' => $posttype->getSlug(),
+            'post_count' => (int) $post_count
+        ]
+    );
+    return $app;
+}
+
+/**
+ * Function which makes the post update view actionable. You can override this
+ * is you decide to create your own view and re-design the screen and elements to
+ * your liking.
+ * 
+ * @since 1.0
+ * @param object $app Application object.
+ * @param Posttype $posttype Posttype object.
+ * @param Post $post Post object.
+ * @return mixed Returns the post update view.
+ */
+function ttcms_post_update_view($app, $posttype, $post)
+{
+    $app->foil->render(
+        'main::admin/post/update-post',
+        [
+            'title' => esc_html__('Update') . ' ' . $posttype->getTitle(),
+            'posttype_title' => $posttype->getTitle(),
+            'posttype' => $posttype->getSlug(),
+            'post' => $post
+        ]
+    );
+    return $app;
+}
