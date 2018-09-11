@@ -117,7 +117,12 @@ class Parsecode
         }
 
         if (0 !== preg_match('@[<>&/\[\]\x00-\x20]@', $tag)) {
-            throw new Exception(sprintf('Invalid parsecode name: %s. Do not use spaces or reserved characters: & / < > [ ]', $tag));
+            throw new Exception(
+                sprintf(
+                    'Invalid parsecode name: %s. Do not use spaces or reserved characters: & / < > [ ]',
+                    $tag
+                )
+            );
         }
 
         if (is_callable($func)) {
