@@ -26,6 +26,10 @@ class SiteCache implements SiteCacheInterface
      */
     public function update($site)
     {
+        if (empty($site)) {
+            return;
+        }
+        
         $this->cache->{'create'}((int) $site->getId(), $site, 'sites');
         $this->cache->{'create'}((int) $site->getId() . 'short', $site, 'site_details');
         $this->cache->{'create'}($site->getSlug(), (int) $site->getId(), 'siteslugs');
