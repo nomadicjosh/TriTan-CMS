@@ -84,18 +84,18 @@ class MetaData implements MetaDataInterface
                 return $check;
             }
         }
-
+        
         $meta_cache = $this->context->obj['cache']->{'read'}($array_id, $meta_type . '_meta');
-
+        
         if (!$meta_cache) {
             $meta_cache = $this->updateMetaDataCache($meta_type, [$array_id]);
             $meta_cache = $meta_cache[$array_id];
         }
-
+        
         if (!$meta_key) {
             return $meta_cache;
         }
-
+        
         if (isset($meta_cache->{$meta_key})) {
             if ($single) {
                 return $this->context->obj['serializer']->{'unserialize'}($meta_cache->{$meta_key}[0]);
@@ -103,6 +103,31 @@ class MetaData implements MetaDataInterface
                 return array_map([$this->context->obj['serializer'], 'unserialize'], $meta_cache->{$meta_key});
             }
         }
+        
+        /**
+         * While the cache updates, temporarily load the requested data from the
+         * database.
+         * 
+         * @since 1.0
+         */
+        if($single) {
+            $meta_data = $this->db->table($meta_type . 'meta')
+                ->where($meta_type . '_id', $array_id)
+                ->where('meta_key', $meta_key)
+                ->get();
+            return $meta_data[0]['meta_value'];
+        } else {
+            $meta_data = $this->db->table($meta_type . 'meta')
+                ->where($meta_type . '_id', $array_id)
+                ->get();
+            $meta = [];
+            foreach($meta_data as $value) {
+                //$meta[$value['meta_key']] = $value['meta_value'];
+                $meta[$value['meta_key']] = array_map( [$this->context->obj['serializer'], 'unserialize'], [$value['meta_value']] );
+            }
+            return $meta;
+        }
+        
 
         if ($single) {
             return '';
