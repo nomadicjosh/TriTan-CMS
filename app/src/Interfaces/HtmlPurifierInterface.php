@@ -10,5 +10,5 @@ interface HtmlPurifierInterface
      * @param string $string
      * @return string Escaped rich text.
      */
-    public function purify(string $string, bool $is_image = false);
+    public function purify($string, $is_image = false);
 }

@@ -29,7 +29,7 @@ class PostMapper implements PostMapperInterface
      * @param string $id
      * @return TriTan\Common\Post\Post|null Returns post object if exist and NULL otherwise.
      */
-    public function findById($id)
+    public function findById(int $id)
     {
         if (!is_integer($id) || (int) $id < 1) {
             throw new InvalidArgumentException(
@@ -51,7 +51,7 @@ class PostMapper implements PostMapperInterface
      * @param string|int $value The field value
      * @return object|false Raw post object
      */
-    public function findBy($field, $value)
+    public function findBy(string $field, $value)
     {
         // 'ID' is an alias of 'id'.
         if ('ID' === $field) {

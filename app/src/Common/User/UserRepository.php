@@ -19,12 +19,12 @@ class UserRepository implements UserRepositoryInterface
         $this->mapper = $mapper;
     }
 
-    public function findById($id)
+    public function findById(int $id)
     {
         return $this->mapper->{'findById'}($id);
     }
     
-    public function findBy($field, $value)
+    public function findBy(string $field, $value)
     {
         return $this->mapper->{'findBy'}($field, $value);
     }

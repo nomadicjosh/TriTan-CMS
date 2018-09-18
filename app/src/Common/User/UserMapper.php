@@ -28,7 +28,7 @@ class UserMapper implements UserMapperInterface
      * @param string $id
      * @return TriTan\Common\User\User|null Returns user object if exist and NULL otherwise.
      */
-    public function findById($id)
+    public function findById(int $id)
     {
         if (!is_integer($id) || (int) $id < 1) {
             throw new InvalidArgumentException('The ID of this entity is invalid.', 'invalid_id');
@@ -47,7 +47,7 @@ class UserMapper implements UserMapperInterface
      * @param string|int $value The field value
      * @return object|false Raw user object
      */
-    public function findBy($field, $value)
+    public function findBy(string $field, $value)
     {
 
         // 'ID' is an alias of 'id'.

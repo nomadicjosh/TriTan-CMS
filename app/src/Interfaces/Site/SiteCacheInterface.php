@@ -1,23 +1,21 @@
 <?php
 namespace TriTan\Interfaces\Site;
 
-use TriTan\Common\Site\Site;
-
 interface SiteCacheInterface
 {
     /**
      * Update site caches.
      *
      * @since 0.9.9
-     * @param object $site Site object to be cached.
+     * @param Site|null $site Site or site id to be cached.
      */
-    public function update(Site $site);
+    public function update($site);
 
     /**
      * Clean site caches.
      *
      * @since 0.9.9
-     * @param object $site Site object to be cleaned from the cache.
+     * @param object|int $site Site or site id to be cleaned from the cache.
      */
-    public function clean(Site $site);
+    public function clean($site);
 }

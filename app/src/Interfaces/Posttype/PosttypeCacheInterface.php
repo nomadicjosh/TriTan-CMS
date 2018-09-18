@@ -1,23 +1,21 @@
 <?php
 namespace TriTan\Interfaces\Posttype;
 
-use TriTan\Common\Posttype\Posttype;
-
 interface PosttypeCacheInterface
 {
     /**
      * Update posttype caches.
      *
      * @since 0.9.9
-     * @param object $posttype Posttype object to be cached.
+     * @param Posttype|null $posttype Posttype to be cached.
      */
-    public function update(Posttype $posttype);
+    public function update($posttype);
 
     /**
      * Clean posttype caches.
      *
      * @since 0.9.9
-     * @param object $posttype Posttype object to be cleaned from the cache.
+     * @param Posttype|int $posttype Posttype or posttype id to be cleaned from the cache.
      */
-    public function clean(Posttype $posttype);
+    public function clean($posttype);
 }

@@ -1,23 +1,21 @@
 <?php
 namespace TriTan\Interfaces\Post;
 
-use TriTan\Common\Post\Post;
-
 interface PostCacheInterface
 {
     /**
      * Update post caches.
      *
      * @since 0.9.9
-     * @param object $post Post object to be cached.
+     * @param Post|null $post Post or post id to be cached.
      */
-    public function update(Post $post);
+    public function update($post);
 
     /**
      * Clean post caches.
      *
      * @since 0.9.9
-     * @param object $post Post object to be cleaned from the cache.
+     * @param Post|int $post Post or post id to be cleaned from the cache.
      */
-    public function clean(Post $post);
+    public function clean($post);
 }

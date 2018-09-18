@@ -353,7 +353,7 @@ class Post implements PostInterface
             return true;
         }
 
-        return c::getInstance()->get('meta')->{'exists'}('post', $this->post_id, c::getInstance()->get('tbl_prefix') . $key);
+        return c::getInstance()->get('meta')->{'exists'}('post', $this->getId(), c::getInstance()->get('tbl_prefix') . $key);
     }
 
     /**
@@ -368,7 +368,7 @@ class Post implements PostInterface
         if (isset($this->{$key})) {
             $value = $this->{$key};
         } else {
-            $value = c::getInstance()->get('postmeta')->{'read'}($this->post_id, c::getInstance()->get('tbl_prefix') . $key, true);
+            $value = c::getInstance()->get('postmeta')->{'read'}($this->getId(), c::getInstance()->get('tbl_prefix') . $key, true);
         }
 
         return $value;
