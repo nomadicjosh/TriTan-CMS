@@ -849,7 +849,7 @@ function get_domain_name()
  * @param string $subject
  * @return bool
  */
-function php_like($pattern, $subject)
+function php_like($pattern, $subject): bool
 {
     $match = str_replace('%', '.*', preg_quote($pattern, '/'));
     return (bool) preg_match("/^{$match}$/i", $subject);
