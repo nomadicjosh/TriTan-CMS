@@ -62,11 +62,12 @@ function the_post()
  *
  * @since 0.9
  * @param int|Post|null $post Post ID or post object.
- * @param bool $object  If set to true, data will return as an object, else as an array.
- *                      Default: true.
+ * @param string $output  If set to OBJECT, data will return as an object, ARRAY_A
+ *                        as an associative array or ARRAY_N as a numeric array.
+ *                        Default: 'OBJECT'.
  * @return array|object
  */
-function get_post($post, $object = true)
+function get_post($post, $output = 'OBJECT')
 {
     if ($post instanceof Post) {
         $_post = $post;
@@ -98,8 +99,10 @@ function get_post($post, $object = true)
         return null;
     }
 
-    if ($object === false) {
+    if ($output === 'ARRAY_A' || $output === false) {
         $_post = $_post->toArray();
+    } elseif($output === 'ARRAY_N') {
+        $_post = array_values($_post->toArray());
     }
 
     /**
@@ -916,7 +919,7 @@ function get_post_created_date(string $format = 'U', bool $gmt = false, $post = 
  */
 function the_created_date(string $format = '', $post = null)
 {
-    $post = get_post($post, true);
+    $post = get_post($post);
 
     if (!$post) {
         return false;
@@ -950,7 +953,7 @@ function the_created_date(string $format = '', $post = null)
      * @param string    $format   Format to use for retrieving the date the post was written.
      *                            Accepts 'G', 'U', or php date format value specified
      *                            in 'date_format' option. Default empty.
-     * @param int|Post  $post     Post array or post id.
+     * @param Post      $post     Post object.
      */
     return hook::getInstance()->{'applyFilter'}('the_created_date', $the_date, $format, $post);
 }
@@ -1008,7 +1011,7 @@ function get_post_created_time(string $format = 'U', bool $gmt = false, $post = 
  */
 function the_created_time(string $format = '', $post = null)
 {
-    $post = get_post($post, true);
+    $post = get_post($post);
 
     if (!$post) {
         return false;
@@ -1042,7 +1045,7 @@ function the_created_time(string $format = '', $post = null)
      * @param string    $format   Format to use for retrieving the time the post was written.
      *                            Accepts 'G', 'U', or php date format value specified
      *                            in 'time_format' option. Default empty.
-     * @param int|Post  $post     Post array or post id.
+     * @param Post      $post     Post object.
      */
     return hook::getInstance()->{'applyFilter'}('the_created_date', $the_time, $format, $post);
 }
@@ -1097,7 +1100,7 @@ function get_post_published_date(string $format = 'U', bool $gmt = false, $post 
  */
 function the_published_date(string $format = '', $post = null)
 {
-    $post = get_post($post, true);
+    $post = get_post($post);
 
     if (!$post) {
         return false;
@@ -1131,7 +1134,7 @@ function the_published_date(string $format = '', $post = null)
      * @param string    $format   Format to use for retrieving the date the post was published.
      *                            Accepts 'G', 'U', or php date format value specified
      *                            in 'date_format' option. Default empty.
-     * @param int|Post  $post     Post array or post id.
+     * @param Post      $post     Post object.
      */
     return hook::getInstance()->{'applyFilter'}('the_published_date', $the_date, $format, $post);
 }
@@ -1186,7 +1189,7 @@ function get_post_published_time(string $format = 'U', bool $gmt = false, $post 
  */
 function the_published_time(string $format = '', $post = null)
 {
-    $post = get_post($post, true);
+    $post = get_post($post);
 
     if (!$post) {
         return false;
@@ -1220,7 +1223,7 @@ function the_published_time(string $format = '', $post = null)
      * @param string    $format   Format to use for retrieving the time the post was published.
      *                            Accepts 'G', 'U', or php date format value specified
      *                            in 'time_format' option. Default empty.
-     * @param int|Post  $post     Post array or post id.
+     * @param Post      $post     Post object.
      */
     return hook::getInstance()->{'applyFilter'}('the_published_time', $the_time, $format, $post);
 }
@@ -1275,7 +1278,7 @@ function get_post_modified_date(string $format = 'U', bool $gmt = false, $post =
  */
 function the_modified_date(string $format = '', $post = null)
 {
-    $post = get_post($post, true);
+    $post = get_post($post);
 
     if (!$post) {
         return false;
@@ -1309,7 +1312,7 @@ function the_modified_date(string $format = '', $post = null)
      * @param string    $format   Format to use for retrieving the date the post was modified.
      *                            Accepts 'G', 'U', or php date format value specified
      *                            in 'date_format' option. Default empty.
-     * @param int|Post  $post     Post array or post id.
+     * @param Post      $post     Post object.
      */
     return hook::getInstance()->{'applyFilter'}('the_modified_date', $the_date, $format, $post);
 }
@@ -1364,7 +1367,7 @@ function get_post_modified_time(string $format = 'U', bool $gmt = false, $post =
  */
 function the_modified_time(string $format = '', $post = null)
 {
-    $post = get_post($post, true);
+    $post = get_post($post);
 
     if (!$post) {
         return false;
@@ -1398,7 +1401,7 @@ function the_modified_time(string $format = '', $post = null)
      * @param string    $format   Format to use for retrieving the time the post was modified.
      *                            Accepts 'G', 'U', or php date format value specified
      *                            in 'time_format' option. Default empty.
-     * @param int|Post  $post     Post array or post id.
+     * @param Post      $post     Post object.
      */
     return hook::getInstance()->{'applyFilter'}('the_modified_time', $the_time, $format, $post);
 }
@@ -1813,17 +1816,14 @@ function ttcms_insert_post(array $postdata, bool $exception = false)
     $post->setSlug($post_slug);
 
     $raw_post_content = $_postdata['post_content'];
-    $sanitized_post_content = ttcms()->obj['sanitizer']->{'item'}($raw_post_content);
     /**
      * Filters a post's content before created/updated.
      *
      * @since 0.9.9
-     * @param string $sanitized_post_content Post content after it has been sanitized.
      * @param string $raw_post_slug The post's slug.
      */
     $post_content = hook::getInstance()->{'applyFilter'}(
         'pre_post_content',
-        $sanitized_post_content,
         $raw_post_content
     );
     $post->setContent($post_content);
@@ -2129,7 +2129,7 @@ function ttcms_insert_post(array $postdata, bool $exception = false)
         }
     }
 
-    $post = get_post((int) $post_id, true);
+    $post = get_post((int) $post_id);
 
     (new \TriTan\Common\Post\PostCache(
         ttcms()->obj['cache'],
@@ -2145,7 +2145,7 @@ function ttcms_insert_post(array $postdata, bool $exception = false)
          * @param array $post       Post object.
          */
         hook::getInstance()->{'doAction'}('update_post', (int) $post_id, $post);
-        $post_after = get_post((int) $post_id, true);
+        $post_after = get_post((int) $post_id);
         /**
          * Action hook triggered after existing post has been updated.
          *
@@ -2155,6 +2155,14 @@ function ttcms_insert_post(array $postdata, bool $exception = false)
          * @param object    $post_before  Post object before the update.
          */
         hook::getInstance()->{'doAction'}('post_updated', (int) $post_id, $post_after, $post_before);
+    } else {
+        /**
+         * Action hook triggered after post is created.
+         *
+         * @since 1.0
+         * @param array $post Post object.
+         */
+        hook::getInstance()->{'doAction'}('create_post', $post);
     }
 
     /**
@@ -2216,7 +2224,7 @@ function ttcms_update_post($postdata, bool $exception = false)
     }
 
     // First, get all of the original fields.
-    $post = get_post((int) $postdata['post_id'], false);
+    $post = get_post((int) $postdata['post_id'], 'ARRAY_A');
 
     if (is_null($post)) {
         if ($exception) {
