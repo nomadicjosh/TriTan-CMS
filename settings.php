@@ -101,6 +101,7 @@ c::getInstance()->set('option', $option);
 require(APP_PATH . 'functions.php');
 
 hook::getInstance()->{'doAction'}('update_user_init');
+hook::getInstance()->{'doAction'}('update_post_init');
 
 /**
  * Fires before the site's theme is loaded.
