@@ -556,7 +556,7 @@ function populate_options_cache()
 }
 
 /**
- * Populate the user cache.
+ * Populate the usermeta cache.
  *
  * @access private
  * @since 0.9.9
@@ -566,8 +566,29 @@ function populate_usermeta_cache()
     $db = new TriTan\Database();
 
     $umeta = $db->table('usermeta')->all();
-    (new \TriTan\Common\MetaData(
-        $db,
-        new \TriTan\Common\Context\HelperContext()
-    ))->{'updateMetaDataCache'}('user', $umeta);
+    foreach($umeta as $meta) {
+        (new \TriTan\Common\MetaData(
+            $db,
+            new \TriTan\Common\Context\HelperContext()
+        ))->{'updateMetaDataCache'}('user', [$meta['user_id']]);
+    }
+}
+
+/**
+ * Populate the postmeta cache.
+ *
+ * @access private
+ * @since 1.0
+ */
+function populate_postmeta_cache()
+{
+    $db = new TriTan\Database();
+
+    $pmeta = $db->table(c::getInstance()->get('tbl_prefix') . 'postmeta')->all();
+    foreach($pmeta as $meta) {
+        (new \TriTan\Common\MetaData(
+            $db,
+            new \TriTan\Common\Context\HelperContext()
+        ))->{'updateMetaDataCache'}(c::getInstance()->get('tbl_prefix') . 'post', [$meta['post_id']]);
+    }
 }

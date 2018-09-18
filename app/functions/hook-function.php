@@ -1803,6 +1803,8 @@ hook::getInstance()->{'addAction'}('enqueue_ttcms_editor', 'ttcms_editor', 5);
 hook::getInstance()->{'addAction'}('flush_cache', 'add_files_cache_directory', 5);
 hook::getInstance()->{'addAction'}('flush_cache', 'populate_usermeta_cache', 5);
 hook::getInstance()->{'addAction'}('update_user_init', 'populate_usermeta_cache', 5);
+hook::getInstance()->{'addAction'}('flush_cache', 'populate_postmeta_cache', 5);
+hook::getInstance()->{'addAction'}('update_post_init', 'populate_postmeta_cache', 5);
 hook::getInstance()->{'addAction'}('plugins_loaded', 'load_activated_plugins', 1);
 hook::getInstance()->{'addAction'}('maintenance_mode', 'ttcms_maintenance_mode', 1);
 hook::getInstance()->{'addAction'}('post_create_view', 'ttcms_post_create_view', 5, 3);

@@ -5,6 +5,7 @@ TriTan\Container::getInstance()->{'set'}('screen_parent', $this->posttype);
 TriTan\Container::getInstance()->{'set'}('screen_child', $this->posttype);
 TriTan\Container::getInstance()->{'set'}('post_id', $this->post->getId());
 use TriTan\Common\Hooks\ActionFilterHook as hook;
+hook::getInstance()->{'doAction'}('update_post_init');
 ?>
 
 <?= ttcms_upload_image(); ?>
