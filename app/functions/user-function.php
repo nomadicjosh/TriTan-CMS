@@ -1766,7 +1766,10 @@ function blacklisted_usernames() : array
  */
 function recently_published_widget()
 {
-    $posts = get_all_posts(null, 5);
+    $db = new Database();
+    $posts = $db->table(c::getInstance()->get('tbl_prefix') . 'post')
+            ->take(5)
+            ->get();
     $_posts = ttcms_list_sort($posts, 'post_created', 'DESC');
 
     foreach ($_posts as $post) {
