@@ -2,6 +2,7 @@
 namespace TriTan\Common;
 
 use TriTan\Exception\Exception;
+use TriTan\Common\Hooks\ActionFilterHook as hook;
 
 class Parsecode
 {
@@ -222,11 +223,23 @@ class Parsecode
      */
     public function doParsecode($content)
     {
+        if ( false === strpos( $content, '[' ) ) {
+            return $content;
+	}
+        
         if (empty(self::$parsecode_tags) || !is_array(self::$parsecode_tags)) {
             return $content;
         }
+        
+        // Find all registered tag names in $content.
+	preg_match_all( '@\[([^<>&/\[\]\x00-\x20=]++)@', $content, $matches );
+	$tagnames = array_intersect( array_keys( self::$parsecode_tags ), $matches[1] );
+        
+        if ( empty( $tagnames ) ) {
+            return $content;
+	}
 
-        $pattern = $this->getRegex();
+        $pattern = $this->getRegex($tagnames);
         return preg_replace_callback("/$pattern/s", [$this, 'doTag'], $content);
     }
 
@@ -246,11 +259,15 @@ class Parsecode
      * 6 - An extra ] to allow for escaping parsecodes with double [[]]
      *
      * @since 0.9.9
+     * @param array $tagnames Optional. List of parsecodes to find. Defaults to all registered parsecodes.
      * @return string The parsecode search regular expression
      */
-    public function getRegex()
+    public function getRegex($tagnames = null)
     {
-        $tagnames = array_keys(self::$parsecode_tags);
+        if ( empty( $tagnames ) ) {
+            $tagnames = array_keys(self::$parsecode_tags);
+	}
+        
         $tagregexp = join('|', array_map('preg_quote', $tagnames));
 
         // WARNING! Do not change this regex without changing doTag() and strip_parsecode_tag()
@@ -362,9 +379,10 @@ class Parsecode
      * @since 0.9.9
      * @param array $pairs Entire list of supported attributes and their defaults.
      * @param array $atts User defined attributes in parsecode tag.
+     * @param string $parsecode Optional. The name of the parsecode, provided for context to enable filtering
      * @return array Combined and filtered attribute list.
      */
-    public function atts($pairs, $atts)
+    public function atts($pairs, $atts, $parsecode = '')
     {
         $atts = (array) $atts;
         $out = [];
@@ -375,6 +393,22 @@ class Parsecode
                 $out[$name] = $default;
             }
         }
+        /**
+	 * Filters a parsecode's default attributes.
+	 *
+	 * If the third parameter of the $this->atts() method is present then this filter is available.
+	 * The third parameter, $parsecode, is the name of the parsecode.
+	 *
+	 * @since 1.0
+	 * @param array  $out       The output array of parsecode attributes.
+	 * @param array  $pairs     The supported attributes and their defaults.
+	 * @param array  $atts      The user defined parsecode attributes.
+	 * @param string $parsecode The parsecode name.
+	 */
+	if ( $parsecode ) {
+            $out = hook::getInstance()->{'applyFilter'}( "atts_{$parsecode}", $out, $pairs, $atts, $parsecode );
+	}
+
         return $out;
     }
 
