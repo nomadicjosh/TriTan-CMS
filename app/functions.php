@@ -33,13 +33,6 @@ function ttcms()
 }
 
 /**
- * Hooks global scope.
- */
-app()->inst->singleton('hook', function () {
-    return new \TriTan\Hooks();
-});
-
-/**
  * Form global scope.
  */
 app()->inst->singleton('form', function () {
