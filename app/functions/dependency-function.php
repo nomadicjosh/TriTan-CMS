@@ -77,7 +77,7 @@ function _ttcms_logger()
  */
 function _ttcms_flash()
 {
-    $flash = new \TriTan\FlashMessages();
+    $flash = new TriTan\Common\FlashMessages();
     return $flash;
 }
 
