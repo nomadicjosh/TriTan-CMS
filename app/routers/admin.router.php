@@ -84,6 +84,52 @@ $app->group('/admin', function () use ($app, $db, $opt, $current_user) {
             ]
         );
     });
+    
+    /**
+     * Before route checks to make sure the logged in user
+     * us allowed to manage options/settings.
+     */
+    $app->before('POST', '/options/', function () {
+        if (!current_user_can('manage_options')) {
+            ttcms()->obj['flash']->{'error'}(
+                esc_html__('You do not have permission to manage options.'),
+                admin_url()
+            );
+            exit();
+        }
+    });
+
+    $app->post('/options/', function () use ($app, $opt, $current_user) {
+        if ($app->req->isPost()) {
+            
+            $options = $app->req->post;
+            
+            if (!empty(array_filter($options))) {
+                foreach ($options as $option => $value) {
+                    $option = trim($option);
+                    
+                    if (!is_array($value)) {
+                        $value = trim($value);
+                    }
+                    
+                    $value = ttcms()->obj['util']->{'unslash'}($value);
+                    $opt->update($option, $value);
+                }
+
+                ttcms_logger_activity_log_write(
+                    esc_html__('Update Record'),
+                    esc_html__('Options'),
+                    esc_html__('Options'),
+                    esc_html($current_user->getLogin())
+                );
+
+                ttcms()->obj['flash']->{'success'}(
+                    ttcms()->obj['flash']->{'notice'}(200),
+                    $app->req->server['HTTP_REFERER']
+                );
+            }
+        }
+    });
 
     /**
      * Before route checks to make sure the logged in user
