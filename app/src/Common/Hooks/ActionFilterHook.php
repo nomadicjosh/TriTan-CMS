@@ -10,7 +10,15 @@ use TriTan\Interfaces\Hooks\DidActionHookInterface;
 use TriTan\Interfaces\Hooks\HasFilterHookInterface;
 use TriTan\Interfaces\Hooks\HasActionHookInterface;
 
-class ActionFilterHook implements ActionFilterHookInterface, RemoveAllActionsHookInterface, RemoveAllFiltersHookInterface, ApplyFilterRefArrayHookInterface, DoActionRefArrayHookInterface, DidActionHookInterface, HasFilterHookInterface, HasActionHookInterface
+class ActionFilterHook implements
+    ActionFilterHookInterface,
+    RemoveAllActionsHookInterface,
+    RemoveAllFiltersHookInterface,
+    ApplyFilterRefArrayHookInterface,
+    DoActionRefArrayHookInterface,
+    DidActionHookInterface,
+    HasFilterHookInterface,
+    HasActionHookInterface
 {
     /**
      *
@@ -55,12 +63,12 @@ class ActionFilterHook implements ActionFilterHookInterface, RemoveAllActionsHoo
      * @const int
      */
     const ARGUMENT_NEUTRAL = 1;
-    
+
     /**
      * @var self The stored singleton instance
      */
     public static $instance;
-    
+
     /**
      * Reset the Container instance.
      */
@@ -96,8 +104,12 @@ class ActionFilterHook implements ActionFilterHookInterface, RemoveAllActionsHoo
      * @param    int                  $priority         Optional. The priority at which the function should be fired. Default is 10.
      * @param    int                  $accepted_args    Optional. The number of arguments that should be passed to the $callback. Default is 1.
      */
-    public function addAction($hook, $function_to_add, $priority = self::PRIORITY_NEUTRAL, $accepted_args = self::ARGUMENT_NEUTRAL)
-    {
+    public function addAction(
+        $hook,
+        $function_to_add,
+        $priority = self::PRIORITY_NEUTRAL,
+        $accepted_args = self::ARGUMENT_NEUTRAL
+    ) {
         return $this->addFilter($hook, $function_to_add, $priority, $accepted_args);
     }
 
@@ -162,8 +174,12 @@ class ActionFilterHook implements ActionFilterHookInterface, RemoveAllActionsHoo
      *                                       executed in the order in which they were added to the filter)
      * @param   int         $accepted_args   Optional. The number of arguments the function accept (default is the number provided).
      */
-    public function addFilter($hook, $function_to_add, $priority = self::PRIORITY_NEUTRAL, $accepted_args = self::ARGUMENT_NEUTRAL)
-    {
+    public function addFilter(
+        $hook,
+        $function_to_add,
+        $priority = self::PRIORITY_NEUTRAL,
+        $accepted_args = self::ARGUMENT_NEUTRAL
+    ) {
         // At this point, we cannot check if the function exists, as it may well be defined later (which is OK)
         $id = $this->buildUniqueId($hook, $function_to_add, $priority);
 
@@ -529,13 +545,17 @@ class ActionFilterHook implements ActionFilterHookInterface, RemoveAllActionsHoo
     /**
      * Build Unique ID for storage and retrieval.
      *
-     * Simply using a function name is not enough, as several functions can have the same name when they are enclosed in classes.
+     * Simply using a function name is not enough, as several functions can
+     * have the same name when they are enclosed in classes.
      *
      * @access private
      * @since 0.9.9
      * @param string $hook
      * @param string|array  $function Used for creating unique id
-     * @param int|bool      $priority Used in counting how many hooks were applied. If === false and $function is an object reference, we return the unique id only if it already has one, false otherwise.
+     * @param int|bool      $priority Used in counting how many hooks were
+     *                                applied. If === false and $function is an
+     *                                object reference, we return the unique id
+     *                                only if it already has one, false otherwise.
      * @return string unique ID for usage as array key
      */
     private function buildUniqueId($hook, $function, $priority)
@@ -611,12 +631,69 @@ class ActionFilterHook implements ActionFilterHookInterface, RemoveAllActionsHoo
     /**
      * Retrieve the name of the current filter or action.
      *
+     * @deprecated since 1.0
+     * @see ActionFilterHook::currentFilter()
      * @access public
      * @since 0.9.9
      * @return string <p>Hook name of the current filter or action.</p>
      */
     public function current()
     {
+        return $this->currentFilter();
+    }
+
+    /**
+     * Retrieve the name of the current filter or action.
+     *
+     * @access public
+     * @since 1.0
+     * @return string <p>Hook name of the current filter or action.</p>
+     */
+    public function currentFilter()
+    {
         return end($this->current_filter);
+    }
+
+    /**
+     * Retrieve the name of the current action.
+     *
+     * @access public
+     * @since 1.0
+     * @return string <p>Hook name of the current action.</p>
+     */
+    public function currentAction()
+    {
+        return $this->currentFilter();
+    }
+
+    /**
+     * Retrieve the name of a filter currently being processed.
+     *
+     * @access public
+     * @since 1.0
+     * @param null|string $filter Optional. Filter to check. Defaults to null,
+     *                            which checks if any filter is currently being run.
+     * @return bool <p>Whether the filter is currently in the stack.</p>
+     */
+    public function doingFilter($filter = null)
+    {
+        if (null === $filter) {
+            return !empty($this->current_filter);
+        }
+        return in_array($filter, $this->current_filter);
+    }
+
+    /**
+     * Retrieve the name of an action currently being processed.
+     *
+     * @access public
+     * @since 1.0
+     * @param string|null $action Optional. Action to check. Defaults to null,
+     *                            which checks if any action is currently being run.
+     * @return bool <p>Whether the action is currently in the stack.</p>
+     */
+    public function doingAction($action = null)
+    {
+        return $this->doingFilter($action);
     }
 }
