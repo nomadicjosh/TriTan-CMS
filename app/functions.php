@@ -33,13 +33,6 @@ function ttcms()
 }
 
 /**
- * Form global scope.
- */
-app()->inst->singleton('form', function () {
-    return new AdamWathan\Form\FormBuilder();
-});
-
-/**
  * Displays the returned translated text.
  *
  * @file app/functions/core-function.php
@@ -94,7 +87,8 @@ function url($route)
 }
 
 /**
- *
+ * Relative time.
+ * 
  * @file app/functions.php
  *
  * @since 0.9
@@ -107,13 +101,14 @@ function time_ago($original)
 }
 
 /**
- *
+ * Checks if a remote file exists.
+ * 
  * @file app/functions.php
  *
  * @since 0.9
- * @return bool
+ * @return bool True on success, false otherwise.
  */
-function remote_file_exists($url)
+function remote_file_exists($url): bool
 {
     $curl = curl_init($url);
     //don't fetch the actual page, you only want to check the connection is ok
@@ -158,9 +153,7 @@ function get_file_ext($filename)
  * @param   int     $length  The length to truncate the string to
  * @param   string  $append  Text to append to the string IF it gets
  *                           truncated, defaults to '...'
- * @return  string
- *
- * @access  public
+ * @return  string Truncated string.
  */
 function safe_truncate($string, $length, $append = '...')
 {
@@ -275,7 +268,7 @@ function _include_once($file, $show_errors = true)
  *
  * @since 0.9
  * @param string $str
- * @return mixed
+ * @return string Trimmed string.
  */
 function _trim($str)
 {
@@ -293,7 +286,7 @@ function _trim($str)
  * @since 0.9
  * @param string $file Filepath
  * @param int $digits Digits to display
- * @return string|bool Size (KB, MB, GB, TB) or boolean
+ * @return string|bool Size (KB, MB, GB, TB) on success or false otherwise.
  */
 function get_file_size($file, $digits = 2)
 {
@@ -322,7 +315,7 @@ if (!function_exists('hash_equals')) {
      * @since 0.9
      * @param string $known_string The string of known length to compare against
      * @param string $user_string The user-supplied string
-     * @return boolean Returns TRUE when the two strings are equal, FALSE otherwise.
+     * @return bool Returns TRUE when the two strings are equal, FALSE otherwise.
      */
     function hash_equals($known_string, $user_string)
     {
@@ -460,7 +453,7 @@ function checked_selected_helper($helper, $current, $echo, $type)
  * @param string $separator Delimeter to used between strings.
  * @param type $string1 Left string.
  * @param type $string2 Right string.
- * @return type
+ * @return string Concatenated string.
  */
 function concat_ws($separator, $string1, $string2)
 {
@@ -507,7 +500,7 @@ function _trigger_error($message, $level = E_USER_NOTICE)
  * @since 0.9
  * @return bool False
  */
-function __return_false()
+function __return_false(): bool
 {
     return false;
 }
@@ -522,7 +515,7 @@ function __return_false()
  * @since 0.9
  * @return bool True
  */
-function __return_true()
+function __return_true(): bool
 {
     return true;
 }
@@ -656,12 +649,11 @@ function plugin_dir_path($filename)
  * @file app/functions.php
  *
  * @since 0.9
- * @param string $file
- *            File which should be included/required.
- * @param bool $once
- *            File should be included/required once. Default true.
- * @param bool|Closure $show_errors
- *            If true error will be processed, if Closure - only Closure will be called. Default true.
+ * @param string $file File which should be included/required.
+ * @param bool $once File should be included/required once. Default true.
+ * @param bool|Closure $show_errors If true error will be processed,
+ *                                  if Closure - only Closure will be called.
+ *                                  Default true.
  * @return mixed
  */
 function ttcms_load_file($file, $once = true, $show_errors = true)
@@ -697,8 +689,7 @@ function ttcms_load_file($file, $once = true, $show_errors = true)
  * @file app/functions.php
  *
  * @since 0.9
- * @param string $string
- *            What to add the trailing slash to.
+ * @param string $string What to add the trailing slash to.
  * @return string String with trailing slash added.
  */
 function add_trailing_slash($string)
@@ -715,8 +706,7 @@ function add_trailing_slash($string)
  * @file app/functions.php
  *
  * @since 0.9
- * @param string $string
- *            What to remove the trailing slashes from.
+ * @param string $string What to remove the trailing slashes from.
  * @return string String without the trailing slashes.
  */
 function remove_trailing_slash($string)
@@ -855,7 +845,7 @@ function add_query_arg($key, $value, $url)
  * @file app/functions.php
  *
  * @since 0.9
- * @return bool
+ * @return bool True if server is running Apache, false otherwise.
  */
 function is_apache(): bool
 {
@@ -872,7 +862,7 @@ function is_apache(): bool
  * e.g. `/admin/`
  *
  * @since 0.9
- * @return bool True if an admin screen, otherwise false.
+ * @return bool True if an admin screen, false otherwise.
  */
 function is_admin(): bool
 {
@@ -891,7 +881,7 @@ function is_admin(): bool
  * @file app/functions.php
  *
  * @since 0.9
- * @return bool True if SSL, otherwise false.
+ * @return bool True if SSL, false otherwise.
  */
 function is_ssl(): bool
 {
@@ -908,7 +898,7 @@ function is_ssl(): bool
  * e.g. `/login/`
  *
  * @since 0.9.9
- * @return bool True if login screen, otherwise false.
+ * @return bool True if login screen, false otherwise.
  */
 function is_login(): bool
 {
