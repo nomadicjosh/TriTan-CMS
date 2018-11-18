@@ -45,7 +45,23 @@ class Container implements ContainerInterface
 
         return static::$instance;
     }
+    
+    /**
+     * Retrieves a sub-key from the container.
+     * 
+     * @since 1.0
+     * @param string $object  name of an object to retrieve a key from.
+     * @param bool   $key     (optional) key to retrieve from the object.
+     * @param null   $default (optional) default value for missing objects or keys.
+     */
 
+    public function prop($object, $key = false, $default = null)
+    {
+        if ($obj = $this->get($object)) {
+            return ($key != false ? $obj->{$key} : $obj);
+        }
+        return $default;
+    }
     /**
      * Retrieves a container parameter.
      *
