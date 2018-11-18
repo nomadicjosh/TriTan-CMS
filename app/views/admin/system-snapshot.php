@@ -46,35 +46,38 @@ $option = (
                 // add filter for adding to report opening
                 $report .= hook::getInstance()->{'applyFilter'}('system_snapshot_report_before', '');
 
-                $report .= "\n\t" . '** TriTan CMS DATA **' . PHP_EOL . PHP_EOL;
-                $report .= 'Site URL:' . "\t\t\t\t\t\t" . site_url() . PHP_EOL;
-                $report .= 'TriTan CMS Release:' . "\t\t\t\t\t" . CURRENT_RELEASE . PHP_EOL;
-                $report .= 'API Key:' . "\t\t\t\t\t\t" . (preg_match('/\s/', $option->{'read'}('api_key')) ? '<font color="red">' . esc_html__('No') . '</font>' : '<font color="green">' . esc_html__('Yes') . '</font>') . PHP_EOL;
-                $report .= "Active User Count:" . "\t\t\t\t\t" . (int) $this->user . PHP_EOL;
-                $report .= sprintf("DB Errors:" . "\t\t\t\t\t\t" . ((int) $this->error <= 0 ? '<font color="green">0</font>' : '<font color="red">' . (int) $this->error . '</font> (<a href="%s"><strong>Click Here</strong></a>)'), admin_url('error/')) . PHP_EOL;
-                $report .= "\n\t" . '** TriTan CMS CONFIG **' . PHP_EOL . PHP_EOL;
-                $report .= 'Environment:' . "\t\t\t\t\t\t" . (APP_ENV == 'PROD' ? '<font color="green">' . esc_html__('Production') . '</font>' : '<font color="red">' . esc_html__('Development') . '</font>') . PHP_EOL;
-                $report .= 'Base Path:' . "\t\t\t\t\t\t" . BASE_PATH . PHP_EOL;
-                $report .= 'Application Path:' . "\t\t\t\t\t" . APP_PATH . PHP_EOL;
+                $report .= "\n\t" . esc_html__('** TriTan CMS DATA **') . PHP_EOL . PHP_EOL;
+                $report .= esc_html__('Site URL:') . "\t\t\t\t\t\t" . site_url() . PHP_EOL;
+                $report .= esc_html__('TriTan CMS Release:') . "\t\t\t\t\t" . CURRENT_RELEASE . PHP_EOL;
+                $report .= esc_html__('API Key:') . "\t\t\t\t\t\t" . (preg_match('/\s/', $option->{'read'}('api_key')) ? '<font color="red">' . esc_html__('No') . '</font>' : '<font color="green">' . esc_html__('Yes') . '</font>') . PHP_EOL;
+                $report .= esc_html__('Active User Count:') . "\t\t\t\t\t" . (int) $this->user . PHP_EOL;
+                $report .= sprintf(esc_html__("DB Errors:") . "\t\t\t\t\t\t" . ((int) $this->error <= 0 ? '<font color="green">0</font>' : '<font color="red">' . (int) $this->error . '</font> (<a href="%s"><strong>' . esc_html__('Click Here') . '</strong></a>)'), admin_url('error/')) . PHP_EOL;
+                $report .= "\n\t" . esc_html__('** TriTan CMS CONFIG **') . PHP_EOL . PHP_EOL;
+                $report .= esc_html__('Environment:') . "\t\t\t\t\t\t" . (APP_ENV == 'PROD' ? '<font color="green">' . esc_html__('Production') . '</font>' : '<font color="red">' . esc_html__('Development') . '</font>') . PHP_EOL;
+                $report .= esc_html__('Base Path:') . "\t\t\t\t\t\t" . BASE_PATH . PHP_EOL;
+                $report .= esc_html__('Application Path:') . "\t\t\t\t\t" . APP_PATH . PHP_EOL;
 
-                $report .= "\n\t" . '** SERVER DATA **' . PHP_EOL . PHP_EOL;
-                $report .= 'PHP Version:' . "\t\t\t\t\t\t" . PHP_VERSION . PHP_EOL;
-                $report .= 'PHP Handler:' . "\t\t\t\t\t\t" . PHP_SAPI . PHP_EOL;
-                $report .= 'Database Version:' . "\t\t\t\t\t" . '0.2.2' . PHP_EOL;
-                $report .= 'Server Software:' . "\t\t\t\t\t" . $this->app->req->server['SERVER_SOFTWARE'] . PHP_EOL;
+                $report .= "\n\t" . esc_html__('** SERVER DATA **') . PHP_EOL . PHP_EOL;
+                $report .= esc_html__('PHP Version:') . "\t\t\t\t\t\t" . PHP_VERSION . PHP_EOL;
+                $report .= esc_html__('PHP Handler:') . "\t\t\t\t\t\t" . PHP_SAPI . PHP_EOL;
+                $report .= esc_html__('Database Version:') . "\t\t\t\t\t" . '0.2.2' . PHP_EOL;
+                $report .= esc_html__('Server Software:') . "\t\t\t\t\t" . $this->app->req->server['SERVER_SOFTWARE'] . PHP_EOL;
 
-                $report .= "\n\t" . '** PHP CONFIGURATION **' . PHP_EOL . PHP_EOL;
-                $report .= 'Memory Limit:' . "\t\t\t\t\t\t" . ini_get('memory_limit') . PHP_EOL;
-                $report .= 'Upload Max:' . "\t\t\t\t\t\t" . ini_get('upload_max_filesize') . PHP_EOL;
-                $report .= 'Post Max:' . "\t\t\t\t\t\t" . ini_get('post_max_size') . PHP_EOL;
-                $report .= 'Time Limit:' . "\t\t\t\t\t\t" . ini_get('max_execution_time') . PHP_EOL;
-                $report .= 'Max Input Vars:' . "\t\t\t\t\t\t" . ini_get('max_input_vars') . PHP_EOL;
-                $report .= 'Cookie Path:' . "\t\t\t\t\t\t" . ((new \TriTan\Common\FileSystem(hook::getInstance()))->{'isWritable'}($this->app->config('cookies.savepath')) ? '<font color="green">' . $this->app->config('cookies.savepath') . '</font>' : '<font color="red">' . $this->app->config('cookies.savepath') . '</font>') . PHP_EOL;
-                $report .= 'Regular Cookie TTL:' . "\t\t\t\t\t" . ttcms_seconds_to_time($this->app->config('cookies.lifetime')) . PHP_EOL;
-                $report .= 'Secure Cookie TTL:' . "\t\t\t\t\t" . ttcms_seconds_to_time($option->{'read'}('cookieexpire')) . PHP_EOL;
-                $report .= 'File Save Path:' . "\t\t\t\t\t\t" . ((new \TriTan\Common\FileSystem(hook::getInstance()))->{'isWritable'}(Container::getInstance()->{'get'}('site_path') . 'files' . DS) ? '<font color="green">' . Container::getInstance()->{'get'}('site_path') . 'files' . DS . '</font>' : '<font color="red">' . Container::getInstance()->{'get'}('site_path') . 'files' . DS . '</font>') . PHP_EOL;
-                $report .= 'TriTan CMS Node:' . "\t\t\t\t\t" . ((new \TriTan\Common\FileSystem(hook::getInstance()))->{'isWritable'}(TTCMS_NODEQ_PATH) ? '<font color="green">' . TTCMS_NODEQ_PATH . '</font>' : '<font color="red">' . TTCMS_NODEQ_PATH . '</font>') . PHP_EOL;
-                $report .= 'cURL Enabled:' . "\t\t\t\t\t\t" . (function_exists('curl_version') ? '<font color="green">' . esc_html__('Yes') . '</font>' : '<font color="red">' . esc_html__('No') . '</font>') . PHP_EOL;
+                $report .= "\n\t" . esc_html__('** PHP CONFIGURATION **') . PHP_EOL . PHP_EOL;
+                $report .= esc_html__('Memory Limit:') . "\t\t\t\t\t\t" . ini_get('memory_limit') . PHP_EOL;
+                $report .= esc_html__('Upload Max:') . "\t\t\t\t\t\t" . ini_get('upload_max_filesize') . PHP_EOL;
+                $report .= esc_html__('Post Max:') . "\t\t\t\t\t\t" . ini_get('post_max_size') . PHP_EOL;
+                $report .= esc_html__('Time Limit:') . "\t\t\t\t\t\t" . ini_get('max_execution_time') . PHP_EOL;
+                $report .= esc_html__('Max Input Vars:') . "\t\t\t\t\t\t" . ini_get('max_input_vars') . PHP_EOL;
+                $report .= esc_html__('Cookie Path:') . "\t\t\t\t\t\t" . ((new \TriTan\Common\FileSystem(hook::getInstance()))->{'isWritable'}($this->app->config('cookies.savepath')) ? '<font color="green">' . $this->app->config('cookies.savepath') . '</font>' : '<font color="red">' . $this->app->config('cookies.savepath') . '</font>') . PHP_EOL;
+                $report .= esc_html__('Regular Cookie TTL:') . "\t\t\t\t\t" . ttcms_seconds_to_time($this->app->config('cookies.lifetime')) . PHP_EOL;
+                $report .= esc_html__('Secure Cookie TTL:') . "\t\t\t\t\t" . ttcms_seconds_to_time($option->{'read'}('cookieexpire')) . PHP_EOL;
+                $report .= esc_html__('File Save Path:') . "\t\t\t\t\t\t" . ((new \TriTan\Common\FileSystem(hook::getInstance()))->{'isWritable'}(Container::getInstance()->{'get'}('site_path') . 'files' . DS) ? '<font color="green">' . Container::getInstance()->{'get'}('site_path') . 'files' . DS . '</font>' : '<font color="red">' . Container::getInstance()->{'get'}('site_path') . 'files' . DS . '</font>') . PHP_EOL;
+                $report .= esc_html__('TriTan CMS Node:') . "\t\t\t\t\t" . ((new \TriTan\Common\FileSystem(hook::getInstance()))->{'isWritable'}(TTCMS_NODEQ_PATH) ? '<font color="green">' . TTCMS_NODEQ_PATH . '</font>' : '<font color="red">' . TTCMS_NODEQ_PATH . '</font>') . PHP_EOL;
+                $report .= esc_html__('cURL Enabled:') . "\t\t\t\t\t\t" . (function_exists('curl_version') ? '<font color="green">' . esc_html__('Yes') . '</font>' : '<font color="red">' . esc_html__('No') . '</font>') . PHP_EOL;
+                
+                $report .= "\n\t" . esc_html__('** PASSWORD HASH COST **') . PHP_EOL . PHP_EOL;
+                $report .= esc_html__('Appropriate Cost Found:') . "\t\t\t\t\t" . (new \TriTan\Common\Password\PasswordCost())->{'cost'}() . PHP_EOL;
 
                 // add filter for end of report
                 $report .= hook::getInstance()->{'applyFilter'}('system_snapshot_report_after', '');
