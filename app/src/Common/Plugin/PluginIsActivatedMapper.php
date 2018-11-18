@@ -43,8 +43,8 @@ class PluginIsActivatedMapper implements PluginIsActivatedMapperInterface
      */
     public function isActivated($plugin) : bool
     {
-        $active = $this->db->table(c::getInstance()->get('tbl_prefix') . 'plugin')->where('plugin_location', $plugin)->first();
+        $count = $this->db->table(c::getInstance()->get('tbl_prefix') . 'plugin')->where('plugin_location', $plugin)->count();
         
-        return @count($active) > 0;
+        return $count > 0 ? true : false;
     }
 }
