@@ -423,10 +423,9 @@ a span,
                     <table class="column" width="100%" border="0" cellspacing="0" cellpadding="0" style="border-spacing: 0;mso-table-lspace: 0pt;mso-table-rspace: 0pt;width: 100%;vertical-align: top;">
                       <tbody>
                         <tr>
-                          <td class="column_cell font_default" align="center" valign="top" style="padding: 16px;font-family: Helvetica, Arial, sans-serif;font-size: 15px;text-align: left;vertical-align: top;color: #888888;">
- 
-							<p style="font-family: Helvetica, Arial, sans-serif;font-size: 15px;line-height: 23px;margin-top: 16px;margin-bottom: 24px;">{content}</p>
-                          </td><!-- /.column_cell -->
+                            <td class="column_cell font_default" align="center" valign="top" style="padding: 16px;font-family: Helvetica, Arial, sans-serif;font-size: 15px;text-align: left;vertical-align: top;color: #888888;">
+                                <p style="font-family: Helvetica, Arial, sans-serif;font-size: 15px;line-height: 23px;margin-top: 16px;margin-bottom: 24px;">{content}</p>
+                            </td><!-- /.column_cell -->
                         </tr>
                       </tbody>
                     </table><!-- /.column -->
