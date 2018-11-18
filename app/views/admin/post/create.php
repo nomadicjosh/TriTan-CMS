@@ -118,6 +118,7 @@ $(function(){
                                         <option value="published"<?= selected('published', __return_post('post_status'), false); ?>><?= esc_html__('Publish'); ?></option>
                                         <?php endif; ?>
                                         <option value="draft"<?= selected('draft', __return_post('post_status'), false); ?>><?= esc_html__('Draft'); ?></option>
+                                        <option value="pending"<?= selected('pending', __return_post('post_status'), false); ?>><?= esc_html__('Pending'); ?></option>
                                         <option value="archived"<?= selected('archived', __return_post('post_status'), false); ?>><?= esc_html__('Archive'); ?></option>
                                     </select>
                                 </div>

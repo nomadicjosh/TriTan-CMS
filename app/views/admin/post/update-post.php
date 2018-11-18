@@ -121,6 +121,7 @@ hook::getInstance()->{'doAction'}('update_post_init');
                                     <option value="published"<?= selected('published', $this->post->getStatus(), false); ?>><?= esc_html__('Publish'); ?></option>
                                     <?php endif; ?>
                                     <option value="draft"<?= selected('draft', $this->post->getStatus(), false); ?>><?= esc_html__('Draft'); ?></option>
+                                    <option value="pending"<?= selected('pending', $this->post->getStatus(), false); ?>><?= esc_html__('Pending'); ?></option>
                                     <option value="archived"<?= selected('archived', $this->post->getStatus(), false); ?>><?= esc_html__('Archive'); ?></option>
                                 </select>
                             </div>
