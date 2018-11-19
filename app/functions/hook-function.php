@@ -325,8 +325,8 @@ function _deprecated_class_method($method_name, $release, $replacement = null)
      * Filter whether to trigger an error for deprecated class methods.
      *
      * @since 0.9
-     * @param bool $trigger
-     *            Whether to trigger the error for deprecated class methods. Default true.
+     * @param bool $trigger Whether to trigger the error for deprecated class methods.
+     *                      Default true.
      */
     if (APP_ENV == 'DEV' && hook::getInstance()->{'applyFilter'}('deprecated_class_method_trigger_error', true)) {
         if (function_exists('t__')) {
@@ -422,8 +422,8 @@ function _deprecated_argument($function_name, $release, $message = null)
      * Filter whether to trigger an error for deprecated arguments.
      *
      * @since 0.9
-     * @param bool $trigger
-     *            Whether to trigger the error for deprecated arguments. Default true.
+     * @param bool $trigger Whether to trigger the error for deprecated arguments.
+     *                      Default true.
      */
     if (APP_ENV == 'DEV' && hook::getInstance()->{'applyFilter'}('deprecated_argument_trigger_error', true)) {
         if (function_exists('t__')) {
@@ -572,8 +572,8 @@ function _incorrectly_called($function_name, $message, $release)
      * Filter whether to trigger an error for _incorrectly_called() calls.
      *
      * @since 0.9
-     * @param bool $trigger
-     *            Whether to trigger the error for _incorrectly_called() calls. Default true.
+     * @param bool $trigger Whether to trigger the error for _incorrectly_called() calls.
+     *                      Default true.
      */
     if (APP_ENV == 'DEV' && hook::getInstance()->{'applyFilter'}('incorrectly_called_trigger_error', true)) {
         if (function_exists('t__')) {
@@ -935,7 +935,6 @@ function get_image_directory_uri()
  *
  * @since 0.9
  * @uses hook::getInstance()->{'applyFilter'}() Calls 'met_footer_release' filter.
- *
  * @return mixed.
  */
 function get_footer_release()
@@ -959,16 +958,18 @@ function get_user_avatar($email, $s = 80, $class = '')
 {
     $email_hash = md5(strtolower(_trim($email)));
 
-    if (ttcms()->obj['ssl']->{'isEnabled'}() || hook::getInstance()->{'hasFilter'}('base_url')) {
+    if (is_ssl()) {
         $url = 'https://secure.gravatar.com/avatar/' . $email_hash . "?s=200";
     } else {
         $url = 'http://www.gravatar.com/avatar/' . $email_hash . "?s=200";
     }
 
-    if (get_http_response_code('http://www.gravatar.com/') != 302) {
-        $static_image_url = site_url("static/assets/img/avatar.png?s=200");
+    $resource_check = 'https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?f=y';
+
+    if (get_http_response_code($resource_check) !== 200 || get_http_response_code($resource_check) !== 302) {
+        $static_image_url = site_url('static/assets/img/avatar.png?s=200');
         $avatarsize = getimagesize($static_image_url);
-        $avatar = '<img src="' . site_url('static/assets/img/avatar.png') . ' ' . ttcms()->obj['image']->{'resize'}($avatarsize[1], $avatarsize[1], $s) . ' class="' . $class . '" alt="' . $email . '" />';
+        $avatar = '<img src="' . site_url('static/assets/img/avatar.png') . '" ' . ttcms()->obj['image']->{'resize'}($avatarsize[1], $avatarsize[1], $s) . ' class="' . $class . '" alt="' . $email . '" />';
     } else {
         $avatarsize = getimagesize($url);
         $avatar = '<img src="' . $url . '" ' . ttcms()->obj['image']->{'resize'}($avatarsize[1], $avatarsize[1], $s) . ' class="' . $class . '" alt="' . $email . '" />';
@@ -990,13 +991,15 @@ function get_user_avatar_url($email)
 {
     $email_hash = md5(strtolower(_trim($email)));
 
-    if (ttcms()->obj['ssl']->{'isEnabled'}() || hook::getInstance()->{'hasFilter'}('base_url')) {
+    if (is_ssl()) {
         $url = 'https://secure.gravatar.com/avatar/' . $email_hash;
     } else {
         $url = 'http://www.gravatar.com/avatar/' . $email_hash;
     }
+    
+    $resource_check = 'https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?f=y';
 
-    if (get_http_response_code('http://www.gravatar.com/') != 302) {
+    if (get_http_response_code($resource_check) !== 200 || get_http_response_code($resource_check) !== 302) {
         $avatar = site_url('static/assets/img/avatar.png');
     } else {
         $avatar = $url;
@@ -1141,20 +1144,26 @@ function compare_releases($current, $latest, $operator = '>'): bool
  * @file app/functions/hook-function.php
  *
  * @since 0.9
- * @param string $url
- *            URL of resource/website.
- * @return int HTTP response code.
+ * @param string $url URL of resource/website.
+ * @return bool HTTP response code.
  */
 function get_http_response_code($url)
 {
-    $headers = get_headers($url);
-    $status = substr($headers[0], 9, 3);
+    $timeout = 10;
+    $ch = curl_init();
+    curl_setopt ( $ch, CURLOPT_URL, $url );
+    curl_setopt ( $ch, CURLOPT_RETURNTRANSFER, 1 );
+    curl_setopt ( $ch, CURLOPT_TIMEOUT, $timeout );
+    $http_respond = curl_exec($ch);
+    $http_respond = trim( strip_tags( $http_respond ) );
+    $http_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
+    $status = $http_code;
+    curl_close( $ch );
     /**
      * Filters the http response code.
      *
      * @since 0.9
-     * @param
-     *            string
+     * @param string $status The http respond code from external resource.
      */
     return hook::getInstance()->{'applyFilter'}('http_response_code', $status);
 }
@@ -1165,8 +1174,7 @@ function get_http_response_code($url)
  * @file app/functions/hook-function.php
  *
  * @since 0.9
- * @param string $plugin_name
- *            The name of the plugin that was just activated.
+ * @param string $plugin_name The name of the plugin that was just activated.
  */
 function ttcms_plugin_activate_message($plugin_name)
 {
@@ -1175,10 +1183,8 @@ function ttcms_plugin_activate_message($plugin_name)
      * Filter the default plugin success activation message.
      *
      * @since 0.9
-     * @param string $success
-     *            The success activation message.
-     * @param string $plugin_name
-     *            The name of the plugin that was just activated.
+     * @param string $success The success activation message.
+     * @param string $plugin_name The name of the plugin that was just activated.
      */
     return hook::getInstance()->{'applyFilter'}('ttcms_plugin_activate_message', $success, $plugin_name);
 }
@@ -1189,8 +1195,7 @@ function ttcms_plugin_activate_message($plugin_name)
  * @file app/functions/hook-function.php
  *
  * @since 0.9
- * @param string $plugin_name
- *            The name of the plugin that was just deactivated.
+ * @param string $plugin_name The name of the plugin that was just deactivated.
  */
 function ttcms_plugin_deactivate_message($plugin_name)
 {
@@ -1199,10 +1204,8 @@ function ttcms_plugin_deactivate_message($plugin_name)
      * Filter the default plugin success deactivation message.
      *
      * @since 0.9
-     * @param string $success
-     *            The success deactivation message.
-     * @param string $plugin_name
-     *            The name of the plugin that was just deactivated.
+     * @param string $success The success deactivation message.
+     * @param string $plugin_name The name of the plugin that was just deactivated.
      */
     return hook::getInstance()->{'applyFilter'}('ttcms_plugin_deactivate_message', $success, $plugin_name);
 }
