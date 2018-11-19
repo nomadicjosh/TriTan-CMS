@@ -62,7 +62,7 @@ function ttcms_remove_accents($string)
 {
     return (
         new \TriTan\Common\Sanitizer(
-            \TriTan\Common\Hooks\ActionFilterHook::getInstance()
+            hook::getInstance()
         )
     )->{'removeAccents'}($string);
 }
@@ -90,7 +90,7 @@ function load_plugin_textdomain($domain, $plugin_rel_path = false)
                     new \TriTan\Common\Context\HelperContext()
                 )
             ),
-            \TriTan\Common\Hooks\ActionFilterHook::getInstance()
+            hook::getInstance()
         )
     )->{'loadPluginTextDomain'}($domain, $plugin_rel_path);
 }
@@ -115,7 +115,7 @@ function load_default_textdomain($domain, $path)
                     new \TriTan\Common\Context\HelperContext()
                 )
             ),
-            \TriTan\Common\Hooks\ActionFilterHook::getInstance()
+            hook::getInstance()
         )
     )->{'loadDefaultTextDomain'}($domain, $path);
 }
@@ -140,7 +140,7 @@ function load_textdomain($domain, $path)
                     new \TriTan\Common\Context\HelperContext()
                 )
             ),
-            \TriTan\Common\Hooks\ActionFilterHook::getInstance()
+            hook::getInstance()
         )
     )->{'loadTextDomain'}($domain, $path);
 }
@@ -163,7 +163,7 @@ function load_core_locale()
                     new \TriTan\Common\Context\HelperContext()
                 )
             ),
-            \TriTan\Common\Hooks\ActionFilterHook::getInstance()
+            hook::getInstance()
         )
     )->{'loadCoreLocale'}();
 }
