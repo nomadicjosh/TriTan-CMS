@@ -966,7 +966,7 @@ function get_user_avatar($email, $s = 80, $class = '')
 
     $resource_check = 'https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?f=y';
 
-    if (get_http_response_code($resource_check) !== 200 || get_http_response_code($resource_check) !== 302) {
+    if (get_http_response_code($resource_check) !== (int) 200) {
         $static_image_url = site_url('static/assets/img/avatar.png?s=200');
         $avatarsize = getimagesize($static_image_url);
         $avatar = '<img src="' . site_url('static/assets/img/avatar.png') . '" ' . ttcms()->obj['image']->{'resize'}($avatarsize[1], $avatarsize[1], $s) . ' class="' . $class . '" alt="' . $email . '" />';
@@ -999,7 +999,7 @@ function get_user_avatar_url($email)
     
     $resource_check = 'https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?f=y';
 
-    if (get_http_response_code($resource_check) !== 200 || get_http_response_code($resource_check) !== 302) {
+    if (get_http_response_code($resource_check) !== (int) 200) {
         $avatar = site_url('static/assets/img/avatar.png');
     } else {
         $avatar = $url;
@@ -1145,27 +1145,19 @@ function compare_releases($current, $latest, $operator = '>'): bool
  *
  * @since 0.9
  * @param string $url URL of resource/website.
- * @return bool HTTP response code.
+ * @return int HTTP response code.
  */
 function get_http_response_code($url)
 {
-    $timeout = 10;
-    $ch = curl_init();
-    curl_setopt ( $ch, CURLOPT_URL, $url );
-    curl_setopt ( $ch, CURLOPT_RETURNTRANSFER, 1 );
-    curl_setopt ( $ch, CURLOPT_TIMEOUT, $timeout );
-    $http_respond = curl_exec($ch);
-    $http_respond = trim( strip_tags( $http_respond ) );
-    $http_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
-    $status = $http_code;
-    curl_close( $ch );
+    $headers = @get_headers($url);
+    $status = substr($headers[0], 9, 3);
     /**
      * Filters the http response code.
      *
      * @since 0.9
-     * @param string $status The http respond code from external resource.
+     * @param int $status The http response code from external resource.
      */
-    return hook::getInstance()->{'applyFilter'}('http_response_code', $status);
+    return hook::getInstance()->{'applyFilter'}('http_response_code', (int) $status);
 }
 
 /**
