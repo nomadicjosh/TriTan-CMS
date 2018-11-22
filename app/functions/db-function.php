@@ -30,8 +30,8 @@ function get_posttype_by(string $field, $value)
 {
     $db = new \TriTan\Database();
     $posttype = $db->table(c::getInstance()->get('tbl_prefix') . 'posttype')
-            ->where($field, $value)
-            ->first();
+        ->where($field, $value)
+        ->first();
     return $posttype;
 }
 
@@ -48,8 +48,8 @@ function get_post_id($post_slug = null) : int
 {
     $db = new \TriTan\Database();
     $post = $db->table(c::getInstance()->get('tbl_prefix') . 'post')
-            ->where('post_slug', $post_slug)
-            ->first();
+        ->where('post_slug', $post_slug)
+        ->first();
 
     return (int) esc_html($post['post_id']);
 }
@@ -90,7 +90,7 @@ function ttcms_slugify(string $title, $table = null)
     }
 
     $results = $db->table($table)
-            ->where("$field", 'match', "/$slug(-[0-9]+)?$/");
+        ->where("$field", 'match', "/$slug(-[0-9]+)?$/");
     if ($results->count() > 0) {
         foreach ($results->get() as $item) {
             $titles[] = $item["$field"];
@@ -176,7 +176,7 @@ function get_all_posts($post_type = null, int $limit = 0, $offset = null, $statu
     $db = new \TriTan\Database();
     if ($post_type != null) {
         $posts = $db->table(c::getInstance()->get('tbl_prefix') . 'post')
-                ->where('post_type.post_posttype', $post_type);
+            ->where('post_type.post_posttype', $post_type);
 
         if ($status !== 'all') {
             $posts->where('post_status', $status);
@@ -228,8 +228,8 @@ function tinymce_link_list()
 {
     $db = new \TriTan\Database();
     $links = $db->table(c::getInstance()->get('tbl_prefix') . 'post')
-            ->where('post_status', 'published')
-            ->get(['post_title', 'post_relative_url']);
+        ->where('post_status', 'published')
+        ->get(['post_title', 'post_relative_url']);
     return $links;
 }
 
@@ -292,9 +292,9 @@ function update_post_relative_url_posttype(int $id, string $old_slug, string $ne
     $post->begin();
     try {
         $post->where('post_type.posttype_id', (int) $id)
-                ->update([
-                    'post_type.post_posttype' => (string) $new_slug
-                ]);
+            ->update([
+                'post_type.post_posttype' => (string) $new_slug
+            ]);
         $post->commit();
     } catch (Exception $ex) {
         $post->rollback();
@@ -320,17 +320,17 @@ function update_post_relative_url_posttype(int $id, string $old_slug, string $ne
  * @file app/functions/db-function.php
  *
  * @since 0.9.9
- * @param int       $posttype_id    Posttype id to check against.
- * @param string    $slug           Slug to search for.
- * @return boolean
+ * @param int    $posttype_id Posttype id to check against.
+ * @param string $slug        Slug to search for.
+ * @return bool
  */
 function ttcms_posttype_slug_exist(int $posttype_id, string $slug) : bool
 {
     $db = new \TriTan\Database();
     $exist = $db->table(c::getInstance()->get('tbl_prefix') . 'posttype')
-            ->where('posttype_slug', $slug)
-            ->where('posttype_id', 'not in', $posttype_id)
-            ->count();
+        ->where('posttype_slug', $slug)
+        ->where('posttype_id', 'not in', $posttype_id)
+        ->count();
     return $exist > 0;
 }
 
@@ -349,10 +349,10 @@ function ttcms_post_slug_exist($post_id, string $slug, string $post_type) : bool
 {
     $db = new \TriTan\Database();
     $exist = $db->table(c::getInstance()->get('tbl_prefix') . 'post')
-            ->where('post_slug', $slug)
-            ->where('post_id', 'not in', $post_id)
-            ->where('post_type.post_posttype', $post_type)
-            ->count();
+        ->where('post_slug', $slug)
+        ->where('post_id', 'not in', $post_id)
+        ->where('post_type.post_posttype', $post_type)
+        ->count();
     return $exist > 0;
 }
 
@@ -370,9 +370,9 @@ function ttcms_site_slug_exist($site_id, string $slug) : bool
 {
     $db = new \TriTan\Database();
     $exist = $db->table('site')
-            ->where('site_slug', $slug)
-            ->where('site_id', 'not in', $site_id)
-            ->count();
+        ->where('site_slug', $slug)
+        ->where('site_id', 'not in', $site_id)
+        ->count();
     return $exist > 0;
 }
 
@@ -389,7 +389,7 @@ function is_post_parent(int $post_id)
 {
     $db = new \TriTan\Database();
     $children = $db->table(c::getInstance()->get('tbl_prefix') . 'post')
-            ->where('post_attributes.parent.parent_id', $post_id);
+        ->where('post_attributes.parent.parent_id', $post_id);
     if ($children->count() <= 0) {
         return false;
     }
@@ -407,8 +407,8 @@ function is_post_posttype_exist($posttype_id) : bool
 {
     $db = new \TriTan\Database();
     $exist = $db->table(c::getInstance()->get('tbl_prefix') . 'post')
-            ->where('post_type.posttype_id', $posttype_id)
-            ->count();
+        ->where('post_type.posttype_id', $posttype_id)
+        ->count();
     return $exist > 0;
 }
 
@@ -425,8 +425,8 @@ function reassign_posts(int $user_id, int $assign_id)
 {
     $db = new \TriTan\Database();
     $count = $db->table(c::getInstance()->get('tbl_prefix') . 'post')
-            ->where('post_author', (int) $user_id)
-            ->count();
+        ->where('post_author', (int) $user_id)
+        ->count();
     if ($count > 0) {
         $reassign = $db->table(c::getInstance()->get('tbl_prefix') . 'post');
         $reassign->begin();
@@ -472,17 +472,17 @@ function reassign_sites(int $user_id, array $params = [])
     }
 
     $count = $db->table('site')
-            ->where('site_owner', (int) $user_id)
-            ->count();
+        ->where('site_owner', (int) $user_id)
+        ->count();
 
     if ($count > 0) {
         $reassign = $db->table('site');
         $reassign->begin();
         try {
             $reassign->where('site_owner', (int) $user_id)
-                    ->update([
-                        'site_owner' => (int) $params['assign_id']
-                    ]);
+                ->update([
+                    'site_owner' => (int) $params['assign_id']
+                ]);
             $reassign->commit();
         } catch (Exception $ex) {
             $reassign->rollback();
@@ -511,8 +511,8 @@ function does_user_have_sites(int $user_id = 0)
 {
     $db = new \TriTan\Database();
     $owner = $db->table('site')
-            ->where('site_owner', $user_id)
-            ->count();
+        ->where('site_owner', $user_id)
+        ->count();
     if ($owner > 0) {
         return true;
     }
@@ -535,8 +535,8 @@ function get_users_sites(int $user_id)
 {
     $db = new \TriTan\Database();
     $sites = $db->table('site')
-            ->where('site_owner', (int) $user_id)
-            ->get();
+        ->where('site_owner', (int) $user_id)
+        ->get();
     return $sites;
 }
 
@@ -589,6 +589,11 @@ function populate_postmeta_cache()
         (new \TriTan\Common\MetaData(
             $db,
             new \TriTan\Common\Context\HelperContext()
-        ))->{'updateMetaDataCache'}(c::getInstance()->get('tbl_prefix') . 'post', [$meta['post_id']]);
+        ))->{'updateMetaDataCache'}(
+            c::getInstance()->get('tbl_prefix') . 'post',
+            [
+                $meta[c::getInstance()->get('tbl_prefix') . 'post_id']
+            ]
+        );
     }
 }

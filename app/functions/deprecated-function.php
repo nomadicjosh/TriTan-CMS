@@ -15,7 +15,6 @@
  *
  * @deprecated since release 0.9.8
  * @param type $matches
- * @return type
  */
 function clean_pre($matches)
 {
@@ -32,7 +31,6 @@ function clean_pre($matches)
  * @global type $parsecode_tags
  * @param type $tag
  * @param type $func
- * @return type
  */
 function add_parsecode($tag, $func)
 {
@@ -218,7 +216,6 @@ function strip_parsecodes($content)
  *
  * @deprecated since release 0.9.8
  * @param type $m
- * @return type
  */
 function strip_parsecode_tag($m)
 {
@@ -250,7 +247,6 @@ function ttcms_autop($pee, $br = 1)
  *
  * @deprecated since release 0.9.8
  * @param type $matches
- * @return type
  */
 function _autop_newline_preservation_helper($matches)
 {
@@ -266,7 +262,6 @@ function _autop_newline_preservation_helper($matches)
  * @deprecated since release 0.9.8
  * @global type $parsecode_tags
  * @param type $pee
- * @return type
  */
 function parsecode_unautop($pee)
 {
@@ -319,8 +314,7 @@ function get_post_posttype_slug($post_id = 0)
  *
  * @deprecated since release 0.9.9
  * @since 0.9
- * @param string $file
- *            Absolute path to file.
+ * @param string $file Absolute path to file.
  */
 function file_mod_time($file)
 {
@@ -365,7 +359,6 @@ function _t($msgid, $domain = '')
 /**
  * @deprecated since release 0.9.9
  * @param type $relative
- * @return type
  */
 function get_path_info($relative)
 {
@@ -528,7 +521,7 @@ function ttcms_php_check_syntax($filename, $check_includes = true)
  * @deprecated since release 0.9.9
  * @since 0.9
  * @param string $path
- * @return true
+ * @return bool
  */
 function win_is_writable($path)
 {
@@ -548,8 +541,7 @@ function win_is_writable($path)
  *
  * @deprecated since release 0.9.9
  * @since 0.9
- * @param string $path
- *            Path to check.
+ * @param string $path Path to check.
  */
 function ttcms_is_writable($path)
 {
@@ -742,8 +734,7 @@ function flatten_array($array)
  *
  * @deprecated since release 0.9.9
  * @since 0.9
- * @param string $dir
- *            Directory that should be removed.
+ * @param string $dir Directory that should be removed.
  */
 function _rmdir($dir)
 {
