@@ -188,7 +188,7 @@ function ttcms_home_url($path = '', $scheme = null)
  * @since 0.9
  * @param string $redirect Path to redirect to on log in.
  * @param string $path     Optional. Path relative to the login url. Default empty.
- * @param string|null $scheme  Optional. Scheme to give the home URL context. Accepts
+ * @param string|null $scheme  Optional. Scheme to give the logout URL context. Accepts
  *                              'http', 'https', 'relative', or null. Default 'login'.
  * @return string Returns the login url.
  */
@@ -236,6 +236,64 @@ function ttcms_login_url($redirect = '', $path = '', $scheme = 'login')
      *                             'relative' or null.
      */
     return hook::getInstance()->{'applyFilter'}('login_url', $login_url, $redirect, $path, $scheme);
+}
+
+/**
+ * Returns the login url for a given site.
+ *
+ * @file app/functions/link-function.php
+ *
+ * @since 1.0
+ * @param string $redirect Path to redirect to on logout.
+ * @param string $path     Optional. Path relative to the logout url. Default empty.
+ * @param string|null $scheme  Optional. Scheme to give the logout URL context. Accepts
+ *                              'http', 'https', 'relative', or null. Default 'logout'.
+ * @return string Returns the logout url.
+ */
+function ttcms_logout_url($redirect = '', $path = '', $scheme = 'logout')
+{
+    $url = ttcms_site_url('logout/', $scheme);
+    
+    if ($path && is_string($path)) {
+        $url .= ltrim($path, '/');
+    }
+
+    if (!empty($redirect)) {
+        $logout_url = add_query_arg('redirect_to', $redirect, $url);
+    }
+
+    /**
+     * Validates the redirect url.
+     *
+     * @since 1.0
+     */
+    if (!empty($redirect) && !validate_url($redirect)) {
+        $logout_url = $url;
+    }
+
+    /**
+     * Last check, and escape again just in case.
+     *
+     * @since 1.0
+     */
+    if (!empty($redirect)) {
+        $logout_url = esc_url($logout_url);
+    } else {
+        $logout_url = esc_url($url);
+    }
+
+    /**
+     * Filters the logout URL.
+     *
+     * @since 1.0
+     *
+     * @param string $logout_url   The logout URL. Not HTML-encoded.
+     * @param string $redirect     The path to redirect to on logout, if supplied.
+     * @param string $path         Route relative to the logout url. Blank string if no path is specified.
+     * @param string|null $scheme  Scheme to give the logout url context. Accepts 'http', 'https',
+     *                             'relative' or null.
+     */
+    return hook::getInstance()->{'applyFilter'}('logout_url', $logout_url, $redirect, $path, $scheme);
 }
 
 /**
@@ -308,4 +366,21 @@ function home_url($path = '', $scheme = null)
 function login_url($redirect = '', $path = '', $scheme = 'login')
 {
     return ttcms_login_url($redirect, $path, $scheme);
+}
+
+/**
+ * Returns the login url for a given site.
+ *
+ * @file app/functions/link-function.php
+ *
+ * @since 1.0
+ * @param string $redirect Path to redirect to on logout.
+ * @param string $path     Optional. Path relative to the logout url. Default empty.
+ * @param string|null $scheme  Optional. Scheme to give the logout URL context. Accepts
+ *                              'http', 'https', 'relative', or null. Default 'logout'.
+ * @return string Returns the logout url.
+ */
+function logout_url($redirect = '', $path = '', $scheme = 'logout')
+{
+    return ttcms_logout_url($redirect, $path, $scheme);
 }
