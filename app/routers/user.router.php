@@ -299,7 +299,7 @@ $app->group('/admin', function () use ($app, $opt, $db, $current_user) {
                 'key' => 'SWITCH_USERBACK',
                 'user_id' => (int) esc_html($current_user->getId()),
                 'user_login' => esc_html($current_user->getLogin()),
-                'remember' => $opt->read('cookieexpire') - time() > 86400 ? esc_html__('yes') : esc_html__('no'),
+                'remember' => $opt->read('cookieexpire') - time() >= 86400 ? esc_html__('yes') : esc_html__('no'),
                 'exp' => (int) $opt->read('cookieexpire') + time()
             ];
             $app->cookies->setSecureCookie($switch_cookie);
@@ -335,7 +335,7 @@ $app->group('/admin', function () use ($app, $opt, $db, $current_user) {
             'key' => 'TTCMS_COOKIENAME',
             'user_id' => (int) $id,
             'user_login' => get_user_value((int) $id, 'username'),
-            'remember' => time() - (int) $opt->read('cookieexpire') > 86400 ? t__('yes', 'tritan-cms') : t__('no', 'tritan-cms'),
+            'remember' => time() - (int) $opt->read('cookieexpire') >= 86400 ? esc_html__('yes') : esc_html__('no'),
             'exp' => (int) $opt->read('cookieexpire') + time()
         ];
 
@@ -424,7 +424,7 @@ $app->group('/admin', function () use ($app, $opt, $db, $current_user) {
             'key' => 'TTCMS_COOKIENAME',
             'user_id' => (int) $id,
             'user_login' => get_user_value((int) $id, 'username'),
-            'remember' => time() - (int) $opt->read('cookieexpire') > 86400 ? t__('yes', 'tritan-cms') : t__('no', 'tritan-cms'),
+            'remember' => time() - (int) $opt->read('cookieexpire') >= 86400 ? esc_html__('yes') : esc_html__('no'),
             'exp' => (int) $opt->read('cookieexpire') + time()
         ];
 

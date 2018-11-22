@@ -48,7 +48,7 @@ function current_user_can($perm): bool
  * @param string $role The role to check for.
  * @return bool True if user has role, false otherwise.
  */
-function current_user_has_role(string $role)
+function current_user_has_role(string $role): bool
 {
     return (
         new TriTan\Common\User\UserRoleRepository(
@@ -98,7 +98,7 @@ function get_role_by_id($role = 0)
  *
  * @since 0.9
  * @param mixed $user_id User's id.
- * @return User|false User array on success, false on failure.
+ * @return User|false User object on success, false on failure.
  */
 function get_userdata($user_id)
 {
@@ -111,7 +111,7 @@ function get_userdata($user_id)
  * @file app/functions/auth-function.php
  *
  * @since 0.9
- * @return boolean
+ * @return bool
  */
 function is_user_logged_in(): bool
 {
@@ -142,7 +142,8 @@ function ae($perm)
  *
  * @since 0.9
  * @param string $field The field to retrieve the user with.
- * @param int|string $value A value for $field (id, uname or email).
+ * @param int|string $value A value for $field (id, login or email).
+ * @return User|false User object on success, false otherwise.
  */
 function get_user_by($field, $value)
 {
@@ -377,7 +378,7 @@ function ttcms_set_auth_cookie($user, $rememberme = '')
         'key' => 'TTCMS_COOKIENAME',
         'user_id' => (int) esc_html($user['user_id']),
         'user_login' => (string) esc_html($user['user_login']),
-        'remember' => (isset($rememberme) ? $rememberme : esc_html__('no')),
+        'remember' => (isset($rememberme) ? esc_html__('yes') : esc_html__('no')),
         'exp' => (int) $expire + time()
     ];
 
