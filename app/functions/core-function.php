@@ -167,12 +167,12 @@ function generate_timezone_list()
         \DateTimeZone::PACIFIC
     );
 
-    $timezones = array();
+    $timezones = [];
     foreach ($regions as $region) {
         $timezones = array_merge($timezones, \DateTimeZone::listIdentifiers($region));
     }
 
-    $timezone_offsets = array();
+    $timezone_offsets = [];
     foreach ($timezones as $timezone) {
         $tz = new \DateTimeZone($timezone);
         $timezone_offsets[$timezone] = $tz->getOffset(new \DateTime());
@@ -181,7 +181,7 @@ function generate_timezone_list()
     // sort timezone by timezone name
     ksort($timezone_offsets);
 
-    $timezone_list = array();
+    $timezone_list = [];
     foreach ($timezone_offsets as $timezone => $offset) {
         $offset_prefix = $offset < 0 ? '-' : '+';
         $offset_formatted = gmdate('H:i', abs($offset));
@@ -332,7 +332,7 @@ function check_mime_type($file, $mode = 0)
 
     // mode 0 = full check
     // mode 1 = extension check only
-    $mime_types = array(
+    $mime_types = [
         'txt' => 'text/plain',
         'csv' => 'text/plain',
         // images
@@ -362,7 +362,7 @@ function check_mime_type($file, $mode = 0)
         'docx' => 'application/msword',
         'xlsx' => 'application/vnd.ms-excel',
         'pptx' => 'application/vnd.ms-powerpoint'
-    );
+    ];
 
     $ext = strtolower(array_pop(explode('.', $file)));
 
@@ -643,13 +643,10 @@ function ttcms_get_file_data($file, $default_headers, $context = '')
  *
  * @since 0.9
  *
- * @param string $plugin_file
- *            Path to the plugin file
- * @param bool $markup
- *            Optional. If the returned data should have HTML markup applied.
- *            Default true.
- * @param bool $translate
- *            Optional. If the returned data should be translated. Default true.
+ * @param string $plugin_file Path to the plugin file
+ * @param bool $markup Optional. If the returned data should have HTML markup applied.
+ *                     Default true.
+ * @param bool $translate Optional. If the returned data should be translated. Default true.
  * @return array {
  *         Plugin data. Values will be empty if not supplied by the plugin.
  *
