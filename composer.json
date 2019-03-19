@@ -69,7 +69,8 @@
         "nette/security": "^2.4",
         "liten/liten": "^1.0",
         "spatie/image": "^1.5",
-        "spatie/schema-org": "^2.0"
+        "spatie/schema-org": "^2.0",
+        "phpseclib/mcrypt_compat": "^1.0"
     },
     "extra": {
         "installer-types": ["tritancms-plugin"],
