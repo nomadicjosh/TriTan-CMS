@@ -1,3 +1,8 @@
+# No Longer Under Development
+TriTan CMS is no longer being maintained. It has been replaced by [Devflow](https://github.com/getdevflow/cmf), a headless content management framework with CQRS and Event Sourcing.
+
+
+
 # TriTan CMS
 TriTan is a developer centric, lightweight content management system (CMS) and content management framework (CMF). It is easy to install, easy to manage, and easy to extend. The majority of TriTan's codebase is derived from WordPress, however, TriTan is not a fork of WordPress. It also should not be seen as a replacement for WordPress, Drupal, Joomla or any of the top used CMS's out there.
 
